@@ -1,3 +1,6 @@
+.git
+release.AppImage
+
 # Logs
 logs
 *.log
@@ -24,6 +27,3 @@ release
 *.njsproj
 *.sln
 *.sw?
-
-# release
-release.AppImage
