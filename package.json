@@ -7,6 +7,7 @@
     "name": "Andrew-LD",
     "email": "andrewld@protonmail.com"
   },
+  "license": "GPL-3.0-only",
   "homepage": "https://github.com/andrew-ld/lutris-gamepad-ui/",
   "scripts": {
     "dev": "vite",
