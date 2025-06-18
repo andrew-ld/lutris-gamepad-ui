@@ -1,8 +1,9 @@
 const { app, BrowserWindow, session, ipcMain } = require("electron");
 const path = require("path");
-const isDev = require("electron-is-dev");
 const { spawn, exec } = require("child_process");
 const { promisify } = require("util");
+
+const isDev = process.env.IS_DEV === "1";
 
 let mainWindow;
 let runningGameProcess;
