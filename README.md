@@ -2,6 +2,8 @@
 
 A simple, TV-friendly, gamepad-navigable frontend for the [Lutris](https://lutris.net/) game launcher on Linux.
 
+**[➡️ View Application Screenshots](./README_SCREENSHOTS.md)**
+
 ## 🤔 Why?
 
 Lutris is a fantastic tool for managing games on Linux, but its default interface is designed for mouse and keyboard at a desk. This project aims to provide a "couch gaming" experience, similar to Steam's Big Picture Mode, allowing you to browse and launch your Lutris library entirely with a gamepad from the comfort of your sofa.
