@@ -1,0 +1,28 @@
+name: Build AppImage and Upload Artifact
+
+permissions:
+  contents: read
+  actions: read
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build the AppImage package
+        run: bash ./docker-create-appimage.sh
+
+      - name: Upload AppImage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release.AppImage
+          path: release.AppImage
