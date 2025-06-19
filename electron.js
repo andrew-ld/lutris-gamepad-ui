@@ -4,6 +4,7 @@ const { spawn, exec } = require("child_process");
 const { promisify } = require("util");
 
 const isDev = process.env.IS_DEV === "1";
+const forceWindowed = process.env.FORCE_WINDOWED === "1";
 
 let mainWindow;
 let runningGameProcess;
@@ -36,18 +37,28 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    fullscreen: !isDev,
+    fullscreen: !forceWindowed && !isDev,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
     },
   });
 
-  mainWindow.loadURL(
-    isDev
-      ? "http://localhost:5173"
-      : `file://${path.join(__dirname, "./dist/index.html")}`
-  );
+  let url;
+
+  if (isDev) {
+    url = "http://localhost:5173";
+  } else {
+    if (__dirname.endsWith("/dist")) {
+      url = path.join(__dirname, "index.html");
+    } else {
+      url = path.join(__dirname, "dist/index.html");
+    }
+
+    url = "file://" + url;
+  }
+
+  mainWindow.loadURL(url);
 
   mainWindow.on("closed", () => {
     mainWindow = null;

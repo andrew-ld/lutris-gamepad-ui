@@ -13,6 +13,7 @@
     "dev": "vite",
     "start": "IS_DEV=1 concurrently \"npm run dev\" \"npm run electron:dev\"",
     "build": "vite build && npm run electron:build",
+    "build:vite": "vite build && cp electron.js dist",
     "preview": "vite preview",
     "electron:dev": "wait-on http://localhost:5173 && electron .",
     "electron:build": "electron-builder"
