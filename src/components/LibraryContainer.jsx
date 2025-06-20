@@ -6,6 +6,8 @@ import LoadingIndicator from "./LoadingIndicator";
 import RunningGame from "./RunningGame";
 import ControlsOverlay from "./ControlsOverlay";
 
+export const LibraryContainerFocusID = "LibraryContainer";
+
 const LibraryContainer = () => {
   const {
     games,
@@ -18,7 +20,7 @@ const LibraryContainer = () => {
 
   const [focusCoords, setFocusCoords] = useState({ shelf: 0, card: 0 });
 
-  const lastInput = useInput();
+  const { lastInput, isFocused } = useInput();
   const cardRefs = useRef([[]]);
 
   const shelves = useMemo(() => {
@@ -46,7 +48,7 @@ const LibraryContainer = () => {
   }, []);
 
   useEffect(() => {
-    if (loading || runningGame) return;
+    if (loading || runningGame || !isFocused(LibraryContainerFocusID)) return;
     const { shelf, card, preventScroll } = focusCoords;
     const targetNode = cardRefs.current[shelf]?.[card];
     if (targetNode) {
@@ -61,10 +63,11 @@ const LibraryContainer = () => {
         });
       }
     }
-  }, [focusCoords]);
+  }, [focusCoords, loading, runningGame, isFocused]);
 
   useEffect(() => {
-    if (!lastInput || loading) return;
+    if (!lastInput || loading || !isFocused(LibraryContainerFocusID)) return;
+
     const { name: direction } = lastInput;
     if (!["UP", "DOWN", "LEFT", "RIGHT"].includes(direction)) return;
 
@@ -89,10 +92,10 @@ const LibraryContainer = () => {
       card = Math.min(card, shelves[shelf]?.games.length - 1 || 0);
       return { shelf, card };
     });
-  }, [lastInput]);
+  }, [lastInput, loading, isFocused, shelves]);
 
   useEffect(() => {
-    if (!lastInput || loading) return;
+    if (!lastInput || loading || !isFocused(LibraryContainerFocusID)) return;
     const { name: action } = lastInput;
 
     switch (action) {
@@ -114,7 +117,17 @@ const LibraryContainer = () => {
         }
         break;
     }
-  }, [lastInput]);
+  }, [
+    lastInput,
+    loading,
+    isFocused,
+    runningGame,
+    focusCoords,
+    shelves,
+    fetchGames,
+    launchGame,
+    closeRunningGame,
+  ]);
 
   const focusedGame =
     !runningGame && shelves.length > 0

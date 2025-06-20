@@ -4,7 +4,6 @@ const {
   session,
   ipcMain,
   nativeImage,
-  Tray,
 } = require("electron");
 const path = require("path");
 const { spawn, exec } = require("child_process");
@@ -137,6 +136,24 @@ ipcMain.on("set-icon", async (_event, dataURL) => {
 
   const iconNative = nativeImage.createFromDataURL(dataURL);
   mainWindow.setIcon(iconNative);
+});
+
+ipcMain.on("reboot-pc", () => {
+  console.log("Requesting PC reboot...");
+  exec("systemctl reboot", (error) => {
+    if (error) {
+      console.error(`Reboot error: ${error.message}`);
+    }
+  });
+});
+
+ipcMain.on("poweroff-pc", () => {
+  console.log("Requesting PC power off...");
+  exec("systemctl poweroff", (error) => {
+    if (error) {
+      console.error(`Poweroff error: ${error.message}`);
+    }
+  });
 });
 
 app.on("window-all-closed", () => {

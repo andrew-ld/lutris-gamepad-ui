@@ -1,21 +1,13 @@
-import { useEffect } from "react";
-import { InputProvider, useInput } from "./contexts/InputContext";
-import { LutrisProvider } from "./contexts/LutrisContext"; // Import provider
+import { InputProvider } from "./contexts/InputContext";
+import { LutrisProvider } from "./contexts/LutrisContext";
 import LibraryContainer from "./components/LibraryContainer";
-import CloseButton from "./components/CloseButton";
+import { LibraryContainerFocusID } from "./components/LibraryContainer";
+import SystemMenu from "./components/SystemMenu";
 
 const AppContent = () => {
-  const lastInput = useInput();
-
-  useEffect(() => {
-    if (lastInput?.name === "Y") {
-      window.close();
-    }
-  }, [lastInput]);
-
   return (
     <div className="App">
-      <CloseButton />
+      <SystemMenu />
       <LibraryContainer />
     </div>
   );
@@ -23,7 +15,7 @@ const AppContent = () => {
 
 function App() {
   return (
-    <InputProvider>
+    <InputProvider defaultFocusId={LibraryContainerFocusID}>
       <LutrisProvider>
         <AppContent />
       </LutrisProvider>

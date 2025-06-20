@@ -11,6 +11,10 @@ const ButtonHint = ({ button, label, onClick }) => (
 const ControlsOverlay = ({ focusedGame, runningGame }) => {
   const { fetchGames, closeRunningGame, launchGame } = useLutris();
 
+  const openSystemMenu = () => {
+    window.dispatchEvent(new Event("toggle-system-menu"));
+  };
+
   return (
     <div className="controls-overlay">
       <div className="hints-list">
@@ -31,7 +35,7 @@ const ControlsOverlay = ({ focusedGame, runningGame }) => {
         )}
 
         <ButtonHint onClick={fetchGames} button="A" label="Reload" />
-        <ButtonHint onClick={() => window.close()} button="Y" label="Exit" />
+        <ButtonHint onClick={openSystemMenu} button="Y" label="Power" />
       </div>
     </div>
   );

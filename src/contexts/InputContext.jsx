@@ -1,14 +1,21 @@
-import { createContext, useContext, useState, useEffect, useRef } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 
 const KEY_MAP = {
   ArrowUp: "UP",
   ArrowDown: "DOWN",
   ArrowLeft: "LEFT",
   ArrowRight: "RIGHT",
-  x: "X",
-  b: "B",
-  y: "Y",
   a: "A",
+  b: "B",
+  x: "X",
+  y: "Y",
 };
 
 const GAMEPAD_BUTTON_MAP = {
@@ -25,8 +32,9 @@ const GAMEPAD_BUTTON_MAP = {
 const InputContext = createContext(null);
 export const useInput = () => useContext(InputContext);
 
-export const InputProvider = ({ children }) => {
+export const InputProvider = ({ children, defaultFocusId }) => {
   const [lastInput, setLastInput] = useState(null);
+  const [focusStack, setFocusStack] = useState([defaultFocusId]);
 
   const setLastInputSafe = (input) => {
     if (document.hasFocus() || !input) {
@@ -36,6 +44,40 @@ export const InputProvider = ({ children }) => {
 
   const prevButtonState = useRef({});
   const animationFrameId = useRef(null);
+
+  const claimInputFocus = useCallback((claimantId) => {
+    setFocusStack((prevStack) => {
+      if (
+        prevStack.length > 0 &&
+        prevStack[prevStack.length - 1] === claimantId
+      ) {
+        return prevStack;
+      }
+      const newStack = [
+        ...prevStack.filter((id) => id !== claimantId),
+        claimantId,
+      ];
+      console.log(
+        `Focus claimed by: ${claimantId}. Stack: [${newStack.join(", ")}]`
+      );
+      return newStack;
+    });
+  }, []);
+
+  const releaseInputFocus = useCallback((claimantId) => {
+    setFocusStack((prevStack) => {
+      if (prevStack.length === 1 && prevStack[0] === defaultFocusId) {
+        return prevStack;
+      }
+      const newStack = prevStack.filter((id) => id !== claimantId);
+      if (newStack.length !== prevStack.length) {
+        console.log(
+          `Focus released by: ${claimantId}. Stack: [${newStack.join(", ")}]`
+        );
+      }
+      return newStack;
+    });
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -50,7 +92,7 @@ export const InputProvider = ({ children }) => {
       }
     };
     const handleKeyUp = (_event) => {
-      setLastInputSafe();
+      setLastInputSafe(null);
     };
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
@@ -127,7 +169,27 @@ export const InputProvider = ({ children }) => {
     };
   }, []);
 
+  const currentFocus =
+    focusStack.length > 0 ? focusStack[focusStack.length - 1] : null;
+
+  const isFocused = useCallback(
+    (claimantId) => {
+      return currentFocus === claimantId;
+    },
+    [currentFocus]
+  );
+
+  const value = {
+    lastInput,
+    currentFocus,
+    isFocused,
+    claimInputFocus,
+    releaseInputFocus,
+  };
+
   return (
-    <InputContext.Provider value={lastInput}>{children}</InputContext.Provider>
+    <InputContext.Provider value={value} defaultFocusId={defaultFocusId}>
+      {children}
+    </InputContext.Provider>
   );
 };

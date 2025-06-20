@@ -28,3 +28,11 @@ export const closeGame = (game) => {
 export const setIcon = (dataURL) => {
   ipcRenderer.send("set-icon", dataURL);
 };
+
+export const rebootPC = () => {
+  ipcRenderer.send("reboot-pc");
+};
+
+export const powerOffPC = () => {
+  ipcRenderer.send("poweroff-pc");
+};
