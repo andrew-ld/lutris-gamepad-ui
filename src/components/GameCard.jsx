@@ -1,5 +1,5 @@
 import React from "react";
-import { launchGame } from "../utils/lutris";
+import { launchGame } from "../utils/ipc";
 import "../styles/GameCard.css";
 import GameCover from "./GameCover";
 

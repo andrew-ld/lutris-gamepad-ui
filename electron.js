@@ -1,4 +1,10 @@
-const { app, BrowserWindow, session, ipcMain } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  session,
+  ipcMain,
+  nativeImage,
+} = require("electron");
 const path = require("path");
 const { spawn, exec } = require("child_process");
 const { promisify } = require("util");
@@ -120,6 +126,15 @@ ipcMain.on("launch-game", (_event, gameId) => {
 
 ipcMain.on("close-game", () => {
   closeRunningGameProcess();
+});
+
+ipcMain.on("set-icon", async (_event, iconSvg) => {
+  if (!mainWindow) {
+    return;
+  }
+
+  const image = nativeImage.createFromPath(iconSvg);
+  mainWindow.setIcon(image);
 });
 
 app.on("window-all-closed", () => {

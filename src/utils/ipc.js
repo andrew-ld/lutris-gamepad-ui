@@ -12,7 +12,6 @@ export const getGames = async () => {
     title: game.name || game.slug,
     playtime: game.playtime,
     lastPlayed: game.lastplayed ? new Date(game.lastplayed) : null,
-    isRunning: false,
   }));
 };
 
@@ -24,4 +23,8 @@ export const launchGame = (game) => {
 export const closeGame = (game) => {
   console.log(`Requesting close for game: ${game.title} (ID: ${game.id})`);
   ipcRenderer.send("close-game", game.id);
+};
+
+export const setIcon = (iconSvg) => {
+  ipcRenderer.send("set-icon", iconSvg);
 };

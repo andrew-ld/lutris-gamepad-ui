@@ -5,7 +5,7 @@ import {
   useEffect,
   useCallback,
 } from "react";
-import * as api from "../utils/lutris";
+import * as api from "../utils/ipc";
 
 const { ipcRenderer } = window.require("electron");
 
