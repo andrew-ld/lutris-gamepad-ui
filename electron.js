@@ -139,8 +139,8 @@ ipcMain.on("set-icon", async (_event, dataURL) => {
 });
 
 app.on("window-all-closed", () => {
-  app.quit();
   closeRunningGameProcess();
+  app.quit();
 });
 
 app.whenReady().then(createWindow);
