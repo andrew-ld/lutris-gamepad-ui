@@ -25,6 +25,6 @@ export const closeGame = (game) => {
   ipcRenderer.send("close-game", game.id);
 };
 
-export const setIcon = (iconSvg) => {
-  ipcRenderer.send("set-icon", iconSvg);
+export const setIcon = (dataURL) => {
+  ipcRenderer.send("set-icon", dataURL);
 };
