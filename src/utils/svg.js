@@ -1,5 +1,4 @@
 export function renderSvgToDataURL(svgString, width, height) {
-  console.log(svgString);
   return new Promise((resolve, reject) => {
     const img = new Image();
 
