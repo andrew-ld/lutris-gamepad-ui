@@ -13,7 +13,6 @@ export function renderSvgToDataURL(svgString, width, height) {
     };
 
     img.onerror = (err) => {
-      console.log(err);
       reject(err);
     };
 
