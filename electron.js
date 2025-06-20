@@ -49,6 +49,7 @@ function createWindow() {
       nodeIntegration: true,
       contextIsolation: false,
     },
+    title: "Lutris Gamepad UI",
   });
 
   let url;
