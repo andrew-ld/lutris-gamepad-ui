@@ -8,7 +8,6 @@ const {
 const path = require("path");
 const { spawn, exec } = require("child_process");
 const { promisify } = require("util");
-const { error } = require("console");
 
 const isDev = process.env.IS_DEV === "1";
 const forceWindowed = process.env.FORCE_WINDOWED === "1";
