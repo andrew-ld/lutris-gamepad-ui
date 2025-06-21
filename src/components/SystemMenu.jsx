@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useInput } from "../contexts/InputContext";
+import { useModal } from "../contexts/ModalContext";
+import ConfirmationDialog from "./ConfirmationDialog";
 import * as api from "../utils/ipc";
 import "../styles/SystemMenu.css";
 
 const menuItems = [
-  { label: "Exit Application", action: () => window.close() },
-  { label: "Reboot System", action: () => api.rebootPC() },
-  { label: "Power Off System", action: () => api.powerOffPC() },
+  { label: "Exit Application", action: () => window.close(), confirm: true },
+  { label: "Reboot System", action: () => api.rebootPC(), confirm: true },
+  { label: "Power Off System", action: () => api.powerOffPC(), confirm: true },
 ];
 
 const PowerIcon = () => (
@@ -38,6 +40,7 @@ export const SystemMenuFocusId = "SystemMenu";
 const SystemMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const { showModal, modalContent } = useModal();
 
   const { lastInput, claimInputFocus, releaseInputFocus, isFocused } =
     useInput();
@@ -53,6 +56,28 @@ const SystemMenu = () => {
       return isOpening;
     });
   }, []);
+
+  const handleAction = useCallback(
+    (item) => {
+      if (item.confirm) {
+        showModal(
+          <ConfirmationDialog
+            mountTimestamp={lastInput?.timestamp}
+            message={`Are you sure you want to\n${item.label}?`}
+            onConfirm={() => {
+              item.action();
+              setIsOpen(false);
+            }}
+            onDeny={setIsOpen(false)}
+          />
+        );
+      } else {
+        item.action();
+        setIsOpen(false);
+      }
+    },
+    [showModal, lastInput]
+  );
 
   useEffect(() => {
     if (isOpen) {
@@ -72,7 +97,7 @@ const SystemMenu = () => {
       return;
     }
 
-    if (lastInput.name === "Y") {
+    if (lastInput.name === "Y" && !modalContent) {
       lastProcessedInput.current = lastInput.timestamp;
       toggleMenu();
       return;
@@ -90,14 +115,21 @@ const SystemMenu = () => {
         setSelectedIndex((prev) => Math.min(menuItems.length - 1, prev + 1));
         break;
       case "A":
-        menuItems[selectedIndex].action();
-        setIsOpen(false);
+        handleAction(menuItems[selectedIndex]);
         break;
       case "B":
         setIsOpen(false);
         break;
     }
-  }, [lastInput, isOpen, selectedIndex, toggleMenu, isFocused]);
+  }, [
+    lastInput,
+    isOpen,
+    selectedIndex,
+    toggleMenu,
+    isFocused,
+    handleAction,
+    modalContent,
+  ]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -131,10 +163,7 @@ const SystemMenu = () => {
                 className={`system-menu-item ${
                   index === selectedIndex ? "focused" : ""
                 }`}
-                onClick={() => {
-                  item.action();
-                  setIsOpen(false);
-                }}
+                onClick={() => handleAction(item)}
                 onMouseEnter={() => setSelectedIndex(index)}
               >
                 {item.label}

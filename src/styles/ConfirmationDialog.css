@@ -1,0 +1,45 @@
+.confirmation-dialog {
+  padding: 24px;
+  text-align: center;
+}
+
+.confirmation-message {
+  margin: 0 0 24px 0;
+  font-size: 1.1rem;
+  line-height: 1.4;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+}
+
+.confirmation-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.confirmation-button {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.confirmation-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-primary);
+}
+
+.confirmation-button.focused {
+  background-color: var(--accent-color);
+  color: var(--text-primary);
+  border-color: var(--accent-color);
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(229, 9, 20, 0.5);
+}
