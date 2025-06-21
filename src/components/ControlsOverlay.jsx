@@ -17,11 +17,15 @@ const ControlsOverlay = ({ focusedGame, runningGame, hasSearch }) => {
     <div className="controls-overlay">
       <div className="hints-list">
         {runningGame && (
-          <ButtonIcon
-            button="B"
-            onClick={closeRunningGame}
-            label={`Force close ${runningGame.title}`}
-          />
+          <>
+            <ButtonIcon button="Super" label="Toggle Overlay" />
+
+            <ButtonIcon
+              button="B"
+              onClick={closeRunningGame}
+              label={`Force close ${runningGame.title}`}
+            />
+          </>
         )}
 
         {showControls && (
