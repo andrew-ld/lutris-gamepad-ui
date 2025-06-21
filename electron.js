@@ -54,17 +54,6 @@ function createWindow() {
     return false;
   });
 
-  mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    fullscreen: !forceWindowed && !isDev,
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-    },
-    title: "Lutris Gamepad UI",
-  });
-
   let url;
 
   if (isDev) {
@@ -79,13 +68,22 @@ function createWindow() {
     url = "file://" + url;
   }
 
+  const fullscreen = !forceWindowed && !isDev;
+
+  mainWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    fullscreen: fullscreen,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+    title: "Lutris Gamepad UI",
+  });
+
   mainWindow.on("closed", () => {
     mainWindow = null;
     closeRunningGameProcess();
-  });
-
-  mainWindow.on("show", () => {
-    mainWindow.focus();
   });
 
   mainWindow.loadURL(url);
@@ -128,19 +126,16 @@ ipcMain.on("launch-game", (_event, gameId) => {
     mainWindow.webContents.send("game-started", gameId);
   }
 
-  runningGameProcess.on("close", () => {
+  const onGameClosed = () => {
     runningGameProcess = null;
     if (mainWindow) {
       mainWindow.webContents.send("game-closed");
+      mainWindow.show();
     }
-  });
+  };
 
-  runningGameProcess.on("error", () => {
-    runningGameProcess = null;
-    if (mainWindow) {
-      mainWindow.webContents.send("game-closed");
-    }
-  });
+  runningGameProcess.on("close", onGameClosed);
+  runningGameProcess.on("error", onGameClosed);
 });
 
 ipcMain.on("close-game", () => {
@@ -182,14 +177,17 @@ ipcMain.on("open-lutris", () => {
   });
 });
 
-ipcMain.on("window-show", () => {
+ipcMain.on("togle-window-show", () => {
   if (!mainWindow) {
     return;
   }
 
-  console.log("window show!");
-
-  mainWindow.show();
+  if (mainWindow.isFocused()) {
+    mainWindow.hide();
+    mainWindow.showInactive();
+  } else {
+    mainWindow.show();
+  }
 });
 
 app.on("window-all-closed", () => {

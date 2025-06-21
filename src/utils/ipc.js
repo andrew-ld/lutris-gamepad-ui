@@ -43,6 +43,6 @@ export const openLutris = () => {
   ipcRenderer.send("open-lutris");
 };
 
-export const windowShow = () => {
-  ipcRenderer.send("window-show");
+export const togleWindowShow = () => {
+  ipcRenderer.send("togle-window-show");
 };

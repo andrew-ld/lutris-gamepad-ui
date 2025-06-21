@@ -8,7 +8,7 @@ import RunningGame from "./RunningGame";
 import ControlsOverlay from "./ControlsOverlay";
 import OnScreenKeyboard from "./OnScreenKeyboard";
 import { playActionSound } from "../utils/sound";
-import { windowShow } from "../utils/ipc";
+import { togleWindowShow } from "../utils/ipc";
 
 export const LibraryContainerFocusID = "LibraryContainer";
 
@@ -153,7 +153,7 @@ const LibraryContainer = () => {
       return;
     }
 
-    windowShow();
+    togleWindowShow();
   }, [runningGame, lastInput, isFocused]);
 
   useEffect(() => {
