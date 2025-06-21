@@ -30,6 +30,14 @@ const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
     hideModal();
   }, [onDeny, hideModal]);
 
+  const handleSubmit = useCallback(() => {
+    if (confirmSelection === 0) {
+      handleConfirm();
+    } else {
+      handleDeny();
+    }
+  }, [handleConfirm, handleDeny, confirmSelection]);
+
   useEffect(() => {
     if (
       !isFocused(ConfirmationDialogFocusId) ||
@@ -46,17 +54,13 @@ const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
         setConfirmSelection((prev) => (prev === 0 ? 1 : 0));
         break;
       case "A":
-        if (confirmSelection === 0) {
-          handleConfirm();
-        } else {
-          handleDeny();
-        }
+        handleSubmit();
         break;
       case "B":
         handleDeny();
         break;
     }
-  }, [lastInput, confirmSelection, handleConfirm, handleDeny, isFocused]);
+  }, [lastInput, confirmSelection, handleDeny, isFocused]);
 
   return (
     <div className="confirmation-dialog">
@@ -82,8 +86,18 @@ const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
         </div>
       </div>
       <div className="confirmation-footer">
-        <ButtonIcon button="A" label="Select" size="small" />
-        <ButtonIcon button="B" label="Cancel" size="small" />
+        <ButtonIcon
+          button="A"
+          label="Select"
+          size="small"
+          onClick={() => handleSubmit()}
+        />
+        <ButtonIcon
+          button="B"
+          label="Cancel"
+          size="small"
+          onClick={() => handleDeny()}
+        />
       </div>
     </div>
   );

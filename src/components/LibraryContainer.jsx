@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useLutris } from "../contexts/LutrisContext";
 import { useInput } from "../contexts/InputContext";
+import { useModal } from "../contexts/ModalContext";
 import GameLibrary from "./GameLibrary";
 import LoadingIndicator from "./LoadingIndicator";
 import RunningGame from "./RunningGame";
 import ControlsOverlay from "./ControlsOverlay";
+import OnScreenKeyboard from "./OnScreenKeyboard";
 
 export const LibraryContainerFocusID = "LibraryContainer";
 
@@ -19,7 +21,9 @@ const LibraryContainer = () => {
   } = useLutris();
 
   const [focusCoords, setFocusCoords] = useState({ shelf: 0, card: 0 });
+  const [searchQuery, setSearchQuery] = useState("");
   const { lastInput, isFocused } = useInput();
+  const { showModal, hideModal } = useModal();
   const cardRefs = useRef([[]]);
 
   const setCardRef = useCallback((el, shelfIndex, cardIndex) => {
@@ -31,18 +35,38 @@ const LibraryContainer = () => {
 
   const shelves = useMemo(() => {
     if (!games || games.length === 0) return [];
-    const sortedGames = [...games].sort((a, b) => b.lastPlayed - a.lastPlayed);
+
+    let filteredGames = games;
+    if (searchQuery) {
+      filteredGames = games.filter((g) =>
+        g.title.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    const sortedGames = [...filteredGames].sort(
+      (a, b) => b.lastPlayed - a.lastPlayed
+    );
     const newShelves = [
       { title: "Recently Played", games: sortedGames.slice(0, 10) },
-      { title: "All Games", games: games },
+      { title: "All Games", games: filteredGames },
     ];
+
+    if (searchQuery) {
+      return [
+        {
+          title: `Results for "${searchQuery}"`,
+          games: filteredGames.sort((a, b) => a.title.localeCompare(b.title)),
+        },
+      ];
+    }
+
     cardRefs.current = newShelves.map((shelf) => Array(shelf.games.length));
     return newShelves;
-  }, [games]);
+  }, [games, searchQuery]);
 
   useEffect(() => {
     setFocusCoords({ shelf: 0, card: 0 });
-  }, [games]);
+  }, [games, searchQuery]);
 
   const handleCardFocus = useCallback((coords) => {
     setFocusCoords((current) => {
@@ -88,6 +112,9 @@ const LibraryContainer = () => {
 
     setFocusCoords((current) => {
       let { shelf, card } = current;
+      if (shelves.length === 0 || shelves[shelf]?.games.length === 0)
+        return current;
+
       switch (direction) {
         case "UP":
           shelf = Math.max(0, shelf - 1);
@@ -110,7 +137,7 @@ const LibraryContainer = () => {
   }, [lastInput, loading, isFocused, shelves]);
 
   const focusedGame =
-    !runningGame && shelves.length > 0
+    !runningGame && shelves.length > 0 && shelves[0]?.games.length > 0
       ? shelves[focusCoords.shelf]?.games[focusCoords.card]
       : null;
 
@@ -120,16 +147,27 @@ const LibraryContainer = () => {
 
     switch (action) {
       case "B":
-        if (runningGame) {
-          closeRunningGame();
-        }
+        if (runningGame) closeRunningGame();
+        else if (searchQuery) setSearchQuery("");
         break;
       case "A":
-        fetchGames();
-        break;
-      case "X":
         if (!runningGame && focusedGame) {
           handleLaunchGame(focusedGame);
+        }
+        break;
+      case "X":
+        if (!runningGame) {
+          showModal(
+            <OnScreenKeyboard
+              label="Search Library"
+              initialValue={searchQuery}
+              onConfirm={(query) => {
+                setSearchQuery(query);
+                hideModal();
+              }}
+              onClose={hideModal}
+            />
+          );
         }
         break;
     }
@@ -139,9 +177,11 @@ const LibraryContainer = () => {
     isFocused,
     runningGame,
     focusedGame,
-    fetchGames,
     handleLaunchGame,
     closeRunningGame,
+    searchQuery,
+    showModal,
+    hideModal,
   ]);
 
   if (loading) {
@@ -165,8 +205,13 @@ const LibraryContainer = () => {
         onCardFocus={handleCardFocus}
         onCardClick={handleLaunchGame}
         setCardRef={setCardRef}
+        searchQuery={searchQuery}
       />
-      <ControlsOverlay focusedGame={focusedGame} runningGame={null} />
+      <ControlsOverlay
+        focusedGame={focusedGame}
+        runningGame={null}
+        hasSearch={!!searchQuery}
+      />
     </>
   );
 };

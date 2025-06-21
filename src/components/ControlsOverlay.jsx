@@ -1,13 +1,17 @@
 import "../styles/ControlsOverlay.css";
 import { useLutris } from "../contexts/LutrisContext";
+import { useModal } from "../contexts/ModalContext";
 import ButtonIcon from "./ButtonIcon";
 
-const ControlsOverlay = ({ focusedGame, runningGame }) => {
-  const { fetchGames, closeRunningGame, launchGame } = useLutris();
+const ControlsOverlay = ({ focusedGame, runningGame, hasSearch }) => {
+  const { closeRunningGame, launchGame } = useLutris();
+  const { modalContent } = useModal();
 
   const openSystemMenu = () => {
     window.dispatchEvent(new Event("toggle-system-menu"));
   };
+
+  const showControls = !runningGame && !modalContent;
 
   return (
     <div className="controls-overlay">
@@ -20,15 +24,20 @@ const ControlsOverlay = ({ focusedGame, runningGame }) => {
           />
         )}
 
-        {focusedGame && !runningGame && (
-          <ButtonIcon
-            button="X"
-            label="Launch Game"
-            onClick={() => launchGame(focusedGame)}
-          />
+        {showControls && (
+          <>
+            {focusedGame && (
+              <ButtonIcon
+                button="A"
+                label="Launch Game"
+                onClick={() => launchGame(focusedGame)}
+              />
+            )}
+            {hasSearch ? <ButtonIcon button="B" label="Clear Search" /> : null}
+            <ButtonIcon button="X" label="Search" />
+          </>
         )}
 
-        <ButtonIcon onClick={fetchGames} button="A" label="Reload" />
         <ButtonIcon onClick={openSystemMenu} button="Y" label="Power" />
       </div>
     </div>

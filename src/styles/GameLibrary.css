@@ -9,3 +9,18 @@
   margin-bottom: 2rem;
   font-weight: bold;
 }
+
+.empty-library-message {
+  text-align: center;
+  margin-top: 10vh;
+  color: var(--text-secondary);
+}
+
+.empty-library-message h2 {
+  font-size: 1.8rem;
+  color: var(--text-primary);
+}
+
+.empty-library-message p {
+  font-size: 1.1rem;
+}

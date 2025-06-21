@@ -7,24 +7,40 @@ const GameLibrary = ({
   onCardFocus,
   onCardClick,
   setCardRef,
+  searchQuery,
 }) => {
+  const hasResults = shelves.length > 0 && shelves[0].games.length > 0;
+
   return (
     <main className="game-library">
       <header className="library-header">
-        <h1>My Library</h1>
+        <h1>{searchQuery ? "Search" : "My Library"}</h1>
       </header>
-      {shelves.map((shelf, shelfIndex) => (
-        <GameShelf
-          key={shelf.title}
-          title={shelf.title}
-          games={shelf.games}
-          shelfIndex={shelfIndex}
-          setCardRef={setCardRef}
-          onCardFocus={onCardFocus}
-          onCardClick={onCardClick}
-          focusCoords={focusCoords}
-        />
-      ))}
+      {hasResults ? (
+        shelves.map((shelf, shelfIndex) => (
+          <GameShelf
+            key={shelf.title}
+            title={shelf.title}
+            games={shelf.games}
+            shelfIndex={shelfIndex}
+            setCardRef={setCardRef}
+            onCardFocus={onCardFocus}
+            onCardClick={onCardClick}
+            focusCoords={focusCoords}
+          />
+        ))
+      ) : (
+        <div className="empty-library-message">
+          <h2>
+            {searchQuery ? `No results for "${searchQuery}"` : "No games found"}
+          </h2>
+          <p>
+            {searchQuery
+              ? "Try a different search term or press 'B' to clear."
+              : "Add games in Lutris and reload."}
+          </p>
+        </div>
+      )}
     </main>
   );
 };

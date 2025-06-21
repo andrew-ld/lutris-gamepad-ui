@@ -1,0 +1,122 @@
+.osk-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 800px;
+  background-color: #1a1a1a;
+  outline: none;
+}
+
+.osk-input-display {
+  background-color: var(--primary-background);
+  color: var(--text-primary);
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.osk-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.osk-input-wrapper {
+  display: flex;
+  align-items: center;
+  min-height: 1.2em;
+}
+
+.osk-input-value {
+  display: inline-block;
+  white-space: pre;
+}
+
+.osk-cursor {
+  display: inline-block;
+  vertical-align: text-bottom;
+  width: 2px;
+  height: 1.5rem;
+  background-color: var(--accent-color);
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  from,
+  to {
+    background-color: transparent;
+  }
+  50% {
+    background-color: var(--accent-color);
+  }
+}
+
+.osk-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.osk-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.osk-key {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease-out;
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+  min-width: 60px;
+  padding: 0 10px;
+}
+
+.osk-key.special {
+  flex-grow: 1.5;
+  background-color: rgba(255, 255, 255, 0.15);
+  font-size: 1rem;
+}
+
+.osk-key[data-key="Space"] {
+  flex-grow: 8;
+}
+
+.osk-key:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.osk-key.focused {
+  background-color: var(--accent-color);
+  color: var(--text-primary);
+  transform: scale(1.08);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}
+
+.osk-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 16px;
+  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
