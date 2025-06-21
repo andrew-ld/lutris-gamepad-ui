@@ -156,6 +156,24 @@ const LibraryContainer = () => {
     togleWindowShow();
   }, [runningGame, lastInput, isFocused]);
 
+  const showSearchModal = useCallback(() => {
+    showModal((hideThisModal) => (
+      <OnScreenKeyboard
+        label="Search Library"
+        initialValue={searchQuery}
+        onConfirm={(query) => {
+          setSearchQuery(query);
+          hideThisModal();
+        }}
+        onClose={hideThisModal}
+      />
+    ));
+  }, [setSearchQuery, showModal, runningGame]);
+
+  const clearSearch = useCallback(() => {
+    setSearchQuery("");
+  }, [setSearchQuery]);
+
   useEffect(() => {
     if (!lastInput || loading || !isFocused(LibraryContainerFocusID)) return;
     const { name: action } = lastInput;
@@ -167,7 +185,7 @@ const LibraryContainer = () => {
         if (runningGame) {
           closeRunningGame();
         } else if (searchQuery) {
-          setSearchQuery("");
+          clearSearch();
         }
         break;
       case "A":
@@ -179,17 +197,7 @@ const LibraryContainer = () => {
       case "X":
         if (!runningGame) {
           playActionSound();
-          showModal((hideThisModal) => (
-            <OnScreenKeyboard
-              label="Search Library"
-              initialValue={searchQuery}
-              onConfirm={(query) => {
-                setSearchQuery(query);
-                hideThisModal();
-              }}
-              onClose={hideThisModal}
-            />
-          ));
+          showSearchModal();
         }
         break;
     }
@@ -203,6 +211,8 @@ const LibraryContainer = () => {
     closeRunningGame,
     searchQuery,
     showModal,
+    showSearchModal,
+    clearSearch,
   ]);
 
   if (loading) {
@@ -232,6 +242,8 @@ const LibraryContainer = () => {
         focusedGame={focusedGame}
         runningGame={null}
         hasSearch={!!searchQuery}
+        clearSearch={clearSearch}
+        showSearchModal={showSearchModal}
       />
     </>
   );

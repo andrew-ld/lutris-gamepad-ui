@@ -3,7 +3,13 @@ import { useLutris } from "../contexts/LutrisContext";
 import { useModal } from "../contexts/ModalContext";
 import ButtonIcon from "./ButtonIcon";
 
-const ControlsOverlay = ({ focusedGame, runningGame, hasSearch }) => {
+const ControlsOverlay = ({
+  focusedGame,
+  runningGame,
+  hasSearch,
+  showSearchModal,
+  clearSearch,
+}) => {
   const { closeRunningGame, launchGame } = useLutris();
   const { modalContent } = useModal();
 
@@ -37,8 +43,16 @@ const ControlsOverlay = ({ focusedGame, runningGame, hasSearch }) => {
                 onClick={() => launchGame(focusedGame)}
               />
             )}
-            {hasSearch ? <ButtonIcon button="B" label="Clear Search" /> : null}
-            <ButtonIcon button="X" label="Search" />
+
+            {hasSearch ? (
+              <ButtonIcon
+                button="B"
+                label="Clear Search"
+                onClick={clearSearch}
+              />
+            ) : null}
+
+            <ButtonIcon button="X" label="Search" onClick={showSearchModal} />
           </>
         )}
 

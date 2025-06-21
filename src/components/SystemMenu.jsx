@@ -106,6 +106,10 @@ const SystemMenu = () => {
     return () => window.removeEventListener("toggle-system-menu", toggleMenu);
   }, [toggleMenu]);
 
+  const handleSelect = useCallback(() => {
+    handleAction(menuItems[selectedIndex]);
+  }, [handleAction, menuItems, selectedIndex]);
+
   useEffect(() => {
     if (!lastInput || lastInput.timestamp === lastProcessedInput.current) {
       return;
@@ -139,7 +143,7 @@ const SystemMenu = () => {
         break;
       case "A":
         playActionSound();
-        handleAction(menuItems[selectedIndex]);
+        handleSelect();
         break;
       case "B":
         playActionSound();
@@ -154,6 +158,7 @@ const SystemMenu = () => {
     isFocused,
     handleAction,
     modalContent,
+    handleSelect,
   ]);
 
   useEffect(() => {
@@ -197,8 +202,18 @@ const SystemMenu = () => {
             ))}
           </ul>
           <div className="system-menu-footer">
-            <ButtonIcon button="A" label="Select" size="small" />
-            <ButtonIcon button="B" label="Back" size="small" />
+            <ButtonIcon
+              button="A"
+              label="Select"
+              size="small"
+              onClick={handleSelect}
+            />
+            <ButtonIcon
+              button="B"
+              label="Back"
+              size="small"
+              onClick={() => setIsOpen(false)}
+            />
           </div>
         </div>
       )}
