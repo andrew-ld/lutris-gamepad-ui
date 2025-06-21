@@ -30,6 +30,19 @@ function closeRunningGameProcess() {
 }
 
 function createWindow() {
+  app.on("second-instance", () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) {
+        mainWindow.restore();
+      }
+      mainWindow.focus();
+    }
+  });
+
+  if (!app.requestSingleInstanceLock()) {
+    app.quit();
+  }
+
   session.defaultSession.setDevicePermissionHandler((details) => {
     if (details.deviceType === "hid") {
       console.log(
