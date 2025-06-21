@@ -4,18 +4,30 @@ const ModalContext = createContext(null);
 export const useModal = () => useContext(ModalContext);
 
 export const ModalProvider = ({ children }) => {
-  const [modalContent, setModalContent] = useState(null);
+  const [modal, setModal] = useState(null);
 
-  const showModal = useCallback((content) => {
-    setModalContent(content);
+  const showModal = useCallback((renderContent) => {
+    const modalId = Symbol("modalId");
+
+    const hideThisModal = () => {
+      setModal((currentModal) => {
+        if (currentModal && currentModal.id === modalId) {
+          return null;
+        }
+        return currentModal;
+      });
+    };
+
+    const content = renderContent(hideThisModal);
+    setModal({ id: modalId, content });
   }, []);
 
   const hideModal = useCallback(() => {
-    setModalContent(null);
+    setModal(null);
   }, []);
 
   const value = {
-    modalContent,
+    modalContent: modal ? modal.content : null,
     showModal,
     hideModal,
   };

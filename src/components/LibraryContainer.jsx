@@ -23,7 +23,7 @@ const LibraryContainer = () => {
   const [focusCoords, setFocusCoords] = useState({ shelf: 0, card: 0 });
   const [searchQuery, setSearchQuery] = useState("");
   const { lastInput, isFocused } = useInput();
-  const { showModal, hideModal } = useModal();
+  const { showModal } = useModal();
   const cardRefs = useRef([[]]);
 
   const setCardRef = useCallback((el, shelfIndex, cardIndex) => {
@@ -157,17 +157,17 @@ const LibraryContainer = () => {
         break;
       case "X":
         if (!runningGame) {
-          showModal(
+          showModal((hideThisModal) => (
             <OnScreenKeyboard
               label="Search Library"
               initialValue={searchQuery}
               onConfirm={(query) => {
                 setSearchQuery(query);
-                hideModal();
+                hideThisModal();
               }}
-              onClose={hideModal}
+              onClose={hideThisModal}
             />
-          );
+          ));
         }
         break;
     }
@@ -181,7 +181,6 @@ const LibraryContainer = () => {
     closeRunningGame,
     searchQuery,
     showModal,
-    hideModal,
   ]);
 
   if (loading) {

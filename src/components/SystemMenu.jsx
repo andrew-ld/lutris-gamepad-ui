@@ -70,16 +70,20 @@ const SystemMenu = () => {
   const handleAction = useCallback(
     (item) => {
       if (item.confirm) {
-        showModal(
+        showModal((hideThisModal) => (
           <ConfirmationDialog
             message={`Are you sure you want to\n${item.label}?`}
             onConfirm={() => {
               item.action();
+              hideThisModal();
               setIsOpen(false);
             }}
-            onDeny={() => setIsOpen(false)}
+            onDeny={() => {
+              hideThisModal();
+              setIsOpen(false);
+            }}
           />
-        );
+        ));
       } else {
         item.action();
         setIsOpen(false);

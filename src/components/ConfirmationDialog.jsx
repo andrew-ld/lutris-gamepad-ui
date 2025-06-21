@@ -1,13 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useInput } from "../contexts/InputContext";
-import { useModal } from "../contexts/ModalContext";
 import ButtonIcon from "./ButtonIcon";
 import "../styles/ConfirmationDialog.css";
 
 export const ConfirmationDialogFocusId = "ConfirmationDialog";
 
 const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
-  const { hideModal } = useModal();
   const { lastInput, claimInputFocus, releaseInputFocus, isFocused } =
     useInput();
   const lastProcessedInput = useRef();
@@ -20,15 +18,11 @@ const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
 
   const handleConfirm = useCallback(() => {
     onConfirm();
-    hideModal();
-  }, [onConfirm, hideModal]);
+  }, [onConfirm]);
 
   const handleDeny = useCallback(() => {
-    if (onDeny) {
-      onDeny();
-    }
-    hideModal();
-  }, [onDeny, hideModal]);
+    onDeny();
+  }, [onDeny]);
 
   const handleSubmit = useCallback(() => {
     if (confirmSelection === 0) {
@@ -60,7 +54,7 @@ const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
         handleDeny();
         break;
     }
-  }, [lastInput, confirmSelection, handleDeny, isFocused]);
+  }, [lastInput, isFocused, handleDeny, handleSubmit]);
 
   return (
     <div className="confirmation-dialog">
@@ -90,13 +84,13 @@ const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
           button="A"
           label="Select"
           size="small"
-          onClick={() => handleSubmit()}
+          onClick={handleSubmit}
         />
         <ButtonIcon
           button="B"
           label="Cancel"
           size="small"
-          onClick={() => handleDeny()}
+          onClick={handleDeny}
         />
       </div>
     </div>
