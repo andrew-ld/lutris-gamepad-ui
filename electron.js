@@ -8,6 +8,7 @@ const {
 const path = require("path");
 const { spawn, exec } = require("child_process");
 const { promisify } = require("util");
+const { error } = require("console");
 
 const isDev = process.env.IS_DEV === "1";
 const forceWindowed = process.env.FORCE_WINDOWED === "1";
@@ -142,7 +143,7 @@ ipcMain.on("reboot-pc", () => {
   console.log("Requesting PC reboot...");
   exec("systemctl reboot", (error) => {
     if (error) {
-      console.error(`Reboot error: ${error.message}`);
+      console.error("Reboot error", error);
     }
   });
 });
@@ -151,7 +152,15 @@ ipcMain.on("poweroff-pc", () => {
   console.log("Requesting PC power off...");
   exec("systemctl poweroff", (error) => {
     if (error) {
-      console.error(`Poweroff error: ${error.message}`);
+      console.error("Poweroff error", error);
+    }
+  });
+});
+
+ipcMain.on("open-lutris", () => {
+  exec("lutris", (error) => {
+    if (error) {
+      console.error("Open Lutris error", error);
     }
   });
 });

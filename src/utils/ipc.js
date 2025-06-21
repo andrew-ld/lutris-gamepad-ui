@@ -36,3 +36,7 @@ export const rebootPC = () => {
 export const powerOffPC = () => {
   ipcRenderer.send("poweroff-pc");
 };
+
+export const openLutris = () => {
+  ipcRenderer.send("open-lutris");
+};

@@ -8,6 +8,7 @@ import "../styles/SystemMenu.css";
 
 const menuItems = [
   { label: "Exit Application", action: () => window.close(), confirm: true },
+  { label: "Open Lutris", action: () => api.openLutris(), confirm: true },
   { label: "Reboot System", action: () => api.rebootPC(), confirm: true },
   { label: "Power Off System", action: () => api.powerOffPC(), confirm: true },
 ];
