@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useInput } from "../contexts/InputContext";
 import ButtonIcon from "./ButtonIcon";
 import "../styles/ConfirmationDialog.css";
+import { playActionSound } from "../utils/sound";
 
 export const ConfirmationDialogFocusId = "ConfirmationDialog";
 
@@ -41,6 +42,8 @@ const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
       return;
     }
     lastProcessedInput.current = lastInput.timestamp;
+
+    playActionSound();
 
     switch (lastInput.name) {
       case "UP":

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useInput } from "../contexts/InputContext";
 import ButtonIcon from "./ButtonIcon";
 import "../styles/OnScreenKeyboard.css";
+import { playActionSound } from "../utils/sound";
 
 export const OnScreenKeyboardFocusID = "OnScreenKeyboard";
 
@@ -70,6 +71,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
       case "LEFT":
       case "RIGHT":
         setFocusCoords((prev) => {
+          const originalCoords = { ...prev };
           let { x, y } = prev;
           const currentLayout = KEY_LAYOUT;
 
@@ -84,16 +86,23 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
           if (lastInput.name === "RIGHT")
             x = Math.min(targetRowLength - 1, x + 1);
 
+          if (originalCoords.x !== x || originalCoords.y !== y) {
+            playActionSound();
+          }
+
           return { x, y };
         });
         break;
       case "A":
+        playActionSound();
         handleKeyPress(KEY_LAYOUT[focusCoords.y][focusCoords.x]);
         break;
       case "X":
+        playActionSound();
         onConfirm(inputValue);
         break;
       case "B":
+        playActionSound();
         onClose();
         break;
     }

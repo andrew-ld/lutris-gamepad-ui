@@ -7,6 +7,7 @@ import LoadingIndicator from "./LoadingIndicator";
 import RunningGame from "./RunningGame";
 import ControlsOverlay from "./ControlsOverlay";
 import OnScreenKeyboard from "./OnScreenKeyboard";
+import { playActionSound } from "../utils/sound";
 
 export const LibraryContainerFocusID = "LibraryContainer";
 
@@ -115,6 +116,8 @@ const LibraryContainer = () => {
       if (shelves.length === 0 || shelves[shelf]?.games.length === 0)
         return current;
 
+      const originalCoords = { shelf, card };
+
       switch (direction) {
         case "UP":
           shelf = Math.max(0, shelf - 1);
@@ -132,6 +135,11 @@ const LibraryContainer = () => {
           return current;
       }
       card = Math.min(card, shelves[shelf]?.games.length - 1 || 0);
+
+      if (originalCoords.shelf !== shelf || originalCoords.card !== card) {
+        playActionSound();
+      }
+
       return { shelf, card };
     });
   }, [lastInput, loading, isFocused, shelves]);
@@ -147,16 +155,23 @@ const LibraryContainer = () => {
 
     switch (action) {
       case "B":
-        if (runningGame) closeRunningGame();
-        else if (searchQuery) setSearchQuery("");
+        playActionSound();
+
+        if (runningGame) {
+          closeRunningGame();
+        } else if (searchQuery) {
+          setSearchQuery("");
+        }
         break;
       case "A":
         if (!runningGame && focusedGame) {
+          playActionSound();
           handleLaunchGame(focusedGame);
         }
         break;
       case "X":
         if (!runningGame) {
+          playActionSound();
           showModal((hideThisModal) => (
             <OnScreenKeyboard
               label="Search Library"

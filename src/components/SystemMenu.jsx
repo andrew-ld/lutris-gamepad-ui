@@ -6,6 +6,7 @@ import ButtonIcon from "./ButtonIcon";
 import * as api from "../utils/ipc";
 import { useLutris } from "../contexts/LutrisContext";
 import "../styles/SystemMenu.css";
+import { playActionSound } from "../utils/sound";
 
 const PowerIcon = () => (
   <svg
@@ -111,6 +112,7 @@ const SystemMenu = () => {
     }
 
     if (lastInput.name === "Y" && !modalContent) {
+      playActionSound();
       lastProcessedInput.current = lastInput.timestamp;
       toggleMenu();
       return;
@@ -122,15 +124,25 @@ const SystemMenu = () => {
 
     switch (lastInput.name) {
       case "UP":
-        setSelectedIndex((prev) => Math.max(0, prev - 1));
+        setSelectedIndex((prev) => {
+          const next = Math.max(0, prev - 1);
+          if (next !== prev) playActionSound();
+          return next;
+        });
         break;
       case "DOWN":
-        setSelectedIndex((prev) => Math.min(menuItems.length - 1, prev + 1));
+        setSelectedIndex((prev) => {
+          const next = Math.min(menuItems.length - 1, prev + 1);
+          if (next !== prev) playActionSound();
+          return next;
+        });
         break;
       case "A":
+        playActionSound();
         handleAction(menuItems[selectedIndex]);
         break;
       case "B":
+        playActionSound();
         setIsOpen(false);
         break;
     }
