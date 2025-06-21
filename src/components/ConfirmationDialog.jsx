@@ -6,11 +6,11 @@ import "../styles/ConfirmationDialog.css";
 
 export const ConfirmationDialogFocusId = "ConfirmationDialog";
 
-const ConfirmationDialog = ({ message, onConfirm, onDeny, mountTimestamp }) => {
+const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
   const { hideModal } = useModal();
   const { lastInput, claimInputFocus, releaseInputFocus, isFocused } =
     useInput();
-  const lastProcessedInput = useRef(mountTimestamp);
+  const lastProcessedInput = useRef();
   const [confirmSelection, setConfirmSelection] = useState(0);
 
   useEffect(() => {

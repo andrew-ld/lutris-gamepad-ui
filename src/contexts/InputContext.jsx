@@ -45,39 +45,49 @@ export const InputProvider = ({ children, defaultFocusId }) => {
   const prevButtonState = useRef({});
   const animationFrameId = useRef(null);
 
-  const claimInputFocus = useCallback((claimantId) => {
-    setFocusStack((prevStack) => {
-      if (
-        prevStack.length > 0 &&
-        prevStack[prevStack.length - 1] === claimantId
-      ) {
-        return prevStack;
-      }
-      const newStack = [
-        ...prevStack.filter((id) => id !== claimantId),
-        claimantId,
-      ];
-      console.log(
-        `Focus claimed by: ${claimantId}. Stack: [${newStack.join(", ")}]`
-      );
-      return newStack;
-    });
-  }, []);
-
-  const releaseInputFocus = useCallback((claimantId) => {
-    setFocusStack((prevStack) => {
-      if (prevStack.length === 1 && prevStack[0] === defaultFocusId) {
-        return prevStack;
-      }
-      const newStack = prevStack.filter((id) => id !== claimantId);
-      if (newStack.length !== prevStack.length) {
+  const claimInputFocus = useCallback(
+    (claimantId) => {
+      setFocusStack((prevStack) => {
+        if (
+          prevStack.length > 0 &&
+          prevStack[prevStack.length - 1] === claimantId
+        ) {
+          return prevStack;
+        }
+        const newStack = [
+          ...prevStack.filter((id) => id !== claimantId),
+          claimantId,
+        ];
+        if (newStack.length != prevStack.length) {
+          setLastInput(null);
+        }
         console.log(
-          `Focus released by: ${claimantId}. Stack: [${newStack.join(", ")}]`
+          `Focus claimed by: ${claimantId}. Stack: [${newStack.join(", ")}]`
         );
-      }
-      return newStack;
-    });
-  }, []);
+        return newStack;
+      });
+    },
+    [setFocusStack, setLastInput]
+  );
+
+  const releaseInputFocus = useCallback(
+    (claimantId) => {
+      setFocusStack((prevStack) => {
+        if (prevStack.length === 1 && prevStack[0] === defaultFocusId) {
+          return prevStack;
+        }
+        const newStack = prevStack.filter((id) => id !== claimantId);
+        if (newStack.length !== prevStack.length) {
+          setLastInput(null);
+          console.log(
+            `Focus released by: ${claimantId}. Stack: [${newStack.join(", ")}]`
+          );
+        }
+        return newStack;
+      });
+    },
+    [setLastInput, setFocusStack]
+  );
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -116,12 +126,15 @@ export const InputProvider = ({ children, defaultFocusId }) => {
         }
       }
 
+      let anyButtonPressed = false;
+
       for (const [button, pressed] of Object.entries(buttons)) {
         const prevButtonPressed = prevButtonState.current[button];
 
         if (pressed && !prevButtonPressed) {
           const actionName = GAMEPAD_BUTTON_MAP[button];
           if (actionName) {
+            anyButtonPressed = true;
             setLastInputSafe({
               type: "gamepad",
               name: actionName,
@@ -130,6 +143,12 @@ export const InputProvider = ({ children, defaultFocusId }) => {
             break;
           }
         }
+      }
+
+      if (!anyButtonPressed) {
+        setLastInput((prev) => {
+          prev?.type === "gamepad" ? null : prev;
+        });
       }
 
       prevButtonState.current = buttons;

@@ -63,7 +63,6 @@ const SystemMenu = () => {
       if (item.confirm) {
         showModal(
           <ConfirmationDialog
-            mountTimestamp={lastInput?.timestamp}
             message={`Are you sure you want to\n${item.label}?`}
             onConfirm={() => {
               item.action();
@@ -77,7 +76,7 @@ const SystemMenu = () => {
         setIsOpen(false);
       }
     },
-    [showModal, lastInput]
+    [showModal]
   );
 
   useEffect(() => {
