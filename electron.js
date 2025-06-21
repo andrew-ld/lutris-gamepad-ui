@@ -41,6 +41,7 @@ function createWindow() {
 
   if (!app.requestSingleInstanceLock()) {
     app.quit();
+    return;
   }
 
   session.defaultSession.setDevicePermissionHandler((details) => {
