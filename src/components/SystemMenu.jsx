@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useInput } from "../contexts/InputContext";
 import { useModal } from "../contexts/ModalContext";
 import ConfirmationDialog from "./ConfirmationDialog";
+import ButtonIcon from "./ButtonIcon";
 import * as api from "../utils/ipc";
 import "../styles/SystemMenu.css";
 
@@ -26,13 +27,6 @@ const PowerIcon = () => (
     <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
     <line x1="12" y1="2" x2="12" y2="12"></line>
   </svg>
-);
-
-const Hint = ({ button, label }) => (
-  <div className="system-menu-hint">
-    <div className={`button-icon button-${button.toLowerCase()}`}>{button}</div>
-    <span className="button-label">{label}</span>
-  </div>
 );
 
 export const SystemMenuFocusId = "SystemMenu";
@@ -68,7 +62,7 @@ const SystemMenu = () => {
               item.action();
               setIsOpen(false);
             }}
-            onDeny={setIsOpen(false)}
+            onDeny={() => setIsOpen(false)}
           />
         );
       } else {
@@ -171,8 +165,8 @@ const SystemMenu = () => {
             ))}
           </ul>
           <div className="system-menu-footer">
-            <Hint button="A" label="Select" />
-            <Hint button="B" label="Back" />
+            <ButtonIcon button="A" label="Select" size="small" />
+            <ButtonIcon button="B" label="Back" size="small" />
           </div>
         </div>
       )}

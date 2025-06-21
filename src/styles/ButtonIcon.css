@@ -1,0 +1,64 @@
+.button-hint {
+  display: flex;
+  align-items: center;
+  color: var(--text-secondary);
+}
+
+.button-hint.clickable {
+  cursor: pointer;
+}
+
+.button-icon {
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: #fff;
+  border: 2px solid #fff;
+}
+
+.button-icon.button-a {
+  background-color: #0078f2;
+  border-color: #0078f2;
+}
+
+.button-icon.button-x {
+  background-color: #0e7a0d;
+  border-color: #0e7a0d;
+}
+
+.button-icon.button-b {
+  background-color: #e50914;
+  border-color: #e50914;
+}
+
+.button-icon.button-y {
+  background-color: #f0c300;
+  border-color: #f0c300;
+  color: #141414;
+}
+
+.button-hint.size-large {
+  gap: 10px;
+}
+.button-hint.size-large .button-icon {
+  width: 28px;
+  height: 28px;
+  font-size: 1rem;
+}
+.button-hint.size-large .button-label {
+  font-size: 1rem;
+}
+
+.button-hint.size-small {
+  gap: 8px;
+}
+.button-hint.size-small .button-icon {
+  width: 24px;
+  height: 24px;
+  font-size: 0.9rem;
+}
+.button-hint.size-small .button-label {
+  font-size: 0.9rem;
+}

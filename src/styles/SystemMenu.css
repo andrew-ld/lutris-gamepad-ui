@@ -92,37 +92,3 @@
   flex-direction: column;
   gap: 8px;
 }
-
-.system-menu-hint {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.system-menu-hint .button-icon {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  font-size: 0.9rem;
-  color: #fff;
-  border: 2px solid #fff;
-}
-
-.system-menu-hint .button-icon.button-a {
-  background-color: #0078f2;
-  border-color: #0078f2;
-}
-
-.system-menu-hint .button-icon.button-b {
-  background-color: #e50914;
-  border-color: #e50914;
-}
-
-.system-menu-hint .button-label {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-}

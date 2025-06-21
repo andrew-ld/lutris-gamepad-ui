@@ -1,12 +1,6 @@
 import "../styles/ControlsOverlay.css";
 import { useLutris } from "../contexts/LutrisContext";
-
-const ButtonHint = ({ button, label, onClick }) => (
-  <div className="button-hint" onClick={onClick}>
-    <div className={`button-icon button-${button.toLowerCase()}`}>{button}</div>
-    <span className="button-label">{label}</span>
-  </div>
-);
+import ButtonIcon from "./ButtonIcon";
 
 const ControlsOverlay = ({ focusedGame, runningGame }) => {
   const { fetchGames, closeRunningGame, launchGame } = useLutris();
@@ -19,7 +13,7 @@ const ControlsOverlay = ({ focusedGame, runningGame }) => {
     <div className="controls-overlay">
       <div className="hints-list">
         {runningGame && (
-          <ButtonHint
+          <ButtonIcon
             button="B"
             onClick={closeRunningGame}
             label={`Force close ${runningGame.title}`}
@@ -27,15 +21,15 @@ const ControlsOverlay = ({ focusedGame, runningGame }) => {
         )}
 
         {focusedGame && !runningGame && (
-          <ButtonHint
+          <ButtonIcon
             button="X"
             label="Launch Game"
             onClick={() => launchGame(focusedGame)}
           />
         )}
 
-        <ButtonHint onClick={fetchGames} button="A" label="Reload" />
-        <ButtonHint onClick={openSystemMenu} button="Y" label="Power" />
+        <ButtonIcon onClick={fetchGames} button="A" label="Reload" />
+        <ButtonIcon onClick={openSystemMenu} button="Y" label="Power" />
       </div>
     </div>
   );
