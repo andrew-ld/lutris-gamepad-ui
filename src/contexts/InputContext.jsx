@@ -94,7 +94,7 @@ export const InputProvider = ({ children, defaultFocusId }) => {
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
-      const actionName = KEY_MAP[event.key];
+      const actionName = KEY_MAP[event.key] || KEY_MAP[event.key.toLowerCase()];
       if (actionName) {
         setLastInputSafe({
           type: "key",
