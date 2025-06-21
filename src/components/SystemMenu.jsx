@@ -77,7 +77,7 @@ const SystemMenu = () => {
         setIsOpen(false);
       }
     },
-    [showModal]
+    [showModal, setIsOpen]
   );
 
   useEffect(() => {
