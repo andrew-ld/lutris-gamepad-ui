@@ -39,7 +39,14 @@ const SystemMenu = () => {
   const { lastInput, claimInputFocus, releaseInputFocus, isFocused } =
     useInput();
   const menuRef = useRef(null);
+  const menuPowerButtonRef = useRef(null);
   const lastProcessedInput = useRef(null);
+
+  useEffect(() => {
+    if (isOpen && menuPowerButtonRef.current) {
+      menuPowerButtonRef.current.focus();
+    }
+  }, [isOpen, menuPowerButtonRef]);
 
   const toggleMenu = useCallback(() => {
     setIsOpen((prev) => {
@@ -141,6 +148,7 @@ const SystemMenu = () => {
   return (
     <div className="system-menu-container" ref={menuRef}>
       <button
+        ref={menuPowerButtonRef}
         className="system-menu-toggle"
         onClick={toggleMenu}
         aria-label="Open System Menu"
