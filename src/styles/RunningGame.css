@@ -52,7 +52,8 @@
   aspect-ratio: 3/4;
   border-radius: 8px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  flex-shrink: 0; 
+  flex-shrink: 0;
+  object-fit: cover;
 }
 
 .running-game-info {

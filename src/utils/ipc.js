@@ -1,4 +1,5 @@
 const { ipcRenderer } = window.require("electron");
+import { formatPlaytime } from "./datetime";
 
 export const getGames = async () => {
   const gamesFromLutris = await ipcRenderer.invoke("get-games");
@@ -7,12 +8,22 @@ export const getGames = async () => {
     return [];
   }
 
-  return gamesFromLutris.map((game) => ({
-    id: game.id,
-    title: game.name || game.slug,
-    playtime: game.playtime,
-    lastPlayed: game.lastplayed ? new Date(game.lastplayed) : null,
-  }));
+  return gamesFromLutris.map((game) => {
+    const hasSeconds =
+      typeof game.playtimeSeconds === "number" &&
+      isFinite(game.playtimeSeconds);
+
+    return {
+      id: game.id,
+      title: game.name || game.slug,
+      playtime: hasSeconds
+        ? formatPlaytime(game.playtimeSeconds)
+        : game.playtime,
+      lastPlayed: game.lastplayed ? new Date(game.lastplayed) : null,
+      playtimeSeconds: game.playtimeSeconds,
+      coverPath: game.coverPath,
+    };
+  });
 };
 
 export const launchGame = (game) => {

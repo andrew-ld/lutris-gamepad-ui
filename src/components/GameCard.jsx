@@ -21,7 +21,15 @@ const GameCard = React.forwardRef(
         onClick={onClick}
         onMouseEnter={onFocus}
       >
-        <GameCover game={game} className="game-card-cover" />
+        {game.coverPath ? (
+          <img
+            src={`file://${game.coverPath}`}
+            alt={game.title}
+            className="game-card-cover"
+          />
+        ) : (
+          <GameCover game={game} className="game-card-cover" />
+        )}
         <div className="game-card-overlay">
           <div className="game-card-info">
             <h3 className="game-card-title">{game.title}</h3>
