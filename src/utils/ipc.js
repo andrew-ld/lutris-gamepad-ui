@@ -4,23 +4,14 @@ import { formatPlaytime } from "./datetime";
 export const getGames = async () => {
   const gamesFromLutris = await ipcRenderer.invoke("get-games");
 
-  if (!Array.isArray(gamesFromLutris)) {
-    return [];
-  }
-
   return gamesFromLutris.map((game) => {
-    const hasSeconds =
-      typeof game.playtimeSeconds === "number" &&
-      isFinite(game.playtimeSeconds);
-
     return {
       id: game.id,
       title: game.name || game.slug,
-      playtime: hasSeconds
+      playtime: game.playtimeSeconds
         ? formatPlaytime(game.playtimeSeconds)
         : game.playtime,
       lastPlayed: game.lastplayed ? new Date(game.lastplayed) : null,
-      playtimeSeconds: game.playtimeSeconds,
       coverPath: game.coverPath,
     };
   });
