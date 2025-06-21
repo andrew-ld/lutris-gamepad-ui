@@ -91,9 +91,10 @@ export const InputProvider = ({ children, defaultFocusId }) => {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
       const actionName = KEY_MAP[event.key];
       if (actionName) {
-        event.preventDefault();
         setLastInputSafe({
           type: "key",
           name: actionName,
