@@ -5,8 +5,9 @@ const GameShelf = ({
   title,
   games,
   shelfIndex,
-  cardRefs,
+  setCardRef,
   onCardFocus,
+  onCardClick,
   focusCoords,
 }) => {
   return (
@@ -16,9 +17,10 @@ const GameShelf = ({
         {games.map((game, cardIndex) => (
           <GameCard
             key={game.id}
-            ref={(el) => (cardRefs.current[shelfIndex][cardIndex] = el)}
+            ref={(el) => setCardRef(el, shelfIndex, cardIndex)}
             game={game}
             onFocus={() => onCardFocus({ shelf: shelfIndex, card: cardIndex })}
+            onClick={() => onCardClick(game)}
             isFocused={
               focusCoords.shelf === shelfIndex && focusCoords.card === cardIndex
             }

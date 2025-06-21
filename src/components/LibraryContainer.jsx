@@ -19,9 +19,15 @@ const LibraryContainer = () => {
   } = useLutris();
 
   const [focusCoords, setFocusCoords] = useState({ shelf: 0, card: 0 });
-
   const { lastInput, isFocused } = useInput();
   const cardRefs = useRef([[]]);
+
+  const setCardRef = useCallback((el, shelfIndex, cardIndex) => {
+    if (!cardRefs.current[shelfIndex]) {
+      cardRefs.current[shelfIndex] = [];
+    }
+    cardRefs.current[shelfIndex][cardIndex] = el;
+  }, []);
 
   const shelves = useMemo(() => {
     if (!games || games.length === 0) return [];
@@ -38,7 +44,7 @@ const LibraryContainer = () => {
     setFocusCoords({ shelf: 0, card: 0 });
   }, [games]);
 
-  const handleCardFocusByMouse = useCallback((coords) => {
+  const handleCardFocus = useCallback((coords) => {
     setFocusCoords((current) => {
       if (current.shelf === coords.shelf && current.card === coords.card) {
         return current;
@@ -46,6 +52,15 @@ const LibraryContainer = () => {
       return { ...coords, preventScroll: true };
     });
   }, []);
+
+  const handleLaunchGame = useCallback(
+    (game) => {
+      if (game && !runningGame) {
+        launchGame(game);
+      }
+    },
+    [runningGame, launchGame]
+  );
 
   useEffect(() => {
     if (loading || runningGame || !isFocused(LibraryContainerFocusID)) return;
@@ -94,6 +109,11 @@ const LibraryContainer = () => {
     });
   }, [lastInput, loading, isFocused, shelves]);
 
+  const focusedGame =
+    !runningGame && shelves.length > 0
+      ? shelves[focusCoords.shelf]?.games[focusCoords.card]
+      : null;
+
   useEffect(() => {
     if (!lastInput || loading || !isFocused(LibraryContainerFocusID)) return;
     const { name: action } = lastInput;
@@ -108,12 +128,8 @@ const LibraryContainer = () => {
         fetchGames();
         break;
       case "X":
-        if (!runningGame) {
-          const gameToLaunch =
-            shelves[focusCoords.shelf]?.games[focusCoords.card];
-          if (gameToLaunch) {
-            launchGame(gameToLaunch);
-          }
+        if (!runningGame && focusedGame) {
+          handleLaunchGame(focusedGame);
         }
         break;
     }
@@ -122,17 +138,11 @@ const LibraryContainer = () => {
     loading,
     isFocused,
     runningGame,
-    focusCoords,
-    shelves,
+    focusedGame,
     fetchGames,
-    launchGame,
+    handleLaunchGame,
     closeRunningGame,
   ]);
-
-  const focusedGame =
-    !runningGame && shelves.length > 0
-      ? shelves[focusCoords.shelf]?.games[focusCoords.card]
-      : null;
 
   if (loading) {
     return <LoadingIndicator message="Loading library..." />;
@@ -152,8 +162,9 @@ const LibraryContainer = () => {
       <GameLibrary
         shelves={shelves}
         focusCoords={focusCoords}
-        onCardFocus={handleCardFocusByMouse}
-        cardRefs={cardRefs}
+        onCardFocus={handleCardFocus}
+        onCardClick={handleLaunchGame}
+        setCardRef={setCardRef}
       />
       <ControlsOverlay focusedGame={focusedGame} runningGame={null} />
     </>

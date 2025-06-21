@@ -1,7 +1,13 @@
 import GameShelf from "./GameShelf";
 import "../styles/GameLibrary.css";
 
-const GameLibrary = ({ shelves, focusCoords, onCardFocus, cardRefs }) => {
+const GameLibrary = ({
+  shelves,
+  focusCoords,
+  onCardFocus,
+  onCardClick,
+  setCardRef,
+}) => {
   return (
     <main className="game-library">
       <header className="library-header">
@@ -13,8 +19,9 @@ const GameLibrary = ({ shelves, focusCoords, onCardFocus, cardRefs }) => {
           title={shelf.title}
           games={shelf.games}
           shelfIndex={shelfIndex}
-          cardRefs={cardRefs}
+          setCardRef={setCardRef}
           onCardFocus={onCardFocus}
+          onCardClick={onCardClick}
           focusCoords={focusCoords}
         />
       ))}
