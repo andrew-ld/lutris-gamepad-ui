@@ -1,7 +1,7 @@
 .game-card {
   position: relative;
   flex-shrink: 0;
-  width: 180px;
+  width: 160px;
   aspect-ratio: 3 / 4;
   border-radius: 8px;
   overflow: hidden;
