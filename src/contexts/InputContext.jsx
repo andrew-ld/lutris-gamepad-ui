@@ -27,6 +27,7 @@ const GAMEPAD_BUTTON_MAP = {
   13: "DOWN",
   14: "LEFT",
   15: "RIGHT",
+  16: "Super",
 };
 
 const InputContext = createContext(null);
@@ -37,7 +38,7 @@ export const InputProvider = ({ children, defaultFocusId }) => {
   const [focusStack, setFocusStack] = useState([defaultFocusId]);
 
   const setLastInputSafe = (input) => {
-    if (document.hasFocus() || !input) {
+    if (document.hasFocus() || !input || input?.name === "Super") {
       setLastInput(input);
     }
   };

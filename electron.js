@@ -79,12 +79,16 @@ function createWindow() {
     url = "file://" + url;
   }
 
-  mainWindow.loadURL(url);
-
   mainWindow.on("closed", () => {
     mainWindow = null;
     closeRunningGameProcess();
   });
+
+  mainWindow.on("show", () => {
+    mainWindow.focus();
+  });
+
+  mainWindow.loadURL(url);
 }
 
 ipcMain.handle("get-games", async () => {
@@ -176,6 +180,16 @@ ipcMain.on("open-lutris", () => {
       console.error("Open Lutris error", error);
     }
   });
+});
+
+ipcMain.on("window-show", () => {
+  if (!mainWindow) {
+    return;
+  }
+
+  console.log("window show!");
+
+  mainWindow.show();
 });
 
 app.on("window-all-closed", () => {

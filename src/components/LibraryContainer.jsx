@@ -8,18 +8,13 @@ import RunningGame from "./RunningGame";
 import ControlsOverlay from "./ControlsOverlay";
 import OnScreenKeyboard from "./OnScreenKeyboard";
 import { playActionSound } from "../utils/sound";
+import { windowShow } from "../utils/ipc";
 
 export const LibraryContainerFocusID = "LibraryContainer";
 
 const LibraryContainer = () => {
-  const {
-    games,
-    loading,
-    runningGame,
-    fetchGames,
-    launchGame,
-    closeRunningGame,
-  } = useLutris();
+  const { games, loading, runningGame, launchGame, closeRunningGame } =
+    useLutris();
 
   const [focusCoords, setFocusCoords] = useState({ shelf: 0, card: 0 });
   const [searchQuery, setSearchQuery] = useState("");
@@ -148,6 +143,18 @@ const LibraryContainer = () => {
     !runningGame && shelves.length > 0 && shelves[0]?.games.length > 0
       ? shelves[focusCoords.shelf]?.games[focusCoords.card]
       : null;
+
+  useEffect(() => {
+    if (
+      !runningGame ||
+      lastInput?.name !== "Super" ||
+      !isFocused(LibraryContainerFocusID)
+    ) {
+      return;
+    }
+
+    windowShow();
+  }, [runningGame, lastInput, isFocused]);
 
   useEffect(() => {
     if (!lastInput || loading || !isFocused(LibraryContainerFocusID)) return;

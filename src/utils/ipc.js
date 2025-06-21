@@ -42,3 +42,7 @@ export const powerOffPC = () => {
 export const openLutris = () => {
   ipcRenderer.send("open-lutris");
 };
+
+export const windowShow = () => {
+  ipcRenderer.send("window-show");
+};
