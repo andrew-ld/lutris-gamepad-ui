@@ -4,14 +4,8 @@ import { useModal } from "../contexts/ModalContext";
 import ConfirmationDialog from "./ConfirmationDialog";
 import ButtonIcon from "./ButtonIcon";
 import * as api from "../utils/ipc";
+import { useLutris } from "../contexts/LutrisContext";
 import "../styles/SystemMenu.css";
-
-const menuItems = [
-  { label: "Exit Application", action: () => window.close(), confirm: true },
-  { label: "Open Lutris", action: () => api.openLutris(), confirm: true },
-  { label: "Reboot System", action: () => api.rebootPC(), confirm: true },
-  { label: "Power Off System", action: () => api.powerOffPC(), confirm: true },
-];
 
 const PowerIcon = () => (
   <svg
@@ -42,6 +36,20 @@ const SystemMenu = () => {
   const menuRef = useRef(null);
   const menuPowerButtonRef = useRef(null);
   const lastProcessedInput = useRef(null);
+
+  const { fetchGames } = useLutris();
+
+  const menuItems = [
+    { label: "Reload Library", action: fetchGames, confirm: false },
+    { label: "Open Lutris", action: () => api.openLutris(), confirm: true },
+    { label: "Reboot System", action: () => api.rebootPC(), confirm: true },
+    {
+      label: "Power Off System",
+      action: () => api.powerOffPC(),
+      confirm: true,
+    },
+    { label: "Exit Application", action: () => window.close(), confirm: true },
+  ];
 
   useEffect(() => {
     if (isOpen && menuPowerButtonRef.current) {
