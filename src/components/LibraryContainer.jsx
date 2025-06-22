@@ -186,7 +186,6 @@ const LibraryContainer = () => {
 
   const closeRunningGameDialogCb = useCallback(() => {
     if (!runningGame) {
-      closeRunningGame();
       return;
     }
 
