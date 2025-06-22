@@ -153,6 +153,7 @@ const LibraryContainer = () => {
       return;
     }
 
+    playActionSound();
     togleWindowShow();
   }, [runningGame, lastInput, isFocused]);
 
