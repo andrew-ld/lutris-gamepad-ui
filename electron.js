@@ -32,8 +32,7 @@ function closeRunningGameProcess() {
 function createWindow() {
   app.on("second-instance", () => {
     if (mainWindow) {
-      mainWindow.restore();
-      mainWindow.focus();
+      mainWindow.show();
     }
   });
 
