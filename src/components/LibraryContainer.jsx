@@ -9,6 +9,7 @@ import ControlsOverlay from "./ControlsOverlay";
 import OnScreenKeyboard from "./OnScreenKeyboard";
 import { playActionSound } from "../utils/sound";
 import { togleWindowShow } from "../utils/ipc";
+import ConfirmationDialog from "./ConfirmationDialog";
 
 export const LibraryContainerFocusID = "LibraryContainer";
 
@@ -21,6 +22,7 @@ const LibraryContainer = () => {
   const { lastInput, isFocused } = useInput();
   const { showModal, modalContent } = useModal();
   const cardRefs = useRef([[]]);
+  const gameCloseCloseModalRef = useRef(null);
 
   const setCardRef = useCallback((el, shelfIndex, cardIndex) => {
     if (!cardRefs.current[shelfIndex]) {
@@ -176,6 +178,37 @@ const LibraryContainer = () => {
   }, [setSearchQuery]);
 
   useEffect(() => {
+    if (!runningGame && gameCloseCloseModalRef.current) {
+      gameCloseCloseModalRef.current();
+      gameCloseCloseModalRef.current = null;
+    }
+  }, [runningGame, gameCloseCloseModalRef]);
+
+  const closeRunningGameDialogCb = useCallback(() => {
+    if (!runningGame) {
+      closeRunningGame();
+      return;
+    }
+
+    showModal((hideThisModal) => {
+      gameCloseCloseModalRef.current = hideThisModal;
+
+      return (
+        <ConfirmationDialog
+          message={`Are you sure you want to close\n${runningGame.title}?`}
+          onConfirm={() => {
+            closeRunningGame();
+            hideThisModal();
+          }}
+          onDeny={() => {
+            hideThisModal();
+          }}
+        />
+      );
+    });
+  }, [closeRunningGame, showModal, runningGame]);
+
+  useEffect(() => {
     if (!lastInput || loading || !isFocused(LibraryContainerFocusID)) return;
     const { name: action } = lastInput;
 
@@ -183,7 +216,7 @@ const LibraryContainer = () => {
       case "B":
         playActionSound();
         if (runningGame) {
-          closeRunningGame();
+          closeRunningGameDialogCb();
         } else if (searchQuery) {
           clearSearchCb();
         }
@@ -208,11 +241,11 @@ const LibraryContainer = () => {
     runningGame,
     focusedGame,
     handleLaunchGame,
-    closeRunningGame,
     searchQuery,
     showSearchModalCb,
     clearSearchCb,
     modalContent,
+    closeRunningGameDialogCb,
   ]);
 
   const openSystemMenu = useCallback(() => {
@@ -230,7 +263,7 @@ const LibraryContainer = () => {
   if (runningGame) {
     controlsOverlayProps.onCloseRunningGame = () => {
       playActionSound();
-      closeRunningGame();
+      closeRunningGameDialogCb();
     };
     controlsOverlayProps.runningGameTitle = runningGame.title;
   } else if (!modalContent) {
