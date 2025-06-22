@@ -2,6 +2,7 @@
   display: flex;
   align-items: center;
   color: var(--text-secondary);
+  white-space: nowrap;
 }
 
 .button-hint.clickable {
