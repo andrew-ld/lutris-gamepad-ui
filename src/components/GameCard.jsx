@@ -1,15 +1,8 @@
 import React from "react";
 import "../styles/GameCard.css";
 import GameCover from "./GameCover";
+import { formatDate } from "../utils/datetime";
 
-const formatDate = (date) => {
-  if (!date) return "Never";
-  return date.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
-};
 
 const GameCard = React.forwardRef(
   ({ game, onFocus, onClick, isFocused }, ref) => {

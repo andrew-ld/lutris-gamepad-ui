@@ -20,3 +20,12 @@ export function formatPlaytime(seconds) {
 
   return "< 1m";
 }
+
+export function formatDate(date) {
+  if (!date) return "Never";
+  return date.toLocaleDateString("en-US", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
