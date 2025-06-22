@@ -77,9 +77,15 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
+      backgroundThrottling: false,
     },
     frame: !fullscreen,
     title: "Lutris Gamepad UI",
+  });
+
+  mainWindow.on("show", () => {
+    mainWindow.restore();
+    mainWindow.focus();
   });
 
   mainWindow.on("closed", () => {
@@ -184,8 +190,7 @@ ipcMain.on("togle-window-show", () => {
   }
 
   if (mainWindow.isFocused()) {
-    mainWindow.hide();
-    mainWindow.showInactive();
+    mainWindow.minimize();
   } else {
     mainWindow.show();
   }
