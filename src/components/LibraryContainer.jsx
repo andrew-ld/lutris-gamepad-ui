@@ -19,7 +19,7 @@ const LibraryContainer = () => {
   const [focusCoords, setFocusCoords] = useState({ shelf: 0, card: 0 });
   const [searchQuery, setSearchQuery] = useState("");
   const { lastInput, isFocused } = useInput();
-  const { showModal } = useModal();
+  const { showModal, modalContent } = useModal();
   const cardRefs = useRef([[]]);
 
   const setCardRef = useCallback((el, shelfIndex, cardIndex) => {
@@ -157,7 +157,7 @@ const LibraryContainer = () => {
     togleWindowShow();
   }, [runningGame, lastInput, isFocused]);
 
-  const showSearchModal = useCallback(() => {
+  const showSearchModalCb = useCallback(() => {
     showModal((hideThisModal) => (
       <OnScreenKeyboard
         label="Search Library"
@@ -169,9 +169,9 @@ const LibraryContainer = () => {
         onClose={hideThisModal}
       />
     ));
-  }, [setSearchQuery, showModal, runningGame]);
+  }, [setSearchQuery, showModal, searchQuery]);
 
-  const clearSearch = useCallback(() => {
+  const clearSearchCb = useCallback(() => {
     setSearchQuery("");
   }, [setSearchQuery]);
 
@@ -182,11 +182,10 @@ const LibraryContainer = () => {
     switch (action) {
       case "B":
         playActionSound();
-
         if (runningGame) {
           closeRunningGame();
         } else if (searchQuery) {
-          clearSearch();
+          clearSearchCb();
         }
         break;
       case "A":
@@ -196,9 +195,9 @@ const LibraryContainer = () => {
         }
         break;
       case "X":
-        if (!runningGame) {
+        if (!runningGame && !modalContent) {
           playActionSound();
-          showSearchModal();
+          showSearchModalCb();
         }
         break;
     }
@@ -211,20 +210,53 @@ const LibraryContainer = () => {
     handleLaunchGame,
     closeRunningGame,
     searchQuery,
-    showModal,
-    showSearchModal,
-    clearSearch,
+    showSearchModalCb,
+    clearSearchCb,
+    modalContent,
   ]);
+
+  const openSystemMenu = useCallback(() => {
+    window.dispatchEvent(new Event("toggle-system-menu"));
+  }, []);
 
   if (loading) {
     return <LoadingIndicator message="Loading library..." />;
+  }
+
+  const controlsOverlayProps = {
+    onOpenSystemMenu: openSystemMenu,
+  };
+
+  if (runningGame) {
+    controlsOverlayProps.onCloseRunningGame = () => {
+      playActionSound();
+      closeRunningGame();
+    };
+    controlsOverlayProps.runningGameTitle = runningGame.title;
+  } else if (!modalContent) {
+    if (focusedGame) {
+      controlsOverlayProps.onLaunchGame = () => {
+        playActionSound();
+        handleLaunchGame(focusedGame);
+      };
+    }
+    if (searchQuery) {
+      controlsOverlayProps.onClearSearch = () => {
+        playActionSound();
+        clearSearchCb();
+      };
+    }
+    controlsOverlayProps.onShowSearchModal = () => {
+      playActionSound();
+      showSearchModalCb();
+    };
   }
 
   if (runningGame) {
     return (
       <>
         <RunningGame game={runningGame} />
-        <ControlsOverlay focusedGame={null} runningGame={runningGame} />
+        <ControlsOverlay {...controlsOverlayProps} />
       </>
     );
   }
@@ -235,17 +267,14 @@ const LibraryContainer = () => {
         shelves={shelves}
         focusCoords={focusCoords}
         onCardFocus={handleCardFocus}
-        onCardClick={handleLaunchGame}
+        onCardClick={(game) => {
+          playActionSound();
+          handleLaunchGame(game);
+        }}
         setCardRef={setCardRef}
         searchQuery={searchQuery}
       />
-      <ControlsOverlay
-        focusedGame={focusedGame}
-        runningGame={null}
-        hasSearch={!!searchQuery}
-        clearSearch={clearSearch}
-        showSearchModal={showSearchModal}
-      />
+      <ControlsOverlay {...controlsOverlayProps} />
     </>
   );
 };

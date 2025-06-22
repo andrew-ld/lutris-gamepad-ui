@@ -1,62 +1,43 @@
 import "../styles/ControlsOverlay.css";
-import { useLutris } from "../contexts/LutrisContext";
-import { useModal } from "../contexts/ModalContext";
 import ButtonIcon from "./ButtonIcon";
 
 const ControlsOverlay = ({
-  focusedGame,
-  runningGame,
-  hasSearch,
-  showSearchModal,
-  clearSearch,
+  onCloseRunningGame,
+  runningGameTitle,
+  onLaunchGame,
+  onClearSearch,
+  onShowSearchModal,
+  onOpenSystemMenu,
 }) => {
-  const { closeRunningGame, launchGame } = useLutris();
-  const { modalContent } = useModal();
-
-  const openSystemMenu = () => {
-    window.dispatchEvent(new Event("toggle-system-menu"));
-  };
-
-  const showControls = !runningGame && !modalContent;
-
   return (
     <div className="controls-overlay">
       <div className="hints-list">
-        {runningGame && (
+        {onCloseRunningGame && (
           <>
             <ButtonIcon button="Super" label="Toggle Overlay" />
-
             <ButtonIcon
               button="B"
-              onClick={closeRunningGame}
-              label={`Force close ${runningGame.title}`}
+              onClick={onCloseRunningGame}
+              label={`Force close ${runningGameTitle || "game"}`}
             />
           </>
         )}
 
-        {showControls && (
-          <>
-            {focusedGame && (
-              <ButtonIcon
-                button="A"
-                label="Launch Game"
-                onClick={() => launchGame(focusedGame)}
-              />
-            )}
-
-            {hasSearch ? (
-              <ButtonIcon
-                button="B"
-                label="Clear Search"
-                onClick={clearSearch}
-              />
-            ) : null}
-
-            <ButtonIcon button="X" label="Search" onClick={showSearchModal} />
-          </>
+        {onLaunchGame && (
+          <ButtonIcon button="A" label="Launch Game" onClick={onLaunchGame} />
         )}
 
-        <ButtonIcon onClick={openSystemMenu} button="Y" label="Power" />
+        {onClearSearch && (
+          <ButtonIcon button="B" label="Clear Search" onClick={onClearSearch} />
+        )}
+
+        {onShowSearchModal && (
+          <ButtonIcon button="X" label="Search" onClick={onShowSearchModal} />
+        )}
+
+        {onOpenSystemMenu && (
+          <ButtonIcon onClick={onOpenSystemMenu} button="Y" label="Power" />
+        )}
       </div>
     </div>
   );
