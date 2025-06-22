@@ -78,6 +78,7 @@ function createWindow() {
       nodeIntegration: true,
       contextIsolation: false,
     },
+    frame: !fullscreen,
     title: "Lutris Gamepad UI",
   });
 
