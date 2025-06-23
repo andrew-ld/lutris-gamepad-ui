@@ -4,6 +4,7 @@ const {
   session,
   ipcMain,
   nativeImage,
+  globalShortcut,
 } = require("electron");
 const path = require("path");
 const { spawn, exec } = require("child_process");
@@ -26,6 +27,18 @@ function closeRunningGameProcess() {
     process.kill(-runningGameProcess.pid, "SIGTERM");
   } catch (e) {
     runningGameProcess.kill("SIGTERM");
+  }
+}
+
+function togleWindowShow() {
+  if (!mainWindow) {
+    return;
+  }
+
+  if (mainWindow.isFocused()) {
+    mainWindow.minimize();
+  } else {
+    mainWindow.show();
   }
 }
 
@@ -78,6 +91,12 @@ function createWindow() {
     },
     frame: !fullscreen,
     title: "Lutris Gamepad UI",
+  });
+
+  globalShortcut.register("CommandOrControl+X", () => {
+    if (mainWindow && runningGameProcess) {
+      togleWindowShow();
+    }
   });
 
   mainWindow.on("show", () => {
@@ -182,20 +201,14 @@ ipcMain.on("open-lutris", () => {
 });
 
 ipcMain.on("togle-window-show", () => {
-  if (!mainWindow) {
-    return;
-  }
-
-  if (mainWindow.isFocused()) {
-    mainWindow.minimize();
-  } else {
-    mainWindow.show();
-  }
+  togleWindowShow();
 });
 
 app.on("window-all-closed", () => {
   closeRunningGameProcess();
   app.quit();
 });
+
+app.commandLine.appendSwitch("enable-features", "GlobalShortcutsPortal");
 
 app.whenReady().then(createWindow);
