@@ -261,25 +261,21 @@ const LibraryContainer = () => {
 
   if (runningGame) {
     controlsOverlayProps.onCloseRunningGame = () => {
-      playActionSound();
       closeRunningGameDialogCb();
     };
     controlsOverlayProps.runningGameTitle = runningGame.title;
   } else if (!modalContent) {
     if (focusedGame) {
       controlsOverlayProps.onLaunchGame = () => {
-        playActionSound();
         handleLaunchGame(focusedGame);
       };
     }
     if (searchQuery) {
       controlsOverlayProps.onClearSearch = () => {
-        playActionSound();
         clearSearchCb();
       };
     }
     controlsOverlayProps.onShowSearchModal = () => {
-      playActionSound();
       showSearchModalCb();
     };
   }
@@ -300,7 +296,6 @@ const LibraryContainer = () => {
         focusCoords={focusCoords}
         onCardFocus={handleCardFocus}
         onCardClick={(game) => {
-          playActionSound();
           handleLaunchGame(game);
         }}
         setCardRef={setCardRef}
