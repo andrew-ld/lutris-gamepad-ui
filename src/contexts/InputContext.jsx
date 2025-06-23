@@ -159,11 +159,11 @@ export const InputProvider = ({ children, defaultFocusId }) => {
         }
       }
 
-      const superFallback =
+      const superFallbackPressed =
         GAMEPAD_SUPER_BUTTON_FALLBACK.every((i) => buttons[i]) &&
         !GAMEPAD_SUPER_BUTTON_FALLBACK.every((i) => prevButtonState.current[i]);
 
-      if (!anyButtonPressed && superFallback) {
+      if (!anyButtonPressed && superFallbackPressed) {
         setInput("Super");
       }
 
