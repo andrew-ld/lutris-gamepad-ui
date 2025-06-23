@@ -18,6 +18,8 @@ const KEY_MAP = {
   y: "Y",
 };
 
+const GAMEPAD_SUPER_BUTTON_FALLBACK = [8, 9];
+
 const GAMEPAD_BUTTON_MAP = {
   0: "A",
   1: "B",
@@ -40,7 +42,10 @@ export const InputProvider = ({ children, defaultFocusId }) => {
   const setLastInputSafe = (input) => {
     if (document.hasFocus() || !input || input?.name === "Super") {
       setLastInput(input);
+      return true;
     }
+
+    return false;
   };
 
   const prevButtonState = useRef({});
@@ -131,21 +136,35 @@ export const InputProvider = ({ children, defaultFocusId }) => {
 
       let anyButtonPressed = false;
 
+      const setInput = (actionName) => {
+        const res = setLastInputSafe({
+          type: "gamepad",
+          name: actionName,
+          timestamp: Date.now(),
+        });
+
+        anyButtonPressed |= res;
+
+        return res;
+      };
+
       for (const [button, pressed] of Object.entries(buttons)) {
         const prevButtonPressed = prevButtonState.current[button];
 
         if (pressed && !prevButtonPressed) {
           const actionName = GAMEPAD_BUTTON_MAP[button];
-          if (actionName) {
-            anyButtonPressed = true;
-            setLastInputSafe({
-              type: "gamepad",
-              name: actionName,
-              timestamp: Date.now(),
-            });
+          if (actionName && setInput(actionName)) {
             break;
           }
         }
+      }
+
+      const superFallback =
+        GAMEPAD_SUPER_BUTTON_FALLBACK.every((i) => buttons[i]) &&
+        !GAMEPAD_SUPER_BUTTON_FALLBACK.every((i) => prevButtonState.current[i]);
+
+      if (!anyButtonPressed && superFallback) {
+        setInput("Super");
       }
 
       if (!anyButtonPressed) {
