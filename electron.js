@@ -140,9 +140,13 @@ ipcMain.on("launch-game", (_event, gameId) => {
   const command = "lutris";
   const args = [`lutris:rungameid/${gameId}`];
 
+  const lutrisEnv = { ...process.env };
+  lutrisEnv["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=/dev/null";
+
   runningGameProcess = spawn(command, args, {
     detached: true,
     stdio: "ignore",
+    env: lutrisEnv,
   });
 
   if (mainWindow) {
