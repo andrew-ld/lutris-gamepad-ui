@@ -5,6 +5,7 @@ const {
   ipcMain,
   nativeImage,
   globalShortcut,
+  powerSaveBlocker,
 } = require("electron");
 const path = require("path");
 const { spawn, exec } = require("child_process");
@@ -53,6 +54,8 @@ function createWindow() {
     app.quit();
     return;
   }
+
+  powerSaveBlocker.start("prevent-display-sleep");
 
   session.defaultSession.setDevicePermissionHandler((details) => {
     if (details.deviceType === "hid") {
