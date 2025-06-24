@@ -1,6 +1,7 @@
 .game-library {
   padding: 2rem 4%;
-  height: 100vh;
+  margin-top: var(--top-bar-height);
+  height: calc(100vh - var(--top-bar-height));
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;

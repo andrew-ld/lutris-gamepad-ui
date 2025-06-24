@@ -5,10 +5,12 @@ import LibraryContainer from "./components/LibraryContainer";
 import { LibraryContainerFocusID } from "./components/LibraryContainer";
 import SystemMenu from "./components/SystemMenu";
 import ModalRenderer from "./components/ModalRenderer";
+import TopBar from "./components/TopBar";
 
 const AppContent = () => {
   return (
     <div className="App">
+      <TopBar />
       <SystemMenu />
       <LibraryContainer />
     </div>

@@ -38,13 +38,13 @@ export const useInput = () => useContext(InputContext);
 export const InputProvider = ({ children, defaultFocusId }) => {
   const [lastInput, setLastInput] = useState(null);
   const [focusStack, setFocusStack] = useState([defaultFocusId]);
+  const [gamepadCount, setGamepadCount] = useState(0);
 
   const setLastInputSafe = (input) => {
     if (document.hasFocus() || !input || input?.name === "Super") {
       setLastInput(input);
       return true;
     }
-
     return false;
   };
 
@@ -64,7 +64,7 @@ export const InputProvider = ({ children, defaultFocusId }) => {
           ...prevStack.filter((id) => id !== claimantId),
           claimantId,
         ];
-        if (newStack.length != prevStack.length) {
+        if (newStack.length !== prevStack.length) {
           setLastInput(null);
         }
         console.log(
@@ -92,8 +92,13 @@ export const InputProvider = ({ children, defaultFocusId }) => {
         return newStack;
       });
     },
-    [setLastInput, setFocusStack]
+    [setLastInput, setFocusStack, defaultFocusId]
   );
+
+  const updateGamepadCount = useCallback(() => {
+    const count = navigator.getGamepads().filter((g) => g).length;
+    setGamepadCount(count);
+  }, [setGamepadCount]);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -128,29 +133,24 @@ export const InputProvider = ({ children, defaultFocusId }) => {
         if (!gp) {
           continue;
         }
-
         for (let i = 0; i < gp.buttons.length; i++) {
           buttons[i] = buttons[i] || gp.buttons[i].pressed;
         }
       }
 
       let anyButtonPressed = false;
-
       const setInput = (actionName) => {
         const res = setLastInputSafe({
           type: "gamepad",
           name: actionName,
           timestamp: Date.now(),
         });
-
         anyButtonPressed |= res;
-
         return res;
       };
 
       for (const [button, pressed] of Object.entries(buttons)) {
         const prevButtonPressed = prevButtonState.current[button];
-
         if (pressed && !prevButtonPressed) {
           const actionName = GAMEPAD_BUTTON_MAP[button];
           if (actionName && setInput(actionName)) {
@@ -168,9 +168,7 @@ export const InputProvider = ({ children, defaultFocusId }) => {
       }
 
       if (!anyButtonPressed) {
-        setLastInput((prev) => {
-          prev?.type === "gamepad" ? null : prev;
-        });
+        setLastInput((prev) => (prev?.type === "gamepad" ? null : prev));
       }
 
       prevButtonState.current = buttons;
@@ -178,6 +176,7 @@ export const InputProvider = ({ children, defaultFocusId }) => {
     };
 
     const handleGamepadConnected = () => {
+      updateGamepadCount();
       if (!animationFrameId.current) {
         console.log("InputProvider: Gamepad polling started.");
         animationFrameId.current = requestAnimationFrame(pollGamepads);
@@ -185,17 +184,26 @@ export const InputProvider = ({ children, defaultFocusId }) => {
     };
 
     const handleGamepadDisconnected = () => {
+      updateGamepadCount();
       if (navigator.getGamepads().filter((g) => g).length === 0) {
-        console.log("InputProvider: Gamepad polling stopped.");
-        cancelAnimationFrame(animationFrameId.current);
-        animationFrameId.current = null;
+        if (animationFrameId.current) {
+          console.log("InputProvider: Gamepad polling stopped.");
+          cancelAnimationFrame(animationFrameId.current);
+          animationFrameId.current = null;
+        }
       }
     };
 
+    updateGamepadCount();
+
     window.addEventListener("gamepadconnected", handleGamepadConnected);
     window.addEventListener("gamepaddisconnected", handleGamepadDisconnected);
+
     if (navigator.getGamepads().filter((g) => g).length > 0) {
-      handleGamepadConnected();
+      if (!animationFrameId.current) {
+        console.log("InputProvider: Gamepad polling started (initial check).");
+        animationFrameId.current = requestAnimationFrame(pollGamepads);
+      }
     }
 
     return () => {
@@ -206,9 +214,10 @@ export const InputProvider = ({ children, defaultFocusId }) => {
       );
       if (animationFrameId.current) {
         cancelAnimationFrame(animationFrameId.current);
+        animationFrameId.current = null;
       }
     };
-  }, []);
+  }, [updateGamepadCount]);
 
   const currentFocus =
     focusStack.length > 0 ? focusStack[focusStack.length - 1] : null;
@@ -226,11 +235,10 @@ export const InputProvider = ({ children, defaultFocusId }) => {
     isFocused,
     claimInputFocus,
     releaseInputFocus,
+    gamepadCount,
   };
 
   return (
-    <InputContext.Provider value={value} defaultFocusId={defaultFocusId}>
-      {children}
-    </InputContext.Provider>
+    <InputContext.Provider value={value}>{children}</InputContext.Provider>
   );
 };

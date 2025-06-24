@@ -1,0 +1,36 @@
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--top-bar-height);
+  background-color: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(8px);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+  z-index: 1900;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.top-bar-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.top-bar-item {
+  font-size: 1rem;
+}
+
+.top-bar-time {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.top-bar-separator {
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
