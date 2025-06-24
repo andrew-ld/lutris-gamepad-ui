@@ -10,12 +10,62 @@ const {
 const path = require("path");
 const { spawn, exec } = require("child_process");
 const { promisify } = require("util");
+const { PulseAudio } = require("@tmigone/pulseaudio");
+const { geteuid } = require("process");
+const { userInfo } = require("os");
+const { existsSync } = require("fs");
 
 const isDev = process.env.IS_DEV === "1";
 const forceWindowed = process.env.FORCE_WINDOWED === "1";
 
 let mainWindow;
 let runningGameProcess;
+let _pulseAudioClient;
+
+async function getPulseAudioClient() {
+  if (_pulseAudioClient) {
+    return _pulseAudioClient;
+  }
+
+  const pulseAudioUnixSocketPath = path.join(
+    process.env["XDG_RUNTIME_DIR"] || `/run/user/${geteuid()}/`,
+    "/pulse/native"
+  );
+
+  let puseAudioCookiePath = path.join(
+    process.env["HOME"] || `/home/${userInfo().username}/`,
+    "/.config/pulse/cookie"
+  );
+
+  if (!existsSync(puseAudioCookiePath)) {
+    console.error("pulse audio cookie file not found", puseAudioCookiePath);
+    puseAudioCookiePath = null;
+  }
+
+  const result = new PulseAudio(
+    `unix:${pulseAudioUnixSocketPath}`,
+    puseAudioCookiePath
+  );
+
+  try {
+    await result.connect();
+    await result.setClientName("lutris-gamepad-ui");
+    _pulseAudioClient = result;
+  } catch (e) {
+    console.error("unable to get pulse audio client", e);
+
+    try {
+      result.disconnect();
+    } catch (disconnectError) {
+      console.error("unable to diconnect pulse audio client", disconnectError);
+    }
+
+    return;
+  }
+
+  _pulseAudioClient = result;
+  return result;
+}
 
 function closeRunningGameProcess() {
   if (!runningGameProcess) {

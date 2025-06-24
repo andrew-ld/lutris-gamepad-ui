@@ -445,6 +445,11 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
+"@tmigone/pulseaudio@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.npmjs.org/@tmigone/pulseaudio/-/pulseaudio-1.0.5.tgz"
+  integrity sha512-HlQdgPybZ71ERgw1FCukiPUborqEJCS82j2dASFe6rwKJOqOSLzSN06agV+gziIuAPBMCvxbeMvjyZ/kcwu4fA==
+
 "@tootallnate/once@2":
   version "2.0.0"
   resolved "https://registry.npmjs.org/@tootallnate/once/-/once-2.0.0.tgz"
@@ -1179,11 +1184,6 @@ electron-builder@^26.0.12:
     lazy-val "^1.0.5"
     simple-update-notifier "2.0.0"
     yargs "^17.6.2"
-
-electron-is-dev@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.npmjs.org/electron-is-dev/-/electron-is-dev-3.0.1.tgz"
-  integrity sha512-8TjjAh8Ec51hUi3o4TaU0mD3GMTOESi866oRNavj9A3IQJ7pmv+MJVmdZBFGw4GFT36X7bkqnuDNYvkQgvyI8Q==
 
 electron-publish@26.0.11:
   version "26.0.11"
