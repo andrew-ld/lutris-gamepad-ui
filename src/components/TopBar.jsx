@@ -26,7 +26,7 @@ const TopBar = () => {
         <span className="top-bar-item top-bar-time">{currentTime}</span>
         <span className="top-bar-item top-bar-separator">|</span>
         <span className="top-bar-item top-bar-gamepads">
-          🎮 {gamepadCount !== undefined ? gamepadCount : "N/A"}
+          🎮 {gamepadCount ? gamepadCount : "N/A"}
         </span>
       </div>
     </div>
