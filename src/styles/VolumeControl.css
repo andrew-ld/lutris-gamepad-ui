@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   width: 90vw;
-  max-width: 350px;
+  max-width: 400px;
   padding: 20px;
   box-sizing: border-box;
 }
@@ -25,6 +25,7 @@
   background-color: rgba(255, 255, 255, 0.05);
   border: 1px solid transparent;
   transition: all 0.2s ease;
+  min-height: 50px;
 }
 
 .volume-control-item.focused {
@@ -37,6 +38,8 @@
 .volume-control-label {
   font-size: 1rem;
   color: var(--text-secondary);
+  flex-shrink: 0;
+  margin-right: 10px;
 }
 
 .volume-control-item.focused .volume-control-label {
@@ -86,6 +89,56 @@
   transition: width 0.1s linear;
 }
 
+.output-device-selector {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  text-align: right;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.output-device-name {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.output-device-count {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.volume-control-current-sink-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.03);
+  font-size: 0.9rem;
+}
+
+.volume-control-current-sink-display .volume-control-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.current-sink-name {
+  color: var(--text-primary);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+  min-width: 0;
+}
+
 .volume-control-footer {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 16px;
@@ -93,4 +146,5 @@
   display: flex;
   justify-content: center;
   gap: 16px;
+  flex-wrap: wrap;
 }

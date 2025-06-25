@@ -58,3 +58,7 @@ export const setAudioVolume = (volumePercent) => {
 export const setAudioMute = (isMuted) => {
   ipcRenderer.send("set-audio-mute", isMuted);
 };
+
+export const setDefaultSink = (sinkName) => {
+  ipcRenderer.send("set-default-sink", sinkName);
+};

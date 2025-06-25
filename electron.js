@@ -14,6 +14,7 @@ const { userInfo } = require("os");
 const { existsSync } = require("fs");
 const { readFile } = require("fs/promises");
 const PAClient = require("paclient");
+const { descriptions } = require("paclient/lib/errors");
 
 const isDev = process.env.IS_DEV === "1";
 const forceWindowed = process.env.FORCE_WINDOWED === "1";
@@ -72,8 +73,9 @@ async function getPulseAudioClient() {
   return pa;
 }
 
-async function getDefaultSinkInfo(pulseAudioClient) {
-  const sinkInfo = await new Promise((resolve, reject) => {
+/** @param {PAClient} pulseAudioClient */
+async function getSinkInfoFromPA(pulseAudioClient) {
+  const defaultSinkInfo = await new Promise((resolve, reject) => {
     pulseAudioClient.getSink("@DEFAULT_SINK@", (e, r) => {
       if (e) {
         reject(e);
@@ -83,19 +85,35 @@ async function getDefaultSinkInfo(pulseAudioClient) {
     });
   });
 
-  console.log(sinkInfo);
+  const allSinkInfo = await new Promise((resolve, reject) => {
+    pulseAudioClient.getSinks((e, r) => {
+      if (e) {
+        reject(e);
+      } else {
+        resolve(r);
+      }
+    });
+  });
 
-  const volume = Math.round(
-    (sinkInfo.channelVolumes[0] / sinkInfo.baseVolume) * 100
-  );
+  const mapSinkInfo = (sink) => {
+    const volume = Math.round((sink.channelVolumes[0] / sink.baseVolume) * 100);
+
+    return {
+      index: sink.index,
+      name: sink.name,
+      description: sink.description,
+      volume: volume,
+      isMuted: sink.muted,
+      baseVolume: sink.baseVolume,
+    };
+  };
 
   const result = {
-    index: sinkInfo.index,
-    name: sinkInfo.description || sinkInfo.name,
-    volume: volume,
-    isMuted: sinkInfo.muted,
-    baseVolume: sinkInfo.baseVolume,
+    ...mapSinkInfo(defaultSinkInfo),
+    availableSinks: allSinkInfo.map(mapSinkInfo),
   };
+
+  console.log("get", result.name);
 
   return result;
 }
@@ -133,7 +151,7 @@ async function sendCurrentAudioInfo(pulseClient) {
 
   mainWindow.webContents.send(
     "audio-info-changed",
-    await getDefaultSinkInfo(pulseClient)
+    await getSinkInfoFromPA(pulseClient)
   );
 }
 
@@ -307,7 +325,7 @@ ipcMain.on("togle-window-show", () => {
 
 ipcMain.handle("get-audio-info", async () => {
   const pulseClient = await getPulseAudioClient();
-  return await getDefaultSinkInfo(pulseClient);
+  return await getSinkInfoFromPA(pulseClient);
 });
 
 ipcMain.on("set-audio-volume", async (_event, volumePercent) => {
@@ -318,12 +336,31 @@ ipcMain.on("set-audio-volume", async (_event, volumePercent) => {
     return;
   }
 
-  const sinkInfo = await getDefaultSinkInfo(pulseClient);
+  const sinkInfo = await getSinkInfoFromPA(pulseClient);
 
   const targetVolume = Math.max(0, Math.min(100, volumePercent));
   const rawVolume = Math.round((targetVolume / 100) * sinkInfo.baseVolume);
 
-  pulseClient.setSinkVolumes(sinkInfo.index, [rawVolume], () => {
+  pulseClient.setSinkVolumes(sinkInfo.index, [rawVolume], (err) => {
+    if (err) {
+      console.log("Cannot set audio volume", err);
+    }
+    sendCurrentAudioInfo(pulseClient);
+  });
+});
+
+ipcMain.on("set-default-sink", async (_event, sinkName) => {
+  const pulseClient = await getPulseAudioClient();
+
+  if (!pulseClient) {
+    console.error("Cannot set default sink: PulseAudio client not available.");
+    return;
+  }
+
+  pulseClient.setDefaultSinkByName(sinkName, async (err) => {
+    if (err) {
+      console.log("Cannot set default sink", err, sinkName);
+    }
     sendCurrentAudioInfo(pulseClient);
   });
 });
@@ -336,9 +373,12 @@ ipcMain.on("set-audio-mute", async (_event, mute) => {
     return;
   }
 
-  const sinkInfo = await getDefaultSinkInfo(pulseClient);
+  const sinkInfo = await getSinkInfoFromPA(pulseClient);
 
-  pulseClient.setSinkMute(sinkInfo.index, mute, async () => {
+  pulseClient.setSinkMute(sinkInfo.index, mute, async (err) => {
+    if (err) {
+      console.log("Cannot set audio mute", err);
+    }
     sendCurrentAudioInfo(pulseClient);
   });
 });

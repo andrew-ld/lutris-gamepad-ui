@@ -12,19 +12,48 @@ const SuperIcon = () => (
   </svg>
 );
 
+const LeftArrowIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    width="1em"
+    height="1em"
+  >
+    <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z" />
+  </svg>
+);
+
+const RightArrowIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    width="1em"
+    height="1em"
+  >
+    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z" />
+  </svg>
+);
+
 const ButtonIcon = ({ button, label, size = "large", onClick }) => {
   let content = button;
-  if (button.toLowerCase() === "super") {
+  const buttonLower = button.toLowerCase();
+
+  if (buttonLower === "super") {
     content = <SuperIcon />;
+  } else if (buttonLower === "left") {
+    content = <LeftArrowIcon />;
+  } else if (buttonLower === "right") {
+    content = <RightArrowIcon />;
   }
+
   return (
     <div
       className={`button-hint size-${size} ${onClick ? "clickable" : ""}`}
       onClick={onClick}
     >
-      <div className={`button-icon button-${button.toLowerCase()}`}>
-        {content}
-      </div>
+      <div className={`button-icon button-${buttonLower}`}>{content}</div>
       {label && <span className="button-label">{label}</span>}
     </div>
   );

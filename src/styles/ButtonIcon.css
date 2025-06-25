@@ -40,6 +40,13 @@
   color: #141414;
 }
 
+.button-icon.button-left,
+.button-icon.button-right {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
 .button-hint.size-large {
   gap: 10px;
 }

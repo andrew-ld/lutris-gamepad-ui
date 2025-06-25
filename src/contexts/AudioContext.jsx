@@ -16,35 +16,54 @@ const VOLUME_STEP = 5;
 export const AudioProvider = ({ children }) => {
   const [volume, setVolume] = useState(100);
   const [isMuted, setIsMuted] = useState(false);
-  const [isLoading, setIsLoading] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [defaultSinkName, setDefaultSinkName] = useState(null);
+  const [availableSinks, setAvailableSinks] = useState([]);
+
+  const processAudioInfo = (info) => {
+    setVolume(info.volume);
+    setIsMuted(info.isMuted);
+    setDefaultSinkName(info.name);
+
+    const sortedSinks = (info.availableSinks || []).slice().sort((a, b) => {
+      const descA = a.description;
+      const descB = b.description;
+      return descA.localeCompare(descB);
+    });
+
+    setAvailableSinks(sortedSinks);
+  };
 
   const fetchAudioInfo = useCallback(async () => {
     setIsLoading(true);
-
     try {
       const info = await api.getAudioInfo();
-      setVolume(info.volume);
-      setIsMuted(info.isMuted);
+      console.log("[AudioContext] Fetched audio info:", info);
+      processAudioInfo(info);
     } finally {
       setIsLoading(false);
     }
-  }, [setIsLoading, setVolume, setIsMuted]);
+  }, [
+    setIsLoading,
+    setVolume,
+    setIsMuted,
+    setDefaultSinkName,
+    setAvailableSinks,
+  ]);
 
   useEffect(() => {
     fetchAudioInfo();
 
     const handleAudioInfoChanged = (_sender, info) => {
       console.log("[IPC] Received audio-info-changed", info);
-      setVolume(info.volume);
-      setIsMuted(info.isMuted);
-      setIsLoading(false);
+      processAudioInfo(info);
     };
 
     ipcRenderer.on("audio-info-changed", handleAudioInfoChanged);
     return () => {
       ipcRenderer.removeListener("audio-info-changed", handleAudioInfoChanged);
     };
-  }, [fetchAudioInfo, setVolume, setIsMuted, setIsLoading]);
+  }, [fetchAudioInfo]);
 
   const updateVolume = useCallback(
     (newVolume) => {
@@ -69,14 +88,21 @@ export const AudioProvider = ({ children }) => {
     api.setAudioMute(!isMuted);
   }, [isMuted]);
 
+  const setDefaultSink = useCallback((sinkName) => {
+    api.setDefaultSink(sinkName);
+  }, []);
+
   const value = {
     volume,
     isMuted,
     isLoading,
+    defaultSinkName,
+    availableSinks,
     setVolume: updateVolume,
     increaseVolume,
     decreaseVolume,
     toggleMute,
+    setDefaultSink,
   };
 
   return (
