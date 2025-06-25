@@ -70,6 +70,22 @@ async function getPulseAudioClient() {
     return null;
   }
 
+  pa.on("close", () => {
+    _pulseAudioClient = null;
+  });
+
+  pa.on("change", () => {
+    sendCurrentAudioInfo(pa);
+  });
+
+  pa.on("new", () => {
+    sendCurrentAudioInfo(pa);
+  });
+
+  pa.on("remove", () => {
+    sendCurrentAudioInfo(pa);
+  });
+
   return pa;
 }
 
@@ -112,8 +128,6 @@ async function getSinkInfoFromPA(pulseAudioClient) {
     ...mapSinkInfo(defaultSinkInfo),
     availableSinks: allSinkInfo.map(mapSinkInfo),
   };
-
-  console.log("get", result.name);
 
   return result;
 }
