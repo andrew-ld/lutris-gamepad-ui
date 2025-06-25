@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, act } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useAudio } from "../contexts/AudioContext";
 import { useInput } from "../contexts/InputContext";
 import ButtonIcon from "./ButtonIcon";
