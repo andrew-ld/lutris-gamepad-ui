@@ -32,17 +32,17 @@ export const AudioProvider = ({ children }) => {
     });
 
     setAvailableSinks(sortedSinks);
+    setIsLoading(false);
   };
 
   const fetchAudioInfo = useCallback(async () => {
     setIsLoading(true);
-    try {
-      const info = await api.getAudioInfo();
-      console.log("[AudioContext] Fetched audio info:", info);
-      processAudioInfo(info);
-    } finally {
-      setIsLoading(false);
+    const info = await api.getAudioInfo();
+    if (!info) {
+      return;
     }
+    console.log("[AudioContext] Fetched audio info:", info);
+    processAudioInfo(info);
   }, [
     setIsLoading,
     setVolume,

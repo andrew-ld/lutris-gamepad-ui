@@ -339,7 +339,9 @@ ipcMain.on("togle-window-show", () => {
 
 ipcMain.handle("get-audio-info", async () => {
   const pulseClient = await getPulseAudioClient();
-  return await getSinkInfoFromPA(pulseClient);
+  if (pulseClient) {
+    return await getSinkInfoFromPA(pulseClient);
+  }
 });
 
 ipcMain.on("set-audio-volume", async (_event, volumePercent) => {

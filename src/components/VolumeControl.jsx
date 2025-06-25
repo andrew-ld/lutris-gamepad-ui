@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, act } from "react";
 import { useAudio } from "../contexts/AudioContext";
 import { useInput } from "../contexts/InputContext";
 import ButtonIcon from "./ButtonIcon";
@@ -117,12 +117,21 @@ const VolumeControl = ({ onClose }) => {
     if (
       !isFocused(VolumeControlFocusID) ||
       !lastInput ||
-      lastInput.timestamp === lastProcessedInput.current ||
-      isAudioLoading
+      lastInput.timestamp === lastProcessedInput.current
     ) {
       return;
     }
     lastProcessedInput.current = lastInput.timestamp;
+
+    if (isAudioLoading) {
+      if (lastInput.name === "B") {
+        playActionSound();
+        onClose();
+      }
+
+      return;
+    }
+
     playActionSound();
 
     switch (lastInput.name) {
@@ -154,6 +163,9 @@ const VolumeControl = ({ onClose }) => {
     return (
       <div className="volume-control-container">
         <p className="volume-control-title">Loading Audio Settings...</p>
+        <div className="volume-control-footer">
+          <ButtonIcon button="B" label="Close" size="small" onClick={onClose} />
+        </div>
       </div>
     );
   }
