@@ -10,60 +10,93 @@ const {
 const path = require("path");
 const { spawn, exec } = require("child_process");
 const { promisify } = require("util");
-const { PulseAudio } = require("@tmigone/pulseaudio");
-const { geteuid } = require("process");
 const { userInfo } = require("os");
 const { existsSync } = require("fs");
+const { readFile } = require("fs/promises");
+const PAClient = require("paclient");
 
 const isDev = process.env.IS_DEV === "1";
 const forceWindowed = process.env.FORCE_WINDOWED === "1";
 
-let mainWindow;
-let runningGameProcess;
-let _pulseAudioClient;
+/** @type {BrowserWindow | null} */
+let mainWindow = null;
+/** @type {process | null} */
+let runningGameProcess = null;
+/** @type {PAClient | null} */
+let _pulseAudioClient = null;
 
+/** @returns {Promise<PAClient | null>} */
 async function getPulseAudioClient() {
   if (_pulseAudioClient) {
     return _pulseAudioClient;
   }
 
-  const pulseAudioUnixSocketPath = path.join(
-    process.env["XDG_RUNTIME_DIR"] || `/run/user/${geteuid()}/`,
-    "/pulse/native"
-  );
-
-  let puseAudioCookiePath = path.join(
+  const pulseAudioCookiePath = path.join(
     process.env["HOME"] || `/home/${userInfo().username}/`,
     "/.config/pulse/cookie"
   );
 
-  if (!existsSync(puseAudioCookiePath)) {
-    console.error("pulse audio cookie file not found", puseAudioCookiePath);
-    puseAudioCookiePath = null;
+  let pulseAudioCookieBuffer;
+
+  if (existsSync(pulseAudioCookiePath)) {
+    pulseAudioCookieBuffer = await readFile(pulseAudioCookiePath);
+  } else {
+    console.error("pulse audio cookie file dont exists", pulseAudioCookiePath);
   }
 
-  const result = new PulseAudio(
-    `unix:${pulseAudioUnixSocketPath}`,
-    puseAudioCookiePath
-  );
+  const config = {
+    cookie: pulseAudioCookieBuffer,
+  };
+
+  const pa = new PAClient();
 
   try {
-    await result.connect();
-    await result.setClientName("lutris-gamepad-ui");
-    _pulseAudioClient = result;
+    pa.connect(config);
+
+    await new Promise((resolve, reject) => {
+      pa.on("ready", () => {
+        resolve();
+      });
+
+      pa.on("error", (e) => {
+        reject(e);
+      });
+    });
+
+    _pulseAudioClient = pa;
   } catch (e) {
-    console.error("unable to get pulse audio client", e);
-
-    try {
-      result.disconnect();
-    } catch (disconnectError) {
-      console.error("unable to diconnect pulse audio client", disconnectError);
-    }
-
-    return;
+    console.error("unable to get pulse audio client:", e);
+    return null;
   }
 
-  _pulseAudioClient = result;
+  return pa;
+}
+
+async function getDefaultSinkInfo(pulseAudioClient) {
+  const sinkInfo = await new Promise((resolve, reject) => {
+    pulseAudioClient.getSink("@DEFAULT_SINK@", (e, r) => {
+      if (e) {
+        reject(e);
+      } else {
+        resolve(r);
+      }
+    });
+  });
+
+  console.log(sinkInfo);
+
+  const volume = Math.round(
+    (sinkInfo.channelVolumes[0] / sinkInfo.baseVolume) * 100
+  );
+
+  const result = {
+    index: sinkInfo.index,
+    name: sinkInfo.description || sinkInfo.name,
+    volume: volume,
+    isMuted: sinkInfo.muted,
+    baseVolume: sinkInfo.baseVolume,
+  };
+
   return result;
 }
 
@@ -91,6 +124,17 @@ function togleWindowShow() {
   } else {
     mainWindow.show();
   }
+}
+
+async function sendCurrentAudioInfo(pulseClient) {
+  if (!mainWindow) {
+    return;
+  }
+
+  mainWindow.webContents.send(
+    "audio-info-changed",
+    await getDefaultSinkInfo(pulseClient)
+  );
 }
 
 function createWindow() {
@@ -261,7 +305,45 @@ ipcMain.on("togle-window-show", () => {
   togleWindowShow();
 });
 
-app.on("window-all-closed", () => {
+ipcMain.handle("get-audio-info", async () => {
+  const pulseClient = await getPulseAudioClient();
+  return await getDefaultSinkInfo(pulseClient);
+});
+
+ipcMain.on("set-audio-volume", async (_event, volumePercent) => {
+  const pulseClient = await getPulseAudioClient();
+
+  if (!pulseClient) {
+    console.error("Cannot set audio volume: PulseAudio client not available.");
+    return;
+  }
+
+  const sinkInfo = await getDefaultSinkInfo(pulseClient);
+
+  const targetVolume = Math.max(0, Math.min(100, volumePercent));
+  const rawVolume = Math.round((targetVolume / 100) * sinkInfo.baseVolume);
+
+  pulseClient.setSinkVolumes(sinkInfo.index, [rawVolume], () => {
+    sendCurrentAudioInfo(pulseClient);
+  });
+});
+
+ipcMain.on("set-audio-mute", async (_event, mute) => {
+  const pulseClient = await getPulseAudioClient();
+
+  if (!pulseClient) {
+    console.error("Cannot set audio mute: PulseAudio client not available.");
+    return;
+  }
+
+  const sinkInfo = await getDefaultSinkInfo(pulseClient);
+
+  pulseClient.setSinkMute(sinkInfo.index, mute, async () => {
+    sendCurrentAudioInfo(pulseClient);
+  });
+});
+
+app.on("window-all-closed", async () => {
   closeRunningGameProcess();
   app.quit();
 });

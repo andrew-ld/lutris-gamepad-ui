@@ -46,3 +46,15 @@ export const openLutris = () => {
 export const togleWindowShow = () => {
   ipcRenderer.send("togle-window-show");
 };
+
+export const getAudioInfo = async () => {
+  return await ipcRenderer.invoke("get-audio-info");
+};
+
+export const setAudioVolume = (volumePercent) => {
+  ipcRenderer.send("set-audio-volume", volumePercent);
+};
+
+export const setAudioMute = (isMuted) => {
+  ipcRenderer.send("set-audio-mute", isMuted);
+};

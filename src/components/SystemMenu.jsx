@@ -3,6 +3,7 @@ import { useInput } from "../contexts/InputContext";
 import { useModal } from "../contexts/ModalContext";
 import ConfirmationDialog from "./ConfirmationDialog";
 import ButtonIcon from "./ButtonIcon";
+import VolumeControl from "./VolumeControl";
 import * as api from "../utils/ipc";
 import { useLutris } from "../contexts/LutrisContext";
 import "../styles/SystemMenu.css";
@@ -40,8 +41,18 @@ const SystemMenu = () => {
 
   const { fetchGames } = useLutris();
 
+  const openAudioSettingsModal = useCallback(() => {
+    showModal((hideThisModal) => <VolumeControl onClose={hideThisModal} />);
+    setIsOpen(false);
+  }, [showModal, setIsOpen]);
+
   const menuItems = [
     { label: "Reload Library", action: fetchGames, confirm: false },
+    {
+      label: "Audio Settings",
+      action: openAudioSettingsModal,
+      confirm: false,
+    },
     { label: "Open Lutris", action: () => api.openLutris(), confirm: true },
     { label: "Reboot System", action: () => api.rebootPC(), confirm: true },
     {
@@ -77,18 +88,17 @@ const SystemMenu = () => {
             onConfirm={() => {
               item.action();
               hideThisModal();
-              setIsOpen(false);
             }}
             onDeny={() => {
               hideThisModal();
-              setIsOpen(false);
             }}
           />
         ));
       } else {
         item.action();
-        setIsOpen(false);
       }
+
+      setIsOpen(false);
     },
     [showModal, setIsOpen]
   );
