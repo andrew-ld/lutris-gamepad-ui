@@ -86,6 +86,8 @@ async function getPulseAudioClient() {
     sendCurrentAudioInfo(pa);
   });
 
+  pa.subscribe("all");
+
   return pa;
 }
 
@@ -361,7 +363,6 @@ ipcMain.on("set-audio-volume", async (_event, volumePercent) => {
     if (err) {
       console.log("Cannot set audio volume", err);
     }
-    sendCurrentAudioInfo(pulseClient);
   });
 });
 
@@ -377,7 +378,6 @@ ipcMain.on("set-default-sink", async (_event, sinkName) => {
     if (err) {
       console.log("Cannot set default sink", err, sinkName);
     }
-    sendCurrentAudioInfo(pulseClient);
   });
 });
 
@@ -395,7 +395,6 @@ ipcMain.on("set-audio-mute", async (_event, mute) => {
     if (err) {
       console.log("Cannot set audio mute", err);
     }
-    sendCurrentAudioInfo(pulseClient);
   });
 });
 
