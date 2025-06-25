@@ -147,11 +147,7 @@ const LibraryContainer = () => {
       : null;
 
   useEffect(() => {
-    if (
-      !runningGame ||
-      lastInput?.name !== "Super" ||
-      !isFocused(LibraryContainerFocusID)
-    ) {
+    if (!runningGame || lastInput?.name !== "Super") {
       return;
     }
 
