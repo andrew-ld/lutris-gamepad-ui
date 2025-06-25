@@ -14,7 +14,6 @@ const { userInfo } = require("os");
 const { existsSync } = require("fs");
 const { readFile } = require("fs/promises");
 const PAClient = require("paclient");
-const { descriptions } = require("paclient/lib/errors");
 
 const isDev = process.env.IS_DEV === "1";
 const forceWindowed = process.env.FORCE_WINDOWED === "1";
