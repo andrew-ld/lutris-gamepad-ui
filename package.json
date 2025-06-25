@@ -19,7 +19,7 @@
     "electron:build": "electron-builder"
   },
   "dependencies": {
-    "paclient": "git+https://github.com/futpib/paclient.git"
+    "paclient": "git+https://github.com/andrew-ld/paclient.git"
   },
   "devDependencies": {
     "@types/react": "^19.1.8",
