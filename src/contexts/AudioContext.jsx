@@ -36,7 +36,6 @@ export const AudioProvider = ({ children }) => {
   };
 
   const fetchAudioInfo = useCallback(async () => {
-    setIsLoading(true);
     const info = await api.getAudioInfo();
     if (!info) {
       return;
