@@ -153,7 +153,7 @@ const LibraryContainer = () => {
 
     playActionSound();
     togleWindowShow();
-  }, [runningGame, lastInput, isFocused]);
+  }, [runningGame, lastInput]);
 
   const showSearchModalCb = useCallback(() => {
     showModal((hideThisModal) => (
