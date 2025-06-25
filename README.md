@@ -23,3 +23,7 @@ After downloading, make the file executable and run it:
 chmod +x lutris-gamepad-ui-*.AppImage
 ./lutris-gamepad-ui-*.AppImage
 ```
+
+### Arch User Repository (AUR)
+
+Arch Linux users (and users of Arch-based distributions) can install [`lutris-gamepad-ui-git`](https://aur.archlinux.org/packages/lutris-gamepad-ui-git) from the [AUR](https://wiki.archlinux.org/title/Arch_User_Repository).
