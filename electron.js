@@ -10,13 +10,16 @@ const {
 const path = require("path");
 const { spawn, exec } = require("child_process");
 const { promisify } = require("util");
-const { userInfo } = require("os");
+const { homedir } = require("os");
 const { existsSync } = require("fs");
 const { readFile } = require("fs/promises");
 const PAClient = require("paclient");
 
 const isDev = process.env.IS_DEV === "1";
 const forceWindowed = process.env.FORCE_WINDOWED === "1";
+
+const lutrisEnv = { ...process.env };
+lutrisEnv["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=/dev/null";
 
 /** @type {BrowserWindow | null} */
 let mainWindow = null;
@@ -31,10 +34,7 @@ async function getPulseAudioClient() {
     return _pulseAudioClient;
   }
 
-  const pulseAudioCookiePath = path.join(
-    process.env["HOME"] || `/home/${userInfo().username}/`,
-    "/.config/pulse/cookie"
-  );
+  const pulseAudioCookiePath = path.join(homedir(), "/.config/pulse/cookie");
 
   let pulseAudioCookieBuffer;
 
@@ -256,21 +256,31 @@ function createWindow() {
 ipcMain.handle("get-games", async () => {
   const execPromise = promisify(exec);
 
-  let latestError;
+  const { stdout: rawGames } = await execPromise("lutris -l -j", {
+    env: lutrisEnv,
+  });
 
-  // first time lutris fail with a dbus error
-  for (let i = 0; i < 3; i++) {
-    try {
-      const { stdout } = await execPromise("lutris -l -j");
-      return JSON.parse(stdout);
-    } catch (e) {
-      latestError = e;
+  const games = JSON.parse(rawGames);
+
+  const lutrisCoverDir = path.join(
+    homedir(),
+    "/.local/share/lutris/coverart/"
+  );
+
+  for (const game of games) {
+    if (!game.slug || game.coverPath) {
+      continue;
+    }
+
+    const gameCoverFile = path.join(lutrisCoverDir, game.slug + ".jpg");
+    console.log(gameCoverFile);
+
+    if (existsSync(gameCoverFile)) {
+      game.coverPath = gameCoverFile;
     }
   }
 
-  console.error("lutris fail!", latestError);
-
-  throw latestError;
+  return games;
 });
 
 ipcMain.on("launch-game", (_event, gameId) => {
@@ -280,9 +290,6 @@ ipcMain.on("launch-game", (_event, gameId) => {
 
   const command = "lutris";
   const args = [`lutris:rungameid/${gameId}`];
-
-  const lutrisEnv = { ...process.env };
-  lutrisEnv["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=/dev/null";
 
   runningGameProcess = spawn(command, args, {
     detached: true,
