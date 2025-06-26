@@ -273,7 +273,6 @@ ipcMain.handle("get-games", async () => {
     }
 
     const gameCoverFile = path.join(lutrisCoverDir, game.slug + ".jpg");
-    console.log(gameCoverFile);
 
     if (existsSync(gameCoverFile)) {
       game.coverPath = gameCoverFile;
