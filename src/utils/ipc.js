@@ -1,5 +1,5 @@
 const { ipcRenderer } = window.require("electron");
-import { formatPlaytime, parseTimedeltaToSeconds } from "./datetime";
+import { parseTimedeltaToSeconds } from "./datetime";
 
 export const getGames = async () => {
   const gamesFromLutris = await ipcRenderer.invoke("get-games");
@@ -8,9 +8,9 @@ export const getGames = async () => {
     return {
       id: game.id,
       title: game.name || game.slug,
-      playtime: game.playtimeSeconds
-        ? formatPlaytime(game.playtimeSeconds)
-        : formatPlaytime(parseTimedeltaToSeconds(game.playtime)),
+      playtimeSeconds: game.playtimeSeconds
+        ? game.playtimeSeconds
+        : parseTimedeltaToSeconds(game.playtime),
       lastPlayed: game.lastplayed ? new Date(game.lastplayed) : null,
       coverPath: game.coverPath,
     };

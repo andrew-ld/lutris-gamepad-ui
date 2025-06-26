@@ -1,8 +1,7 @@
 import React from "react";
 import "../styles/GameCard.css";
 import GameCover from "./GameCover";
-import { formatDate } from "../utils/datetime";
-
+import { formatDate, formatPlaytime } from "../utils/datetime";
 
 const GameCard = React.forwardRef(
   ({ game, onFocus, onClick, isFocused }, ref) => {
@@ -26,7 +25,7 @@ const GameCard = React.forwardRef(
         <div className="game-card-overlay">
           <div className="game-card-info">
             <h3 className="game-card-title">{game.title}</h3>
-            <p>Playtime: {game.playtime}</p>
+            <p>Playtime: {formatPlaytime(game.playtimeSeconds)}</p>
             <p>Last played: {formatDate(game.lastPlayed)}</p>
           </div>
         </div>
