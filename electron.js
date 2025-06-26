@@ -51,9 +51,7 @@ async function getPulseAudioClient() {
   const pa = new PAClient();
 
   try {
-    pa.connect(config);
-
-    await new Promise((resolve, reject) => {
+    const connectPromise = new Promise((resolve, reject) => {
       pa.on("ready", () => {
         resolve();
       });
@@ -62,6 +60,10 @@ async function getPulseAudioClient() {
         reject(e);
       });
     });
+
+    pa.connect(config);
+
+    await connectPromise;
 
     _pulseAudioClient = pa;
   } catch (e) {
