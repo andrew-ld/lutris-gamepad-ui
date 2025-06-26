@@ -4,9 +4,10 @@ import { useAudio } from "../contexts/AudioContext";
 import "../styles/TopBar.css";
 
 const TopBar = () => {
-  const [currentTime, setCurrentTime] = useState("");
   const { gamepadCount } = useInput();
   const { volume, isMuted, isLoading: audioIsLoading } = useAudio();
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [currentTime, setCurrentTime] = useState("");
 
   useEffect(() => {
     const updateClock = () => {
@@ -20,14 +21,29 @@ const TopBar = () => {
     updateClock();
     const timerId = setInterval(updateClock, 1000);
 
-    return () => clearInterval(timerId);
-  }, []);
+    const updateOnlineStatus = () => {
+      setIsOnline(navigator.onLine);
+    };
+
+    window.addEventListener("online", updateOnlineStatus);
+    window.addEventListener("offline", updateOnlineStatus);
+
+    return () => {
+      clearInterval(timerId);
+      window.removeEventListener("online", updateOnlineStatus);
+      window.removeEventListener("offline", updateOnlineStatus);
+    };
+  }, [setIsOnline, setCurrentTime]);
 
   const getVolumeIcon = () => {
     if (isMuted || volume === 0) return "🔇";
     if (volume < 33) return "🔈";
     if (volume < 66) return "🔉";
     return "🔊";
+  };
+
+  const getNetworkIndicator = () => {
+    return isOnline ? "📶" : "❌ Offline";
   };
 
   return (
@@ -46,6 +62,8 @@ const TopBar = () => {
             </span>
           </>
         )}
+        <span className="top-bar-item top-bar-separator">|</span>
+        <span className="top-bar-item">{getNetworkIndicator()}</span>
       </div>
     </div>
   );
