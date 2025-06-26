@@ -50,6 +50,12 @@ async function getPulseAudioClient() {
 
   const pa = new PAClient();
 
+  pa.on("close", () => {
+    if (_pulseAudioClient === pa) {
+      _pulseAudioClient = null;
+    }
+  });
+
   try {
     const connectPromise = new Promise((resolve, reject) => {
       const onReady = () => {
@@ -77,10 +83,6 @@ async function getPulseAudioClient() {
     console.error("unable to get pulse audio client:", e);
     return null;
   }
-
-  pa.on("close", () => {
-    _pulseAudioClient = null;
-  });
 
   pa.on("change", () => {
     sendCurrentAudioInfo(pa);
