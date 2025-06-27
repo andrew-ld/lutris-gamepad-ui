@@ -11,7 +11,7 @@ const path = require("path");
 const { spawn, exec } = require("child_process");
 const { promisify } = require("util");
 const { homedir } = require("os");
-const { existsSync } = require("fs");
+const { existsSync, readFileSync } = require("fs");
 const { readFile } = require("fs/promises");
 const PAClient = require("paclient");
 
@@ -144,17 +144,71 @@ async function getSinkInfoFromPA(pulseAudioClient) {
   return result;
 }
 
+function findLutrisWrapperChildren(pid) {
+  const childrenPath = path.join(
+    "/proc",
+    String(pid),
+    "task",
+    String(pid),
+    "children"
+  );
+
+  const childrenContent = readFileSync(childrenPath, "utf8");
+
+  return childrenContent
+    .trim()
+    .split(" ")
+    .map(Number)
+    .filter((childPid) => {
+      if (!childPid) {
+        return false;
+      }
+
+      try {
+        const cmdline = readFileSync(
+          path.join("/proc", String(childPid), "cmdline"),
+          "utf8"
+        );
+
+        return cmdline.startsWith("lutris-wrapper");
+      } catch (e) {
+        console.error("unable to read cmdline of pid", childPid);
+        return false;
+      }
+    });
+}
+
 function closeRunningGameProcess() {
   if (!runningGameProcess) {
     return;
   }
 
-  console.warn("closeRunningGameProcess!");
+  let lutrisWrapperPids;
 
   try {
-    process.kill(-runningGameProcess.pid, "SIGTERM");
+    lutrisWrapperPids = findLutrisWrapperChildren(runningGameProcess.pid);
   } catch (e) {
-    runningGameProcess.kill("SIGTERM");
+    console.error("unable to find lutris wrapper child", e);
+  }
+
+  let killablePids;
+
+  if (lutrisWrapperPids?.length) {
+    console.info("using lutris wrapper pid for close running game");
+    killablePids = lutrisWrapperPids;
+  } else {
+    console.info("using lutris main process pid for close running game");
+    killablePids = [runningGameProcess.pid];
+  }
+
+  for (const killablePid of killablePids) {
+    console.info("sending sigterm to pid", killablePid);
+
+    try {
+      process.kill(killablePid, "SIGTERM");
+    } catch (e) {
+      console.error("unable to kill pid", killablePid, e);
+    }
   }
 }
 
@@ -262,10 +316,7 @@ ipcMain.handle("get-games", async () => {
 
   const games = JSON.parse(rawGames);
 
-  const lutrisCoverDir = path.join(
-    homedir(),
-    "/.local/share/lutris/coverart/"
-  );
+  const lutrisCoverDir = path.join(homedir(), "/.local/share/lutris/coverart/");
 
   for (const game of games) {
     if (!game.slug || game.coverPath) {
