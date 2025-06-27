@@ -1,7 +1,7 @@
 {
   "name": "lutris-gamepad-ui",
   "private": true,
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "electron.js",
   "author": {
     "name": "Andrew-LD",
