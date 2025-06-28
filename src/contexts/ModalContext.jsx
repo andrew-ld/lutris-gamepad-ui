@@ -1,33 +1,40 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useRef,
+} from "react";
 
 const ModalContext = createContext(null);
 export const useModal = () => useContext(ModalContext);
 
 export const ModalProvider = ({ children }) => {
-  const [modal, setModal] = useState(null);
+  const [modals, setModals] = useState([]);
+  const modalIdCounter = useRef(0);
 
   const showModal = useCallback((renderContent) => {
-    const modalId = Symbol("modalId");
+    const modalId = modalIdCounter.current++;
 
     const hideThisModal = () => {
-      setModal((currentModal) => {
-        if (currentModal && currentModal.id === modalId) {
-          return null;
-        }
-        return currentModal;
-      });
+      setModals((currentModals) =>
+        currentModals.filter((m) => m.id !== modalId)
+      );
     };
 
     const content = renderContent(hideThisModal);
-    setModal({ id: modalId, content });
+    const newModal = { id: modalId, content };
+
+    setModals((currentModals) => [...currentModals, newModal]);
   }, []);
 
   const hideModal = useCallback(() => {
-    setModal(null);
+    setModals((currentModals) => currentModals.slice(0, -1));
   }, []);
 
   const value = {
-    modalContent: modal ? modal.content : null,
+    modals,
+    isModalOpen: modals.length > 0,
     showModal,
     hideModal,
   };

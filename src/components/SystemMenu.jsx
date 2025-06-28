@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, act } from "react";
 import { useInput } from "../contexts/InputContext";
 import { useModal } from "../contexts/ModalContext";
 import ConfirmationDialog from "./ConfirmationDialog";
@@ -31,7 +31,7 @@ export const SystemMenuFocusId = "SystemMenu";
 const SystemMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const { showModal, modalContent } = useModal();
+  const { showModal, isModalOpen } = useModal();
 
   const { lastInput, claimInputFocus, releaseInputFocus, isFocused } =
     useInput();
@@ -44,30 +44,81 @@ const SystemMenu = () => {
   const openAudioSettingsModal = useCallback(() => {
     showModal((hideThisModal) => <VolumeControl onClose={hideThisModal} />);
     setIsOpen(false);
-  }, [showModal, setIsOpen]);
+  }, [showModal]);
 
   const menuItems = [
-    { label: "Reload Library", action: fetchGames, confirm: false },
+    { label: "Reload Library", action: fetchGames },
     {
       label: "Audio Settings",
       action: openAudioSettingsModal,
-      confirm: false,
     },
-    { label: "Open Lutris", action: () => api.openLutris(), confirm: true },
-    { label: "Reboot System", action: () => api.rebootPC(), confirm: true },
+    { label: "Open Lutris", action: () => api.openLutris() },
+    {
+      label: "Reboot System",
+      action: () => api.rebootPC(),
+      doubleConfirm: true,
+    },
     {
       label: "Power Off System",
       action: () => api.powerOffPC(),
-      confirm: true,
+      doubleConfirm: true,
     },
     { label: "Exit Application", action: () => window.close(), confirm: true },
   ];
+
+  const openConfirmation = useCallback(
+    (message, onConfirmAction, closeOnConfirm = true) => {
+      showModal((hideThisModal) => (
+        <ConfirmationDialog
+          message={message}
+          onConfirm={() => {
+            onConfirmAction();
+            if (closeOnConfirm) {
+              hideThisModal();
+            }
+          }}
+          onDeny={hideThisModal}
+        />
+      ));
+    },
+    [showModal]
+  );
+
+  const handleAction = useCallback(
+    (item) => {
+      setIsOpen(false);
+
+      if (item.doubleConfirm || item.confirm) {
+        let action;
+
+        if (item.confirm) {
+          action = item.action;
+        } else {
+          action = () => {
+            openConfirmation(
+              `This action is final and cannot be undone.\nContinue with "${item.label}"?`,
+              item.action
+            );
+          };
+        }
+
+        openConfirmation(
+          `Are you sure you want to\n${item.label}?`,
+          action,
+          !!item.confirm
+        );
+      } else {
+        item.action();
+      }
+    },
+    [openConfirmation]
+  );
 
   useEffect(() => {
     if (isOpen && menuPowerButtonRef.current) {
       menuPowerButtonRef.current.focus();
     }
-  }, [isOpen, menuPowerButtonRef]);
+  }, [isOpen]);
 
   const toggleMenu = useCallback(() => {
     setIsOpen((prev) => {
@@ -78,30 +129,6 @@ const SystemMenu = () => {
       return isOpening;
     });
   }, []);
-
-  const handleAction = useCallback(
-    (item) => {
-      if (item.confirm) {
-        showModal((hideThisModal) => (
-          <ConfirmationDialog
-            message={`Are you sure you want to\n${item.label}?`}
-            onConfirm={() => {
-              item.action();
-              hideThisModal();
-            }}
-            onDeny={() => {
-              hideThisModal();
-            }}
-          />
-        ));
-      } else {
-        item.action();
-      }
-
-      setIsOpen(false);
-    },
-    [showModal, setIsOpen]
-  );
 
   useEffect(() => {
     if (isOpen) {
@@ -125,7 +152,7 @@ const SystemMenu = () => {
       return;
     }
 
-    if (lastInput.name === "Y" && !modalContent) {
+    if (lastInput.name === "Y" && !isModalOpen) {
       playActionSound();
       lastProcessedInput.current = lastInput.timestamp;
       toggleMenu();
@@ -167,7 +194,7 @@ const SystemMenu = () => {
     toggleMenu,
     isFocused,
     handleAction,
-    modalContent,
+    isModalOpen,
     handleSelect,
   ]);
 

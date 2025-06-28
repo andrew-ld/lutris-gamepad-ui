@@ -2,11 +2,13 @@ import { useModal } from "../contexts/ModalContext";
 import "../styles/Modal.css";
 
 const ModalRenderer = () => {
-  const { modalContent, hideModal } = useModal();
+  const { modals, hideModal, isModalOpen } = useModal();
 
-  if (!modalContent) {
+  if (!isModalOpen) {
     return null;
   }
+
+  const topModal = modals[modals.length - 1];
 
   const handleOverlayClick = () => {
     hideModal();
@@ -19,7 +21,7 @@ const ModalRenderer = () => {
   return (
     <div className="modal-overlay" onClick={handleOverlayClick}>
       <div className="modal-content" onClick={handleContentClick}>
-        {modalContent}
+        {topModal.content}
       </div>
     </div>
   );
