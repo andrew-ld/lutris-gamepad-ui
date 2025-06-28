@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useInput } from "../contexts/InputContext";
-import ButtonIcon from "./ButtonIcon";
 import "../styles/OnScreenKeyboard.css";
 import { playActionSound } from "../utils/sound";
+import LegendaContainer from "./LegendaContainer";
 
 export const OnScreenKeyboardFocusID = "OnScreenKeyboard";
 
@@ -19,14 +19,10 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
     useInput();
   const [inputValue, setInputValue] = useState(initialValue || "");
   const [focusCoords, setFocusCoords] = useState({ x: 0, y: 0 });
-  const rootRef = useRef(null);
   const lastProcessedInput = useRef(null);
 
   useEffect(() => {
     claimInputFocus(OnScreenKeyboardFocusID);
-    if (rootRef.current) {
-      rootRef.current.focus();
-    }
     return () => releaseInputFocus(OnScreenKeyboardFocusID);
   }, [claimInputFocus, releaseInputFocus]);
 
@@ -120,50 +116,61 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
     handleKeyPress(KEY_LAYOUT[focusCoords.y][focusCoords.x]);
   }, [handleKeyPress, focusCoords]);
 
+  const onConfirmCallback = useCallback(() => {
+    onConfirm(inputValue);
+  }, [onConfirm, inputValue]);
+
+  const onCloseCallback = useCallback(() => {
+    onClose();
+  }, [onClose]);
+
+  const legendItems = [
+    {
+      button: "A",
+      label: "Select",
+      onClick: onSelectCallback,
+    },
+    {
+      button: "X",
+      label: "Submit",
+      onClick: onConfirmCallback,
+    },
+    { button: "B", label: "Close", onClick: onCloseCallback },
+  ];
+
   return (
-    <div ref={rootRef} className="osk-container" tabIndex="-1">
-      <div className="osk-input-display">
-        <label className="osk-label">{label}</label>
-        <div className="osk-input-wrapper">
-          <span className="osk-input-value">{inputValue}</span>
-          <span className="osk-cursor" />
-        </div>
-      </div>
-      <div className="osk-layout">
-        {KEY_LAYOUT.map((row, y) => (
-          <div className="osk-row" key={`row-${y}`}>
-            {row.map((key, x) => {
-              const isFocused = focusCoords.x === x && focusCoords.y === y;
-              return (
-                <button
-                  key={key}
-                  className={`osk-key ${key.length > 1 ? "special" : ""} ${
-                    isFocused ? "focused" : ""
-                  }`}
-                  onClick={() => handleKeyPress(key)}
-                >
-                  {key}
-                </button>
-              );
-            })}
+    <div className="osk-container" tabIndex="-1">
+      <LegendaContainer legendItems={legendItems}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <div className="osk-input-display">
+            <label className="osk-label">{label}</label>
+            <div className="osk-input-wrapper">
+              <span className="osk-input-value">{inputValue}</span>
+              <span className="osk-cursor" />
+            </div>
           </div>
-        ))}
-      </div>
-      <div className="osk-footer">
-        <ButtonIcon
-          button="A"
-          label="Select"
-          size="small"
-          onClick={onSelectCallback}
-        />
-        <ButtonIcon
-          button="X"
-          label="Submit"
-          size="small"
-          onClick={() => onConfirm(inputValue)}
-        />
-        <ButtonIcon button="B" label="Close" size="small" onClick={onClose} />
-      </div>
+          <div className="osk-layout">
+            {KEY_LAYOUT.map((row, y) => (
+              <div className="osk-row" key={`row-${y}`}>
+                {row.map((key, x) => {
+                  const isFocused = focusCoords.x === x && focusCoords.y === y;
+                  return (
+                    <button
+                      key={key}
+                      className={`osk-key ${key.length > 1 ? "special" : ""} ${
+                        isFocused ? "focused" : ""
+                      }`}
+                      onClick={() => handleKeyPress(key)}
+                    >
+                      {key}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+      </LegendaContainer>
     </div>
   );
 };
