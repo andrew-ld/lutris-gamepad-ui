@@ -83,12 +83,3 @@
   background-color: var(--accent-color);
   color: var(--text-primary);
 }
-
-.system-menu-footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 8px 12px;
-  margin-top: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}

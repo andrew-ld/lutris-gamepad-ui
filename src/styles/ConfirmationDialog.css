@@ -50,12 +50,3 @@
   transform: scale(1.05);
   box-shadow: 0 0 15px rgba(229, 9, 20, 0.5);
 }
-
-.confirmation-footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 8px 12px;
-  margin-top: 8px;
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-}

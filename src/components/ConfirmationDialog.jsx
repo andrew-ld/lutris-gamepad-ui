@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useInput } from "../contexts/InputContext";
-import ButtonIcon from "./ButtonIcon";
 import "../styles/ConfirmationDialog.css";
 import { playActionSound } from "../utils/sound";
+import LegendaContainer from "./LegendaContainer";
 
 export const ConfirmationDialogFocusId = "ConfirmationDialog";
 
@@ -59,43 +59,36 @@ const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
     }
   }, [lastInput, isFocused, handleDeny, handleSubmit]);
 
+  const legendItems = [
+    { button: "A", label: "Select", onClick: handleSubmit },
+    { button: "B", label: "Cancel", onClick: handleDeny },
+  ];
+
   return (
     <div className="confirmation-dialog">
-      <div className="confirmation-content">
-        <p className="confirmation-message">{message}</p>
-        <div className="confirmation-buttons">
-          <button
-            className={`confirmation-button ${
-              confirmSelection === 0 ? "focused" : ""
-            }`}
-            onClick={handleConfirm}
-          >
-            Confirm
-          </button>
-          <button
-            className={`confirmation-button ${
-              confirmSelection === 1 ? "focused" : ""
-            }`}
-            onClick={handleDeny}
-          >
-            Cancel
-          </button>
+      <LegendaContainer legendItems={legendItems}>
+        <div className="confirmation-content">
+          <p className="confirmation-message">{message}</p>
+          <div className="confirmation-buttons">
+            <button
+              className={`confirmation-button ${
+                confirmSelection === 0 ? "focused" : ""
+              }`}
+              onClick={handleConfirm}
+            >
+              Confirm
+            </button>
+            <button
+              className={`confirmation-button ${
+                confirmSelection === 1 ? "focused" : ""
+              }`}
+              onClick={handleDeny}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
-      </div>
-      <div className="confirmation-footer">
-        <ButtonIcon
-          button="A"
-          label="Select"
-          size="small"
-          onClick={handleSubmit}
-        />
-        <ButtonIcon
-          button="B"
-          label="Cancel"
-          size="small"
-          onClick={handleDeny}
-        />
-      </div>
+      </LegendaContainer>
     </div>
   );
 };

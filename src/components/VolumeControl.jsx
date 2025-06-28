@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useAudio } from "../contexts/AudioContext";
 import { useInput } from "../contexts/InputContext";
-import ButtonIcon from "./ButtonIcon";
 import "../styles/VolumeControl.css";
 import { playActionSound } from "../utils/sound";
+import LegendaContainer from "./LegendaContainer";
 
 export const VolumeControlFocusID = "VolumeControl";
 
@@ -160,12 +160,14 @@ const VolumeControl = ({ onClose }) => {
   ]);
 
   if (isAudioLoading && (!availableSinks || availableSinks.length === 0)) {
+    const legendItems = [{ button: "B", label: "Close", onClick: onClose }];
     return (
       <div className="volume-control-container">
-        <p className="volume-control-title">Loading Audio Settings...</p>
-        <div className="volume-control-footer">
-          <ButtonIcon button="B" label="Close" size="small" onClick={onClose} />
-        </div>
+        <LegendaContainer legendItems={legendItems}>
+          <div style={{ padding: "24px 0", margin: 0 }}>
+            <p className="volume-control-title">Loading Audio Settings...</p>
+          </div>
+        </LegendaContainer>
       </div>
     );
   }
@@ -184,107 +186,106 @@ const VolumeControl = ({ onClose }) => {
     }
   }, [currentHighlightedSink, setDefaultSink]);
 
+  const legendItems = [];
+  if (focusedControlType === CONTROL_TYPES.MUTE) {
+    legendItems.push({
+      button: "A",
+      label: isMuted ? "Unmute" : "Mute",
+      onClick: toggleMute,
+    });
+  } else if (focusedControlType === CONTROL_TYPES.VOLUME) {
+    legendItems.push({ button: "LEFT", label: "Decrease" });
+    legendItems.push({ button: "RIGHT", label: "Increase" });
+  } else if (
+    focusedControlType === CONTROL_TYPES.OUTPUT_DEVICE &&
+    availableSinks?.length > 0
+  ) {
+    legendItems.push({ button: "LEFT", label: "Prev" });
+    legendItems.push({ button: "RIGHT", label: "Next" });
+    if (currentHighlightedSink) {
+      legendItems.push({
+        button: "A",
+        label: "Set Device",
+        onClick: handleSetDeviceClick,
+      });
+    }
+  }
+  legendItems.push({ button: "B", label: "Close", onClick: onClose });
+
   return (
     <div className="volume-control-container">
-      <h2 className="volume-control-title">Audio Settings</h2>
+      <LegendaContainer legendItems={legendItems}>
+        <div>
+          <h2 className="volume-control-title">Audio Settings</h2>
 
-      <div
-        className={`volume-control-item ${
-          focusedControlType === CONTROL_TYPES.MUTE ? "focused" : ""
-        }`}
-      >
-        <span className="volume-control-label">Mute</span>
-        <button className="mute-button" onClick={toggleMute}>
-          {isMuted ? "Unmute" : "Mute"}
-        </button>
-      </div>
-
-      <div
-        className={`volume-control-item ${
-          focusedControlType === CONTROL_TYPES.VOLUME ? "focused" : ""
-        }`}
-      >
-        <span className="volume-control-label">Volume</span>
-        <div className="volume-bar-display">
-          <div className="volume-bar-container">
-            <div
-              className="volume-bar-fill"
-              style={{ width: `${isMuted ? 0 : volume}%` }}
-            ></div>
-          </div>
-          <span className="volume-control-value">{`${volume}%`}</span>
-        </div>
-      </div>
-
-      {currentDefaultSinkObject && (
-        <div className="volume-control-current-sink-display">
-          <span className="volume-control-label">Current Output:</span>
-          <span
-            className="current-sink-name"
-            title={currentDefaultSinkObject.description}
+          <div
+            className={`volume-control-item ${
+              focusedControlType === CONTROL_TYPES.MUTE ? "focused" : ""
+            }`}
           >
-            {currentDefaultSinkObject.description}
-          </span>
-        </div>
-      )}
+            <span className="volume-control-label">Mute</span>
+            <button className="mute-button" onClick={toggleMute}>
+              {isMuted ? "Unmute" : "Mute"}
+            </button>
+          </div>
 
-      <div
-        className={`volume-control-item ${
-          focusedControlType === CONTROL_TYPES.OUTPUT_DEVICE ? "focused" : ""
-        }`}
-      >
-        <span className="volume-control-label">Select Output</span>
-        <div className="output-device-selector">
-          {currentHighlightedSink ? (
-            <>
+          <div
+            className={`volume-control-item ${
+              focusedControlType === CONTROL_TYPES.VOLUME ? "focused" : ""
+            }`}
+          >
+            <span className="volume-control-label">Volume</span>
+            <div className="volume-bar-display">
+              <div className="volume-bar-container">
+                <div
+                  className="volume-bar-fill"
+                  style={{ width: `${isMuted ? 0 : volume}%` }}
+                ></div>
+              </div>
+              <span className="volume-control-value">{`${volume}%`}</span>
+            </div>
+          </div>
+
+          {currentDefaultSinkObject && (
+            <div className="volume-control-current-sink-display">
+              <span className="volume-control-label">Current Output:</span>
               <span
-                className="output-device-name"
-                title={currentHighlightedSink.description}
+                className="current-sink-name"
+                title={currentDefaultSinkObject.description}
               >
-                {currentHighlightedSink.description}
+                {currentDefaultSinkObject.description}
               </span>
-              <span className="output-device-count">
-                ({highlightedSinkIndex + 1}/{availableSinks.length})
-              </span>
-            </>
-          ) : (
-            <span className="output-device-name">No devices found</span>
+            </div>
           )}
-        </div>
-      </div>
 
-      <div className="volume-control-footer">
-        {focusedControlType === CONTROL_TYPES.MUTE && (
-          <ButtonIcon
-            button="A"
-            label={isMuted ? "Unmute" : "Mute"}
-            size="small"
-            onClick={toggleMute}
-          />
-        )}
-        {focusedControlType === CONTROL_TYPES.VOLUME && (
-          <>
-            <ButtonIcon button="LEFT" label="Decrease" size="small" />
-            <ButtonIcon button="RIGHT" label="Increase" size="small" />
-          </>
-        )}
-        {focusedControlType === CONTROL_TYPES.OUTPUT_DEVICE &&
-          availableSinks?.length > 0 && (
-            <>
-              <ButtonIcon button="LEFT" label="Prev" size="small" />
-              <ButtonIcon button="RIGHT" label="Next" size="small" />
-              {currentHighlightedSink && (
-                <ButtonIcon
-                  button="A"
-                  label="Set Device"
-                  size="small"
-                  onClick={handleSetDeviceClick}
-                />
+          <div
+            className={`volume-control-item ${
+              focusedControlType === CONTROL_TYPES.OUTPUT_DEVICE
+                ? "focused"
+                : ""
+            }`}
+          >
+            <span className="volume-control-label">Select Output</span>
+            <div className="output-device-selector">
+              {currentHighlightedSink ? (
+                <>
+                  <span
+                    className="output-device-name"
+                    title={currentHighlightedSink.description}
+                  >
+                    {currentHighlightedSink.description}
+                  </span>
+                  <span className="output-device-count">
+                    ({highlightedSinkIndex + 1}/{availableSinks.length})
+                  </span>
+                </>
+              ) : (
+                <span className="output-device-name">No devices found</span>
               )}
-            </>
-          )}
-        <ButtonIcon button="B" label="Close" size="small" onClick={onClose} />
-      </div>
+            </div>
+          </div>
+        </div>
+      </LegendaContainer>
     </div>
   );
 };

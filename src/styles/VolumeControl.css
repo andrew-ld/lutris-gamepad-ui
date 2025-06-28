@@ -138,13 +138,3 @@
   flex-grow: 1;
   min-width: 0;
 }
-
-.volume-control-footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 16px;
-  margin-top: 12px;
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}

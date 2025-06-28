@@ -2,12 +2,12 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useInput } from "../contexts/InputContext";
 import { useModal } from "../contexts/ModalContext";
 import ConfirmationDialog from "./ConfirmationDialog";
-import ButtonIcon from "./ButtonIcon";
 import VolumeControl from "./VolumeControl";
 import * as api from "../utils/ipc";
 import { useLutris } from "../contexts/LutrisContext";
 import "../styles/SystemMenu.css";
 import { playActionSound } from "../utils/sound";
+import LegendaContainer from "./LegendaContainer";
 
 const PowerIcon = () => (
   <svg
@@ -184,6 +184,11 @@ const SystemMenu = () => {
     };
   }, [isOpen]);
 
+  const legendItems = [
+    { button: "A", label: "Select", onClick: handleSelect },
+    { button: "B", label: "Back", onClick: () => setIsOpen(false) },
+  ];
+
   return (
     <div className="system-menu-container" ref={menuRef}>
       <button
@@ -197,34 +202,22 @@ const SystemMenu = () => {
 
       {isOpen && (
         <div className="system-menu-overlay">
-          <ul className="system-menu-list">
-            {menuItems.map((item, index) => (
-              <li
-                key={item.label}
-                className={`system-menu-item ${
-                  index === selectedIndex ? "focused" : ""
-                }`}
-                onClick={() => handleAction(item)}
-                onMouseEnter={() => setSelectedIndex(index)}
-              >
-                {item.label}
-              </li>
-            ))}
-          </ul>
-          <div className="system-menu-footer">
-            <ButtonIcon
-              button="A"
-              label="Select"
-              size="small"
-              onClick={handleSelect}
-            />
-            <ButtonIcon
-              button="B"
-              label="Back"
-              size="small"
-              onClick={() => setIsOpen(false)}
-            />
-          </div>
+          <LegendaContainer legendItems={legendItems}>
+            <ul className="system-menu-list">
+              {menuItems.map((item, index) => (
+                <li
+                  key={item.label}
+                  className={`system-menu-item ${
+                    index === selectedIndex ? "focused" : ""
+                  }`}
+                  onClick={() => handleAction(item)}
+                  onMouseEnter={() => setSelectedIndex(index)}
+                >
+                  {item.label}
+                </li>
+              ))}
+            </ul>
+          </LegendaContainer>
         </div>
       )}
     </div>
