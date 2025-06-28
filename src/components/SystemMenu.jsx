@@ -115,8 +115,10 @@ const SystemMenu = () => {
   );
 
   useEffect(() => {
-    if (isOpen && menuPowerButtonRef.current) {
-      menuPowerButtonRef.current.focus();
+    if (isOpen) {
+      menuPowerButtonRef.current?.focus();
+    } else {
+      menuPowerButtonRef.current?.blur();
     }
   }, [isOpen]);
 
