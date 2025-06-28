@@ -159,8 +159,12 @@ const VolumeControl = ({ onClose }) => {
     onClose,
   ]);
 
+  const handleClose = useCallback(() => {
+    onClose();
+  }, [onClose]);
+
   if (isAudioLoading && (!availableSinks || availableSinks.length === 0)) {
-    const legendItems = [{ button: "B", label: "Close", onClick: onClose }];
+    const legendItems = [{ button: "B", label: "Close", onClick: handleClose }];
     return (
       <div className="volume-control-container">
         <LegendaContainer legendItems={legendItems}>
@@ -186,6 +190,18 @@ const VolumeControl = ({ onClose }) => {
     }
   }, [currentHighlightedSink, setDefaultSink]);
 
+  const handlePrevSink = useCallback(() => {
+    setHighlightedSinkIndex((prev) => Math.max(0, prev - 1));
+  }, []);
+
+  const handleNextSink = useCallback(() => {
+    if (availableSinks && availableSinks.length > 0) {
+      setHighlightedSinkIndex((prev) =>
+        Math.min(availableSinks.length - 1, prev + 1)
+      );
+    }
+  }, [availableSinks]);
+
   const legendItems = [];
   if (focusedControlType === CONTROL_TYPES.MUTE) {
     legendItems.push({
@@ -194,14 +210,30 @@ const VolumeControl = ({ onClose }) => {
       onClick: toggleMute,
     });
   } else if (focusedControlType === CONTROL_TYPES.VOLUME) {
-    legendItems.push({ button: "LEFT", label: "Decrease" });
-    legendItems.push({ button: "RIGHT", label: "Increase" });
+    legendItems.push({
+      button: "LEFT",
+      label: "Decrease",
+      onClick: decreaseVolume,
+    });
+    legendItems.push({
+      button: "RIGHT",
+      label: "Increase",
+      onClick: increaseVolume,
+    });
   } else if (
     focusedControlType === CONTROL_TYPES.OUTPUT_DEVICE &&
     availableSinks?.length > 0
   ) {
-    legendItems.push({ button: "LEFT", label: "Prev" });
-    legendItems.push({ button: "RIGHT", label: "Next" });
+    legendItems.push({
+      button: "LEFT",
+      label: "Prev",
+      onClick: handlePrevSink,
+    });
+    legendItems.push({
+      button: "RIGHT",
+      label: "Next",
+      onClick: handleNextSink,
+    });
     if (currentHighlightedSink) {
       legendItems.push({
         button: "A",
@@ -210,7 +242,7 @@ const VolumeControl = ({ onClose }) => {
       });
     }
   }
-  legendItems.push({ button: "B", label: "Close", onClick: onClose });
+  legendItems.push({ button: "B", label: "Close", onClick: handleClose });
 
   return (
     <div className="volume-control-container">
