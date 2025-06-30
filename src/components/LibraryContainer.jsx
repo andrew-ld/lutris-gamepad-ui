@@ -22,8 +22,10 @@ const LibraryContainer = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const { showModal } = useModalActions();
   const { isModalOpen } = useModalState();
+
   const cardRefs = useRef([[]]);
   const gameCloseCloseModalRef = useRef(null);
+  const prevFocusCoords = useRef(null);
 
   const setCardRef = useCallback((el, shelfIndex, cardIndex) => {
     if (!cardRefs.current[shelfIndex]) {
@@ -63,8 +65,14 @@ const LibraryContainer = () => {
     return newShelves;
   }, [games, searchQuery]);
 
+  const shelvesRef = useRef(shelves);
+  shelvesRef.current = shelves;
+  const focusCoordsRef = useRef(focusCoords);
+  focusCoordsRef.current = focusCoords;
+
   useEffect(() => {
     setFocusCoords({ shelf: 0, card: 0 });
+    prevFocusCoords.current = null;
   }, [games, searchQuery]);
 
   const handleCardFocus = useCallback((coords) => {
@@ -87,9 +95,19 @@ const LibraryContainer = () => {
 
   useEffect(() => {
     if (loading || runningGame) return;
+
+    if (prevFocusCoords.current) {
+      const { shelf: prevShelf, card: prevCard } = prevFocusCoords.current;
+      const prevNode = cardRefs.current[prevShelf]?.[prevCard];
+      if (prevNode) {
+        prevNode.classList.remove("focused");
+      }
+    }
+
     const { shelf, card, preventScroll } = focusCoords;
     const targetNode = cardRefs.current[shelf]?.[card];
     if (targetNode) {
+      targetNode.classList.add("focused");
       if (preventScroll) {
         targetNode.focus({ preventScroll: true });
       } else {
@@ -101,6 +119,8 @@ const LibraryContainer = () => {
         });
       }
     }
+
+    prevFocusCoords.current = focusCoords;
   }, [focusCoords, loading, runningGame]);
 
   const focusedGame = useMemo(
@@ -157,6 +177,7 @@ const LibraryContainer = () => {
 
   const libraryInputHandler = useCallback(
     (input) => {
+      let currentFocusedGame;
       switch (input.name) {
         case "UP":
         case "DOWN":
@@ -198,9 +219,11 @@ const LibraryContainer = () => {
           });
           break;
         case "A":
-          if (focusedGame) {
+          currentFocusedGame =
+            shelves[focusCoords.shelf]?.games[focusCoords.card];
+          if (currentFocusedGame) {
             playActionSound();
-            handleLaunchGame(focusedGame);
+            handleLaunchGame(currentFocusedGame);
           }
           break;
         case "B":
@@ -217,7 +240,7 @@ const LibraryContainer = () => {
     },
     [
       shelves,
-      focusedGame,
+      focusCoords,
       searchQuery,
       handleLaunchGame,
       clearSearchCb,
@@ -262,6 +285,14 @@ const LibraryContainer = () => {
     window.dispatchEvent(new Event("toggle-system-menu"));
   }, []);
 
+  const stableOnLaunchGame = useCallback(() => {
+    const { shelf, card } = focusCoordsRef.current;
+    const game = shelvesRef.current[shelf]?.games[card];
+    if (game) {
+      launchGame(game);
+    }
+  }, [launchGame]);
+
   if (loading) {
     return <LoadingIndicator message="Loading library..." />;
   }
@@ -275,7 +306,7 @@ const LibraryContainer = () => {
     controlsOverlayProps.runningGameTitle = runningGame.title;
   } else if (!isModalOpen) {
     if (focusedGame) {
-      controlsOverlayProps.onLaunchGame = () => handleLaunchGame(focusedGame);
+      controlsOverlayProps.onLaunchGame = stableOnLaunchGame;
     }
     if (searchQuery) {
       controlsOverlayProps.onClearSearch = clearSearchCb;
@@ -296,11 +327,8 @@ const LibraryContainer = () => {
     <>
       <GameLibrary
         shelves={shelves}
-        focusCoords={focusCoords}
         onCardFocus={handleCardFocus}
-        onCardClick={(game) => {
-          handleLaunchGame(game);
-        }}
+        onCardClick={handleLaunchGame}
         setCardRef={setCardRef}
         searchQuery={searchQuery}
       />

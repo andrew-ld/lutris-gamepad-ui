@@ -1,3 +1,4 @@
+import React from "react";
 import "../styles/ControlsOverlay.css";
 import ButtonIcon from "./ButtonIcon";
 
@@ -43,4 +44,4 @@ const ControlsOverlay = ({
   );
 };
 
-export default ControlsOverlay;
+export default React.memo(ControlsOverlay);

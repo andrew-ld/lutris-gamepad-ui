@@ -1,9 +1,9 @@
+import React from "react";
 import GameShelf from "./GameShelf";
 import "../styles/GameLibrary.css";
 
 const GameLibrary = ({
   shelves,
-  focusCoords,
   onCardFocus,
   onCardClick,
   setCardRef,
@@ -26,7 +26,6 @@ const GameLibrary = ({
             setCardRef={setCardRef}
             onCardFocus={onCardFocus}
             onCardClick={onCardClick}
-            focusCoords={focusCoords}
           />
         ))
       ) : (
@@ -45,4 +44,4 @@ const GameLibrary = ({
   );
 };
 
-export default GameLibrary;
+export default React.memo(GameLibrary);

@@ -1,3 +1,4 @@
+import React from "react";
 import GameCard from "./GameCard";
 import "../styles/GameShelf.css";
 
@@ -8,7 +9,6 @@ const GameShelf = ({
   setCardRef,
   onCardFocus,
   onCardClick,
-  focusCoords,
 }) => {
   return (
     <section className="game-shelf">
@@ -21,9 +21,6 @@ const GameShelf = ({
             game={game}
             onFocus={() => onCardFocus({ shelf: shelfIndex, card: cardIndex })}
             onClick={() => onCardClick(game)}
-            isFocused={
-              focusCoords.shelf === shelfIndex && focusCoords.card === cardIndex
-            }
           />
         ))}
       </div>
@@ -31,4 +28,4 @@ const GameShelf = ({
   );
 };
 
-export default GameShelf;
+export default React.memo(GameShelf);
