@@ -267,13 +267,7 @@ function createWindow() {
 
   session.defaultSession.webRequest.onBeforeRequest((details, callback) => {
     const protocol = new URL(details.url).protocol;
-
-    if (allowedProtocols.has(protocol)) {
-      callback({});
-      return;
-    }
-
-    callback({ cancel: true });
+    callback({ cancel: !allowedProtocols.has(protocol) });
   });
 
   protocol.handle("app", (request) => {
