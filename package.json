@@ -39,7 +39,8 @@
     "files": [
       "dist/**/*",
       "electron.js",
-      "package.json"
+      "package.json",
+      "electron_preload.js"
     ],
     "directories": {
       "buildResources": "assets"
