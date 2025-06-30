@@ -212,7 +212,7 @@ function closeRunningGameProcess() {
   }
 }
 
-function togleWindowShow() {
+function toggleWindowShow() {
   if (!mainWindow) {
     return;
   }
@@ -281,8 +281,9 @@ function createWindow() {
     fullscreen: fullscreen,
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false,
+      contextIsolation: true,
       backgroundThrottling: false,
+      preload: path.join(__dirname, "electron_preload.js"),
     },
     frame: !fullscreen,
     title: "Lutris Gamepad UI",
@@ -290,7 +291,7 @@ function createWindow() {
 
   globalShortcut.register("CommandOrControl+X", () => {
     if (mainWindow && runningGameProcess) {
-      togleWindowShow();
+      toggleWindowShow();
     }
   });
 
@@ -402,8 +403,8 @@ ipcMain.on("open-lutris", () => {
   });
 });
 
-ipcMain.on("togle-window-show", () => {
-  togleWindowShow();
+ipcMain.on("toggle-window-show", () => {
+  toggleWindowShow();
 });
 
 ipcMain.handle("get-audio-info", async () => {

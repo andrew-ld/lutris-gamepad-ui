@@ -1,8 +1,7 @@
-const { ipcRenderer } = window.require("electron");
 import { parseTimedeltaToSeconds } from "./datetime";
 
 export const getGames = async () => {
-  const gamesFromLutris = await ipcRenderer.invoke("get-games");
+  const gamesFromLutris = await window.electronAPI.getGames();
 
   return gamesFromLutris.map((game) => {
     return {
@@ -19,46 +18,46 @@ export const getGames = async () => {
 
 export const launchGame = (game) => {
   console.log(`Requesting launch for game: ${game.title} (ID: ${game.id})`);
-  ipcRenderer.send("launch-game", game.id);
+  window.electronAPI.launchGame(game.id);
 };
 
 export const closeGame = (game) => {
   console.log(`Requesting close for game: ${game.title} (ID: ${game.id})`);
-  ipcRenderer.send("close-game", game.id);
+  window.electronAPI.closeGame(game.id);
 };
 
 export const setIcon = (dataURL) => {
-  ipcRenderer.send("set-icon", dataURL);
+  window.electronAPI.setIcon(dataURL);
 };
 
 export const rebootPC = () => {
-  ipcRenderer.send("reboot-pc");
+  window.electronAPI.rebootPC();
 };
 
 export const powerOffPC = () => {
-  ipcRenderer.send("poweroff-pc");
+  window.electronAPI.powerOffPC();
 };
 
 export const openLutris = () => {
-  ipcRenderer.send("open-lutris");
+  window.electronAPI.openLutris();
 };
 
-export const togleWindowShow = () => {
-  ipcRenderer.send("togle-window-show");
+export const toggleWindowShow = () => {
+  window.electronAPI.toggleWindowShow();
 };
 
 export const getAudioInfo = async () => {
-  return await ipcRenderer.invoke("get-audio-info");
+  return await window.electronAPI.getAudioInfo();
 };
 
 export const setAudioVolume = (volumePercent) => {
-  ipcRenderer.send("set-audio-volume", volumePercent);
+  window.electronAPI.setAudioVolume(volumePercent);
 };
 
 export const setAudioMute = (isMuted) => {
-  ipcRenderer.send("set-audio-mute", isMuted);
+  window.electronAPI.setAudioMute(isMuted);
 };
 
 export const setDefaultSink = (sinkName) => {
-  ipcRenderer.send("set-default-sink", sinkName);
+  window.electronAPI.setDefaultSink(sinkName);
 };

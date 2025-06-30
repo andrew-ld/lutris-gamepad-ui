@@ -7,7 +7,7 @@ import RunningGame from "./RunningGame";
 import ControlsOverlay from "./ControlsOverlay";
 import OnScreenKeyboard from "./OnScreenKeyboard";
 import { playActionSound } from "../utils/sound";
-import { togleWindowShow } from "../utils/ipc";
+import { toggleWindowShow } from "../utils/ipc";
 import ConfirmationDialog from "./ConfirmationDialog";
 import { useScopedInput } from "../hooks/useScopedInput";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
@@ -235,7 +235,7 @@ const LibraryContainer = () => {
       key: "Super",
       action: () => {
         playActionSound();
-        togleWindowShow();
+        toggleWindowShow();
       },
       active: !!runningGame,
     },

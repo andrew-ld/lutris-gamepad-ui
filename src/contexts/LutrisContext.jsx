@@ -7,8 +7,6 @@ import {
 } from "react";
 import * as api from "../utils/ipc";
 
-const { ipcRenderer } = window.require("electron");
-
 const LutrisContext = createContext(null);
 export const useLutris = () => useContext(LutrisContext);
 
@@ -34,7 +32,7 @@ export const LutrisProvider = ({ children }) => {
   }, [fetchGames]);
 
   useEffect(() => {
-    const handleGameStarted = (_event, gameId) => {
+    const handleGameStarted = (gameId) => {
       console.log(`[IPC] Received game-started for ID: ${gameId}`);
       const game = games.find((g) => g.id === gameId);
       if (game) {
@@ -48,12 +46,12 @@ export const LutrisProvider = ({ children }) => {
       fetchGames();
     };
 
-    ipcRenderer.on("game-started", handleGameStarted);
-    ipcRenderer.on("game-closed", handleGameClosed);
+    window.electronAPI.onGameStarted(handleGameStarted);
+    window.electronAPI.onGameClosed(handleGameClosed);
 
     return () => {
-      ipcRenderer.removeListener("game-started", handleGameStarted);
-      ipcRenderer.removeListener("game-closed", handleGameClosed);
+      window.electronAPI.removeAllListeners("game-started");
+      window.electronAPI.removeAllListeners("game-closed");
     };
   }, [games, fetchGames]);
 

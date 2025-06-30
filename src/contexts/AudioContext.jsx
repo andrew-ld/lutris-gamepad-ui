@@ -6,7 +6,6 @@ import {
   useCallback,
 } from "react";
 import * as api from "../utils/ipc";
-const { ipcRenderer } = window.require("electron");
 
 const AudioContext = createContext(null);
 export const useAudio = () => useContext(AudioContext);
@@ -53,14 +52,15 @@ export const AudioProvider = ({ children }) => {
   useEffect(() => {
     fetchAudioInfo();
 
-    const handleAudioInfoChanged = (_sender, info) => {
+    const handleAudioInfoChanged = (info) => {
       console.log("[IPC] Received audio-info-changed", info);
       processAudioInfo(info);
     };
 
-    ipcRenderer.on("audio-info-changed", handleAudioInfoChanged);
+    window.electronAPI.onAudioInfoChanged(handleAudioInfoChanged);
+
     return () => {
-      ipcRenderer.removeListener("audio-info-changed", handleAudioInfoChanged);
+      window.electronAPI.removeAllListeners("audio-info-changed");
     };
   }, [fetchAudioInfo]);
 
