@@ -1,3 +1,4 @@
+import React from "react";
 import "../styles/ButtonIcon.css";
 
 const SuperIcon = () => (
@@ -59,4 +60,4 @@ const ButtonIcon = ({ button, label, size = "large", onClick }) => {
   );
 };
 
-export default ButtonIcon;
+export default React.memo(ButtonIcon);

@@ -1,3 +1,4 @@
+import React from "react";
 import ButtonIcon from "./ButtonIcon";
 import "../styles/LegendaContainer.css";
 
@@ -20,4 +21,4 @@ const LegendaContainer = ({ children, legendItems = [] }) => {
   );
 };
 
-export default LegendaContainer;
+export default React.memo(LegendaContainer);

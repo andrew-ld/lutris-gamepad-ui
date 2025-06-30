@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useMemo } from "react";
 import { useScopedInput } from "../hooks/useScopedInput";
 import "../styles/OnScreenKeyboard.css";
 import { playActionSound } from "../utils/sound";
@@ -18,30 +18,39 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
   const [inputValue, setInputValue] = useState(initialValue || "");
   const [focusCoords, setFocusCoords] = useState({ x: 0, y: 0 });
 
-  const handleKeyPress = useCallback(
-    (key) => {
-      if (typeof key !== "string") return;
+  const inputValueRef = useRef(inputValue);
+  inputValueRef.current = inputValue;
 
-      switch (key) {
-        case "Backspace":
-          setInputValue((prev) => prev.slice(0, -1));
-          break;
-        case "Space":
-          setInputValue((prev) => prev + " ");
-          break;
-        case "Enter":
-          onConfirm(inputValue);
-          break;
-        case "Close":
-          onClose();
-          break;
-        default:
-          setInputValue((prev) => prev + key);
-          break;
-      }
-    },
-    [onConfirm, onClose, inputValue]
-  );
+  const focusCoordsRef = useRef(focusCoords);
+  focusCoordsRef.current = focusCoords;
+
+  const onConfirmRef = useRef(onConfirm);
+  onConfirmRef.current = onConfirm;
+
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
+  const handleKeyPress = useCallback((key) => {
+    if (typeof key !== "string") return;
+
+    switch (key) {
+      case "Backspace":
+        setInputValue((prev) => prev.slice(0, -1));
+        break;
+      case "Space":
+        setInputValue((prev) => prev + " ");
+        break;
+      case "Enter":
+        onConfirmRef.current(inputValueRef.current);
+        break;
+      case "Close":
+        onCloseRef.current();
+        break;
+      default:
+        setInputValue((prev) => prev + key);
+        break;
+    }
+  }, []);
 
   const inputHandler = useCallback(
     (input) => {
@@ -75,48 +84,55 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
           break;
         case "A":
           playActionSound();
-          handleKeyPress(KEY_LAYOUT[focusCoords.y][focusCoords.x]);
+          handleKeyPress(
+            KEY_LAYOUT[focusCoordsRef.current.y][focusCoordsRef.current.x]
+          );
           break;
         case "X":
           playActionSound();
-          onConfirm(inputValue);
+          onConfirmRef.current(inputValueRef.current);
           break;
         case "B":
           playActionSound();
-          onClose();
+          onCloseRef.current();
           break;
       }
     },
-    [focusCoords, handleKeyPress, onClose, inputValue, onConfirm]
+    [handleKeyPress]
   );
 
   useScopedInput(inputHandler, OnScreenKeyboardFocusID);
 
   const onSelectCallback = useCallback(() => {
-    handleKeyPress(KEY_LAYOUT[focusCoords.y][focusCoords.x]);
-  }, [handleKeyPress, focusCoords]);
+    handleKeyPress(
+      KEY_LAYOUT[focusCoordsRef.current.y][focusCoordsRef.current.x]
+    );
+  }, [handleKeyPress]);
 
   const onConfirmCallback = useCallback(() => {
-    onConfirm(inputValue);
-  }, [onConfirm, inputValue]);
+    onConfirmRef.current(inputValueRef.current);
+  }, []);
 
   const onCloseCallback = useCallback(() => {
-    onClose();
-  }, [onClose]);
+    onCloseRef.current();
+  }, []);
 
-  const legendItems = [
-    {
-      button: "A",
-      label: "Select",
-      onClick: onSelectCallback,
-    },
-    {
-      button: "X",
-      label: "Submit",
-      onClick: onConfirmCallback,
-    },
-    { button: "B", label: "Close", onClick: onCloseCallback },
-  ];
+  const legendItems = useMemo(
+    () => [
+      {
+        button: "A",
+        label: "Select",
+        onClick: onSelectCallback,
+      },
+      {
+        button: "X",
+        label: "Submit",
+        onClick: onConfirmCallback,
+      },
+      { button: "B", label: "Close", onClick: onCloseCallback },
+    ],
+    [onSelectCallback, onConfirmCallback, onCloseCallback]
+  );
 
   return (
     <div className="osk-container" tabIndex="-1">

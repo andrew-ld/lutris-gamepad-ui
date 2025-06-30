@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useModalActions, useModalState } from "../contexts/ModalContext";
 import ConfirmationDialog from "./ConfirmationDialog";
 import VolumeControl from "./VolumeControl";
@@ -37,6 +37,8 @@ const SystemMenu = () => {
 
   const menuRef = useRef(null);
   const menuPowerButtonRef = useRef(null);
+  const selectedIndexRef = useRef(selectedIndex);
+  selectedIndexRef.current = selectedIndex;
 
   const { fetchGames } = useLutris();
 
@@ -45,29 +47,32 @@ const SystemMenu = () => {
     setIsOpen(false);
   }, [showModal]);
 
-  const menuItems = [
-    { label: "Reload Library", action: fetchGames },
-    {
-      label: "Audio Settings",
-      action: openAudioSettingsModal,
-    },
-    { label: "Open Lutris", action: () => api.openLutris() },
-    {
-      label: "Reboot System",
-      action: () => api.rebootPC(),
-      doubleConfirm: true,
-    },
-    {
-      label: "Power Off System",
-      action: () => api.powerOffPC(),
-      doubleConfirm: true,
-    },
-    {
-      label: "Exit Application",
-      action: () => window.close(),
-      doubleConfirm: true,
-    },
-  ];
+  const menuItems = useMemo(
+    () => [
+      { label: "Reload Library", action: fetchGames },
+      {
+        label: "Audio Settings",
+        action: openAudioSettingsModal,
+      },
+      { label: "Open Lutris", action: () => api.openLutris() },
+      {
+        label: "Reboot System",
+        action: () => api.rebootPC(),
+        doubleConfirm: true,
+      },
+      {
+        label: "Power Off System",
+        action: () => api.powerOffPC(),
+        doubleConfirm: true,
+      },
+      {
+        label: "Exit Application",
+        action: () => window.close(),
+        doubleConfirm: true,
+      },
+    ],
+    [fetchGames, openAudioSettingsModal]
+  );
 
   const openConfirmation = useCallback(
     (message, onConfirmAction, closeOnConfirm = true) => {
@@ -135,9 +140,15 @@ const SystemMenu = () => {
     });
   }, []);
 
+  const handleActionRef = useRef(handleAction);
+  handleActionRef.current = handleAction;
+
+  const menuItemsRef = useRef(menuItems);
+  menuItemsRef.current = menuItems;
+
   const handleSelect = useCallback(() => {
-    handleAction(menuItems[selectedIndex]);
-  }, [handleAction, menuItems, selectedIndex]);
+    handleActionRef.current(menuItemsRef.current[selectedIndexRef.current]);
+  }, []);
 
   const menuInputHandler = useCallback(
     (input) => {
@@ -151,7 +162,7 @@ const SystemMenu = () => {
           break;
         case "DOWN":
           setSelectedIndex((prev) => {
-            const next = Math.min(menuItems.length - 1, prev + 1);
+            const next = Math.min(menuItemsRef.current.length - 1, prev + 1);
             if (next !== prev) playActionSound();
             return next;
           });
@@ -166,7 +177,7 @@ const SystemMenu = () => {
           break;
       }
     },
-    [handleSelect, menuItems]
+    [handleSelect]
   );
 
   useScopedInput(menuInputHandler, SystemMenuFocusId, isOpen);
@@ -200,10 +211,15 @@ const SystemMenu = () => {
     };
   }, [isOpen]);
 
-  const legendItems = [
-    { button: "A", label: "Select", onClick: handleSelect },
-    { button: "B", label: "Back", onClick: () => setIsOpen(false) },
-  ];
+  const closeMenuCallback = useCallback(() => setIsOpen(false), []);
+
+  const legendItems = useMemo(
+    () => [
+      { button: "A", label: "Select", onClick: handleSelect },
+      { button: "B", label: "Back", onClick: closeMenuCallback },
+    ],
+    [handleSelect, closeMenuCallback]
+  );
 
   return (
     <div className="system-menu-container" ref={menuRef}>

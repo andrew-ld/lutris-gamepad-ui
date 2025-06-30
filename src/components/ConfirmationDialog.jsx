@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import { useScopedInput } from "../hooks/useScopedInput";
 import "../styles/ConfirmationDialog.css";
 import { playActionSound } from "../utils/sound";
@@ -9,6 +9,9 @@ export const ConfirmationDialogFocusId = "ConfirmationDialog";
 const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
   const [confirmSelection, setConfirmSelection] = useState(0);
 
+  const confirmSelectionRef = useRef(confirmSelection);
+  confirmSelectionRef.current = confirmSelection;
+
   const handleConfirm = useCallback(() => {
     onConfirm();
   }, [onConfirm]);
@@ -18,12 +21,12 @@ const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
   }, [onDeny]);
 
   const handleSubmit = useCallback(() => {
-    if (confirmSelection === 0) {
+    if (confirmSelectionRef.current === 0) {
       handleConfirm();
     } else {
       handleDeny();
     }
-  }, [handleConfirm, handleDeny, confirmSelection]);
+  }, [handleConfirm, handleDeny]);
 
   const inputHandler = useCallback(
     (input) => {
@@ -47,10 +50,13 @@ const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
 
   useScopedInput(inputHandler, ConfirmationDialogFocusId);
 
-  const legendItems = [
-    { button: "A", label: "Select", onClick: handleSubmit },
-    { button: "B", label: "Cancel", onClick: handleDeny },
-  ];
+  const legendItems = useMemo(
+    () => [
+      { button: "A", label: "Select", onClick: handleSubmit },
+      { button: "B", label: "Cancel", onClick: handleDeny },
+    ],
+    [handleSubmit, handleDeny]
+  );
 
   return (
     <div className="confirmation-dialog">

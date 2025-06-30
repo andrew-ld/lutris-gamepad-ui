@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useAudio } from "../contexts/AudioContext";
 import { useScopedInput } from "../hooks/useScopedInput";
 import "../styles/VolumeControl.css";
@@ -143,19 +143,6 @@ const VolumeControl = ({ onClose }) => {
     onClose();
   }, [onClose]);
 
-  if (isAudioLoading && (!availableSinks || availableSinks.length === 0)) {
-    const legendItems = [{ button: "B", label: "Close", onClick: handleClose }];
-    return (
-      <div className="volume-control-container">
-        <LegendaContainer legendItems={legendItems}>
-          <div style={{ padding: "24px 0", margin: 0 }}>
-            <p className="volume-control-title">Loading Audio Settings...</p>
-          </div>
-        </LegendaContainer>
-      </div>
-    );
-  }
-
   const currentHighlightedSink =
     availableSinks?.length > 0 && highlightedSinkIndex < availableSinks.length
       ? availableSinks[highlightedSinkIndex]
@@ -182,47 +169,77 @@ const VolumeControl = ({ onClose }) => {
     }
   }, [availableSinks]);
 
-  const legendItems = [];
-  if (focusedControlType === CONTROL_TYPES.MUTE) {
-    legendItems.push({
-      button: "A",
-      label: isMuted ? "Unmute" : "Mute",
-      onClick: toggleMute,
-    });
-  } else if (focusedControlType === CONTROL_TYPES.VOLUME) {
-    legendItems.push({
-      button: "LEFT",
-      label: "Decrease",
-      onClick: decreaseVolume,
-    });
-    legendItems.push({
-      button: "RIGHT",
-      label: "Increase",
-      onClick: increaseVolume,
-    });
-  } else if (
-    focusedControlType === CONTROL_TYPES.OUTPUT_DEVICE &&
-    availableSinks?.length > 0
-  ) {
-    legendItems.push({
-      button: "LEFT",
-      label: "Prev",
-      onClick: handlePrevSink,
-    });
-    legendItems.push({
-      button: "RIGHT",
-      label: "Next",
-      onClick: handleNextSink,
-    });
-    if (currentHighlightedSink) {
-      legendItems.push({
+  const legendItems = useMemo(() => {
+    const items = [];
+    if (focusedControlType === CONTROL_TYPES.MUTE) {
+      items.push({
         button: "A",
-        label: "Set Device",
-        onClick: handleSetDeviceClick,
+        label: isMuted ? "Unmute" : "Mute",
+        onClick: toggleMute,
       });
+    } else if (focusedControlType === CONTROL_TYPES.VOLUME) {
+      items.push({
+        button: "LEFT",
+        label: "Decrease",
+        onClick: decreaseVolume,
+      });
+      items.push({
+        button: "RIGHT",
+        label: "Increase",
+        onClick: increaseVolume,
+      });
+    } else if (
+      focusedControlType === CONTROL_TYPES.OUTPUT_DEVICE &&
+      availableSinks?.length > 0
+    ) {
+      items.push({
+        button: "LEFT",
+        label: "Prev",
+        onClick: handlePrevSink,
+      });
+      items.push({
+        button: "RIGHT",
+        label: "Next",
+        onClick: handleNextSink,
+      });
+      if (currentHighlightedSink) {
+        items.push({
+          button: "A",
+          label: "Set Device",
+          onClick: handleSetDeviceClick,
+        });
+      }
     }
+    items.push({ button: "B", label: "Close", onClick: handleClose });
+    return items;
+  }, [
+    focusedControlType,
+    isMuted,
+    toggleMute,
+    decreaseVolume,
+    increaseVolume,
+    availableSinks,
+    currentHighlightedSink,
+    handlePrevSink,
+    handleNextSink,
+    handleSetDeviceClick,
+    handleClose,
+  ]);
+
+  if (isAudioLoading && (!availableSinks || availableSinks.length === 0)) {
+    const loadingLegendItems = [
+      { button: "B", label: "Close", onClick: handleClose },
+    ];
+    return (
+      <div className="volume-control-container">
+        <LegendaContainer legendItems={loadingLegendItems}>
+          <div style={{ padding: "24px 0", margin: 0 }}>
+            <p className="volume-control-title">Loading Audio Settings...</p>
+          </div>
+        </LegendaContainer>
+      </div>
+    );
   }
-  legendItems.push({ button: "B", label: "Close", onClick: handleClose });
 
   return (
     <div className="volume-control-container">

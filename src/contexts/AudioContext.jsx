@@ -41,13 +41,7 @@ export const AudioProvider = ({ children }) => {
     }
     console.log("[AudioContext] Fetched audio info:", info);
     processAudioInfo(info);
-  }, [
-    setIsLoading,
-    setVolume,
-    setIsMuted,
-    setDefaultSinkName,
-    setAvailableSinks,
-  ]);
+  }, []);
 
   useEffect(() => {
     fetchAudioInfo();
@@ -64,28 +58,37 @@ export const AudioProvider = ({ children }) => {
     };
   }, [fetchAudioInfo]);
 
-  const updateVolume = useCallback(
-    (newVolume) => {
-      const clampedVolume = Math.max(0, Math.min(100, newVolume));
-      api.setAudioVolume(clampedVolume);
-      if (isMuted && clampedVolume > 0) {
+  const updateVolume = useCallback((volumePercent) => {
+    const clampedVolume = Math.max(0, Math.min(100, volumePercent));
+    api.setAudioVolume(clampedVolume);
+    setIsMuted((currentMuteState) => {
+      if (currentMuteState && clampedVolume > 0) {
         api.setAudioMute(false);
       }
-    },
-    [isMuted]
-  );
+      return currentMuteState;
+    });
+  }, []);
 
   const increaseVolume = useCallback(() => {
-    updateVolume(volume + VOLUME_STEP);
-  }, [volume, updateVolume]);
+    setVolume((currentVolume) => {
+      updateVolume(currentVolume + VOLUME_STEP);
+      return currentVolume;
+    });
+  }, [updateVolume]);
 
   const decreaseVolume = useCallback(() => {
-    updateVolume(volume - VOLUME_STEP);
-  }, [volume, updateVolume]);
+    setVolume((currentVolume) => {
+      updateVolume(currentVolume - VOLUME_STEP);
+      return currentVolume;
+    });
+  }, [updateVolume]);
 
   const toggleMute = useCallback(() => {
-    api.setAudioMute(!isMuted);
-  }, [isMuted]);
+    setIsMuted((currentMuteState) => {
+      api.setAudioMute(!currentMuteState);
+      return currentMuteState;
+    });
+  }, []);
 
   const setDefaultSink = useCallback((sinkName) => {
     api.setDefaultSink(sinkName);
