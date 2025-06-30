@@ -230,6 +230,22 @@ const LibraryContainer = () => {
     !runningGame && !isModalOpen
   );
 
+  const closeGameInputHandler = useCallback(
+    (input) => {
+      if (input.name === "B") {
+        playActionSound();
+        closeRunningGameDialogCb();
+      }
+    },
+    [closeRunningGameDialogCb]
+  );
+
+  useScopedInput(
+    closeGameInputHandler,
+    LibraryContainerFocusID,
+    !!runningGame && !isModalOpen
+  );
+
   useGlobalShortcut([
     {
       key: "Super",
@@ -238,14 +254,6 @@ const LibraryContainer = () => {
         toggleWindowShow();
       },
       active: !!runningGame,
-    },
-    {
-      key: "B",
-      action: () => {
-        playActionSound();
-        closeRunningGameDialogCb();
-      },
-      active: !!runningGame && !isModalOpen,
     },
   ]);
 
