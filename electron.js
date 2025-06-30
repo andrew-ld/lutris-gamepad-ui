@@ -269,7 +269,7 @@ function createWindow() {
     const requestedPath = path.resolve(path.normalize(requestedUrl.pathname));
 
     const authorized =
-      requestedPath.startsWith(__dirname) ||
+      requestedPath.startsWith(__dirname + "/") ||
       whitelistedAppProtocolFiles.has(requestedPath);
 
     if (!authorized) {
