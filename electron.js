@@ -255,13 +255,25 @@ function createWindow() {
   powerSaveBlocker.start("prevent-display-sleep");
 
   session.defaultSession.setDevicePermissionHandler((details) => {
-    if (details.deviceType === "hid") {
-      console.log(
-        `[Permissions] Auto-granting HID permission for device from origin: ${details.origin}`
-      );
-      return true;
+    return details.deviceType === "hid";
+  });
+
+  const allowedProtocols = new Set();
+  allowedProtocols.add("app:");
+  allowedProtocols.add("devtools:");
+  if (isDev) {
+    allowedProtocols.add("http:");
+  }
+
+  session.defaultSession.webRequest.onBeforeRequest((details, callback) => {
+    const protocol = new URL(details.url).protocol;
+
+    if (allowedProtocols.has(protocol)) {
+      callback({});
+      return;
     }
-    return false;
+
+    callback({ cancel: true });
   });
 
   protocol.handle("app", (request) => {
