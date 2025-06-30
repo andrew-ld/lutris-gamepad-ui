@@ -18,7 +18,7 @@ const RunningGamePage = ({ game }) => {
       <div className="running-game-content">
         {game.coverPath ? (
           <img
-            src={`file://${game.coverPath}`}
+            src={`app://${game.coverPath}`}
             alt={game.title}
             className="running-game-cover"
           />

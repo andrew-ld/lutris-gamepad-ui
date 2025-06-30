@@ -14,7 +14,7 @@ const GameCard = React.forwardRef(({ game, onFocus, onClick }, ref) => {
     >
       {game.coverPath ? (
         <img
-          src={`file://${game.coverPath}`}
+          src={`app://${game.coverPath}`}
           alt={game.title}
           className="game-card-cover"
         />

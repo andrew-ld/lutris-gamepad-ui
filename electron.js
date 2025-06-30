@@ -6,17 +6,22 @@ const {
   nativeImage,
   globalShortcut,
   powerSaveBlocker,
+  protocol,
+  net,
 } = require("electron");
-const path = require("path");
 const { spawn, exec } = require("child_process");
 const { promisify } = require("util");
 const { homedir } = require("os");
 const { existsSync, readFileSync } = require("fs");
 const { readFile } = require("fs/promises");
 const PAClient = require("paclient");
+const path = require("node:path");
+const url = require("url");
 
 const isDev = process.env.IS_DEV === "1";
 const forceWindowed = process.env.FORCE_WINDOWED === "1";
+
+const whitelistedAppProtocolFiles = new Set();
 
 const lutrisEnv = { ...process.env };
 lutrisEnv["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=/dev/null";
@@ -259,18 +264,34 @@ function createWindow() {
     return false;
   });
 
-  let url;
+  protocol.handle("app", (request) => {
+    const requestedUrl = new URL(request.url);
+    const requestedPath = path.resolve(path.normalize(requestedUrl.pathname));
 
-  if (isDev) {
-    url = "http://localhost:5173";
-  } else {
-    if (__dirname.endsWith("/dist")) {
-      url = path.join(__dirname, "index.html");
-    } else {
-      url = path.join(__dirname, "dist/index.html");
+    const authorized =
+      requestedPath.startsWith(__dirname) ||
+      whitelistedAppProtocolFiles.has(requestedPath);
+
+    if (!authorized) {
+      console.error("unauthorized file access: ", requestedPath);
+      return;
     }
 
-    url = "file://" + url;
+    return net.fetch(url.pathToFileURL(requestedPath).toString());
+  });
+
+  let homePageUrl;
+
+  if (isDev) {
+    homePageUrl = "http://localhost:5173";
+  } else {
+    if (__dirname.endsWith("/dist")) {
+      homePageUrl = path.join(__dirname, "index.html");
+    } else {
+      homePageUrl = path.join(__dirname, "dist/index.html");
+    }
+
+    homePageUrl = "app://" + homePageUrl;
   }
 
   const fullscreen = !forceWindowed && !isDev;
@@ -280,9 +301,10 @@ function createWindow() {
     height: 600,
     fullscreen: fullscreen,
     webPreferences: {
-      nodeIntegration: true,
+      nodeIntegration: false,
       contextIsolation: true,
       backgroundThrottling: false,
+      sandbox: true,
       preload: path.join(__dirname, "electron_preload.js"),
     },
     frame: !fullscreen,
@@ -305,7 +327,7 @@ function createWindow() {
     closeRunningGameProcess();
   });
 
-  mainWindow.loadURL(url);
+  mainWindow.loadURL(homePageUrl);
 }
 
 ipcMain.handle("get-games", async () => {
@@ -320,7 +342,12 @@ ipcMain.handle("get-games", async () => {
   const lutrisCoverDir = path.join(homedir(), "/.local/share/lutris/coverart/");
 
   for (const game of games) {
-    if (!game.slug || game.coverPath) {
+    if (game.coverPath) {
+      whitelistedAppProtocolFiles.add(game.coverPath);
+      continue;
+    }
+
+    if (!game.slug) {
       continue;
     }
 
@@ -328,6 +355,7 @@ ipcMain.handle("get-games", async () => {
 
     if (existsSync(gameCoverFile)) {
       game.coverPath = gameCoverFile;
+      whitelistedAppProtocolFiles.add(gameCoverFile);
     }
   }
 
