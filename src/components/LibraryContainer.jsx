@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useLutris } from "../contexts/LutrisContext";
-import { useModal } from "../contexts/ModalContext";
+import { useModalActions, useModalState } from "../contexts/ModalContext";
 import GameLibrary from "./GameLibrary";
 import LoadingIndicator from "./LoadingIndicator";
 import RunningGame from "./RunningGame";
@@ -20,7 +20,8 @@ const LibraryContainer = () => {
 
   const [focusCoords, setFocusCoords] = useState({ shelf: 0, card: 0 });
   const [searchQuery, setSearchQuery] = useState("");
-  const { showModal, isModalOpen } = useModal();
+  const { showModal } = useModalActions();
+  const { isModalOpen } = useModalState();
   const cardRefs = useRef([[]]);
   const gameCloseCloseModalRef = useRef(null);
 

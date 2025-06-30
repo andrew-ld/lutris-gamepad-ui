@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useModal } from "../contexts/ModalContext";
+import { useModalActions, useModalState } from "../contexts/ModalContext";
 import ConfirmationDialog from "./ConfirmationDialog";
 import VolumeControl from "./VolumeControl";
 import * as api from "../utils/ipc";
@@ -32,7 +32,8 @@ export const SystemMenuFocusId = "SystemMenu";
 const SystemMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const { showModal, isModalOpen } = useModal();
+  const { showModal } = useModalActions();
+  const { isModalOpen } = useModalState();
 
   const menuRef = useRef(null);
   const menuPowerButtonRef = useRef(null);

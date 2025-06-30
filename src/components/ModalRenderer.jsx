@@ -1,14 +1,13 @@
-import { useModal } from "../contexts/ModalContext";
+import { useModalState, useModalActions } from "../contexts/ModalContext";
 import "../styles/Modal.css";
 
 const ModalRenderer = () => {
-  const { modals, hideModal, isModalOpen } = useModal();
+  const { topModal, isModalOpen } = useModalState();
+  const { hideModal } = useModalActions();
 
   if (!isModalOpen) {
     return null;
   }
-
-  const topModal = modals[modals.length - 1];
 
   const handleOverlayClick = () => {
     hideModal();
