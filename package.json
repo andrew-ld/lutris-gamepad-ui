@@ -30,6 +30,7 @@
     "electron-builder": "^26.0.12",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-scan": "^0.4.3",
     "vite": "^6.3.5",
     "wait-on": "^8.0.3"
   },

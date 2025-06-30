@@ -2,9 +2,10 @@ import { useEffect, useRef } from "react";
 import { useInput } from "../contexts/InputContext";
 
 export const useScopedInput = (handler, focusId, isActive = true) => {
-  const { lastInput, claimInputFocus, consumeInput } = useInput();
+  const { subscribe, claimInputFocus } = useInput();
   const inputTokenRef = useRef(null);
-  const lastProcessedInput = useRef(null);
+  const latestHandler = useRef(handler);
+  latestHandler.current = handler;
 
   useEffect(() => {
     if (isActive) {
@@ -17,17 +18,19 @@ export const useScopedInput = (handler, focusId, isActive = true) => {
   }, [claimInputFocus, focusId, isActive]);
 
   useEffect(() => {
-    if (
-      !isActive ||
-      !inputTokenRef.current?.isAcquired() ||
-      !lastInput ||
-      lastInput.timestamp === lastProcessedInput.current ||
-      lastInput.isConsumed
-    ) {
-      return;
-    }
-    lastProcessedInput.current = lastInput.timestamp;
-    consumeInput();
-    handler(lastInput);
-  }, [lastInput, handler, isActive, consumeInput]);
+    const handleInput = (input) => {
+      if (
+        input.isConsumed ||
+        !isActive ||
+        !inputTokenRef.current?.isAcquired()
+      ) {
+        return;
+      }
+      input.isConsumed = true;
+      latestHandler.current(input);
+    };
+
+    const unsubscribe = subscribe(handleInput);
+    return unsubscribe;
+  }, [subscribe, isActive]);
 };

@@ -2,25 +2,26 @@ import { useEffect, useRef } from "react";
 import { useInput } from "../contexts/InputContext";
 
 export const useGlobalShortcut = (shortcuts) => {
-  const { lastInput, consumeInput } = useInput();
-  const lastProcessedInput = useRef(null);
+  const { subscribe } = useInput();
+  const latestShortcuts = useRef(shortcuts);
+  latestShortcuts.current = shortcuts;
 
   useEffect(() => {
-    if (
-      !lastInput ||
-      lastInput.timestamp === lastProcessedInput.current ||
-      lastInput.isConsumed
-    ) {
-      return;
-    }
-
-    for (const shortcut of shortcuts) {
-      if (shortcut.active && lastInput.name === shortcut.key) {
-        lastProcessedInput.current = lastInput.timestamp;
-        consumeInput();
-        shortcut.action();
-        break;
+    const handleInput = (input) => {
+      if (input.isConsumed) {
+        return;
       }
-    }
-  }, [lastInput, shortcuts, consumeInput]);
+
+      for (const shortcut of latestShortcuts.current) {
+        if (shortcut.active && input.name === shortcut.key) {
+          input.isConsumed = true;
+          shortcut.action();
+          return;
+        }
+      }
+    };
+
+    const unsubscribe = subscribe(handleInput);
+    return unsubscribe;
+  }, [subscribe]);
 };

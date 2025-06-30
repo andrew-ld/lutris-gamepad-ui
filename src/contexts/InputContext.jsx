@@ -36,7 +36,8 @@ const InputContext = createContext(null);
 export const useInput = () => useContext(InputContext);
 
 export const InputProvider = ({ children }) => {
-  const [lastInput, setLastInput] = useState(null);
+  const listeners = useRef(new Set());
+
   const [focusStack, setFocusStack] = useState([]);
   const [gamepadCount, setGamepadCount] = useState(0);
 
@@ -50,24 +51,27 @@ export const InputProvider = ({ children }) => {
     focusStackRef.current = focusStack;
   }, [focusStack]);
 
-  const setLastInputSafe = (input) => {
+  const subscribe = useCallback((callback) => {
+    listeners.current.add(callback);
+    return () => listeners.current.delete(callback);
+  }, []);
+
+  const broadcast = useCallback((input) => {
+    const eventObject = { ...input, isConsumed: false };
+    [...listeners.current].forEach((cb) => cb(eventObject));
+  }, []);
+
+  const processInput = (input) => {
     if (document.hasFocus() || !input || input?.name === "Super") {
-      setLastInput(input);
+      broadcast(input);
       return true;
     }
     return false;
   };
 
-  const consumeInput = useCallback(() => {
-    setLastInput((prev) => (prev ? { ...prev, isConsumed: true } : null));
-  }, []);
-
   const releaseFocus = useCallback((uniqueId) => {
     setFocusStack((prevStack) => {
       const newStack = prevStack.filter((f) => f.uniqueId !== uniqueId);
-      if (newStack.length !== prevStack.length) {
-        setLastInput(null);
-      }
       return newStack;
     });
   }, []);
@@ -76,8 +80,6 @@ export const InputProvider = ({ children }) => {
     (claimantId) => {
       const uniqueId = focusIdCounter.current++;
       const newFocus = { claimantId, uniqueId };
-
-      setLastInput(null);
 
       setFocusStack((prevStack) => {
         const newStack = [...prevStack, newFocus];
@@ -112,21 +114,16 @@ export const InputProvider = ({ children }) => {
       event.stopImmediatePropagation();
       const actionName = KEY_MAP[event.key] || KEY_MAP[event.key.toLowerCase()];
       if (actionName) {
-        setLastInputSafe({
+        processInput({
           type: "key",
           name: actionName,
           timestamp: Date.now(),
         });
       }
     };
-    const handleKeyUp = (_event) => {
-      setLastInputSafe(null);
-    };
     document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("keyup", handleKeyUp);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("keyup", handleKeyUp);
     };
   }, []);
 
@@ -143,22 +140,20 @@ export const InputProvider = ({ children }) => {
         }
       }
 
-      let anyButtonPressed = false;
-      const setInput = (actionName) => {
-        const res = setLastInputSafe({
+      const createInput = (actionName) => {
+        return {
           type: "gamepad",
           name: actionName,
           timestamp: Date.now(),
-        });
-        anyButtonPressed |= res;
-        return res;
+        };
       };
 
       for (const [button, pressed] of Object.entries(buttons)) {
         const prevButtonPressed = prevButtonState.current[button];
         if (pressed && !prevButtonPressed) {
           const actionName = GAMEPAD_BUTTON_MAP[button];
-          if (actionName && setInput(actionName)) {
+          if (actionName) {
+            processInput(createInput(actionName));
             break;
           }
         }
@@ -168,12 +163,8 @@ export const InputProvider = ({ children }) => {
         GAMEPAD_SUPER_BUTTON_FALLBACK.every((i) => buttons[i]) &&
         !GAMEPAD_SUPER_BUTTON_FALLBACK.every((i) => prevButtonState.current[i]);
 
-      if (!anyButtonPressed && superFallbackPressed) {
-        setInput("Super");
-      }
-
-      if (!anyButtonPressed) {
-        setLastInput((prev) => (prev?.type === "gamepad" ? null : prev));
+      if (superFallbackPressed) {
+        processInput(createInput("Super"));
       }
 
       prevButtonState.current = buttons;
@@ -225,9 +216,8 @@ export const InputProvider = ({ children }) => {
   }, [updateGamepadCount]);
 
   const value = {
-    lastInput,
+    subscribe,
     claimInputFocus,
-    consumeInput,
     gamepadCount,
   };
 
