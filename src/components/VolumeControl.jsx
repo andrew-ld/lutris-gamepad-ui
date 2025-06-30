@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAudio } from "../contexts/AudioContext";
-import { useInput } from "../contexts/InputContext";
+import { useScopedInput } from "../hooks/useScopedInput";
 import "../styles/VolumeControl.css";
 import { playActionSound } from "../utils/sound";
 import LegendaContainer from "./LegendaContainer";
@@ -31,19 +31,11 @@ const VolumeControl = ({ onClose }) => {
     availableSinks,
     setDefaultSink,
   } = useAudio();
-  const { lastInput, claimInputFocus } = useInput();
 
   const [focusedControlType, setFocusedControlType] = useState(
     CONTROL_ORDER[0]
   );
   const [highlightedSinkIndex, setHighlightedSinkIndex] = useState(0);
-  const lastProcessedInput = useRef(null);
-  const inputTokenRef = useRef(null);
-
-  useEffect(() => {
-    inputTokenRef.current = claimInputFocus(VolumeControlFocusID);
-    return () => inputTokenRef.current.release();
-  }, [claimInputFocus]);
 
   useEffect(() => {
     if (availableSinks && availableSinks.length > 0) {
@@ -113,44 +105,39 @@ const VolumeControl = ({ onClose }) => {
     ]
   );
 
-  useEffect(() => {
-    if (
-      !inputTokenRef.current?.isAcquired() ||
-      !lastInput ||
-      lastInput.timestamp === lastProcessedInput.current
-    ) {
-      return;
-    }
-    lastProcessedInput.current = lastInput.timestamp;
-
-    if (isAudioLoading) {
-      if (lastInput.name === "B") {
-        playActionSound();
-        onClose();
+  const inputHandler = useCallback(
+    (input) => {
+      if (isAudioLoading) {
+        if (input.name === "B") {
+          playActionSound();
+          onClose();
+        }
+        return;
       }
 
-      return;
-    }
+      playActionSound();
 
-    playActionSound();
+      switch (input.name) {
+        case "UP":
+        case "DOWN":
+          handleNavigation(input.name);
+          break;
+        case "LEFT":
+        case "RIGHT":
+        case "A":
+          handleAction(input.name);
+          break;
+        case "B":
+          onClose();
+          break;
+        default:
+          break;
+      }
+    },
+    [isAudioLoading, handleNavigation, handleAction, onClose]
+  );
 
-    switch (lastInput.name) {
-      case "UP":
-      case "DOWN":
-        handleNavigation(lastInput.name);
-        break;
-      case "LEFT":
-      case "RIGHT":
-      case "A":
-        handleAction(lastInput.name);
-        break;
-      case "B":
-        onClose();
-        break;
-      default:
-        break;
-    }
-  }, [lastInput, isAudioLoading, handleNavigation, handleAction, onClose]);
+  useScopedInput(inputHandler, VolumeControlFocusID);
 
   const handleClose = useCallback(() => {
     onClose();

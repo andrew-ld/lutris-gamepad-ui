@@ -58,6 +58,10 @@ export const InputProvider = ({ children }) => {
     return false;
   };
 
+  const consumeInput = useCallback(() => {
+    setLastInput((prev) => (prev ? { ...prev, isConsumed: true } : null));
+  }, []);
+
   const releaseFocus = useCallback((uniqueId) => {
     setFocusStack((prevStack) => {
       const newStack = prevStack.filter((f) => f.uniqueId !== uniqueId);
@@ -223,6 +227,7 @@ export const InputProvider = ({ children }) => {
   const value = {
     lastInput,
     claimInputFocus,
+    consumeInput,
     gamepadCount,
   };
 

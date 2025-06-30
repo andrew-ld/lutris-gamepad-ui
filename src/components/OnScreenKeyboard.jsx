@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useInput } from "../contexts/InputContext";
+import { useState, useCallback } from "react";
+import { useScopedInput } from "../hooks/useScopedInput";
 import "../styles/OnScreenKeyboard.css";
 import { playActionSound } from "../utils/sound";
 import LegendaContainer from "./LegendaContainer";
@@ -15,16 +15,8 @@ const KEY_LAYOUT = [
 ];
 
 const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
-  const { lastInput, claimInputFocus } = useInput();
   const [inputValue, setInputValue] = useState(initialValue || "");
   const [focusCoords, setFocusCoords] = useState({ x: 0, y: 0 });
-  const lastProcessedInput = useRef(null);
-  const inputTokenRef = useRef(null);
-
-  useEffect(() => {
-    inputTokenRef.current = claimInputFocus(OnScreenKeyboardFocusID);
-    return () => inputTokenRef.current.release();
-  }, [claimInputFocus]);
 
   const handleKeyPress = useCallback(
     (key) => {
@@ -51,58 +43,54 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
     [onConfirm, onClose, inputValue]
   );
 
-  useEffect(() => {
-    if (
-      !inputTokenRef.current?.isAcquired() ||
-      !lastInput ||
-      lastInput.timestamp === lastProcessedInput.current
-    ) {
-      return;
-    }
-    lastProcessedInput.current = lastInput.timestamp;
+  const inputHandler = useCallback(
+    (input) => {
+      switch (input.name) {
+        case "UP":
+        case "DOWN":
+        case "LEFT":
+        case "RIGHT":
+          setFocusCoords((prev) => {
+            const originalCoords = { ...prev };
+            let { x, y } = prev;
+            const currentLayout = KEY_LAYOUT;
 
-    switch (lastInput.name) {
-      case "UP":
-      case "DOWN":
-      case "LEFT":
-      case "RIGHT":
-        setFocusCoords((prev) => {
-          const originalCoords = { ...prev };
-          let { x, y } = prev;
-          const currentLayout = KEY_LAYOUT;
+            if (input.name === "UP") y = Math.max(0, y - 1);
+            if (input.name === "DOWN")
+              y = Math.min(currentLayout.length - 1, y + 1);
 
-          if (lastInput.name === "UP") y = Math.max(0, y - 1);
-          if (lastInput.name === "DOWN")
-            y = Math.min(currentLayout.length - 1, y + 1);
+            const targetRowLength = currentLayout[y].length;
+            x = Math.min(x, targetRowLength - 1);
 
-          const targetRowLength = currentLayout[y].length;
-          x = Math.min(x, targetRowLength - 1);
+            if (input.name === "LEFT") x = Math.max(0, x - 1);
+            if (input.name === "RIGHT")
+              x = Math.min(targetRowLength - 1, x + 1);
 
-          if (lastInput.name === "LEFT") x = Math.max(0, x - 1);
-          if (lastInput.name === "RIGHT")
-            x = Math.min(targetRowLength - 1, x + 1);
+            if (originalCoords.x !== x || originalCoords.y !== y) {
+              playActionSound();
+            }
 
-          if (originalCoords.x !== x || originalCoords.y !== y) {
-            playActionSound();
-          }
+            return { x, y };
+          });
+          break;
+        case "A":
+          playActionSound();
+          handleKeyPress(KEY_LAYOUT[focusCoords.y][focusCoords.x]);
+          break;
+        case "X":
+          playActionSound();
+          onConfirm(inputValue);
+          break;
+        case "B":
+          playActionSound();
+          onClose();
+          break;
+      }
+    },
+    [focusCoords, handleKeyPress, onClose, inputValue, onConfirm]
+  );
 
-          return { x, y };
-        });
-        break;
-      case "A":
-        playActionSound();
-        handleKeyPress(KEY_LAYOUT[focusCoords.y][focusCoords.x]);
-        break;
-      case "X":
-        playActionSound();
-        onConfirm(inputValue);
-        break;
-      case "B":
-        playActionSound();
-        onClose();
-        break;
-    }
-  }, [focusCoords, handleKeyPress, onClose, inputValue, onConfirm, lastInput]);
+  useScopedInput(inputHandler, OnScreenKeyboardFocusID);
 
   const onSelectCallback = useCallback(() => {
     handleKeyPress(KEY_LAYOUT[focusCoords.y][focusCoords.x]);

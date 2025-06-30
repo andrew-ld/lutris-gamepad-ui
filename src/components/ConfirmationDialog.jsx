@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useInput } from "../contexts/InputContext";
+import { useState, useCallback } from "react";
+import { useScopedInput } from "../hooks/useScopedInput";
 import "../styles/ConfirmationDialog.css";
 import { playActionSound } from "../utils/sound";
 import LegendaContainer from "./LegendaContainer";
@@ -7,15 +7,7 @@ import LegendaContainer from "./LegendaContainer";
 export const ConfirmationDialogFocusId = "ConfirmationDialog";
 
 const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
-  const { lastInput, claimInputFocus } = useInput();
-  const lastProcessedInput = useRef();
   const [confirmSelection, setConfirmSelection] = useState(0);
-  const inputTokenRef = useRef(null);
-
-  useEffect(() => {
-    inputTokenRef.current = claimInputFocus(ConfirmationDialogFocusId);
-    return () => inputTokenRef.current.release();
-  }, [claimInputFocus]);
 
   const handleConfirm = useCallback(() => {
     onConfirm();
@@ -33,32 +25,27 @@ const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
     }
   }, [handleConfirm, handleDeny, confirmSelection]);
 
-  useEffect(() => {
-    if (
-      !inputTokenRef.current?.isAcquired() ||
-      !lastInput ||
-      lastInput.timestamp === lastProcessedInput.current
-    ) {
-      return;
-    }
+  const inputHandler = useCallback(
+    (input) => {
+      playActionSound();
 
-    lastProcessedInput.current = lastInput.timestamp;
+      switch (input.name) {
+        case "UP":
+        case "DOWN":
+          setConfirmSelection((prev) => (prev === 0 ? 1 : 0));
+          break;
+        case "A":
+          handleSubmit();
+          break;
+        case "B":
+          handleDeny();
+          break;
+      }
+    },
+    [handleDeny, handleSubmit]
+  );
 
-    playActionSound();
-
-    switch (lastInput.name) {
-      case "UP":
-      case "DOWN":
-        setConfirmSelection((prev) => (prev === 0 ? 1 : 0));
-        break;
-      case "A":
-        handleSubmit();
-        break;
-      case "B":
-        handleDeny();
-        break;
-    }
-  }, [lastInput, handleDeny, handleSubmit]);
+  useScopedInput(inputHandler, ConfirmationDialogFocusId);
 
   const legendItems = [
     { button: "A", label: "Select", onClick: handleSubmit },

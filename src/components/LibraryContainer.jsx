@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useLutris } from "../contexts/LutrisContext";
-import { useInput } from "../contexts/InputContext";
 import { useModal } from "../contexts/ModalContext";
 import GameLibrary from "./GameLibrary";
 import LoadingIndicator from "./LoadingIndicator";
@@ -10,6 +9,8 @@ import OnScreenKeyboard from "./OnScreenKeyboard";
 import { playActionSound } from "../utils/sound";
 import { togleWindowShow } from "../utils/ipc";
 import ConfirmationDialog from "./ConfirmationDialog";
+import { useScopedInput } from "../hooks/useScopedInput";
+import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
 
 export const LibraryContainerFocusID = "LibraryContainer";
 
@@ -19,17 +20,9 @@ const LibraryContainer = () => {
 
   const [focusCoords, setFocusCoords] = useState({ shelf: 0, card: 0 });
   const [searchQuery, setSearchQuery] = useState("");
-  const { lastInput, claimInputFocus } = useInput();
-  const { showModal, modalContent } = useModal();
+  const { showModal, isModalOpen } = useModal();
   const cardRefs = useRef([[]]);
   const gameCloseCloseModalRef = useRef(null);
-  const inputTokenRef = useRef(null);
-
-  useEffect(() => {
-    if (!inputTokenRef.current) {
-      inputTokenRef.current = claimInputFocus(LibraryContainerFocusID);
-    }
-  }, [claimInputFocus]);
 
   const setCardRef = useCallback((el, shelfIndex, cardIndex) => {
     if (!cardRefs.current[shelfIndex]) {
@@ -92,7 +85,7 @@ const LibraryContainer = () => {
   );
 
   useEffect(() => {
-    if (loading || runningGame || !inputTokenRef.current?.isAcquired()) return;
+    if (loading || runningGame) return;
     const { shelf, card, preventScroll } = focusCoords;
     const targetNode = cardRefs.current[shelf]?.[card];
     if (targetNode) {
@@ -109,58 +102,13 @@ const LibraryContainer = () => {
     }
   }, [focusCoords, loading, runningGame]);
 
-  useEffect(() => {
-    if (!lastInput || loading || !inputTokenRef.current?.isAcquired()) return;
-
-    const { name: direction } = lastInput;
-    if (!["UP", "DOWN", "LEFT", "RIGHT"].includes(direction)) return;
-
-    setFocusCoords((current) => {
-      let { shelf, card } = current;
-      if (shelves.length === 0 || shelves[shelf]?.games.length === 0)
-        return current;
-
-      const originalCoords = { shelf, card };
-
-      switch (direction) {
-        case "UP":
-          shelf = Math.max(0, shelf - 1);
-          break;
-        case "DOWN":
-          shelf = Math.min(shelves.length - 1, shelf + 1);
-          break;
-        case "LEFT":
-          card = Math.max(0, card - 1);
-          break;
-        case "RIGHT":
-          card = Math.min(shelves[shelf].games.length - 1, card + 1);
-          break;
-        default:
-          return current;
-      }
-      card = Math.min(card, shelves[shelf]?.games.length - 1 || 0);
-
-      if (originalCoords.shelf !== shelf || originalCoords.card !== card) {
-        playActionSound();
-      }
-
-      return { shelf, card };
-    });
-  }, [lastInput, loading, shelves]);
-
-  const focusedGame =
-    !runningGame && shelves.length > 0 && shelves[0]?.games.length > 0
-      ? shelves[focusCoords.shelf]?.games[focusCoords.card]
-      : null;
-
-  useEffect(() => {
-    if (!runningGame || lastInput?.name !== "Super") {
-      return;
-    }
-
-    playActionSound();
-    togleWindowShow();
-  }, [runningGame, lastInput]);
+  const focusedGame = useMemo(
+    () =>
+      !runningGame && shelves.length > 0 && shelves[0]?.games.length > 0
+        ? shelves[focusCoords.shelf]?.games[focusCoords.card]
+        : null,
+    [runningGame, shelves, focusCoords]
+  );
 
   const showSearchModalCb = useCallback(() => {
     showModal((hideThisModal) => (
@@ -191,10 +139,8 @@ const LibraryContainer = () => {
     if (!runningGame) {
       return;
     }
-
     showModal((hideThisModal) => {
       gameCloseCloseModalRef.current = hideThisModal;
-
       return (
         <ConfirmationDialog
           message={`Are you sure you want to close\n${runningGame.title}?`}
@@ -202,51 +148,105 @@ const LibraryContainer = () => {
             closeRunningGame();
             hideThisModal();
           }}
-          onDeny={() => {
-            hideThisModal();
-          }}
+          onDeny={hideThisModal}
         />
       );
     });
   }, [closeRunningGame, showModal, runningGame]);
 
-  useEffect(() => {
-    if (!lastInput || loading || !inputTokenRef.current?.isAcquired()) return;
-    const { name: action } = lastInput;
+  const libraryInputHandler = useCallback(
+    (input) => {
+      switch (input.name) {
+        case "UP":
+        case "DOWN":
+        case "LEFT":
+        case "RIGHT":
+          setFocusCoords((current) => {
+            let { shelf, card } = current;
+            if (shelves.length === 0 || shelves[shelf]?.games.length === 0)
+              return current;
 
-    switch (action) {
-      case "B":
-        playActionSound();
-        if (runningGame) {
-          closeRunningGameDialogCb();
-        } else if (searchQuery) {
-          clearSearchCb();
-        }
-        break;
-      case "A":
-        if (!runningGame && focusedGame) {
-          playActionSound();
-          handleLaunchGame(focusedGame);
-        }
-        break;
-      case "X":
-        if (!runningGame && !modalContent) {
+            const originalCoords = { shelf, card };
+
+            switch (input.name) {
+              case "UP":
+                shelf = Math.max(0, shelf - 1);
+                break;
+              case "DOWN":
+                shelf = Math.min(shelves.length - 1, shelf + 1);
+                break;
+              case "LEFT":
+                card = Math.max(0, card - 1);
+                break;
+              case "RIGHT":
+                card = Math.min(shelves[shelf].games.length - 1, card + 1);
+                break;
+              default:
+                return current;
+            }
+            card = Math.min(card, shelves[shelf]?.games.length - 1 || 0);
+
+            if (
+              originalCoords.shelf !== shelf ||
+              originalCoords.card !== card
+            ) {
+              playActionSound();
+            }
+
+            return { shelf, card };
+          });
+          break;
+        case "A":
+          if (focusedGame) {
+            playActionSound();
+            handleLaunchGame(focusedGame);
+          }
+          break;
+        case "B":
+          if (searchQuery) {
+            playActionSound();
+            clearSearchCb();
+          }
+          break;
+        case "X":
           playActionSound();
           showSearchModalCb();
-        }
-        break;
-    }
-  }, [
-    lastInput,
-    loading,
-    runningGame,
-    focusedGame,
-    handleLaunchGame,
-    searchQuery,
-    showSearchModalCb,
-    clearSearchCb,
-    modalContent,
-    closeRunningGameDialogCb,
+          break;
+      }
+    },
+    [
+      shelves,
+      focusedGame,
+      searchQuery,
+      handleLaunchGame,
+      clearSearchCb,
+      showSearchModalCb,
+    ]
+  );
+
+  useScopedInput(
+    libraryInputHandler,
+    LibraryContainerFocusID,
+    !runningGame && !isModalOpen
+  );
+
+  useGlobalShortcut([
+    {
+      key: "Super",
+      action: () => {
+        playActionSound();
+        togleWindowShow();
+      },
+      active: !!runningGame,
+    },
+    {
+      key: "B",
+      action: () => {
+        playActionSound();
+        closeRunningGameDialogCb();
+      },
+      active: !!runningGame && !isModalOpen,
+    },
   ]);
 
   const openSystemMenu = useCallback(() => {
@@ -262,24 +262,16 @@ const LibraryContainer = () => {
   };
 
   if (runningGame) {
-    controlsOverlayProps.onCloseRunningGame = () => {
-      closeRunningGameDialogCb();
-    };
+    controlsOverlayProps.onCloseRunningGame = closeRunningGameDialogCb;
     controlsOverlayProps.runningGameTitle = runningGame.title;
-  } else if (!modalContent) {
+  } else if (!isModalOpen) {
     if (focusedGame) {
-      controlsOverlayProps.onLaunchGame = () => {
-        handleLaunchGame(focusedGame);
-      };
+      controlsOverlayProps.onLaunchGame = () => handleLaunchGame(focusedGame);
     }
     if (searchQuery) {
-      controlsOverlayProps.onClearSearch = () => {
-        clearSearchCb();
-      };
+      controlsOverlayProps.onClearSearch = clearSearchCb;
     }
-    controlsOverlayProps.onShowSearchModal = () => {
-      showSearchModalCb();
-    };
+    controlsOverlayProps.onShowSearchModal = showSearchModalCb;
   }
 
   if (runningGame) {

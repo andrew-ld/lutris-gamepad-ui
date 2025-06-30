@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useInput } from "../contexts/InputContext";
 import { useModal } from "../contexts/ModalContext";
 import ConfirmationDialog from "./ConfirmationDialog";
 import VolumeControl from "./VolumeControl";
@@ -8,6 +7,8 @@ import { useLutris } from "../contexts/LutrisContext";
 import "../styles/SystemMenu.css";
 import { playActionSound } from "../utils/sound";
 import LegendaContainer from "./LegendaContainer";
+import { useScopedInput } from "../hooks/useScopedInput";
+import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
 
 const PowerIcon = () => (
   <svg
@@ -33,11 +34,8 @@ const SystemMenu = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { showModal, isModalOpen } = useModal();
 
-  const { lastInput, claimInputFocus } = useInput();
   const menuRef = useRef(null);
   const menuPowerButtonRef = useRef(null);
-  const lastProcessedInput = useRef(null);
-  const inputTokenRef = useRef(null);
 
   const { fetchGames } = useLutris();
 
@@ -136,74 +134,57 @@ const SystemMenu = () => {
     });
   }, []);
 
-  useEffect(() => {
-    if (isOpen) {
-      inputTokenRef.current = claimInputFocus(SystemMenuFocusId);
-      return () => {
-        inputTokenRef.current?.release();
-        inputTokenRef.current = null;
-      };
-    }
-  }, [isOpen, claimInputFocus]);
+  const handleSelect = useCallback(() => {
+    handleAction(menuItems[selectedIndex]);
+  }, [handleAction, menuItems, selectedIndex]);
+
+  const menuInputHandler = useCallback(
+    (input) => {
+      switch (input.name) {
+        case "UP":
+          setSelectedIndex((prev) => {
+            const next = Math.max(0, prev - 1);
+            if (next !== prev) playActionSound();
+            return next;
+          });
+          break;
+        case "DOWN":
+          setSelectedIndex((prev) => {
+            const next = Math.min(menuItems.length - 1, prev + 1);
+            if (next !== prev) playActionSound();
+            return next;
+          });
+          break;
+        case "A":
+          playActionSound();
+          handleSelect();
+          break;
+        case "B":
+          playActionSound();
+          setIsOpen(false);
+          break;
+      }
+    },
+    [handleSelect, menuItems]
+  );
+
+  useScopedInput(menuInputHandler, SystemMenuFocusId, isOpen);
+
+  useGlobalShortcut([
+    {
+      key: "Y",
+      action: () => {
+        playActionSound();
+        toggleMenu();
+      },
+      active: !isModalOpen,
+    },
+  ]);
 
   useEffect(() => {
     window.addEventListener("toggle-system-menu", toggleMenu);
     return () => window.removeEventListener("toggle-system-menu", toggleMenu);
   }, [toggleMenu]);
-
-  const handleSelect = useCallback(() => {
-    handleAction(menuItems[selectedIndex]);
-  }, [handleAction, menuItems, selectedIndex]);
-
-  useEffect(() => {
-    if (!lastInput || lastInput.timestamp === lastProcessedInput.current) {
-      return;
-    }
-
-    if (lastInput.name === "Y" && !isModalOpen) {
-      playActionSound();
-      lastProcessedInput.current = lastInput.timestamp;
-      toggleMenu();
-      return;
-    }
-
-    if (!isOpen || !inputTokenRef.current?.isAcquired()) return;
-
-    lastProcessedInput.current = lastInput.timestamp;
-
-    switch (lastInput.name) {
-      case "UP":
-        setSelectedIndex((prev) => {
-          const next = Math.max(0, prev - 1);
-          if (next !== prev) playActionSound();
-          return next;
-        });
-        break;
-      case "DOWN":
-        setSelectedIndex((prev) => {
-          const next = Math.min(menuItems.length - 1, prev + 1);
-          if (next !== prev) playActionSound();
-          return next;
-        });
-        break;
-      case "A":
-        playActionSound();
-        handleSelect();
-        break;
-      case "B":
-        playActionSound();
-        setIsOpen(false);
-        break;
-    }
-  }, [
-    lastInput,
-    isOpen,
-    selectedIndex,
-    toggleMenu,
-    handleAction,
-    isModalOpen,
-    handleSelect,
-  ]);
 
   useEffect(() => {
     if (!isOpen) return;
