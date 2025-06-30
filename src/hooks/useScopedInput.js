@@ -5,7 +5,6 @@ export const useScopedInput = (handler, focusId, isActive = true) => {
   const { subscribe, claimInputFocus } = useInput();
   const inputTokenRef = useRef(null);
   const latestHandler = useRef(handler);
-  latestHandler.current = handler;
 
   useEffect(() => {
     if (isActive) {
