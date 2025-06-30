@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, act } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useInput } from "../contexts/InputContext";
 import { useModal } from "../contexts/ModalContext";
 import ConfirmationDialog from "./ConfirmationDialog";
@@ -33,11 +33,11 @@ const SystemMenu = () => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const { showModal, isModalOpen } = useModal();
 
-  const { lastInput, claimInputFocus, releaseInputFocus, isFocused } =
-    useInput();
+  const { lastInput, claimInputFocus } = useInput();
   const menuRef = useRef(null);
   const menuPowerButtonRef = useRef(null);
   const lastProcessedInput = useRef(null);
+  const inputTokenRef = useRef(null);
 
   const { fetchGames } = useLutris();
 
@@ -63,7 +63,11 @@ const SystemMenu = () => {
       action: () => api.powerOffPC(),
       doubleConfirm: true,
     },
-    { label: "Exit Application", action: () => window.close(), confirm: true },
+    {
+      label: "Exit Application",
+      action: () => window.close(),
+      doubleConfirm: true,
+    },
   ];
 
   const openConfirmation = useCallback(
@@ -134,11 +138,13 @@ const SystemMenu = () => {
 
   useEffect(() => {
     if (isOpen) {
-      claimInputFocus(SystemMenuFocusId);
-    } else {
-      releaseInputFocus(SystemMenuFocusId);
+      inputTokenRef.current = claimInputFocus(SystemMenuFocusId);
+      return () => {
+        inputTokenRef.current?.release();
+        inputTokenRef.current = null;
+      };
     }
-  }, [isOpen, claimInputFocus, releaseInputFocus]);
+  }, [isOpen, claimInputFocus]);
 
   useEffect(() => {
     window.addEventListener("toggle-system-menu", toggleMenu);
@@ -161,7 +167,7 @@ const SystemMenu = () => {
       return;
     }
 
-    if (!isOpen || !isFocused(SystemMenuFocusId)) return;
+    if (!isOpen || !inputTokenRef.current?.isAcquired()) return;
 
     lastProcessedInput.current = lastInput.timestamp;
 
@@ -194,7 +200,6 @@ const SystemMenu = () => {
     isOpen,
     selectedIndex,
     toggleMenu,
-    isFocused,
     handleAction,
     isModalOpen,
     handleSelect,

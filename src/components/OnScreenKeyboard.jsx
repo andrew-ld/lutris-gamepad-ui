@@ -15,16 +15,16 @@ const KEY_LAYOUT = [
 ];
 
 const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
-  const { lastInput, claimInputFocus, releaseInputFocus, isFocused } =
-    useInput();
+  const { lastInput, claimInputFocus } = useInput();
   const [inputValue, setInputValue] = useState(initialValue || "");
   const [focusCoords, setFocusCoords] = useState({ x: 0, y: 0 });
   const lastProcessedInput = useRef(null);
+  const inputTokenRef = useRef(null);
 
   useEffect(() => {
-    claimInputFocus(OnScreenKeyboardFocusID);
-    return () => releaseInputFocus(OnScreenKeyboardFocusID);
-  }, [claimInputFocus, releaseInputFocus]);
+    inputTokenRef.current = claimInputFocus(OnScreenKeyboardFocusID);
+    return () => inputTokenRef.current.release();
+  }, [claimInputFocus]);
 
   const handleKeyPress = useCallback(
     (key) => {
@@ -53,7 +53,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
 
   useEffect(() => {
     if (
-      !isFocused(OnScreenKeyboardFocusID) ||
+      !inputTokenRef.current?.isAcquired() ||
       !lastInput ||
       lastInput.timestamp === lastProcessedInput.current
     ) {
@@ -102,15 +102,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
         onClose();
         break;
     }
-  }, [
-    lastInput,
-    isFocused,
-    focusCoords,
-    handleKeyPress,
-    onClose,
-    inputValue,
-    onConfirm,
-  ]);
+  }, [focusCoords, handleKeyPress, onClose, inputValue, onConfirm, lastInput]);
 
   const onSelectCallback = useCallback(() => {
     handleKeyPress(KEY_LAYOUT[focusCoords.y][focusCoords.x]);

@@ -19,10 +19,17 @@ const LibraryContainer = () => {
 
   const [focusCoords, setFocusCoords] = useState({ shelf: 0, card: 0 });
   const [searchQuery, setSearchQuery] = useState("");
-  const { lastInput, isFocused } = useInput();
+  const { lastInput, claimInputFocus } = useInput();
   const { showModal, modalContent } = useModal();
   const cardRefs = useRef([[]]);
   const gameCloseCloseModalRef = useRef(null);
+  const inputTokenRef = useRef(null);
+
+  useEffect(() => {
+    if (!inputTokenRef.current) {
+      inputTokenRef.current = claimInputFocus(LibraryContainerFocusID);
+    }
+  }, [claimInputFocus]);
 
   const setCardRef = useCallback((el, shelfIndex, cardIndex) => {
     if (!cardRefs.current[shelfIndex]) {
@@ -85,7 +92,7 @@ const LibraryContainer = () => {
   );
 
   useEffect(() => {
-    if (loading || runningGame || !isFocused(LibraryContainerFocusID)) return;
+    if (loading || runningGame || !inputTokenRef.current?.isAcquired()) return;
     const { shelf, card, preventScroll } = focusCoords;
     const targetNode = cardRefs.current[shelf]?.[card];
     if (targetNode) {
@@ -100,10 +107,10 @@ const LibraryContainer = () => {
         });
       }
     }
-  }, [focusCoords, loading, runningGame, isFocused]);
+  }, [focusCoords, loading, runningGame]);
 
   useEffect(() => {
-    if (!lastInput || loading || !isFocused(LibraryContainerFocusID)) return;
+    if (!lastInput || loading || !inputTokenRef.current?.isAcquired()) return;
 
     const { name: direction } = lastInput;
     if (!["UP", "DOWN", "LEFT", "RIGHT"].includes(direction)) return;
@@ -139,7 +146,7 @@ const LibraryContainer = () => {
 
       return { shelf, card };
     });
-  }, [lastInput, loading, isFocused, shelves]);
+  }, [lastInput, loading, shelves]);
 
   const focusedGame =
     !runningGame && shelves.length > 0 && shelves[0]?.games.length > 0
@@ -204,7 +211,7 @@ const LibraryContainer = () => {
   }, [closeRunningGame, showModal, runningGame]);
 
   useEffect(() => {
-    if (!lastInput || loading || !isFocused(LibraryContainerFocusID)) return;
+    if (!lastInput || loading || !inputTokenRef.current?.isAcquired()) return;
     const { name: action } = lastInput;
 
     switch (action) {
@@ -232,7 +239,6 @@ const LibraryContainer = () => {
   }, [
     lastInput,
     loading,
-    isFocused,
     runningGame,
     focusedGame,
     handleLaunchGame,

@@ -1,9 +1,8 @@
 import { InputProvider } from "./contexts/InputContext";
 import { LutrisProvider } from "./contexts/LutrisContext";
 import { ModalProvider } from "./contexts/ModalContext";
-import { AudioProvider } from "./contexts/AudioContext"; // Import AudioProvider
+import { AudioProvider } from "./contexts/AudioContext";
 import LibraryContainer from "./components/LibraryContainer";
-import { LibraryContainerFocusID } from "./components/LibraryContainer";
 import SystemMenu from "./components/SystemMenu";
 import ModalRenderer from "./components/ModalRenderer";
 import TopBar from "./components/TopBar";
@@ -20,7 +19,7 @@ const AppContent = () => {
 
 function App() {
   return (
-    <InputProvider defaultFocusId={LibraryContainerFocusID}>
+    <InputProvider>
       <LutrisProvider>
         <ModalProvider>
           <AudioProvider>

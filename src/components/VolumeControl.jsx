@@ -31,19 +31,19 @@ const VolumeControl = ({ onClose }) => {
     availableSinks,
     setDefaultSink,
   } = useAudio();
-  const { lastInput, claimInputFocus, releaseInputFocus, isFocused } =
-    useInput();
+  const { lastInput, claimInputFocus } = useInput();
 
   const [focusedControlType, setFocusedControlType] = useState(
     CONTROL_ORDER[0]
   );
   const [highlightedSinkIndex, setHighlightedSinkIndex] = useState(0);
   const lastProcessedInput = useRef(null);
+  const inputTokenRef = useRef(null);
 
   useEffect(() => {
-    claimInputFocus(VolumeControlFocusID);
-    return () => releaseInputFocus(VolumeControlFocusID);
-  }, [claimInputFocus, releaseInputFocus]);
+    inputTokenRef.current = claimInputFocus(VolumeControlFocusID);
+    return () => inputTokenRef.current.release();
+  }, [claimInputFocus]);
 
   useEffect(() => {
     if (availableSinks && availableSinks.length > 0) {
@@ -115,7 +115,7 @@ const VolumeControl = ({ onClose }) => {
 
   useEffect(() => {
     if (
-      !isFocused(VolumeControlFocusID) ||
+      !inputTokenRef.current?.isAcquired() ||
       !lastInput ||
       lastInput.timestamp === lastProcessedInput.current
     ) {
@@ -150,14 +150,7 @@ const VolumeControl = ({ onClose }) => {
       default:
         break;
     }
-  }, [
-    lastInput,
-    isFocused,
-    isAudioLoading,
-    handleNavigation,
-    handleAction,
-    onClose,
-  ]);
+  }, [lastInput, isAudioLoading, handleNavigation, handleAction, onClose]);
 
   const handleClose = useCallback(() => {
     onClose();

@@ -7,15 +7,15 @@ import LegendaContainer from "./LegendaContainer";
 export const ConfirmationDialogFocusId = "ConfirmationDialog";
 
 const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
-  const { lastInput, claimInputFocus, releaseInputFocus, isFocused } =
-    useInput();
+  const { lastInput, claimInputFocus } = useInput();
   const lastProcessedInput = useRef();
   const [confirmSelection, setConfirmSelection] = useState(0);
+  const inputTokenRef = useRef(null);
 
   useEffect(() => {
-    claimInputFocus(ConfirmationDialogFocusId);
-    return () => releaseInputFocus(ConfirmationDialogFocusId);
-  }, [claimInputFocus, releaseInputFocus]);
+    inputTokenRef.current = claimInputFocus(ConfirmationDialogFocusId);
+    return () => inputTokenRef.current.release();
+  }, [claimInputFocus]);
 
   const handleConfirm = useCallback(() => {
     onConfirm();
@@ -35,12 +35,13 @@ const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
 
   useEffect(() => {
     if (
-      !isFocused(ConfirmationDialogFocusId) ||
+      !inputTokenRef.current?.isAcquired() ||
       !lastInput ||
       lastInput.timestamp === lastProcessedInput.current
     ) {
       return;
     }
+
     lastProcessedInput.current = lastInput.timestamp;
 
     playActionSound();
@@ -57,7 +58,7 @@ const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
         handleDeny();
         break;
     }
-  }, [lastInput, isFocused, handleDeny, handleSubmit]);
+  }, [lastInput, handleDeny, handleSubmit]);
 
   const legendItems = [
     { button: "A", label: "Select", onClick: handleSubmit },

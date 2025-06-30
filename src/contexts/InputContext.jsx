@@ -35,10 +35,20 @@ const GAMEPAD_BUTTON_MAP = {
 const InputContext = createContext(null);
 export const useInput = () => useContext(InputContext);
 
-export const InputProvider = ({ children, defaultFocusId }) => {
+export const InputProvider = ({ children }) => {
   const [lastInput, setLastInput] = useState(null);
-  const [focusStack, setFocusStack] = useState([defaultFocusId]);
+  const [focusStack, setFocusStack] = useState([]);
   const [gamepadCount, setGamepadCount] = useState(0);
+
+  const focusIdCounter = useRef(0);
+  const focusStackRef = useRef(focusStack);
+
+  const prevButtonState = useRef({});
+  const animationFrameId = useRef(null);
+
+  useEffect(() => {
+    focusStackRef.current = focusStack;
+  }, [focusStack]);
 
   const setLastInputSafe = (input) => {
     if (document.hasFocus() || !input || input?.name === "Super") {
@@ -48,57 +58,48 @@ export const InputProvider = ({ children, defaultFocusId }) => {
     return false;
   };
 
-  const prevButtonState = useRef({});
-  const animationFrameId = useRef(null);
+  const releaseFocus = useCallback((uniqueId) => {
+    setFocusStack((prevStack) => {
+      const newStack = prevStack.filter((f) => f.uniqueId !== uniqueId);
+      if (newStack.length !== prevStack.length) {
+        setLastInput(null);
+      }
+      return newStack;
+    });
+  }, []);
 
   const claimInputFocus = useCallback(
     (claimantId) => {
-      setFocusStack((prevStack) => {
-        if (
-          prevStack.length > 0 &&
-          prevStack[prevStack.length - 1] === claimantId
-        ) {
-          return prevStack;
-        }
-        const newStack = [
-          ...prevStack.filter((id) => id !== claimantId),
-          claimantId,
-        ];
-        if (newStack.length !== prevStack.length) {
-          setLastInput(null);
-        }
-        console.log(
-          `Focus claimed by: ${claimantId}. Stack: [${newStack.join(", ")}]`
-        );
-        return newStack;
-      });
-    },
-    [setFocusStack, setLastInput]
-  );
+      const uniqueId = focusIdCounter.current++;
+      const newFocus = { claimantId, uniqueId };
 
-  const releaseInputFocus = useCallback(
-    (claimantId) => {
+      setLastInput(null);
+
       setFocusStack((prevStack) => {
-        if (prevStack.length === 1 && prevStack[0] === defaultFocusId) {
-          return prevStack;
-        }
-        const newStack = prevStack.filter((id) => id !== claimantId);
-        if (newStack.length !== prevStack.length) {
-          setLastInput(null);
-          console.log(
-            `Focus released by: ${claimantId}. Stack: [${newStack.join(", ")}]`
-          );
-        }
+        const newStack = [...prevStack, newFocus];
         return newStack;
       });
+
+      const token = {
+        isAcquired: () => {
+          const stack = focusStackRef.current;
+          if (stack.length === 0) return false;
+          return stack[stack.length - 1].uniqueId === uniqueId;
+        },
+        release: () => {
+          releaseFocus(uniqueId, claimantId);
+        },
+      };
+
+      return token;
     },
-    [setLastInput, setFocusStack, defaultFocusId]
+    [releaseFocus]
   );
 
   const updateGamepadCount = useCallback(() => {
     const count = navigator.getGamepads().filter((g) => g).length;
     setGamepadCount(count);
-  }, [setGamepadCount]);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -219,22 +220,9 @@ export const InputProvider = ({ children, defaultFocusId }) => {
     };
   }, [updateGamepadCount]);
 
-  const currentFocus =
-    focusStack.length > 0 ? focusStack[focusStack.length - 1] : null;
-
-  const isFocused = useCallback(
-    (claimantId) => {
-      return currentFocus === claimantId;
-    },
-    [currentFocus]
-  );
-
   const value = {
     lastInput,
-    currentFocus,
-    isFocused,
     claimInputFocus,
-    releaseInputFocus,
     gamepadCount,
   };
 
