@@ -342,7 +342,13 @@ function findLutrisWrapper() {
     return cwdLutrisWrapper;
   }
 
-  return path.join(process.resourcesPath, FILENAME);
+  const resourcesLutrisWrapper = path.join(process.resourcesPath, FILENAME);
+
+  if (existsSync(resourcesLutrisWrapper)) {
+    return resourcesLutrisWrapper;
+  }
+
+  return path.join(process.resourcesPath, "app.asar.unpacked", FILENAME);
 }
 
 ipcMain.handle("get-games", async () => {
