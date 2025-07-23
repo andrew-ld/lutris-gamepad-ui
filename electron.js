@@ -17,14 +17,11 @@ const { readFile } = require("fs/promises");
 const PAClient = require("paclient");
 const path = require("node:path");
 const url = require("url");
+const { cwd } = require("node:process");
 
 const isDev = process.env.IS_DEV === "1";
 const forceWindowed = process.env.FORCE_WINDOWED === "1";
-
 const whitelistedAppProtocolFiles = new Set();
-
-const lutrisEnv = { ...process.env };
-lutrisEnv["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=/dev/null";
 
 /** @type {BrowserWindow | null} */
 let mainWindow = null;
@@ -336,12 +333,24 @@ function createWindow() {
   mainWindow.loadURL(homePageUrl);
 }
 
+function findLutrisWrapper() {
+  const FILENAME = "lutris_wrapper.sh";
+
+  const cwdLutrisWrapper = path.join(cwd(), FILENAME);
+
+  if (existsSync(cwdLutrisWrapper)) {
+    return cwdLutrisWrapper;
+  }
+
+  return path.join(process.resourcesPath, FILENAME);
+}
+
 ipcMain.handle("get-games", async () => {
   const execPromise = promisify(exec);
 
-  const { stdout: rawGames } = await execPromise("lutris -l -j", {
-    env: lutrisEnv,
-  });
+  const { stdout: rawGames } = await execPromise(
+    `bash ${findLutrisWrapper()} -l -j`
+  );
 
   const games = JSON.parse(rawGames);
 
@@ -373,13 +382,12 @@ ipcMain.on("launch-game", (_event, gameId) => {
     throw new Error("A game is already running.");
   }
 
-  const command = "lutris";
-  const args = [`lutris:rungameid/${gameId}`];
+  const command = "bash";
+  const args = [findLutrisWrapper(), `lutris:rungameid/${gameId}`];
 
   runningGameProcess = spawn(command, args, {
     detached: true,
     stdio: "ignore",
-    env: lutrisEnv,
   });
 
   if (mainWindow) {
@@ -430,7 +438,7 @@ ipcMain.on("poweroff-pc", () => {
 });
 
 ipcMain.on("open-lutris", () => {
-  exec("lutris", (error) => {
+  exec(findLutrisWrapper(), (error) => {
     if (error) {
       console.error("Open Lutris error", error);
     }

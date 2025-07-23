@@ -42,7 +42,13 @@
       "dist/**/*",
       "electron.js",
       "package.json",
-      "electron_preload.js"
+      "electron_preload.js",
+      "lutris_wrapper.sh",
+      "lutris_wrapper.py"
+    ],
+    "asarUnpack": [
+      "lutris_wrapper.sh",
+      "lutris_wrapper.py"
     ],
     "directories": {
       "buildResources": "assets"
