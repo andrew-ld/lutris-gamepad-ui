@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.1.9",
   "main": "electron.js",
+  "description": "A simple, TV-friendly, gamepad-navigable frontend for the Lutris game launcher on Linux.",
   "author": {
     "name": "Andrew-LD",
     "email": "andrewld@protonmail.com"
@@ -54,7 +55,9 @@
       "buildResources": "assets"
     },
     "linux": {
-      "target": "AppImage"
+      "target": "AppImage",
+      "category": "game",
+      "icon": "src/resources/icon.svg"
     }
   }
 }

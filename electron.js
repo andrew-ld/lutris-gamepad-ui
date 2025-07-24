@@ -366,6 +366,10 @@ function findLutrisWrapper() {
   ];
 
   for (const directory of DIRECTORIES) {
+    if (path.basename(directory) === "app.asar") {
+      continue;
+    }
+
     const wrapperAbsolutePath = path.join(directory, "lutris_wrapper.sh");
 
     if (existsSync(wrapperAbsolutePath)) {
