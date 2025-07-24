@@ -43,8 +43,8 @@
     "files": [
       "dist/**/*",
       "electron.cjs",
+      "electron_preload.cjs",
       "package.json",
-      "electron_preload.js",
       "lutris_wrapper.sh",
       "lutris_wrapper.py"
     ],
