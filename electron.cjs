@@ -8,6 +8,7 @@ const {
   powerSaveBlocker,
   protocol,
   net,
+  screen,
 } = require("electron");
 const { spawn, exec } = require("child_process");
 const { promisify } = require("util");
@@ -354,10 +355,20 @@ function createWindow() {
 
   const fullscreen = !forceWindowed && !isDev;
 
+  let width = 800;
+  let height = 600;
+
+  if (fullscreen) {
+    const display = screen.getPrimaryDisplay();
+    width = display.workAreaSize.width;
+    height = display.workAreaSize.height;
+  }
+
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width,
+    height,
     fullscreen: fullscreen,
+    resizable: !fullscreen,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -369,9 +380,18 @@ function createWindow() {
     title: "Lutris Gamepad UI",
   });
 
+  mainWindow.on("focus", () => {
+    if (fullscreen) {
+      mainWindow.setFullScreen(true);
+    }
+  });
+
   mainWindow.on("show", () => {
     mainWindow.restore();
     mainWindow.focus();
+    if (fullscreen) {
+      mainWindow.setFullScreen(true);
+    }
   });
 
   mainWindow.on("closed", () => {
