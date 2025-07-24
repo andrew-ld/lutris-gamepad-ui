@@ -445,7 +445,7 @@ ipcMain.on("poweroff-pc", () => {
 });
 
 ipcMain.on("open-lutris", () => {
-  exec(findLutrisWrapper(), (error) => {
+  exec(`bash ${findLutrisWrapper()}`, (error) => {
     if (error) {
       console.error("Open Lutris error", error);
     }
