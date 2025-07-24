@@ -332,7 +332,7 @@ function createWindow() {
       contextIsolation: true,
       backgroundThrottling: false,
       sandbox: true,
-      preload: path.join(__dirname, "electron_preload.js"),
+      preload: path.join(__dirname, "electron_preload.cjs"),
     },
     frame: !fullscreen,
     title: "Lutris Gamepad UI",
