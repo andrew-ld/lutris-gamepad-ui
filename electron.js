@@ -334,21 +334,22 @@ function createWindow() {
 }
 
 function findLutrisWrapper() {
-  const FILENAME = "lutris_wrapper.sh";
+  const PATHS = [
+    cwd(),
+    __dirname,
+    process.resourcesPath,
+    path.join(process.resourcesPath, "app.asar.unpacked"),
+  ];
 
-  const cwdLutrisWrapper = path.join(cwd(), FILENAME);
+  for (const path of PATHS) {
+    const completePath = path.join(path, "lutris_wrapper.sh");
 
-  if (existsSync(cwdLutrisWrapper)) {
-    return cwdLutrisWrapper;
+    if (existsSync(completePath)) {
+      return completePath;
+    }
   }
 
-  const resourcesLutrisWrapper = path.join(process.resourcesPath, FILENAME);
-
-  if (existsSync(resourcesLutrisWrapper)) {
-    return resourcesLutrisWrapper;
-  }
-
-  return path.join(process.resourcesPath, "app.asar.unpacked", FILENAME);
+  throw new Error("unable to find lutris wrapper");
 }
 
 ipcMain.handle("get-games", async () => {
