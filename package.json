@@ -2,7 +2,8 @@
   "name": "lutris-gamepad-ui",
   "private": true,
   "version": "0.1.10",
-  "main": "electron.js",
+  "main": "electron.cjs",
+  "type": "module",
   "description": "A simple, TV-friendly, gamepad-navigable frontend for the Lutris game launcher on Linux.",
   "author": {
     "name": "Andrew-LD",
@@ -13,7 +14,7 @@
   "scripts": {
     "dev": "vite",
     "start": "IS_DEV=1 concurrently \"npm run dev\" \"npm run electron:dev\"",
-    "start:prod": "npm run build:vite && electron36 electron.js",
+    "start:prod": "npm run build:vite && electron36 electron.cjs",
     "build": "vite build && npm run electron:build",
     "build:vite": "vite build",
     "preview": "vite preview",
@@ -26,22 +27,22 @@
   "devDependencies": {
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
-    "@vitejs/plugin-react": "^4.5.2",
-    "concurrently": "^9.1.2",
-    "electron": "^36.5.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "concurrently": "^9.2.0",
+    "electron": "^37.2.4",
     "electron-builder": "^26.0.12",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-scan": "^0.4.3",
-    "vite": "^6.3.5",
-    "wait-on": "^8.0.3"
+    "vite": "^7.0.6",
+    "wait-on": "^8.0.4"
   },
   "build": {
     "appId": "com.electron.${name}",
     "productName": "lutris gamepad ui",
     "files": [
       "dist/**/*",
-      "electron.js",
+      "electron.cjs",
       "package.json",
       "electron_preload.js",
       "lutris_wrapper.sh",
