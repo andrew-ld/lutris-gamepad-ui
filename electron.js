@@ -334,18 +334,18 @@ function createWindow() {
 }
 
 function findLutrisWrapper() {
-  const PATHS = [
+  const DIRECTORIES = [
     cwd(),
     __dirname,
     process.resourcesPath,
     path.join(process.resourcesPath, "app.asar.unpacked"),
   ];
 
-  for (const path of PATHS) {
-    const completePath = path.join(path, "lutris_wrapper.sh");
+  for (const directory of DIRECTORIES) {
+    const wrapperAbsolutePath = path.join(directory, "lutris_wrapper.sh");
 
-    if (existsSync(completePath)) {
-      return completePath;
+    if (existsSync(wrapperAbsolutePath)) {
+      return wrapperAbsolutePath;
     }
   }
 
