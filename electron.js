@@ -338,12 +338,6 @@ function createWindow() {
     title: "Lutris Gamepad UI",
   });
 
-  globalShortcut.register("CommandOrControl+X", () => {
-    if (mainWindow && runningGameProcess) {
-      toggleWindowShow();
-    }
-  });
-
   mainWindow.on("show", () => {
     mainWindow.restore();
     mainWindow.focus();
@@ -420,6 +414,12 @@ ipcMain.on("launch-game", (_event, gameId) => {
   const command = "bash";
   const args = [findLutrisWrapper(), `lutris:rungameid/${gameId}`];
 
+  globalShortcut.register("CommandOrControl+X", () => {
+    if (runningGameProcess) {
+      toggleWindowShow();
+    }
+  });
+
   runningGameProcess = spawn(command, args, {
     detached: true,
     stdio: "ignore",
@@ -431,10 +431,13 @@ ipcMain.on("launch-game", (_event, gameId) => {
 
   const onGameClosed = () => {
     runningGameProcess = null;
+
     if (mainWindow) {
       mainWindow.webContents.send("game-closed");
       mainWindow.show();
     }
+
+    globalShortcut.unregister("CommandOrControl+X");
   };
 
   runningGameProcess.on("close", onGameClosed);
