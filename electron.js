@@ -146,7 +146,13 @@ async function getSinkInfoFromPA(pulseAudioClient) {
   return result;
 }
 
-function findLutrisWrapperChildren(pid) {
+function findLutrisWrapperChildren(pid, visitedPids) {
+  if (visitedPids.has(pid)) {
+    return [];
+  }
+
+  visitedPids.add(pid);
+
   const childrenPath = path.join(
     "/proc",
     String(pid),
@@ -155,29 +161,44 @@ function findLutrisWrapperChildren(pid) {
     "children"
   );
 
-  const childrenContent = readFileSync(childrenPath, "utf8");
+  let childrenContent;
 
-  return childrenContent
+  try {
+    childrenContent = readFileSync(childrenPath, "utf8");
+  } catch (e) {
+    console.error("Unable to read children of pid", pid, e);
+    return [];
+  }
+
+  const childPids = childrenContent
     .trim()
     .split(" ")
     .map(Number)
-    .filter((childPid) => {
-      if (!childPid) {
-        return false;
-      }
+    .filter(Boolean);
 
-      try {
-        const cmdline = readFileSync(
-          path.join("/proc", String(childPid), "cmdline"),
-          "utf8"
-        );
+  return childPids.flatMap((childPid) => {
+    const directLutrisChild = [];
 
-        return cmdline.startsWith("lutris-wrapper");
-      } catch (e) {
-        console.error("unable to read cmdline of pid", childPid);
-        return false;
+    try {
+      const cmdline = readFileSync(
+        path.join("/proc", String(childPid), "cmdline"),
+        "utf8"
+      );
+
+      if (cmdline.startsWith("lutris-wrapper")) {
+        directLutrisChild.push(childPid);
       }
-    });
+    } catch (e) {
+      console.error("Unable to read cmdline of pid", childPid, e);
+    }
+
+    const lutrisGrandchildren = findLutrisWrapperChildren(
+      childPid,
+      visitedPids
+    );
+
+    return directLutrisChild.concat(lutrisGrandchildren);
+  });
 }
 
 function closeRunningGameProcess() {
@@ -188,7 +209,10 @@ function closeRunningGameProcess() {
   let lutrisWrapperPids;
 
   try {
-    lutrisWrapperPids = findLutrisWrapperChildren(runningGameProcess.pid);
+    lutrisWrapperPids = findLutrisWrapperChildren(
+      runningGameProcess.pid,
+      new Set()
+    );
   } catch (e) {
     console.error("unable to find lutris wrapper child", e);
   }
