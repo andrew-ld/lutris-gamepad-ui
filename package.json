@@ -59,7 +59,10 @@
     "linux": {
       "target": "AppImage",
       "category": "game",
-      "icon": "src/resources/icon.svg"
+      "icon": "src/resources/icon.svg",
+      "desktop": {
+        "StartupWMClass": "lutris-gamepad-ui"
+      }
     }
   }
 }

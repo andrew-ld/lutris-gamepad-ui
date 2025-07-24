@@ -291,6 +291,8 @@ async function sendCurrentAudioInfo(pulseClient) {
 }
 
 function createWindow() {
+  app.setName("lutris-gamepad-ui");
+
   app.on("second-instance", () => {
     if (mainWindow) {
       mainWindow.show();
