@@ -2,7 +2,8 @@
   "name": "lutris-gamepad-ui",
   "private": true,
   "version": "0.1.10",
-  "main": "electron.js",
+  "main": "electron.cjs",
+  "type": "module",
   "description": "A simple, TV-friendly, gamepad-navigable frontend for the Lutris game launcher on Linux.",
   "author": {
     "name": "Andrew-LD",
@@ -13,7 +14,7 @@
   "scripts": {
     "dev": "vite",
     "start": "IS_DEV=1 concurrently \"npm run dev\" \"npm run electron:dev\"",
-    "start:prod": "npm run build:vite && electron36 electron.js",
+    "start:prod": "npm run build:vite && electron36 electron.cjs",
     "build": "vite build && npm run electron:build",
     "build:vite": "vite build",
     "preview": "vite preview",
@@ -41,15 +42,16 @@
     "productName": "lutris gamepad ui",
     "files": [
       "dist/**/*",
-      "electron.js",
+      "electron.cjs",
       "package.json",
-      "electron_preload.js",
+      "electron_preload.cjs",
       "lutris_wrapper.sh",
       "lutris_wrapper.py"
     ],
     "asarUnpack": [
       "lutris_wrapper.sh",
-      "lutris_wrapper.py"
+      "lutris_wrapper.py",
+      "electron_preload.cjs"
     ],
     "directories": {
       "buildResources": "assets"

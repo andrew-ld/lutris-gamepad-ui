@@ -19,6 +19,8 @@ const path = require("node:path");
 const url = require("url");
 const { cwd } = require("node:process");
 
+process.noAsar = true;
+
 const isDev = process.env.IS_DEV === "1";
 const forceWindowed = process.env.FORCE_WINDOWED === "1";
 const whitelistedAppProtocolFiles = new Set();
@@ -238,6 +240,33 @@ function closeRunningGameProcess() {
   }
 }
 
+function localeAppFile(name) {
+  const DIRECTORIES = [
+    cwd(),
+    __dirname,
+    process.resourcesPath,
+    path.join(process.resourcesPath, "app.asar.unpacked"),
+  ];
+
+  for (const directory of DIRECTORIES) {
+    const wrapperAbsolutePath = path.join(directory, name);
+
+    if (existsSync(wrapperAbsolutePath)) {
+      return wrapperAbsolutePath;
+    }
+  }
+
+  return new Error("unable to find: " + name);
+}
+
+function getLutrisWrapperPath() {
+  return localeAppFile("lutris_wrapper.sh");
+}
+
+function getElectronPreloadPath() {
+  return localeAppFile("electron_preload.cjs");
+}
+
 function toggleWindowShow() {
   if (!mainWindow) {
     return;
@@ -332,7 +361,7 @@ function createWindow() {
       contextIsolation: true,
       backgroundThrottling: false,
       sandbox: true,
-      preload: path.join(__dirname, "electron_preload.js"),
+      preload: getElectronPreloadPath(),
     },
     frame: !fullscreen,
     title: "Lutris Gamepad UI",
@@ -351,34 +380,11 @@ function createWindow() {
   mainWindow.loadURL(homePageUrl);
 }
 
-function findLutrisWrapper() {
-  const DIRECTORIES = [
-    cwd(),
-    __dirname,
-    process.resourcesPath,
-    path.join(process.resourcesPath, "app.asar.unpacked"),
-  ];
-
-  for (const directory of DIRECTORIES) {
-    if (path.basename(directory) === "app.asar") {
-      continue;
-    }
-
-    const wrapperAbsolutePath = path.join(directory, "lutris_wrapper.sh");
-
-    if (existsSync(wrapperAbsolutePath)) {
-      return wrapperAbsolutePath;
-    }
-  }
-
-  throw new Error("unable to find lutris wrapper");
-}
-
 ipcMain.handle("get-games", async () => {
   const execPromise = promisify(exec);
 
   const { stdout: rawGames } = await execPromise(
-    `bash ${findLutrisWrapper()} -l -j`
+    `bash ${getLutrisWrapperPath()} -l -j`
   );
 
   const games = JSON.parse(rawGames);
@@ -412,7 +418,7 @@ ipcMain.on("launch-game", (_event, gameId) => {
   }
 
   const command = "bash";
-  const args = [findLutrisWrapper(), `lutris:rungameid/${gameId}`];
+  const args = [getLutrisWrapperPath(), `lutris:rungameid/${gameId}`];
 
   globalShortcut.register("CommandOrControl+X", () => {
     if (runningGameProcess) {
@@ -476,7 +482,7 @@ ipcMain.on("poweroff-pc", () => {
 });
 
 ipcMain.on("open-lutris", () => {
-  exec(`bash ${findLutrisWrapper()}`, (error) => {
+  exec(`bash ${getLutrisWrapperPath()}`, (error) => {
     if (error) {
       console.error("Open Lutris error", error);
     }
