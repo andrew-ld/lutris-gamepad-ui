@@ -19,8 +19,11 @@ const PAClient = require("paclient");
 const path = require("node:path");
 const url = require("url");
 const { cwd } = require("node:process");
+const { globSync } = require("node:fs");
 
 process.noAsar = true;
+
+const execPromise = promisify(exec);
 
 const isDev = process.env.IS_DEV === "1";
 const forceWindowed = process.env.FORCE_WINDOWED === "1";
@@ -402,16 +405,28 @@ function createWindow() {
   mainWindow.loadURL(homePageUrl);
 }
 
-ipcMain.handle("get-games", async () => {
-  const execPromise = promisify(exec);
+async function getCoverArtDirectory() {
+  const result = await execPromise(
+    `bash ${getLutrisWrapperPath()} --get-coverart-path`
+  );
 
+  return result.stdout.trim();
+}
+
+ipcMain.handle("get-games", async () => {
   const { stdout: rawGames } = await execPromise(
     `bash ${getLutrisWrapperPath()} -l -j`
   );
 
   const games = JSON.parse(rawGames);
 
-  const lutrisCoverDir = path.join(homedir(), "/.local/share/lutris/coverart/");
+  let lutrisCoverDir;
+
+  try {
+    lutrisCoverDir = await getCoverArtDirectory();
+  } catch (e) {
+    console.error("unable to get lutris cover dir", e);
+  }
 
   for (const game of games) {
     if (game.coverPath) {
@@ -419,15 +434,15 @@ ipcMain.handle("get-games", async () => {
       continue;
     }
 
-    if (!game.slug) {
+    if (!game.slug || !lutrisCoverDir) {
       continue;
     }
 
-    const gameCoverFile = path.join(lutrisCoverDir, game.slug + ".jpg");
+    const coverPath = globSync(path.join(lutrisCoverDir, game.slug) + ".*")[0];
 
-    if (existsSync(gameCoverFile)) {
-      game.coverPath = gameCoverFile;
-      whitelistedAppProtocolFiles.add(gameCoverFile);
+    if (coverPath) {
+      game.coverPath = coverPath;
+      whitelistedAppProtocolFiles.add(coverPath);
     }
   }
 

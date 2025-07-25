@@ -5,6 +5,8 @@ set -xe
 SCRIPT_PATH=$(readlink -f "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
 
+export PYTHONDONTWRITEBYTECODE=1
+
 get_python_cmd() {
     if command -v python3 &>/dev/null; then
         echo "python3"
