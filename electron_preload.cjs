@@ -24,6 +24,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.on("audio-info-changed", (_event, ...args) =>
       callback(...args)
     ),
-
+  openExternalLink: (url) => ipcRenderer.send("open-external-link", url),
   removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel),
 });

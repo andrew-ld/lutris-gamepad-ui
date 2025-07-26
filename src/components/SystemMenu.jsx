@@ -9,6 +9,7 @@ import { playActionSound } from "../utils/sound";
 import LegendaContainer from "./LegendaContainer";
 import { useScopedInput } from "../hooks/useScopedInput";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
+import About from "./About";
 
 const PowerIcon = () => (
   <svg
@@ -47,9 +48,18 @@ const SystemMenu = () => {
     setIsOpen(false);
   }, [showModal]);
 
+  const openAboutModal = useCallback(() => {
+    showModal((hideThisModal) => <About onClose={hideThisModal} />);
+    setIsOpen(false);
+  }, [showModal]);
+
   const menuItems = useMemo(
     () => [
       { label: "Reload Library", action: fetchGames },
+      {
+        label: "About",
+        action: openAboutModal,
+      },
       {
         label: "Audio Settings",
         action: openAudioSettingsModal,
@@ -71,7 +81,7 @@ const SystemMenu = () => {
         doubleConfirm: true,
       },
     ],
-    [fetchGames, openAudioSettingsModal]
+    [fetchGames, openAudioSettingsModal, openAboutModal]
   );
 
   const openConfirmation = useCallback(

@@ -9,6 +9,7 @@ const {
   protocol,
   net,
   screen,
+  shell
 } = require("electron");
 const { spawn, exec } = require("child_process");
 const { promisify } = require("util");
@@ -535,6 +536,17 @@ ipcMain.handle("get-audio-info", async () => {
   if (pulseClient) {
     return await getSinkInfoFromPA(pulseClient);
   }
+});
+
+ipcMain.on("open-external-link", (_event, url) => {
+  const protocol = new URL(url).protocol;
+
+  if (protocol !== "https:") {
+    console.error("trying to open a url but is not https", protocol);
+    return;
+  }
+
+  shell.openExternal(url);
 });
 
 ipcMain.on("set-audio-volume", async (_event, volumePercent) => {

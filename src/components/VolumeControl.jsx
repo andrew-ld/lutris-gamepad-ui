@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useAudio } from "../contexts/AudioContext";
-import { useScopedInput } from "../hooks/useScopedInput";
 import "../styles/VolumeControl.css";
-import { playActionSound } from "../utils/sound";
 import LegendaContainer from "./LegendaContainer";
+import RowBasedMenu from "./RowBasedMenu";
+import FocusableRow from "./FocusableRow";
 
 export const VolumeControlFocusID = "VolumeControl";
 
@@ -12,12 +12,6 @@ const CONTROL_TYPES = {
   VOLUME: "VOLUME",
   OUTPUT_DEVICE: "OUTPUT_DEVICE",
 };
-
-const CONTROL_ORDER = [
-  CONTROL_TYPES.MUTE,
-  CONTROL_TYPES.VOLUME,
-  CONTROL_TYPES.OUTPUT_DEVICE,
-];
 
 const VolumeControl = ({ onClose }) => {
   const {
@@ -32,10 +26,8 @@ const VolumeControl = ({ onClose }) => {
     setDefaultSink,
   } = useAudio();
 
-  const [focusedControlType, setFocusedControlType] = useState(
-    CONTROL_ORDER[0]
-  );
   const [highlightedSinkIndex, setHighlightedSinkIndex] = useState(0);
+  const [focusedItem, setFocusedItem] = useState(null);
 
   useEffect(() => {
     if (availableSinks && availableSinks.length > 0) {
@@ -50,25 +42,23 @@ const VolumeControl = ({ onClose }) => {
     }
   }, [availableSinks, defaultSinkName]);
 
-  const handleNavigation = useCallback(
-    (direction) => {
-      const currentIndex = CONTROL_ORDER.indexOf(focusedControlType);
-      let nextIndex;
-      if (direction === "UP") {
-        nextIndex = Math.max(0, currentIndex - 1);
-      } else {
-        nextIndex = Math.min(CONTROL_ORDER.length - 1, currentIndex + 1);
-      }
-      if (currentIndex !== nextIndex) {
-        setFocusedControlType(CONTROL_ORDER[nextIndex]);
-      }
-    },
-    [focusedControlType]
+  const menuItems = useMemo(
+    () => [
+      { type: CONTROL_TYPES.MUTE, label: "Mute" },
+      { type: CONTROL_TYPES.VOLUME, label: "Volume" },
+      { type: CONTROL_TYPES.OUTPUT_DEVICE, label: "Select Output" },
+    ],
+    []
   );
 
   const handleAction = useCallback(
-    (actionName) => {
-      switch (focusedControlType) {
+    (actionName, item) => {
+      if (actionName === "B") {
+        onClose();
+        return;
+      }
+
+      switch (item.type) {
         case CONTROL_TYPES.MUTE:
           if (actionName === "A") toggleMute();
           break;
@@ -90,149 +80,129 @@ const VolumeControl = ({ onClose }) => {
             }
           }
           break;
-        default:
-          break;
       }
     },
     [
-      focusedControlType,
       toggleMute,
       decreaseVolume,
       increaseVolume,
       availableSinks,
       highlightedSinkIndex,
       setDefaultSink,
+      onClose,
     ]
   );
 
-  const inputHandler = useCallback(
-    (input) => {
-      if (isAudioLoading) {
-        if (input.name === "B") {
-          playActionSound();
-          onClose();
-        }
-        return;
-      }
-
-      playActionSound();
-
-      switch (input.name) {
-        case "UP":
-        case "DOWN":
-          handleNavigation(input.name);
-          break;
-        case "LEFT":
-        case "RIGHT":
-        case "A":
-          handleAction(input.name);
-          break;
-        case "B":
-          onClose();
-          break;
-        default:
-          break;
-      }
-    },
-    [isAudioLoading, handleNavigation, handleAction, onClose]
-  );
-
-  useScopedInput(inputHandler, VolumeControlFocusID);
-
-  const handleClose = useCallback(() => {
-    onClose();
-  }, [onClose]);
-
-  const currentHighlightedSink =
-    availableSinks?.length > 0 && highlightedSinkIndex < availableSinks.length
-      ? availableSinks[highlightedSinkIndex]
-      : null;
-
-  const currentDefaultSinkObject =
-    defaultSinkName && availableSinks?.find((s) => s.name === defaultSinkName);
-
-  const handleSetDeviceClick = useCallback(() => {
-    if (currentHighlightedSink) {
-      setDefaultSink(currentHighlightedSink.name);
-    }
-  }, [currentHighlightedSink, setDefaultSink]);
-
-  const handlePrevSink = useCallback(() => {
-    setHighlightedSinkIndex((prev) => Math.max(0, prev - 1));
+  const handleFocusChange = useCallback((item) => {
+    setFocusedItem(item);
   }, []);
 
-  const handleNextSink = useCallback(() => {
-    if (availableSinks && availableSinks.length > 0) {
-      setHighlightedSinkIndex((prev) =>
-        Math.min(availableSinks.length - 1, prev + 1)
+  const renderItem = useCallback(
+    (item, isFocused, onMouseEnter) => {
+      return (
+        <FocusableRow
+          key={item.type}
+          isFocused={isFocused}
+          onMouseEnter={onMouseEnter}
+        >
+          <span className="volume-control-label">{item.label}</span>
+          {item.type === CONTROL_TYPES.MUTE && (
+            <button className="mute-button" onClick={toggleMute}>
+              {isMuted ? "Unmute" : "Mute"}
+            </button>
+          )}
+          {item.type === CONTROL_TYPES.VOLUME && (
+            <div className="volume-bar-display">
+              <div className="volume-bar-container">
+                <div
+                  className="volume-bar-fill"
+                  style={{ width: `${isMuted ? 0 : volume}%` }}
+                ></div>
+              </div>
+              <span className="volume-control-value">{`${volume}%`}</span>
+            </div>
+          )}
+          {item.type === CONTROL_TYPES.OUTPUT_DEVICE && (
+            <div className="output-device-selector">
+              {availableSinks?.length > 0 ? (
+                <>
+                  <span
+                    className="output-device-name"
+                    title={availableSinks[highlightedSinkIndex]?.description}
+                  >
+                    {availableSinks[highlightedSinkIndex]?.description}
+                  </span>
+                  <span className="output-device-count">
+                    ({highlightedSinkIndex + 1}/{availableSinks.length})
+                  </span>
+                </>
+              ) : (
+                <span className="output-device-name">No devices found</span>
+              )}
+            </div>
+          )}
+        </FocusableRow>
       );
-    }
-  }, [availableSinks]);
+    },
+    [volume, isMuted, toggleMute, availableSinks, highlightedSinkIndex]
+  );
 
   const legendItems = useMemo(() => {
     const items = [];
-    if (focusedControlType === CONTROL_TYPES.MUTE) {
-      items.push({
-        button: "A",
-        label: isMuted ? "Unmute" : "Mute",
-        onClick: toggleMute,
-      });
-    } else if (focusedControlType === CONTROL_TYPES.VOLUME) {
-      items.push({
-        button: "LEFT",
-        label: "Decrease",
-        onClick: decreaseVolume,
-      });
-      items.push({
-        button: "RIGHT",
-        label: "Increase",
-        onClick: increaseVolume,
-      });
-    } else if (
-      focusedControlType === CONTROL_TYPES.OUTPUT_DEVICE &&
-      availableSinks?.length > 0
-    ) {
-      items.push({
-        button: "LEFT",
-        label: "Prev",
-        onClick: handlePrevSink,
-      });
-      items.push({
-        button: "RIGHT",
-        label: "Next",
-        onClick: handleNextSink,
-      });
-      if (currentHighlightedSink) {
+    if (!focusedItem)
+      return [{ button: "B", label: "Close", onClick: onClose }];
+
+    switch (focusedItem.type) {
+      case CONTROL_TYPES.MUTE:
         items.push({
           button: "A",
-          label: "Set Device",
-          onClick: handleSetDeviceClick,
+          label: isMuted ? "Unmute" : "Mute",
+          onClick: toggleMute,
         });
-      }
+        break;
+      case CONTROL_TYPES.VOLUME:
+        items.push({
+          button: "LEFT",
+          label: "Decrease",
+          onClick: decreaseVolume,
+        });
+        items.push({
+          button: "RIGHT",
+          label: "Increase",
+          onClick: increaseVolume,
+        });
+        break;
+      case CONTROL_TYPES.OUTPUT_DEVICE:
+        if (availableSinks?.length > 1) {
+          items.push({ button: "LEFT", label: "Prev" });
+          items.push({ button: "RIGHT", label: "Next" });
+        }
+        if (availableSinks?.length > 0) {
+          items.push({ button: "A", label: "Set Device" });
+        }
+        break;
     }
-    items.push({ button: "B", label: "Close", onClick: handleClose });
+    items.push({ button: "B", label: "Close", onClick: onClose });
     return items;
   }, [
-    focusedControlType,
+    focusedItem,
     isMuted,
     toggleMute,
     decreaseVolume,
     increaseVolume,
     availableSinks,
-    currentHighlightedSink,
-    handlePrevSink,
-    handleNextSink,
-    handleSetDeviceClick,
-    handleClose,
+    onClose,
   ]);
 
+  const currentDefaultSinkObject =
+    defaultSinkName && availableSinks?.find((s) => s.name === defaultSinkName);
+
   if (isAudioLoading && (!availableSinks || availableSinks.length === 0)) {
-    const loadingLegendItems = [
-      { button: "B", label: "Close", onClick: handleClose },
-    ];
     return (
       <div className="volume-control-container">
-        <LegendaContainer legendItems={loadingLegendItems}>
+        <LegendaContainer
+          legendItems={[{ button: "B", label: "Close", onClick: onClose }]}
+        >
           <div style={{ padding: "24px 0", margin: 0 }}>
             <p className="volume-control-title">Loading Audio Settings...</p>
           </div>
@@ -246,35 +216,6 @@ const VolumeControl = ({ onClose }) => {
       <LegendaContainer legendItems={legendItems}>
         <div>
           <h2 className="volume-control-title">Audio Settings</h2>
-
-          <div
-            className={`volume-control-item ${
-              focusedControlType === CONTROL_TYPES.MUTE ? "focused" : ""
-            }`}
-          >
-            <span className="volume-control-label">Mute</span>
-            <button className="mute-button" onClick={toggleMute}>
-              {isMuted ? "Unmute" : "Mute"}
-            </button>
-          </div>
-
-          <div
-            className={`volume-control-item ${
-              focusedControlType === CONTROL_TYPES.VOLUME ? "focused" : ""
-            }`}
-          >
-            <span className="volume-control-label">Volume</span>
-            <div className="volume-bar-display">
-              <div className="volume-bar-container">
-                <div
-                  className="volume-bar-fill"
-                  style={{ width: `${isMuted ? 0 : volume}%` }}
-                ></div>
-              </div>
-              <span className="volume-control-value">{`${volume}%`}</span>
-            </div>
-          </div>
-
           {currentDefaultSinkObject && (
             <div className="volume-control-current-sink-display">
               <span className="volume-control-label">Current Output:</span>
@@ -286,33 +227,13 @@ const VolumeControl = ({ onClose }) => {
               </span>
             </div>
           )}
-
-          <div
-            className={`volume-control-item ${
-              focusedControlType === CONTROL_TYPES.OUTPUT_DEVICE
-                ? "focused"
-                : ""
-            }`}
-          >
-            <span className="volume-control-label">Select Output</span>
-            <div className="output-device-selector">
-              {currentHighlightedSink ? (
-                <>
-                  <span
-                    className="output-device-name"
-                    title={currentHighlightedSink.description}
-                  >
-                    {currentHighlightedSink.description}
-                  </span>
-                  <span className="output-device-count">
-                    ({highlightedSinkIndex + 1}/{availableSinks.length})
-                  </span>
-                </>
-              ) : (
-                <span className="output-device-name">No devices found</span>
-              )}
-            </div>
-          </div>
+          <RowBasedMenu
+            items={menuItems}
+            renderItem={renderItem}
+            onAction={handleAction}
+            focusId={VolumeControlFocusID}
+            onFocusChange={handleFocusChange}
+          />
         </div>
       </LegendaContainer>
     </div>

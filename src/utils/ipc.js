@@ -61,3 +61,7 @@ export const setAudioMute = (isMuted) => {
 export const setDefaultSink = (sinkName) => {
   window.electronAPI.setDefaultSink(sinkName);
 };
+
+export const openExternalLink = (url) => {
+  window.electronAPI.openExternalLink(url);
+};
