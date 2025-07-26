@@ -121,6 +121,7 @@ const BUTTON_CONTENT_MAP = {
 
 const ButtonIcon = ({ button, label, size = "large", onClick }) => {
   const { getLatestInputType, subscribeToInputType } = useInput();
+
   const [latestInputType, setLatestInputType] = useState(() =>
     getLatestInputType()
   );
@@ -134,8 +135,8 @@ const ButtonIcon = ({ button, label, size = "large", onClick }) => {
   const styleClass = `button-icon button-${latestInputType}-${buttonLower}`;
 
   const content =
-    BUTTON_CONTENT_MAP.generic[buttonLower] ||
     BUTTON_CONTENT_MAP[latestInputType]?.[buttonLower] ||
+    BUTTON_CONTENT_MAP.generic[buttonLower] ||
     button;
 
   return (
