@@ -16,6 +16,7 @@
     "start": "IS_DEV=1 concurrently \"npm run dev\" \"npm run electron:dev\"",
     "start:prod": "npm run build:vite && electron36 electron.cjs",
     "start:prod-wayland": "npm run build:vite && electron36 electron.cjs --ozone-platform=wayland",
+    "start:prod-steamdeck": "npm run build:vite && gamescope -W 1280 -w 1280 -H 800 -h 800 -- electron36 electron.cjs",
     "build": "vite build && npm run electron:build",
     "build:vite": "vite build",
     "preview": "vite preview",

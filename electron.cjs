@@ -9,7 +9,7 @@ const {
   protocol,
   net,
   screen,
-  shell
+  shell,
 } = require("electron");
 const { spawn, exec } = require("child_process");
 const { promisify } = require("util");
