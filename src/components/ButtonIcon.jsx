@@ -93,19 +93,33 @@ const PlayStationTriangleIcon = () => (
   </svg>
 );
 
+const CtrlXIcon = () => (
+  <svg
+    viewBox="0 0 36 24"
+    fill="currentColor"
+    width="1.5em"
+    height="1em"
+    style={{ letterSpacing: "0.5px" }}
+  >
+    <text
+      x="50%"
+      y="50%"
+      dominantBaseline="middle"
+      textAnchor="middle"
+      fontSize="11"
+      fontFamily="sans-serif"
+      fontWeight="bold"
+    >
+      Ctrl+X
+    </text>
+  </svg>
+);
+
 const BUTTON_CONTENT_MAP = {
   keyboard: {
-    a: "A",
-    b: "B",
-    x: "X",
-    y: "Y",
+    super: <CtrlXIcon />,
   },
-  xbox: {
-    a: "A",
-    b: "B",
-    x: "X",
-    y: "Y",
-  },
+  xbox: {},
   playstation: {
     a: <PlayStationCrossIcon />,
     b: <PlayStationCircleIcon />,
@@ -113,6 +127,10 @@ const BUTTON_CONTENT_MAP = {
     y: <PlayStationTriangleIcon />,
   },
   generic: {
+    a: "A",
+    b: "B",
+    x: "X",
+    y: "Y",
     super: <SuperIcon />,
     left: <LeftArrowIcon />,
     right: <RightArrowIcon />,
