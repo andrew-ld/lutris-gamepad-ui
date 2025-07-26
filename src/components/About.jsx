@@ -60,9 +60,11 @@ const About = ({ onClose }) => {
         key={item.label}
         isFocused={isFocused}
         onMouseEnter={onMouseEnter}
-        onClick={
-          item.isLink ? () => window.open(item.value, "_blank") : undefined
-        }
+        onClick={() => {
+          if (item.isLink) {
+            openExternalLink(item.value);
+          }
+        }}
       >
         <span className="about-row-label">{item.label}</span>
         <span className="about-row-value">{valueContent}</span>
@@ -73,7 +75,11 @@ const About = ({ onClose }) => {
   const legendItems = useMemo(() => {
     const items = [];
     if (focusedItem?.isLink) {
-      items.push({ button: "A", label: "Open Link" });
+      items.push({
+        button: "A",
+        label: "Open Link",
+        onClick: () => openExternalLink(focusedItem.value),
+      });
     }
     items.push({ button: "B", label: "Close", onClick: onClose });
     return items;
