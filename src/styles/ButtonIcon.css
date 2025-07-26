@@ -19,29 +19,64 @@
   border: 2px solid #fff;
 }
 
-.button-icon.button-a {
-  background-color: #0078f2;
-  border-color: #0078f2;
+.button-keyboard-a,
+.button-keyboard-b,
+.button-keyboard-x,
+.button-keyboard-y,
+.button-keyboard-left,
+.button-keyboard-right,
+.button-keyboard-super {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
 }
 
-.button-icon.button-x {
-  background-color: #0e7a0d;
-  border-color: #0e7a0d;
+.button-xbox-a {
+  background-color: #107c10;
+  border-color: #107c10;
 }
-
-.button-icon.button-b {
+.button-xbox-b {
   background-color: #e50914;
   border-color: #e50914;
 }
-
-.button-icon.button-y {
-  background-color: #f0c300;
-  border-color: #f0c300;
+.button-xbox-x {
+  background-color: #0078d4;
+  border-color: #0078d4;
+}
+.button-xbox-y {
+  background-color: #ffb900;
+  border-color: #ffb900;
   color: #141414;
 }
 
-.button-icon.button-left,
-.button-icon.button-right {
+.button-xbox-left,
+.button-xbox-right,
+.button-xbox-super {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.button-playstation-a {
+  background-color: #0070d1;
+  border-color: #0070d1;
+}
+.button-playstation-b {
+  background-color: #e50914;
+  border-color: #e50914;
+}
+.button-playstation-x {
+  background-color: #b22383;
+  border-color: #b22383;
+}
+.button-playstation-y {
+  background-color: #009374;
+  border-color: #009374;
+}
+
+.button-playstation-left,
+.button-playstation-right,
+.button-playstation-super {
   background-color: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
   color: #fff;

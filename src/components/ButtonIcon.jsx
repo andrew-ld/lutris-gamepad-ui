@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/ButtonIcon.css";
+import { useInput } from "../contexts/InputContext";
 
 const SuperIcon = () => (
   <svg
@@ -37,24 +38,112 @@ const RightArrowIcon = () => (
   </svg>
 );
 
-const ButtonIcon = ({ button, label, size = "large", onClick }) => {
-  let content = button;
-  const buttonLower = button.toLowerCase();
+const PlayStationCrossIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    width="0.8em"
+    height="0.8em"
+  >
+    <path d="M6 6L18 18M18 6L6 18" />
+  </svg>
+);
 
-  if (buttonLower === "super") {
-    content = <SuperIcon />;
-  } else if (buttonLower === "left") {
-    content = <LeftArrowIcon />;
-  } else if (buttonLower === "right") {
-    content = <RightArrowIcon />;
-  }
+const PlayStationCircleIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    width="0.9em"
+    height="0.9em"
+  >
+    <circle cx="12" cy="12" r="9" />
+  </svg>
+);
+
+const PlayStationSquareIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinejoin="round"
+    width="0.8em"
+    height="0.8em"
+  >
+    <rect x="4.5" y="4.5" width="15" height="15" />
+  </svg>
+);
+
+const PlayStationTriangleIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinejoin="round"
+    width="0.9em"
+    height="0.9em"
+  >
+    <path d="M12 3L21.5 19.5H2.5L12 3Z" />
+  </svg>
+);
+
+const BUTTON_CONTENT_MAP = {
+  keyboard: {
+    a: "A",
+    b: "B",
+    x: "X",
+    y: "Y",
+  },
+  xbox: {
+    a: "A",
+    b: "B",
+    x: "X",
+    y: "Y",
+  },
+  playstation: {
+    a: <PlayStationCrossIcon />,
+    b: <PlayStationCircleIcon />,
+    x: <PlayStationSquareIcon />,
+    y: <PlayStationTriangleIcon />,
+  },
+  generic: {
+    super: <SuperIcon />,
+    left: <LeftArrowIcon />,
+    right: <RightArrowIcon />,
+  },
+};
+
+const ButtonIcon = ({ button, label, size = "large", onClick }) => {
+  const { getLatestInputType, subscribeToInputType } = useInput();
+  const [latestInputType, setLatestInputType] = useState(() =>
+    getLatestInputType()
+  );
+
+  useEffect(() => {
+    const unsubscribe = subscribeToInputType(setLatestInputType);
+    return unsubscribe;
+  }, [subscribeToInputType]);
+
+  const buttonLower = button.toLowerCase();
+  const styleClass = `button-icon button-${latestInputType}-${buttonLower}`;
+
+  const content =
+    BUTTON_CONTENT_MAP.generic[buttonLower] ||
+    BUTTON_CONTENT_MAP[latestInputType]?.[buttonLower] ||
+    button;
 
   return (
     <div
       className={`button-hint size-${size} ${onClick ? "clickable" : ""}`}
       onClick={onClick}
     >
-      <div className={`button-icon button-${buttonLower}`}>{content}</div>
+      <div className={styleClass}>{content}</div>
       {label && <span className="button-label">{label}</span>}
     </div>
   );

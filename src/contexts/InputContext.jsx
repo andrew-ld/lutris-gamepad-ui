@@ -32,11 +32,35 @@ const GAMEPAD_BUTTON_MAP = {
   16: "Super",
 };
 
+const getGamepadType = (gamepad) => {
+  const gamepadId = gamepad?.id?.toLowerCase();
+
+  if (!gamepadId) {
+    return null;
+  }
+
+  if (
+    gamepadId.includes("playstation") ||
+    gamepadId.includes("dualsense") ||
+    gamepadId.includes("dualshock")
+  ) {
+    return "playstation";
+  }
+
+  if (gamepadId.includes("xbox")) {
+    return "xbox";
+  }
+
+  return null;
+};
+
 const InputContext = createContext(null);
 export const useInput = () => useContext(InputContext);
 
 export const InputProvider = ({ children }) => {
   const listeners = useRef(new Set());
+  const inputTypeListeners = useRef(new Set());
+  const latestInputTypeRef = useRef("keyboard");
 
   const [focusStack, setFocusStack] = useState([]);
   const [gamepadCount, setGamepadCount] = useState(0);
@@ -56,12 +80,27 @@ export const InputProvider = ({ children }) => {
     return () => listeners.current.delete(callback);
   }, []);
 
+  const subscribeToInputType = useCallback((callback) => {
+    inputTypeListeners.current.add(callback);
+    return () => inputTypeListeners.current.delete(callback);
+  }, []);
+
+  const notifyInputTypeChanged = useCallback(() => {
+    for (const listener of inputTypeListeners.current) {
+      listener(latestInputTypeRef.current);
+    }
+  }, []);
+
   const broadcast = useCallback((input) => {
     const eventObject = { ...input, isConsumed: false };
     [...listeners.current].forEach((cb) => cb(eventObject));
   }, []);
 
-  const processInput = (input) => {
+  const processInput = (input, inputType) => {
+    if (inputType && inputType !== latestInputTypeRef.current) {
+      latestInputTypeRef.current = inputType;
+      notifyInputTypeChanged();
+    }
     if (document.hasFocus() || !input || input?.name === "Super") {
       broadcast(input);
       return true;
@@ -114,11 +153,14 @@ export const InputProvider = ({ children }) => {
       event.stopImmediatePropagation();
       const actionName = KEY_MAP[event.key] || KEY_MAP[event.key.toLowerCase()];
       if (actionName) {
-        processInput({
-          type: "key",
-          name: actionName,
-          timestamp: Date.now(),
-        });
+        processInput(
+          {
+            type: "key",
+            name: actionName,
+            timestamp: Date.now(),
+          },
+          "keyboard"
+        );
       }
     };
     document.addEventListener("keydown", handleKeyDown);
@@ -130,12 +172,16 @@ export const InputProvider = ({ children }) => {
   useEffect(() => {
     const pollGamepads = () => {
       const buttons = {};
+      let activeGamepad = null;
 
       for (const gp of navigator.getGamepads()) {
         if (!gp) {
           continue;
         }
         for (let i = 0; i < gp.buttons.length; i++) {
+          if (!activeGamepad && gp.buttons[i].pressed) {
+            activeGamepad = gp;
+          }
           buttons[i] = buttons[i] || gp.buttons[i].pressed;
         }
       }
@@ -148,12 +194,22 @@ export const InputProvider = ({ children }) => {
         };
       };
 
+      let gamepadType = activeGamepad ? getGamepadType(activeGamepad) : null;
+
+      if (!gamepadType) {
+        if (latestInputTypeRef.current !== "keyboard") {
+          gamepadType = latestInputTypeRef.current;
+        } else {
+          gamepadType = "xbox";
+        }
+      }
+
       for (const [button, pressed] of Object.entries(buttons)) {
         const prevButtonPressed = prevButtonState.current[button];
         if (pressed && !prevButtonPressed) {
           const actionName = GAMEPAD_BUTTON_MAP[button];
           if (actionName) {
-            processInput(createInput(actionName));
+            processInput(createInput(actionName), gamepadType);
             break;
           }
         }
@@ -164,7 +220,7 @@ export const InputProvider = ({ children }) => {
         !GAMEPAD_SUPER_BUTTON_FALLBACK.every((i) => prevButtonState.current[i]);
 
       if (superFallbackPressed) {
-        processInput(createInput("Super"));
+        processInput(createInput("Super"), gamepadType);
       }
 
       prevButtonState.current = buttons;
@@ -219,6 +275,8 @@ export const InputProvider = ({ children }) => {
     subscribe,
     claimInputFocus,
     gamepadCount,
+    subscribeToInputType,
+    getLatestInputType: () => latestInputTypeRef.current,
   };
 
   return (
