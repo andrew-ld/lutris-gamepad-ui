@@ -8,7 +8,6 @@ const {
   powerSaveBlocker,
   protocol,
   net,
-  screen,
   shell,
 } = require("electron");
 const { spawn, exec } = require("child_process");
@@ -29,6 +28,8 @@ const execPromise = promisify(exec);
 const isDev = process.env.IS_DEV === "1";
 const forceWindowed = process.env.FORCE_WINDOWED === "1";
 const whitelistedAppProtocolFiles = new Set();
+const gamescopeIntegration =
+  process.env.GAMEPADUI_GAMESCOPE_INTEGRATION === "1";
 
 /** @type {BrowserWindow | null} */
 let mainWindow = null;
@@ -304,9 +305,11 @@ function createWindow() {
     }
   });
 
-  if (!app.requestSingleInstanceLock()) {
-    app.quit();
-    return;
+  if (!gamescopeIntegration) {
+    if (!app.requestSingleInstanceLock()) {
+      app.quit();
+      return;
+    }
   }
 
   powerSaveBlocker.start("prevent-display-sleep");
@@ -357,16 +360,10 @@ function createWindow() {
     homePageUrl = "app://" + homePageUrl;
   }
 
-  const fullscreen = !forceWindowed && !isDev;
+  const fullscreen = gamescopeIntegration || (!forceWindowed && !isDev);
 
   let width = 800;
   let height = 600;
-
-  if (fullscreen) {
-    const display = screen.getPrimaryDisplay();
-    width = display.workAreaSize.width;
-    height = display.workAreaSize.height;
-  }
 
   mainWindow = new BrowserWindow({
     width,
@@ -464,9 +461,16 @@ ipcMain.on("launch-game", (_event, gameId) => {
     }
   });
 
+  const env = { ...process.env };
+
+  if (gamescopeIntegration) {
+    env.DISPLAY = ":2";
+  }
+
   runningGameProcess = spawn(command, args, {
     detached: true,
     stdio: "ignore",
+    env: env,
   });
 
   if (mainWindow) {
