@@ -22,6 +22,10 @@ const url = require("url");
 const { cwd } = require("node:process");
 const { globSync } = require("node:fs");
 
+const { x11 } = require("nativelib");
+
+console.log(x11.focus.on("pid-changed", console.log));
+
 process.noAsar = true;
 
 const execPromise = promisify(exec);

@@ -24,7 +24,8 @@
     "electron:build": "electron-builder"
   },
   "dependencies": {
-    "paclient": "git+https://github.com/andrew-ld/paclient.git#450fc5046e2bb6b3ce7920211ec89bc3748d0463"
+    "paclient": "git+https://github.com/andrew-ld/paclient.git#450fc5046e2bb6b3ce7920211ec89bc3748d0463",
+    "nativelib": "./src-nativelib/"
   },
   "devDependencies": {
     "@types/react": "^19.1.8",

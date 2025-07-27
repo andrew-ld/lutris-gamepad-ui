@@ -1,0 +1,20 @@
+{
+  "name": "nativelib",
+  "version": "1.0.0",
+  "description": "Native Node.js addon",
+  "private": true,
+  "license": "GPL-3.0-only",
+  "homepage": "https://github.com/andrew-ld/lutris-gamepad-ui/",
+  "main": "index.js",
+  "scripts": {
+    "build": "node-gyp rebuild"
+  },
+  "dependencies": {
+    "bindings": "^1.5.0",
+    "node-addon-api": "^8.5.0"
+  },
+  "devDependencies": {
+    "electron": "^37.2.4",
+    "node-gyp": "^11.2.0"
+  }
+}
