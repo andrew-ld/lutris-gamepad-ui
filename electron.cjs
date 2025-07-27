@@ -364,8 +364,8 @@ function createWindow() {
 
   if (fullscreen) {
     const display = screen.getPrimaryDisplay();
-    width = display.workAreaSize.width;
-    height = display.workAreaSize.height;
+    width = display.size.width;
+    height = display.size.height;
   }
 
   mainWindow = new BrowserWindow({
