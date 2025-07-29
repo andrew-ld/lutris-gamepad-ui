@@ -46,6 +46,7 @@ const writeLog = (level, ...args) => {
     logStream.write(formattedMessage + "\n", (err) => {
       if (err) {
         console.error("Failed to write to log file:", err);
+        logStream = null;
       }
     });
   }
