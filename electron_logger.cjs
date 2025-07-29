@@ -43,7 +43,7 @@ const writeLog = (level, ...args) => {
   consoleMethod(`[${timestamp}] [${level}]`, ...args);
 
   if (logStream && logStream.writable) {
-    logStream.write(formattedMessage + "\n", (err) => {
+    logStream.write(formattedMessage + "\n\r", (err) => {
       if (err) {
         console.error("Failed to write to log file:", err);
         logStream = null;

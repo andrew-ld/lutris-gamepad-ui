@@ -449,20 +449,18 @@ ipcMain.handle("get-games", async () => {
         continue;
       }
 
-      if (!game.slug || !lutrisCoverDir) {
+      if (!game.slug || !lutrisCoverDir || !lutrisCoverDirFiles) {
         continue;
       }
 
-      if (lutrisCoverDirFiles) {
-        const coverFilename = lutrisCoverDirFiles.find((f) =>
-          f.startsWith(game.slug + ".")
-        );
+      const coverFilename = lutrisCoverDirFiles.find((f) =>
+        f.startsWith(game.slug + ".")
+      );
 
-        if (coverFilename) {
-          const coverPath = path.join(lutrisCoverDir, coverFilename);
-          game.coverPath = coverPath;
-          whitelistedAppProtocolFiles.add(coverPath);
-        }
+      if (coverFilename) {
+        const coverPath = path.join(lutrisCoverDir, coverFilename);
+        game.coverPath = coverPath;
+        whitelistedAppProtocolFiles.add(coverPath);
       }
     }
   }
