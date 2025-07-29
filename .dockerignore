@@ -1,5 +1,6 @@
 .git
 release.AppImage
+package-lock.json
 
 # Logs
 logs

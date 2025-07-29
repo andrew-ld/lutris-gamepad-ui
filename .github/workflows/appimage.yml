@@ -1,8 +1,4 @@
-name: Build AppImage and Upload Artifact
-
-permissions:
-  contents: read
-  actions: read
+name: Build AppImage and Create Release
 
 on:
   push:
@@ -11,18 +7,35 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    strategy:
+      matrix:
+        include:
+          - arch: 'x64'
+            docker_arch: 'amd64'
+          - arch: 'arm64'
+            docker_arch: 'arm64'
+
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build the AppImage package
-        run: bash ./docker-create-appimage.sh
+      - name: Build the AppImage package for ${{ matrix.arch }}
+        run: bash ./docker-create-appimage.sh ${{ matrix.docker_arch }}
+
+      - name: Rename AppImage artifact
+        run: mv release.AppImage lutris-gamepad-ui-${{ matrix.arch }}.AppImage
 
       - name: Upload AppImage artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release.AppImage
-          path: release.AppImage
+          name: appimage-${{ matrix.arch }}
+          path: lutris-gamepad-ui-${{ matrix.arch }}.AppImage

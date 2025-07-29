@@ -10,6 +10,12 @@ function cleanup() {
 
 trap cleanup EXIT
 
-docker buildx build --output type=local,dest="$tmpdir" --progress plain .
+declare -a PLATFORM_ARGS
+
+if [[ -n "$1" ]]; then
+  PLATFORM_ARGS=("--platform" "linux/$1")
+fi
+
+docker buildx build "${PLATFORM_ARGS[@]}" --output type=local,dest="$tmpdir" --progress plain .
 
 cp "$tmpdir"/release.AppImage .
