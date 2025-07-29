@@ -22,6 +22,13 @@ const url = require("url");
 const { cwd } = require("node:process");
 const { globSync } = require("node:fs");
 
+const {
+  info: logInfo,
+  warn: logWarn,
+  error: logError,
+} = require("./electron_logger.cjs");
+const { readdir } = require("node:fs/promises");
+
 process.noAsar = true;
 
 const execPromise = promisify(exec);
@@ -50,7 +57,7 @@ async function getPulseAudioClient() {
   if (existsSync(pulseAudioCookiePath)) {
     pulseAudioCookieBuffer = await readFile(pulseAudioCookiePath);
   } else {
-    console.error("pulse audio cookie file dont exists", pulseAudioCookiePath);
+    logError("pulse audio cookie file dont exists", pulseAudioCookiePath);
   }
 
   const config = {
@@ -89,7 +96,7 @@ async function getPulseAudioClient() {
 
     _pulseAudioClient = pa;
   } catch (e) {
-    console.error("unable to get pulse audio client:", e);
+    logError("unable to get pulse audio client:", e);
     return null;
   }
 
@@ -173,7 +180,7 @@ function findLutrisWrapperChildren(pid, visitedPids) {
   try {
     childrenContent = readFileSync(childrenPath, "utf8");
   } catch (e) {
-    console.error("Unable to read children of pid", pid, e);
+    logError("Unable to read children of pid", pid, e);
     return [];
   }
 
@@ -196,7 +203,7 @@ function findLutrisWrapperChildren(pid, visitedPids) {
         directLutrisChild.push(childPid);
       }
     } catch (e) {
-      console.error("Unable to read cmdline of pid", childPid, e);
+      logError("Unable to read cmdline of pid", childPid, e);
     }
 
     const lutrisGrandchildren = findLutrisWrapperChildren(
@@ -221,26 +228,26 @@ function closeRunningGameProcess() {
       new Set()
     );
   } catch (e) {
-    console.error("unable to find lutris wrapper child", e);
+    logError("unable to find lutris wrapper child", e);
   }
 
   let killablePids;
 
   if (lutrisWrapperPids?.length) {
-    console.info("using lutris wrapper pid for close running game");
+    logInfo("using lutris wrapper pid for close running game");
     killablePids = lutrisWrapperPids;
   } else {
-    console.info("using lutris main process pid for close running game");
+    logWarn("using lutris main process pid for close running game");
     killablePids = [runningGameProcess.pid];
   }
 
   for (const killablePid of killablePids) {
-    console.info("sending sigterm to pid", killablePid);
+    logInfo("sending sigterm to pid", killablePid);
 
     try {
       process.kill(killablePid, "SIGTERM");
     } catch (e) {
-      console.error("unable to kill pid", killablePid, e);
+      logError("unable to kill pid", killablePid, e);
     }
   }
 }
@@ -296,8 +303,6 @@ async function sendCurrentAudioInfo(pulseClient) {
 }
 
 function createWindow() {
-  app.setName("lutris-gamepad-ui");
-
   app.on("second-instance", () => {
     if (mainWindow) {
       mainWindow.show();
@@ -336,7 +341,7 @@ function createWindow() {
       whitelistedAppProtocolFiles.has(requestedPath);
 
     if (!authorized) {
-      console.error("unauthorized file access: ", requestedPath);
+      logError("unauthorized file access: ", requestedPath);
       return;
     }
 
@@ -421,29 +426,44 @@ ipcMain.handle("get-games", async () => {
 
   const games = JSON.parse(rawGames);
 
-  let lutrisCoverDir;
+  if (games.length) {
+    let lutrisCoverDir;
 
-  try {
-    lutrisCoverDir = await getCoverArtDirectory();
-  } catch (e) {
-    console.error("unable to get lutris cover dir", e);
-  }
-
-  for (const game of games) {
-    if (game.coverPath) {
-      whitelistedAppProtocolFiles.add(game.coverPath);
-      continue;
+    try {
+      lutrisCoverDir = await getCoverArtDirectory();
+    } catch (e) {
+      logError("unable to get lutris cover dir", e);
     }
 
-    if (!game.slug || !lutrisCoverDir) {
-      continue;
+    let lutrisCoverDirFiles;
+
+    try {
+      lutrisCoverDirFiles = await readdir(lutrisCoverDir);
+    } catch (e) {
+      logError("unable to list files in lutris cover dir", lutrisCoverDir, e);
     }
 
-    const coverPath = globSync(path.join(lutrisCoverDir, game.slug) + ".*")[0];
+    for (const game of games) {
+      if (game.coverPath) {
+        whitelistedAppProtocolFiles.add(game.coverPath);
+        continue;
+      }
 
-    if (coverPath) {
-      game.coverPath = coverPath;
-      whitelistedAppProtocolFiles.add(coverPath);
+      if (!game.slug || !lutrisCoverDir) {
+        continue;
+      }
+
+      if (lutrisCoverDirFiles) {
+        const coverFilename = lutrisCoverDirFiles.find((f) =>
+          f.startsWith(game.slug + ".")
+        );
+
+        if (coverFilename) {
+          const coverPath = path.join(lutrisCoverDir, coverFilename);
+          game.coverPath = coverPath;
+          whitelistedAppProtocolFiles.add(coverPath);
+        }
+      }
     }
   }
 
@@ -502,19 +522,19 @@ ipcMain.on("set-icon", async (_event, dataURL) => {
 });
 
 ipcMain.on("reboot-pc", () => {
-  console.log("Requesting PC reboot...");
+  logInfo("Requesting PC reboot...");
   exec("systemctl reboot", (error) => {
     if (error) {
-      console.error("Reboot error", error);
+      logError("Reboot error", error);
     }
   });
 });
 
 ipcMain.on("poweroff-pc", () => {
-  console.log("Requesting PC power off...");
+  logInfo("Requesting PC power off...");
   exec("systemctl poweroff", (error) => {
     if (error) {
-      console.error("Poweroff error", error);
+      logError("Poweroff error", error);
     }
   });
 });
@@ -522,7 +542,7 @@ ipcMain.on("poweroff-pc", () => {
 ipcMain.on("open-lutris", () => {
   exec(`bash ${getLutrisWrapperPath()}`, (error) => {
     if (error) {
-      console.error("Open Lutris error", error);
+      logError("Open Lutris error", error);
     }
   });
 });
@@ -542,7 +562,7 @@ ipcMain.on("open-external-link", (_event, url) => {
   const protocol = new URL(url).protocol;
 
   if (protocol !== "https:") {
-    console.error("trying to open a url but is not https", protocol);
+    logError("trying to open a url but is not https", protocol);
     return;
   }
 
@@ -553,7 +573,7 @@ ipcMain.on("set-audio-volume", async (_event, volumePercent) => {
   const pulseClient = await getPulseAudioClient();
 
   if (!pulseClient) {
-    console.error("Cannot set audio volume: PulseAudio client not available.");
+    logError("Cannot set audio volume: PulseAudio client not available.");
     return;
   }
 
@@ -564,7 +584,7 @@ ipcMain.on("set-audio-volume", async (_event, volumePercent) => {
 
   pulseClient.setSinkVolumes(sinkInfo.index, [rawVolume], (err) => {
     if (err) {
-      console.log("Cannot set audio volume", err);
+      logInfo("Cannot set audio volume", err);
     }
   });
 });
@@ -573,22 +593,33 @@ ipcMain.on("set-default-sink", async (_event, sinkName) => {
   const pulseClient = await getPulseAudioClient();
 
   if (!pulseClient) {
-    console.error("Cannot set default sink: PulseAudio client not available.");
+    logError("Cannot set default sink: PulseAudio client not available.");
     return;
   }
 
   pulseClient.setDefaultSinkByName(sinkName, async (err) => {
     if (err) {
-      console.log("Cannot set default sink", err, sinkName);
+      logInfo("Cannot set default sink", err, sinkName);
     }
   });
+});
+
+const logLevelToLogger = {
+  error: logError,
+  warn: logWarn,
+  info: logInfo,
+};
+
+ipcMain.on("log", async (_event, level, messageParts) => {
+  const logger = logLevelToLogger[level] || logError;
+  logger(...messageParts);
 });
 
 ipcMain.on("set-audio-mute", async (_event, mute) => {
   const pulseClient = await getPulseAudioClient();
 
   if (!pulseClient) {
-    console.error("Cannot set audio mute: PulseAudio client not available.");
+    logError("Cannot set audio mute: PulseAudio client not available.");
     return;
   }
 
@@ -596,7 +627,7 @@ ipcMain.on("set-audio-mute", async (_event, mute) => {
 
   pulseClient.setSinkMute(sinkInfo.index, mute, async (err) => {
     if (err) {
-      console.log("Cannot set audio mute", err);
+      logInfo("Cannot set audio mute", err);
     }
   });
 });
@@ -608,4 +639,13 @@ app.on("window-all-closed", async () => {
 
 app.commandLine.appendSwitch("enable-features", "GlobalShortcutsPortal");
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+  app.setName("lutris-gamepad-ui");
+
+  try {
+    createWindow();
+  } catch (e) {
+    logError("unable to create main window", e);
+    app.quit();
+  }
+});

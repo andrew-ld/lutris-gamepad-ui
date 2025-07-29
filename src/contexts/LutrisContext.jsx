@@ -21,7 +21,7 @@ export const LutrisProvider = ({ children }) => {
       const allGames = await api.getGames();
       setGames(allGames);
     } catch (error) {
-      console.error("Error fetching games in context:", error);
+      api.logError("Error fetching games in context:", error);
     } finally {
       setLoading(false);
     }
@@ -33,7 +33,7 @@ export const LutrisProvider = ({ children }) => {
 
   useEffect(() => {
     const handleGameStarted = (gameId) => {
-      console.log(`[IPC] Received game-started for ID: ${gameId}`);
+      api.logInfo(`[IPC] Received game-started for ID: ${gameId}`);
       const game = games.find((g) => g.id === gameId);
       if (game) {
         setRunningGame(game);
@@ -41,7 +41,7 @@ export const LutrisProvider = ({ children }) => {
     };
 
     const handleGameClosed = () => {
-      console.log("[IPC] Received game-closed");
+      api.logInfo("[IPC] Received game-closed");
       setRunningGame(null);
       fetchGames();
     };

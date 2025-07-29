@@ -1,4 +1,5 @@
 import buttonActionSound from "../resources/buttonActionSound.wav";
+import { logError } from "./ipc";
 
 const ACTION_SOUND_THROTTLE_MS = 50;
 
@@ -7,7 +8,7 @@ let lastActionSoundPlayTime = 0;
 
 const playSoundInstance = (audioInstance) => {
   audioInstance.currentTime = 0;
-  audioInstance.play().catch((e) => console.warn("Could not play sound", e));
+  audioInstance.play().catch((e) => logError("Could not play sound", e));
 };
 
 export function playActionSound() {

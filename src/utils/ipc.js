@@ -17,12 +17,12 @@ export const getGames = async () => {
 };
 
 export const launchGame = (game) => {
-  console.log(`Requesting launch for game: ${game.title} (ID: ${game.id})`);
+  logInfo(`Requesting launch for game: ${game.title} (ID: ${game.id})`);
   window.electronAPI.launchGame(game.id);
 };
 
 export const closeGame = (game) => {
-  console.log(`Requesting close for game: ${game.title} (ID: ${game.id})`);
+  logInfo(`Requesting close for game: ${game.title} (ID: ${game.id})`);
   window.electronAPI.closeGame(game.id);
 };
 
@@ -64,4 +64,19 @@ export const setDefaultSink = (sinkName) => {
 
 export const openExternalLink = (url) => {
   window.electronAPI.openExternalLink(url);
+};
+
+export const logInfo = (...args) => {
+  console.info(...args);
+  window.electronAPI.log("info", args);
+};
+
+export const logWarn = (...args) => {
+  console.warn(...args);
+  window.electronAPI.log("warn", args);
+};
+
+export const logError = (...args) => {
+  console.error(...args);
+  window.electronAPI.log("error", args);
 };

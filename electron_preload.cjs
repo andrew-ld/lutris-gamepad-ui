@@ -3,7 +3,6 @@ const { contextBridge, ipcRenderer } = require("electron");
 contextBridge.exposeInMainWorld("electronAPI", {
   getGames: () => ipcRenderer.invoke("get-games"),
   getAudioInfo: () => ipcRenderer.invoke("get-audio-info"),
-
   launchGame: (gameId) => ipcRenderer.send("launch-game", gameId),
   closeGame: (gameId) => ipcRenderer.send("close-game", gameId),
   setIcon: (dataURL) => ipcRenderer.send("set-icon", dataURL),
@@ -26,4 +25,5 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ),
   openExternalLink: (url) => ipcRenderer.send("open-external-link", url),
   removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel),
+  log: (level, args) => ipcRenderer.send("log", level, args),
 });

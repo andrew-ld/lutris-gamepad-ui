@@ -39,7 +39,6 @@ export const AudioProvider = ({ children }) => {
     if (!info) {
       return;
     }
-    console.log("[AudioContext] Fetched audio info:", info);
     processAudioInfo(info);
   }, []);
 
@@ -47,7 +46,6 @@ export const AudioProvider = ({ children }) => {
     fetchAudioInfo();
 
     const handleAudioInfoChanged = (info) => {
-      console.log("[IPC] Received audio-info-changed", info);
       processAudioInfo(info);
     };
 

@@ -6,6 +6,7 @@ import {
   useRef,
   useCallback,
 } from "react";
+import { logInfo } from "../utils/ipc";
 
 const KEY_MAP = {
   ArrowUp: "UP",
@@ -230,7 +231,7 @@ export const InputProvider = ({ children }) => {
     const handleGamepadConnected = () => {
       updateGamepadCount();
       if (!animationFrameId.current) {
-        console.log("InputProvider: Gamepad polling started.");
+        logInfo("InputProvider: Gamepad polling started.");
         animationFrameId.current = requestAnimationFrame(pollGamepads);
       }
     };
@@ -239,7 +240,7 @@ export const InputProvider = ({ children }) => {
       updateGamepadCount();
       if (navigator.getGamepads().filter((g) => g).length === 0) {
         if (animationFrameId.current) {
-          console.log("InputProvider: Gamepad polling stopped.");
+          logInfo("InputProvider: Gamepad polling stopped.");
           cancelAnimationFrame(animationFrameId.current);
           animationFrameId.current = null;
         }
@@ -253,7 +254,7 @@ export const InputProvider = ({ children }) => {
 
     if (navigator.getGamepads().filter((g) => g).length > 0) {
       if (!animationFrameId.current) {
-        console.log("InputProvider: Gamepad polling started (initial check).");
+        logInfo("InputProvider: Gamepad polling started (initial check).");
         animationFrameId.current = requestAnimationFrame(pollGamepads);
       }
     }
