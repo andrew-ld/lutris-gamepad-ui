@@ -20,7 +20,7 @@ const PAClient = require("paclient");
 const path = require("node:path");
 const url = require("url");
 const { cwd } = require("node:process");
-const { globSync } = require("node:fs");
+const nodejsWayland = require("nodejs-wayland-server")
 
 const {
   info: logInfo,
@@ -647,3 +647,5 @@ app.whenReady().then(() => {
     app.quit();
   }
 });
+
+nodejsWayland.default.wetMain([process.argv0, "--shell=kiosk"])

@@ -24,6 +24,7 @@
     "electron:build": "electron-builder"
   },
   "dependencies": {
+    "nodejs-wayland-server": "git+https://github.com/andrew-ld/nodejs-wayland-server.git#a602579ddee195de48cc0cd96141c3077ac8f815",
     "paclient": "git+https://github.com/andrew-ld/paclient.git#450fc5046e2bb6b3ce7920211ec89bc3748d0463"
   },
   "devDependencies": {
