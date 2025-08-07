@@ -20,7 +20,7 @@ const PAClient = require("paclient");
 const path = require("node:path");
 const url = require("url");
 const { cwd } = require("node:process");
-const nodejsWayland = require("nodejs-wayland-server")
+const nodejsWayland = require("nodejs-wayland-server");
 
 const {
   info: logInfo,
@@ -36,6 +36,7 @@ const execPromise = promisify(exec);
 const isDev = process.env.IS_DEV === "1";
 const forceWindowed = process.env.FORCE_WINDOWED === "1";
 const whitelistedAppProtocolFiles = new Set();
+const embeddedWaylandServer = process.env.GAMEPADUI_WAYLAND_SERVER == "1";
 
 /** @type {BrowserWindow | null} */
 let mainWindow = null;
@@ -309,7 +310,7 @@ function createWindow() {
     }
   });
 
-  if (!app.requestSingleInstanceLock()) {
+  if (!embeddedWaylandServer && !app.requestSingleInstanceLock()) {
     app.quit();
     return;
   }
@@ -362,7 +363,7 @@ function createWindow() {
     homePageUrl = "app://" + homePageUrl;
   }
 
-  const fullscreen = !forceWindowed && !isDev;
+  const fullscreen = embeddedWaylandServer || (!forceWindowed && !isDev);
 
   let width = 800;
   let height = 600;
@@ -647,5 +648,3 @@ app.whenReady().then(() => {
     app.quit();
   }
 });
-
-nodejsWayland.default.wetMain([process.argv0, "--shell=kiosk"])
