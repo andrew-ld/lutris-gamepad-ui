@@ -1,18 +1,9 @@
 const { app } = require("electron");
 const { spawn } = require("child_process");
-const { basename, join, dirname } = require("path");
 const { launchWaylandServer } = require("nodejs-wayland-server");
 
 function launchMainProcess() {
-  const mainAppArguments = process.argv.slice(1).map((a) => {
-    if (basename(a) === basename(__filename)) {
-      return join(dirname(a), "electron.cjs");
-    } else {
-      return a;
-    }
-  });
-
-  const mainAppProcess = spawn(process.argv0, mainAppArguments, {
+  const mainAppProcess = spawn(process.argv0, process.argv.slice(1), {
     stdio: "inherit",
     env: {
       ...process.env,
@@ -20,8 +11,8 @@ function launchMainProcess() {
     },
   });
 
-  mainAppProcess.on("close", (code) => {
-    console.log("main app process closed, code:", code);
+  mainAppProcess.on("exit", (code) => {
+    console.log("main app process exit, code:", code);
     app.exit(code);
   });
 
@@ -45,6 +36,10 @@ function main() {
   });
 }
 
-app.on("ready", () => {
-  main();
-});
+if (process.env.GAMEPADUI_WAYLAND_SERVER === "1") {
+  require("./electron.cjs");
+} else {
+  app.on("ready", () => {
+    main();
+  });
+}

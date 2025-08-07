@@ -2,7 +2,7 @@
   "name": "lutris-gamepad-ui",
   "private": true,
   "version": "0.1.11",
-  "main": "electron.cjs",
+  "main": "electron_wayland_server.cjs",
   "type": "module",
   "description": "A simple, TV-friendly, gamepad-navigable frontend for the Lutris game launcher on Linux.",
   "author": {
@@ -15,6 +15,7 @@
     "dev": "vite",
     "start": "IS_DEV=1 concurrently \"npm run dev\" \"npm run electron:dev\"",
     "start:prod": "npm run build:vite && electron36 electron.cjs",
+    "start:prod-wayland-server": "npm run build:vite && electron36 electron_wayland_server.cjs",
     "start:prod-wayland": "npm run build:vite && electron36 electron.cjs --ozone-platform=wayland",
     "start:prod-steamdeck": "npm run build:vite && gamescope -W 1280 -w 1280 -H 800 -h 800 -- electron36 electron.cjs",
     "build": "vite build && npm run electron:build",
@@ -24,7 +25,7 @@
     "electron:build": "electron-builder"
   },
   "dependencies": {
-    "nodejs-wayland-server": "git+https://github.com/andrew-ld/nodejs-wayland-server.git#a602579ddee195de48cc0cd96141c3077ac8f815",
+    "nodejs-wayland-server": "git+https://github.com/andrew-ld/nodejs-wayland-server.git#5935fc2b8c03474c3098b45c2d286bf9504af108",
     "paclient": "git+https://github.com/andrew-ld/paclient.git#450fc5046e2bb6b3ce7920211ec89bc3748d0463"
   },
   "devDependencies": {
@@ -50,7 +51,8 @@
       "electron_preload.cjs",
       "electron_logger.cjs",
       "lutris_wrapper.sh",
-      "lutris_wrapper.py"
+      "lutris_wrapper.py",
+      "electron_wayland_server.cjs"
     ],
     "asarUnpack": [
       "lutris_wrapper.sh",

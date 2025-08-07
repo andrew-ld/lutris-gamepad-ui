@@ -20,7 +20,6 @@ const PAClient = require("paclient");
 const path = require("node:path");
 const url = require("url");
 const { cwd } = require("node:process");
-const nodejsWayland = require("nodejs-wayland-server");
 
 const {
   info: logInfo,
@@ -633,7 +632,7 @@ ipcMain.on("set-audio-mute", async (_event, mute) => {
 
 app.on("window-all-closed", async () => {
   closeRunningGameProcess();
-  app.quit();
+  process.abort();
 });
 
 app.commandLine.appendSwitch("enable-features", "GlobalShortcutsPortal");
@@ -645,6 +644,6 @@ app.whenReady().then(() => {
     createWindow();
   } catch (e) {
     logError("unable to create main window", e);
-    app.quit();
+    process.abort();
   }
 });
