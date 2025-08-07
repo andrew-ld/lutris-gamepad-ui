@@ -47,6 +47,7 @@
       "electron.cjs",
       "package.json",
       "electron_preload.cjs",
+      "electron_logger.cjs",
       "lutris_wrapper.sh",
       "lutris_wrapper.py"
     ],
