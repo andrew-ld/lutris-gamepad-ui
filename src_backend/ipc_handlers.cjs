@@ -1,0 +1,83 @@
+const { ipcMain, shell, nativeImage } = require("electron");
+const { exec } = require("child_process");
+const {
+  getAudioInfo,
+  setAudioVolume,
+  setDefaultSink,
+  setAudioMute,
+} = require("./audio_manager.cjs");
+const {
+  getGames,
+  launchGame,
+  closeRunningGameProcess,
+} = require("./game_manager.cjs");
+const { toggleWindowShow } = require("./window_manager.cjs");
+const {
+  getLutrisWrapperPath,
+  logError,
+  logInfo,
+  logWarn,
+} = require("./utils.cjs");
+const { getMainWindow } = require("./state.cjs");
+
+const logLevelToLogger = {
+  error: logError,
+  warn: logWarn,
+  info: logInfo,
+};
+
+function registerIpcHandlers() {
+  // Game Management
+  ipcMain.handle("get-games", getGames);
+  ipcMain.on("launch-game", (_event, gameId) => launchGame(gameId));
+  ipcMain.on("close-game", closeRunningGameProcess);
+  ipcMain.on("open-lutris", () => {
+    exec(`bash ${getLutrisWrapperPath()}`, (err) => {
+      if (err) logError("Open Lutris error", err);
+    });
+  });
+
+  // Window & App Management
+  ipcMain.on("toggle-window-show", toggleWindowShow);
+  ipcMain.on("set-icon", async (_event, dataURL) => {
+    const mainWindow = getMainWindow();
+    if (mainWindow) {
+      mainWindow.setIcon(nativeImage.createFromDataURL(dataURL));
+    }
+  });
+  ipcMain.on("open-external-link", (_event, url) => {
+    if (new URL(url).protocol !== "https:") {
+      logError("Attempted to open a non-HTTPS URL:", url);
+      return;
+    }
+    shell.openExternal(url);
+  });
+
+  ipcMain.on("reboot-pc", () => {
+    logInfo("Requesting PC reboot...");
+    exec("systemctl reboot", (err) => {
+      if (err) logError("Reboot error", err);
+    });
+  });
+  ipcMain.on("poweroff-pc", () => {
+    logInfo("Requesting PC power off...");
+    exec("systemctl poweroff", (err) => {
+      if (err) logError("Poweroff error", err);
+    });
+  });
+
+  ipcMain.handle("get-audio-info", getAudioInfo);
+  ipcMain.on("set-audio-volume", (_event, volume) => setAudioVolume(volume));
+  ipcMain.on("set-default-sink", (_event, sinkName) =>
+    setDefaultSink(sinkName)
+  );
+  ipcMain.on("set-audio-mute", (_event, mute) => setAudioMute(mute));
+
+  // Logging from Renderer
+  ipcMain.on("log", (_event, level, messageParts) => {
+    const logger = logLevelToLogger[level] || logError;
+    logger(...messageParts);
+  });
+}
+
+module.exports = { registerIpcHandlers };

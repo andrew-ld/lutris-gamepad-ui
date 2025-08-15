@@ -45,11 +45,11 @@
     "files": [
       "dist/**/*",
       "electron.cjs",
-      "package.json",
       "electron_preload.cjs",
-      "electron_logger.cjs",
+      "package.json",
       "lutris_wrapper.sh",
-      "lutris_wrapper.py"
+      "lutris_wrapper.py",
+      "src_backend/**/*"
     ],
     "asarUnpack": [
       "lutris_wrapper.sh",
@@ -62,7 +62,7 @@
     "linux": {
       "target": "AppImage",
       "category": "game",
-      "icon": "src/resources/icon.svg"
+      "icon": "src_frontend/resources/icon.svg"
     }
   }
 }
