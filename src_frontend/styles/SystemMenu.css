@@ -52,6 +52,10 @@
   animation: fadeInMenu 0.2s ease-out;
 }
 
+.system-menu-overlay .legenda-content {
+  --legenda-content-padding: 0;
+}
+
 @keyframes fadeInMenu {
   from {
     opacity: 0;

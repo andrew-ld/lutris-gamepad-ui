@@ -69,8 +69,13 @@ async function initializePulseAudioClient() {
 
   try {
     await new Promise((resolve, reject) => {
-      pa.once("ready", resolve);
-      pa.once("error", reject);
+      pa.once("ready", () => {
+        logInfo("Audio manager connected to PulseAudio successfully.");
+        resolve();
+      });
+      pa.once("error", (e) => {
+        reject(e);
+      });
       pa.connect();
     });
 

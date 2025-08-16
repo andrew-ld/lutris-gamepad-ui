@@ -29,7 +29,6 @@
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
   max-width: 90vw;
   max-height: 90vh;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
 }

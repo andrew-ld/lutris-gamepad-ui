@@ -24,20 +24,21 @@
     "electron:build": "electron-builder"
   },
   "dependencies": {
-    "paclient": "git+https://github.com/andrew-ld/paclient.git#450fc5046e2bb6b3ce7920211ec89bc3748d0463"
+    "@homebridge/dbus-native": "github:andrew-ld/dbus-native#b1e7adc7daf54a3c1d23912cb020832085322109",
+    "paclient": "github:andrew-ld/paclient#450fc5046e2bb6b3ce7920211ec89bc3748d0463"
   },
   "devDependencies": {
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "@vitejs/plugin-react": "^4.5.2",
-    "concurrently": "^9.1.2",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^5.0.0",
+    "concurrently": "^9.2.0",
     "electron": "^36.5.0",
     "electron-builder": "^26.0.12",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "react-scan": "^0.4.3",
-    "vite": "^6.3.5",
-    "wait-on": "^8.0.3"
+    "vite": "^7.1.2",
+    "wait-on": "^8.0.4"
   },
   "build": {
     "appId": "com.electron.${name}",

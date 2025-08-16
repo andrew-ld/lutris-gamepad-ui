@@ -42,12 +42,39 @@ function getElectronPreloadPath() {
   return localeAppFile("electron_preload.cjs");
 }
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function retryAsync(fn, options = {}) {
+  const {
+    maxTries = 3,
+    initialDelay = 200,
+    maxDelay = 2000,
+    onRetry,
+  } = options;
+
+  for (let attempt = 1; attempt <= maxTries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (attempt === maxTries) {
+        throw error;
+      }
+      if (onRetry) {
+        onRetry(error, attempt);
+      }
+      const delay = Math.min(initialDelay * 2 ** (attempt - 1), maxDelay);
+      await sleep(delay);
+    }
+  }
+}
+
 module.exports = {
   isDev,
   forceWindowed,
   execPromise,
   getLutrisWrapperPath,
   getElectronPreloadPath,
+  retryAsync,
   logInfo,
   logWarn,
   logError,

@@ -7,6 +7,7 @@ import { useLutris } from "../contexts/LutrisContext";
 import "../styles/SystemMenu.css";
 import { playActionSound } from "../utils/sound";
 import LegendaContainer from "./LegendaContainer";
+import BluetoothMenu from "./BluetoothMenu";
 import { useScopedInput } from "../hooks/useScopedInput";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
 import About from "./About";
@@ -48,6 +49,11 @@ const SystemMenu = () => {
     setIsOpen(false);
   }, [showModal]);
 
+  const openBluetoothSettingsModal = useCallback(() => {
+    showModal((hideThisModal) => <BluetoothMenu onClose={hideThisModal} />);
+    setIsOpen(false);
+  }, [showModal]);
+
   const openAboutModal = useCallback(() => {
     showModal((hideThisModal) => <About onClose={hideThisModal} />);
     setIsOpen(false);
@@ -63,6 +69,10 @@ const SystemMenu = () => {
       {
         label: "Audio Settings",
         action: openAudioSettingsModal,
+      },
+      {
+        label: "Bluetooth Settings",
+        action: openBluetoothSettingsModal,
       },
       { label: "Open Lutris", action: () => api.openLutris() },
       {

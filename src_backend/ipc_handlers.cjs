@@ -11,6 +11,15 @@ const {
   launchGame,
   closeRunningGameProcess,
 } = require("./game_manager.cjs");
+const {
+  getBluetoothState,
+  powerOnAdapter,
+  startDiscovery: bluetoothStartDiscovery,
+  stopDiscovery: bluetoothStopDiscovery,
+  connectToDevice: bluetoothConnect,
+  disconnectFromDevice: bluetoothDisconnect,
+  subscribeToChanges: subscribeToBluetoothChanges,
+} = require("./bluetooth_manager.cjs");
 const { toggleWindowShow } = require("./window_manager.cjs");
 const {
   getLutrisWrapperPath,
@@ -53,6 +62,7 @@ function registerIpcHandlers() {
     shell.openExternal(url);
   });
 
+  // System Control
   ipcMain.on("reboot-pc", () => {
     logInfo("Requesting PC reboot...");
     exec("systemctl reboot", (err) => {
@@ -66,12 +76,28 @@ function registerIpcHandlers() {
     });
   });
 
+  // Audio Management
   ipcMain.handle("get-audio-info", getAudioInfo);
   ipcMain.on("set-audio-volume", (_event, volume) => setAudioVolume(volume));
   ipcMain.on("set-default-sink", (_event, sinkName) =>
     setDefaultSink(sinkName)
   );
   ipcMain.on("set-audio-mute", (_event, mute) => setAudioMute(mute));
+
+  // Bluetooth Management
+  ipcMain.handle("bluetooth-get-state", getBluetoothState);
+  ipcMain.on("bluetooth-power-on-adapter", async (_event, adapterPath) =>
+    powerOnAdapter(adapterPath)
+  );
+  ipcMain.on("bluetooth-start-discovery", bluetoothStartDiscovery);
+  ipcMain.on("bluetooth-stop-discovery", bluetoothStopDiscovery);
+  ipcMain.on("bluetooth-connect", async (_event, devicePath) =>
+    bluetoothConnect(devicePath)
+  );
+  ipcMain.on("bluetooth-disconnect", (_event, devicePath) =>
+    bluetoothDisconnect(devicePath)
+  );
+  subscribeToBluetoothChanges();
 
   // Logging from Renderer
   ipcMain.on("log", (_event, level, messageParts) => {

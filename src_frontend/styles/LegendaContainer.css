@@ -2,14 +2,39 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  flex: 1;
+  min-height: 0;
+}
+
+.legenda-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--legenda-content-padding, 24px);
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-color) transparent;
+}
+
+.legenda-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.legenda-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.legenda-content::-webkit-scrollbar-thumb {
+  background-color: var(--accent-color);
+  border-radius: 4px;
 }
 
 .legenda-footer {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding: 12px 16px;
-  margin-top: 8px;
   display: flex;
   justify-content: center;
   gap: 16px;
   flex-wrap: wrap;
+  flex-shrink: 0;
 }

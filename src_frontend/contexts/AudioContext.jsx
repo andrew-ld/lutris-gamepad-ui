@@ -5,7 +5,7 @@ import {
   useEffect,
   useCallback,
 } from "react";
-import * as api from "../utils/ipc";
+import * as ipc from "../utils/ipc";
 
 const AudioContext = createContext(null);
 export const useAudio = () => useContext(AudioContext);
@@ -20,6 +20,10 @@ export const AudioProvider = ({ children }) => {
   const [availableSinks, setAvailableSinks] = useState([]);
 
   const processAudioInfo = (info) => {
+    if (!info) {
+      setIsLoading(false);
+      return;
+    }
     setVolume(info.volume);
     setIsMuted(info.isMuted);
     setDefaultSinkName(info.name);
@@ -35,11 +39,13 @@ export const AudioProvider = ({ children }) => {
   };
 
   const fetchAudioInfo = useCallback(async () => {
-    const info = await api.getAudioInfo();
-    if (!info) {
-      return;
+    try {
+      const info = await ipc.getAudioInfo();
+      processAudioInfo(info);
+    } catch (err) {
+      ipc.logError("Failed to fetch initial audio info:", err);
+      setIsLoading(false);
     }
-    processAudioInfo(info);
   }, []);
 
   useEffect(() => {
@@ -49,23 +55,23 @@ export const AudioProvider = ({ children }) => {
       processAudioInfo(info);
     };
 
-    window.electronAPI.onAudioInfoChanged(handleAudioInfoChanged);
+    ipc.onAudioInfoChanged(handleAudioInfoChanged);
 
     return () => {
-      window.electronAPI.removeAllListeners("audio-info-changed");
+      ipc.removeAllListeners("audio-info-changed");
     };
   }, [fetchAudioInfo]);
 
-  const updateVolume = useCallback((volumePercent) => {
-    const clampedVolume = Math.max(0, Math.min(100, volumePercent));
-    api.setAudioVolume(clampedVolume);
-    setIsMuted((currentMuteState) => {
-      if (currentMuteState && clampedVolume > 0) {
-        api.setAudioMute(false);
+  const updateVolume = useCallback(
+    (volumePercent) => {
+      const clampedVolume = Math.max(0, Math.min(100, volumePercent));
+      ipc.setAudioVolume(clampedVolume);
+      if (isMuted && clampedVolume > 0) {
+        ipc.setAudioMute(false);
       }
-      return currentMuteState;
-    });
-  }, []);
+    },
+    [isMuted]
+  );
 
   const increaseVolume = useCallback(() => {
     setVolume((currentVolume) => {
@@ -82,14 +88,11 @@ export const AudioProvider = ({ children }) => {
   }, [updateVolume]);
 
   const toggleMute = useCallback(() => {
-    setIsMuted((currentMuteState) => {
-      api.setAudioMute(!currentMuteState);
-      return currentMuteState;
-    });
-  }, []);
+    ipc.setAudioMute(!isMuted);
+  }, [isMuted]);
 
   const setDefaultSink = useCallback((sinkName) => {
-    api.setDefaultSink(sinkName);
+    ipc.setDefaultSink(sinkName);
   }, []);
 
   const value = {

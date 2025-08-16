@@ -5,7 +5,8 @@ import {
   useEffect,
   useCallback,
 } from "react";
-import * as api from "../utils/ipc";
+import * as ipc from "../utils/ipc";
+import { parseTimedeltaToSeconds } from "../utils/datetime";
 
 const LutrisContext = createContext(null);
 export const useLutris = () => useContext(LutrisContext);
@@ -18,10 +19,21 @@ export const LutrisProvider = ({ children }) => {
   const fetchGames = useCallback(async () => {
     setLoading(true);
     try {
-      const allGames = await api.getGames();
-      setGames(allGames);
+      const allGames = await ipc.getGames();
+
+      const mappedGames = allGames.map((game) => ({
+        id: game.id,
+        title: game.name || game.slug,
+        playtimeSeconds: game.playtimeSeconds
+          ? game.playtimeSeconds
+          : parseTimedeltaToSeconds(game.playtime),
+        lastPlayed: game.lastplayed ? new Date(game.lastplayed) : null,
+        coverPath: game.coverPath,
+      }));
+
+      setGames(mappedGames);
     } catch (error) {
-      api.logError("Error fetching games in context:", error);
+      ipc.logError("Error fetching games in context:", error);
     } finally {
       setLoading(false);
     }
@@ -33,7 +45,7 @@ export const LutrisProvider = ({ children }) => {
 
   useEffect(() => {
     const handleGameStarted = (gameId) => {
-      api.logInfo(`[IPC] Received game-started for ID: ${gameId}`);
+      ipc.logInfo(`[IPC] Received game-started for ID: ${gameId}`);
       const game = games.find((g) => g.id === gameId);
       if (game) {
         setRunningGame(game);
@@ -41,31 +53,31 @@ export const LutrisProvider = ({ children }) => {
     };
 
     const handleGameClosed = () => {
-      api.logInfo("[IPC] Received game-closed");
+      ipc.logInfo("[IPC] Received game-closed");
       setRunningGame(null);
       fetchGames();
     };
 
-    window.electronAPI.onGameStarted(handleGameStarted);
-    window.electronAPI.onGameClosed(handleGameClosed);
+    ipc.onGameStarted(handleGameStarted);
+    ipc.onGameClosed(handleGameClosed);
 
     return () => {
-      window.electronAPI.removeAllListeners("game-started");
-      window.electronAPI.removeAllListeners("game-closed");
+      ipc.removeAllListeners("game-started");
+      ipc.removeAllListeners("game-closed");
     };
   }, [games, fetchGames]);
 
   const launchGame = useCallback(
     (game) => {
       if (runningGame) return;
-      api.launchGame(game);
+      ipc.launchGame(game);
     },
     [runningGame]
   );
 
   const closeRunningGame = useCallback(() => {
     if (!runningGame) return;
-    api.closeGame(runningGame);
+    ipc.closeGame(runningGame);
   }, [runningGame]);
 
   const value = {
