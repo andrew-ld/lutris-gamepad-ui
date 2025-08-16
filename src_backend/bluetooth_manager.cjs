@@ -294,12 +294,16 @@ async function stopDiscovery() {
   const adapterPaths = await _getAllAdapterPaths();
   if (adapterPaths.length === 0) return;
   for (const path of adapterPaths) {
-    _callOnInterface(
-      path,
-      ADAPTER_INTERFACE,
-      "StopDiscovery",
-      `stop discovery on ${path}`
-    );
+    try {
+      await _callOnInterface(
+        path,
+        ADAPTER_INTERFACE,
+        "StopDiscovery",
+        `stop discovery on ${path}`
+      );
+    } catch (e) {
+      logError("Could not stop discovery on adapter:", path, e);
+    }
   }
 }
 
