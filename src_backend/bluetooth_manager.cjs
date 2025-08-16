@@ -52,9 +52,8 @@ function _getBus() {
 
 async function _getObjectManager() {
   if (objectManager) return objectManager;
-  await _getBus();
-  const service = systemBus.getService(BLUEZ_SERVICE_NAME);
-
+  const bus = await _getBus();
+  const service = bus.getService(BLUEZ_SERVICE_NAME);
   return new Promise((resolve, reject) => {
     service.getInterface(
       BLUEZ_OBJECT_PATH,
