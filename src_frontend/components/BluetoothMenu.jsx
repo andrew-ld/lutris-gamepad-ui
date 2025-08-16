@@ -155,7 +155,7 @@ const BluetoothMenu = ({ onClose }) => {
 
   useEffect(() => {
     forceRefresh();
-  }, []);
+  }, [forceRefresh]);
 
   useEffect(() => {
     return () => {
@@ -163,7 +163,7 @@ const BluetoothMenu = ({ onClose }) => {
         stopDiscovery();
       }
     };
-  }, [isDiscovering]);
+  }, [isDiscovering, forceRefresh]);
 
   return (
     <div className="bt-menu-container">
