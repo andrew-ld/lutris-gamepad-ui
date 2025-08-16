@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useEffect } from "react";
+import { useMemo, useCallback, useEffect, useRef } from "react";
 import {
   useBluetoothState,
   useBluetoothActions,
@@ -24,6 +24,7 @@ const BluetoothMenu = ({ onClose }) => {
     powerOnAdapter,
   } = useBluetoothActions();
   const { showModal } = useModalActions();
+  const currentMenuItem = useRef(null);
 
   const handleDeviceAction = useCallback(
     (device) => {
@@ -74,6 +75,8 @@ const BluetoothMenu = ({ onClose }) => {
   );
 
   const menuItems = useMemo(() => {
+    currentMenuItem.current = null;
+
     const powerOnItems = (adapters || [])
       .filter((a) => !a.powered)
       .map((adapter) => ({
@@ -102,6 +105,10 @@ const BluetoothMenu = ({ onClose }) => {
   }, [devices, adapters, handleDeviceAction, powerOnAdapter]);
 
   const renderItem = useCallback((item, isFocused, onMouseEnter) => {
+    if (isFocused) {
+      currentMenuItem.current = item;
+    }
+
     const actionButtonLabel = item.isAdapter
       ? "Power On"
       : item.device.isConnected
@@ -141,7 +148,13 @@ const BluetoothMenu = ({ onClose }) => {
 
   const legendItems = useMemo(
     () => [
-      { button: "A", label: "Select" },
+      {
+        button: "A",
+        label: "Select",
+        onClick: () => {
+          currentMenuItem.current?.action();
+        },
+      },
       {
         button: "X",
         label: isDiscovering ? "Stop discovery" : "Start discovery",
