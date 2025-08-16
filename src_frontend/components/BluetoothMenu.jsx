@@ -75,8 +75,6 @@ const BluetoothMenu = ({ onClose }) => {
   );
 
   const menuItems = useMemo(() => {
-    currentMenuItem.current = null;
-
     const powerOnItems = (adapters || [])
       .filter((a) => !a.powered)
       .map((adapter) => ({
@@ -105,10 +103,6 @@ const BluetoothMenu = ({ onClose }) => {
   }, [devices, adapters, handleDeviceAction, powerOnAdapter]);
 
   const renderItem = useCallback((item, isFocused, onMouseEnter) => {
-    if (isFocused) {
-      currentMenuItem.current = item;
-    }
-
     const actionButtonLabel = item.isAdapter
       ? "Power On"
       : item.device.isConnected
@@ -192,6 +186,10 @@ const BluetoothMenu = ({ onClose }) => {
               onAction={handleAction}
               focusId={BluetoothMenuFocusId}
               itemKey={(item) => item.id}
+              onFocusChange={(item) => {
+                currentMenuItem.current = item;
+              }}
+              emptyMessage="No devices found. Ensure Bluetooth is powered on and press 'X' to start discovery."
             />
           )}
         </div>

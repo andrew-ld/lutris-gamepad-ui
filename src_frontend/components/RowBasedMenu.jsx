@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useScopedInput } from "../hooks/useScopedInput";
 import { playActionSound } from "../utils/sound";
+import "../styles/RowBasedMenu.css";
 
 const findScrollableParent = (element) => {
   let el = element;
@@ -26,6 +27,8 @@ const RowBasedMenu = ({
   isActive = true,
   onFocusChange,
   itemKey = defaultKeyExtractor,
+  renderEmpty,
+  emptyMessage = "No items available.",
 }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedIndexRef = useRef(selectedIndex);
@@ -41,7 +44,7 @@ const RowBasedMenu = ({
   const selectedItemKeyRef = useRef(null);
 
   useEffect(() => {
-    if (items[selectedIndex]) {
+    if (items.length > 0 && items[selectedIndex]) {
       selectedItemKeyRef.current = itemKey(items[selectedIndex], selectedIndex);
     } else {
       selectedItemKeyRef.current = null;
@@ -49,6 +52,11 @@ const RowBasedMenu = ({
   }, [selectedIndex, items, itemKey]);
 
   useEffect(() => {
+    if (items.length === 0) {
+      setSelectedIndex(0);
+      onFocusChangeRef.current?.(null);
+      return;
+    }
     if (selectedItemKeyRef.current !== null) {
       const newIndex = items.findIndex(
         (item, index) => itemKey(item, index) === selectedItemKeyRef.current
@@ -64,11 +72,11 @@ const RowBasedMenu = ({
   }, [items, itemKey]);
 
   useEffect(() => {
-    if (onFocusChangeRef.current && items[selectedIndex]) {
-      onFocusChangeRef.current(items[selectedIndex]);
+    if (onFocusChangeRef.current) {
+      onFocusChangeRef.current(items[selectedIndex] ?? null);
     }
 
-    if (!containerRef.current) return;
+    if (!containerRef.current || items.length === 0) return;
 
     const scrollParent = findScrollableParent(containerRef.current);
     const selectedElement = containerRef.current.children[selectedIndex];
@@ -100,6 +108,14 @@ const RowBasedMenu = ({
 
   const inputHandler = useCallback(
     (input) => {
+      if (items.length === 0) {
+        if (onActionRef.current) {
+          playActionSound();
+          onActionRef.current(input.name, null);
+        }
+        return;
+      }
+
       const currentItem = items[selectedIndexRef.current];
 
       switch (input.name) {
@@ -134,6 +150,17 @@ const RowBasedMenu = ({
   );
 
   useScopedInput(inputHandler, focusId, isActive);
+
+  if (items.length === 0) {
+    if (renderEmpty) {
+      return renderEmpty();
+    }
+    return (
+      <div className="row-based-menu-empty">
+        <p>{emptyMessage}</p>
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef}>

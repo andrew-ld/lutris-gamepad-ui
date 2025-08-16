@@ -7,6 +7,10 @@ const { logInfo, logError } = require("./src_backend/utils.cjs");
 
 process.noAsar = true;
 
+process.on("unhandledRejection", (reason, promise) => {
+  logError("Caught a global rejection:", reason, promise);
+});
+
 if (!app.requestSingleInstanceLock()) {
   app.quit();
   return;

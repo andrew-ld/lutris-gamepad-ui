@@ -277,12 +277,16 @@ async function startDiscovery() {
     return;
   }
   for (const path of adapterPaths) {
-    _callOnInterface(
-      path,
-      ADAPTER_INTERFACE,
-      "StartDiscovery",
-      `start discovery on ${path}`
-    );
+    try {
+      await _callOnInterface(
+        path,
+        ADAPTER_INTERFACE,
+        "StartDiscovery",
+        `start discovery on ${path}`
+      );
+    } catch (e) {
+      logError("Could not start discovery on adapter:", path, e);
+    }
   }
 }
 
