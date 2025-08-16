@@ -163,7 +163,7 @@ const BluetoothMenu = ({ onClose }) => {
         stopDiscovery();
       }
     };
-  }, [isDiscovering, forceRefresh]);
+  }, [isDiscovering, stopDiscovery]);
 
   return (
     <div className="bt-menu-container">
