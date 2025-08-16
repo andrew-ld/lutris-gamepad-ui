@@ -83,6 +83,7 @@ async function _getInterface(path, interfaceName) {
 }
 
 const _getVariantValue = (variant) => variant?.[1]?.[0];
+
 const _findInterfaceProps = (interfaces, name) =>
   interfaces.find(([ifaceName]) => ifaceName === name)?.[1];
 
@@ -196,18 +197,22 @@ async function powerOnAdapter(adapterPath) {
     logWarn("Could not execute rfkill: ", e.message);
   }
 
-  return retryAsync(
-    () => setAdapterBooleanProperty(adapterPath, "Powered", true),
-    {
-      maxTries: 3,
-      initialDelay: 300,
-      onRetry: (error, attempt) => {
-        logInfo(
-          `Retrying power on for adapter ${adapterPath} (attempt ${attempt}). Error: ${error.message}`
-        );
-      },
-    }
-  );
+  try {
+    await retryAsync(
+      () => setAdapterBooleanProperty(adapterPath, "Powered", true),
+      {
+        maxTries: 3,
+        initialDelay: 300,
+        onRetry: (error, attempt) => {
+          logWarn(
+            `Retrying power on for adapter ${adapterPath} (attempt ${attempt}). Error: ${error.message}`
+          );
+        },
+      }
+    );
+  } catch (e) {
+    logError(`Unable to power on adapter ${adapterPath}. Error:`, e);
+  }
 }
 
 async function listDevices() {
