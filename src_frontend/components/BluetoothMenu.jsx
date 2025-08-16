@@ -157,6 +157,14 @@ const BluetoothMenu = ({ onClose }) => {
     forceRefresh();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (isDiscovering) {
+        stopDiscovery();
+      }
+    };
+  }, [isDiscovering]);
+
   return (
     <div className="bt-menu-container">
       <LegendaContainer legendItems={legendItems}>
