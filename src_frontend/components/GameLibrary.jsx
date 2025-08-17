@@ -7,12 +7,14 @@ const GameLibrary = ({
   onCardFocus,
   onCardClick,
   setCardRef,
+  setShelfRef,
+  libraryContainerRef,
   searchQuery,
 }) => {
   const hasResults = shelves.length > 0 && shelves[0].games.length > 0;
 
   return (
-    <main className="game-library">
+    <main ref={libraryContainerRef} className="game-library">
       <header className="library-header">
         <h1>{searchQuery ? "Search" : "My Library"}</h1>
       </header>
@@ -24,6 +26,7 @@ const GameLibrary = ({
             games={shelf.games}
             shelfIndex={shelfIndex}
             setCardRef={setCardRef}
+            setShelfRef={setShelfRef}
             onCardFocus={onCardFocus}
             onCardClick={onCardClick}
           />

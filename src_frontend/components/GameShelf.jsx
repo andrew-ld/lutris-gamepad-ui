@@ -7,11 +7,12 @@ const GameShelf = ({
   games,
   shelfIndex,
   setCardRef,
+  setShelfRef,
   onCardFocus,
   onCardClick,
 }) => {
   return (
-    <section className="game-shelf">
+    <section ref={(el) => setShelfRef(el, shelfIndex)} className="game-shelf">
       <h2 className="game-shelf-title">{title}</h2>
       <div className="game-shelf-scroll-container">
         {games.map((game, cardIndex) => (

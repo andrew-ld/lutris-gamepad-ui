@@ -2,20 +2,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { useScopedInput } from "../hooks/useScopedInput";
 import { playActionSound } from "../utils/sound";
 import "../styles/RowBasedMenu.css";
-
-const findScrollableParent = (element) => {
-  let el = element;
-  while (el && el !== document.body) {
-    const style = window.getComputedStyle(el);
-    if (style.overflowY === "auto" || style.overflowY === "scroll") {
-      if (el.scrollHeight > el.clientHeight) {
-        return el;
-      }
-    }
-    el = el.parentElement;
-  }
-  return null;
-};
+import { findScrollableParent } from "../utils/dom";
 
 const defaultKeyExtractor = (item, index) => item.id ?? item.label ?? index;
 

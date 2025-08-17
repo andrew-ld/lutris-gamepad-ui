@@ -23,9 +23,16 @@ const LibraryContainer = () => {
   const { showModal } = useModalActions();
   const { isModalOpen } = useModalState();
 
+  const libraryContainerRef = useRef(null);
   const cardRefs = useRef([[]]);
+  const shelfRefs = useRef([]);
   const gameCloseCloseModalRef = useRef(null);
   const prevFocusCoords = useRef(null);
+  const lastCardIndexByShelf = useRef([]);
+
+  const setShelfRef = useCallback((el, shelfIndex) => {
+    shelfRefs.current[shelfIndex] = el;
+  }, []);
 
   const setCardRef = useCallback((el, shelfIndex, cardIndex) => {
     if (!cardRefs.current[shelfIndex]) {
@@ -72,7 +79,6 @@ const LibraryContainer = () => {
     newShelves.push({ title: "All Games", games: allGamesSorted });
 
     const categoriesMap = new Map();
-
     games.forEach((game) => {
       game.categories.forEach((categoryName) => {
         if (!categoriesMap.has(categoryName)) {
@@ -107,6 +113,7 @@ const LibraryContainer = () => {
   useEffect(() => {
     setFocusCoords({ shelf: 0, card: 0 });
     prevFocusCoords.current = null;
+    lastCardIndexByShelf.current = [];
   }, [games, searchQuery]);
 
   const handleCardFocus = useCallback((coords) => {
@@ -114,6 +121,7 @@ const LibraryContainer = () => {
       if (current.shelf === coords.shelf && current.card === coords.card) {
         return current;
       }
+      lastCardIndexByShelf.current[coords.shelf] = coords.card;
       return { ...coords, preventScroll: true };
     });
   }, []);
@@ -139,6 +147,7 @@ const LibraryContainer = () => {
     }
 
     const { shelf, card, preventScroll } = focusCoords;
+
     const targetNode = cardRefs.current[shelf]?.[card];
     if (targetNode) {
       targetNode.classList.add("focused");
@@ -154,8 +163,21 @@ const LibraryContainer = () => {
       }
     }
 
+    const prevShelf = prevFocusCoords.current?.shelf;
+    if (shelf !== prevShelf) {
+      if (shelf === 0) {
+        libraryContainerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        const targetShelfNode = shelfRefs.current[shelf];
+        targetShelfNode?.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+        });
+      }
+    }
+
     prevFocusCoords.current = focusCoords;
-  }, [focusCoords, loading, runningGame]);
+  }, [focusCoords, loading, runningGame, shelves.length]);
 
   const focusedGame = useMemo(
     () =>
@@ -218,38 +240,57 @@ const LibraryContainer = () => {
         case "LEFT":
         case "RIGHT":
           setFocusCoords((current) => {
-            let { shelf, card } = current;
-            if (shelves.length === 0 || shelves[shelf]?.games.length === 0)
+            const { shelf: currentShelf, card: currentCard } = current;
+            if (
+              shelves.length === 0 ||
+              shelves[currentShelf]?.games.length === 0
+            )
               return current;
 
-            const originalCoords = { shelf, card };
+            let nextShelf = currentShelf;
+            let nextCard = currentCard;
 
             switch (input.name) {
               case "UP":
-                shelf = Math.max(0, shelf - 1);
+                nextShelf = Math.max(0, currentShelf - 1);
                 break;
               case "DOWN":
-                shelf = Math.min(shelves.length - 1, shelf + 1);
+                nextShelf = Math.min(shelves.length - 1, currentShelf + 1);
                 break;
               case "LEFT":
-                card = Math.max(0, card - 1);
+                nextCard = Math.max(0, currentCard - 1);
                 break;
               case "RIGHT":
-                card = Math.min(shelves[shelf].games.length - 1, card + 1);
+                nextCard = Math.min(
+                  shelves[currentShelf].games.length - 1,
+                  currentCard + 1
+                );
                 break;
               default:
                 return current;
             }
-            card = Math.min(card, shelves[shelf]?.games.length - 1 || 0);
 
-            if (
-              originalCoords.shelf !== shelf ||
-              originalCoords.card !== card
-            ) {
+            if (nextShelf !== currentShelf) {
+              lastCardIndexByShelf.current[currentShelf] = currentCard;
+              const rememberedCard = lastCardIndexByShelf.current[nextShelf];
+
+              if (rememberedCard) {
+                nextCard = Math.min(
+                  rememberedCard,
+                  shelves[nextShelf].games.length - 1
+                );
+              } else {
+                nextCard = 0;
+              }
+            } else {
+              lastCardIndexByShelf.current[currentShelf] = nextCard;
+            }
+
+            if (currentShelf !== nextShelf || currentCard !== nextCard) {
               playActionSound();
             }
 
-            return { shelf, card };
+            return { shelf: nextShelf, card: nextCard };
           });
           break;
         case "A":
@@ -364,6 +405,8 @@ const LibraryContainer = () => {
         onCardFocus={handleCardFocus}
         onCardClick={handleLaunchGame}
         setCardRef={setCardRef}
+        setShelfRef={setShelfRef}
+        libraryContainerRef={libraryContainerRef}
         searchQuery={searchQuery}
       />
       <ControlsOverlay {...controlsOverlayProps} />
