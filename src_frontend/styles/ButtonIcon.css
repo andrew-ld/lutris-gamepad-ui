@@ -25,6 +25,8 @@
 .button-keyboard-y,
 .button-keyboard-left,
 .button-keyboard-right,
+.button-keyboard-up,
+.button-keyboard-down,
 .button-keyboard-super {
   background-color: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
@@ -51,6 +53,8 @@
 
 .button-xbox-left,
 .button-xbox-right,
+.button-xbox-up,
+.button-xbox-down,
 .button-xbox-super {
   background-color: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
@@ -76,6 +80,8 @@
 
 .button-playstation-left,
 .button-playstation-right,
+.button-playstation-up,
+.button-playstation-down,
 .button-playstation-super {
   background-color: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);

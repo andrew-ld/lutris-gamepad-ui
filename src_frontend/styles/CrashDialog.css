@@ -1,0 +1,99 @@
+.crash-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--primary-background);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  color: var(--text-primary);
+  padding: 20px;
+}
+
+.crash-dialog-container {
+  background-color: var(--secondary-background);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.crash-dialog-content {
+  text-align: center;
+}
+
+.crash-dialog-container .legenda-content {
+  --legenda-content-padding: 24px 32px;
+}
+
+.crash-dialog-title {
+  color: var(--accent-color);
+  font-size: 2rem;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.crash-dialog-message {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.crash-dialog-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.crash-dialog-button {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.crash-dialog-button.focused {
+  background-color: var(--accent-color);
+  color: var(--text-primary);
+  border-color: var(--accent-color);
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(229, 9, 20, 0.5);
+}
+
+body.mouse-active .crash-dialog-button:hover {
+  transform: scale(1.05);
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.crash-dialog-details {
+  background-color: var(--primary-background);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 16px;
+  text-align: left;
+  margin-top: 16px;
+}
+
+.crash-dialog-details pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}

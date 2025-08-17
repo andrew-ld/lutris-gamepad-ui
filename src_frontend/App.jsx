@@ -8,8 +8,9 @@ import LibraryContainer from "./components/LibraryContainer";
 import SystemMenu from "./components/SystemMenu";
 import ModalRenderer from "./components/ModalRenderer";
 import TopBar from "./components/TopBar";
+import ErrorBoundary from "./components/ErrorBoundary";
 
-const AppContent = () => {
+const AppMouseFocus = () => {
   const { subscribe } = useInput();
 
   useEffect(() => {
@@ -41,7 +42,9 @@ const AppContent = () => {
       clearTimeout(timeoutId);
     };
   }, [subscribe]);
+};
 
+const AppContent = () => {
   return (
     <div className="App">
       <TopBar />
@@ -54,16 +57,19 @@ const AppContent = () => {
 function App() {
   return (
     <InputProvider>
-      <LutrisProvider>
-        <ModalProvider>
-          <AudioProvider>
-            <BluetoothProvider>
-              <AppContent />
-              <ModalRenderer />
-            </BluetoothProvider>
-          </AudioProvider>
-        </ModalProvider>
-      </LutrisProvider>
+      <AppMouseFocus />
+      <ErrorBoundary>
+        <LutrisProvider>
+          <ModalProvider>
+            <AudioProvider>
+              <BluetoothProvider>
+                <AppContent />
+                <ModalRenderer />
+              </BluetoothProvider>
+            </AudioProvider>
+          </ModalProvider>
+        </LutrisProvider>
+      </ErrorBoundary>
     </InputProvider>
   );
 }
