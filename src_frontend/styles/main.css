@@ -22,6 +22,11 @@
   box-sizing: border-box;
 }
 
+body:not(.mouse-active) * {
+  pointer-events: none;
+  cursor: default !important;
+}
+
 body,
 html,
 #root {
