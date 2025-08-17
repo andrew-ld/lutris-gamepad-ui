@@ -37,31 +37,65 @@ const LibraryContainer = () => {
   const shelves = useMemo(() => {
     if (!games || games.length === 0) return [];
 
-    let filteredGames = games;
     if (searchQuery) {
-      filteredGames = games.filter((g) =>
+      const filteredGames = games.filter((g) =>
         g.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
-    }
-
-    const sortedGames = [...filteredGames].sort(
-      (a, b) => b.lastPlayed - a.lastPlayed
-    );
-    const newShelves = [
-      { title: "Recently Played", games: sortedGames.slice(0, 10) },
-      { title: "All Games", games: filteredGames },
-    ];
-
-    if (searchQuery) {
-      return [
+      const searchShelves = [
         {
           title: `Results for "${searchQuery}"`,
           games: filteredGames.sort((a, b) => a.title.localeCompare(b.title)),
         },
       ];
+      cardRefs.current = searchShelves.map((shelf) =>
+        Array(shelf.games.length)
+      );
+      return searchShelves;
     }
 
+    const sortByLastPlayed = (gameList) =>
+      [...gameList].sort(
+        (a, b) =>
+          (b.lastPlayed?.getTime() || 0) - (a.lastPlayed?.getTime() || 0)
+      );
+
+    const newShelves = [];
+
+    const recentlyPlayedGames = sortByLastPlayed(games).slice(0, 10);
+    if (recentlyPlayedGames.length > 0) {
+      newShelves.push({ title: "Recently Played", games: recentlyPlayedGames });
+    }
+
+    const allGamesSorted = [...games].sort((a, b) =>
+      a.title.localeCompare(b.title)
+    );
+    newShelves.push({ title: "All Games", games: allGamesSorted });
+
+    const categoriesMap = new Map();
+
+    games.forEach((game) => {
+      game.categories.forEach((categoryName) => {
+        if (!categoriesMap.has(categoryName)) {
+          categoriesMap.set(categoryName, []);
+        }
+        categoriesMap.get(categoryName).push(game);
+      });
+    });
+
+    const sortedCategoryNames = [...categoriesMap.keys()].sort((a, b) =>
+      a.localeCompare(b)
+    );
+
+    sortedCategoryNames.forEach((categoryName) => {
+      const categoryGames = categoriesMap.get(categoryName);
+      newShelves.push({
+        title: categoryName.charAt(0).toUpperCase() + categoryName.slice(1),
+        games: sortByLastPlayed(categoryGames),
+      });
+    });
+
     cardRefs.current = newShelves.map((shelf) => Array(shelf.games.length));
+
     return newShelves;
   }, [games, searchQuery]);
 

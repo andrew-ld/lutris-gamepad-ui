@@ -1,3 +1,4 @@
+import json
 import runpy
 import shutil
 import sys
@@ -8,10 +9,20 @@ gi.require_version('Gtk', '3.0')
 
 from gi.repository import Gtk
 from lutris import settings
+from lutris.database import categories
 
 
 def get_coverart_path_main():
     print(settings.COVERART_PATH)
+
+
+def get_all_games_categories_main():
+    result = {
+        "categories": categories.get_categories(),
+        "all_games_categories": categories.get_all_games_categories()
+    }
+
+    print(json.dumps(result))
 
 
 def lutris_main():
@@ -31,6 +42,9 @@ def lutris_main():
 def main():
     if "--get-coverart-path" in sys.argv:
         get_coverart_path_main()
+
+    elif "--get-all-games-categories" in sys.argv:
+        get_all_games_categories_main()
 
     else:
         lutris_main()

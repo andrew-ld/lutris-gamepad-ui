@@ -29,6 +29,7 @@ export const LutrisProvider = ({ children }) => {
           : parseTimedeltaToSeconds(game.playtime),
         lastPlayed: game.lastplayed ? new Date(game.lastplayed) : null,
         coverPath: game.coverPath,
+        categories: game.categories || [],
       }));
 
       setGames(mappedGames);

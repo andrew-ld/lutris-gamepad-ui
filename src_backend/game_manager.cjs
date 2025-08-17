@@ -89,10 +89,35 @@ function closeRunningGameProcess() {
 
 async function getGames() {
   const wrapperPath = getLutrisWrapperPath();
-  const { stdout: rawGames } = await execPromise(`bash ${wrapperPath} -l -j`);
-  const games = JSON.parse(rawGames);
 
+  const [{ stdout: rawGames }, { stdout: rawCategoriesData }] =
+    await Promise.all([
+      execPromise(`bash ${wrapperPath} -l -j`),
+      execPromise(`bash ${wrapperPath} --get-all-games-categories`),
+    ]);
+
+  const games = JSON.parse(rawGames);
   if (!games.length) return games;
+
+  try {
+    const {
+      categories: allCategories,
+      all_games_categories: gameCategoriesMap,
+    } = JSON.parse(rawCategoriesData);
+
+    const categoryIdToNameMap = new Map(
+      allCategories.map((cat) => [cat.id, cat.name])
+    );
+
+    for (const game of games) {
+      const categoryIds = gameCategoriesMap[String(game.id)];
+      game.categories = categoryIds
+        ? categoryIds.map((id) => categoryIdToNameMap.get(id)).filter(Boolean)
+        : [];
+    }
+  } catch (e) {
+    logError("Could not process game categories:", e);
+  }
 
   try {
     const { stdout } = await execPromise(
