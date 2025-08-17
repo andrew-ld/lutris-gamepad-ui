@@ -10,10 +10,20 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from lutris import settings
 from lutris.database import categories
+from lutris.gui.widgets.utils import get_runtime_icon_path
 
 
 def get_coverart_path_main():
     print(settings.COVERART_PATH)
+
+
+def get_runtime_icon_path_main(icon_name: str):
+    icon_path = get_runtime_icon_path(icon_name)
+
+    if icon_path is not None:
+        print(icon_path)
+    else:
+        sys.exit(1)
 
 
 def get_all_games_categories_main():
@@ -42,6 +52,9 @@ def lutris_main():
 def main():
     if "--get-coverart-path" in sys.argv:
         get_coverart_path_main()
+
+    elif "--get-runtime-icon-path" in sys.argv:
+        get_runtime_icon_path_main(sys.argv[sys.argv.index("--get-runtime-icon-path") + 1])
 
     elif "--get-all-games-categories" in sys.argv:
         get_all_games_categories_main()

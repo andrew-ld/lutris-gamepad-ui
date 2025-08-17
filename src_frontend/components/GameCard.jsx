@@ -21,6 +21,13 @@ const GameCard = React.forwardRef(({ game, onFocus, onClick }, ref) => {
       ) : (
         <GameCover game={game} className="game-card-cover" />
       )}
+      {game.runtimeIconPath && (
+        <img
+          src={`app://${game.runtimeIconPath}`}
+          alt="Runner Icon"
+          className="game-card-runner-icon"
+        />
+      )}
       <div className="game-card-overlay">
         <div className="game-card-info">
           <h3 className="game-card-title">{game.title}</h3>

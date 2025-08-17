@@ -19,6 +19,8 @@ const {
 } = require("./utils.cjs");
 const { toggleWindowShow } = require("./window_manager.cjs");
 
+const runtimeIconCache = new Map();
+
 function findLutrisWrapperChildren(pid, visitedPids) {
   if (visitedPids.has(pid)) return [];
   visitedPids.add(pid);
@@ -117,6 +119,47 @@ async function getGames() {
     }
   } catch (e) {
     logError("Could not process game categories:", e);
+  }
+
+  try {
+    const uniqueRunners = [
+      ...new Set(games.map((g) => g.runner).filter(Boolean)),
+    ];
+    const runnersToFetch = uniqueRunners.filter(
+      (runner) => !runtimeIconCache.has(runner)
+    );
+
+    if (runnersToFetch.length > 0) {
+      const iconPromises = runnersToFetch.map(async (runner) => {
+        try {
+          const { stdout } = await execPromise(
+            `bash ${wrapperPath} --get-runtime-icon-path "${runner}"`
+          );
+          const path = stdout.trim();
+          if (path) {
+            runtimeIconCache.set(runner, path);
+            addWhitelistedFile(path);
+          } else {
+            runtimeIconCache.set(runner, null);
+          }
+        } catch (error) {
+          logWarn(`Could not get runtime icon for '${runner}':`, error);
+          runtimeIconCache.set(runner, null);
+        }
+      });
+      await Promise.all(iconPromises);
+    }
+
+    for (const game of games) {
+      if (game.runner && runtimeIconCache.has(game.runner)) {
+        const runtimeIconPath = runtimeIconCache.get(game.runner);
+        if (runtimeIconPath) {
+          game.runtimeIconPath = runtimeIconPath;
+        }
+      }
+    }
+  } catch (e) {
+    logError("Could not process runtime icons:", e);
   }
 
   try {

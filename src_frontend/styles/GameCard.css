@@ -40,6 +40,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  z-index: 6;
 }
 
 .game-card:hover .game-card-overlay,
@@ -93,4 +94,16 @@
 
 .game-card.focused .game-card-info {
   transform: translateY(0);
+}
+
+.game-card-runner-icon {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  z-index: 5;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+  pointer-events: none;
 }
