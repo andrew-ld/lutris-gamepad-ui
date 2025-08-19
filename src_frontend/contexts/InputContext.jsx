@@ -121,6 +121,12 @@ export const InputProvider = ({ children }) => {
   const animationFrameId = useRef(null);
 
   useEffect(() => {
+    return () => {
+      clearTimeout(prevButtonStateTimeout.current);
+    };
+  }, []);
+
+  useEffect(() => {
     focusStackRef.current = focusStack;
   }, [focusStack]);
 
@@ -302,7 +308,10 @@ export const InputProvider = ({ children }) => {
 
       if (anyButtonPressed) {
         clearTimeout(prevButtonStateTimeout.current);
-        prevButtonStateTimeout.current = setTimeout(clearPrevButtonState, INPUT_REPROCESS_DELAY_MS);
+        prevButtonStateTimeout.current = setTimeout(
+          clearPrevButtonState,
+          INPUT_REPROCESS_DELAY_MS
+        );
         prevButtonState.current = buttons;
       }
 
