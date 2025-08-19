@@ -35,7 +35,7 @@ const GAMEPAD_BUTTON_MAP = {
 
 const ANALOG_THRESHOLD = 0.5;
 
-const INPUT_REPROCESS_DELAY_MS = 150;
+const INPUT_AUTOREPEAT_DELAY_MS = 150;
 
 const GAMEPAD_ACTION_TO_BUTTON_MAP = Object.fromEntries(
   Object.entries(GAMEPAD_BUTTON_MAP).map(([key, value]) => [value, key])
@@ -310,7 +310,7 @@ export const InputProvider = ({ children }) => {
         clearTimeout(prevButtonStateTimeout.current);
         prevButtonStateTimeout.current = setTimeout(
           clearPrevButtonState,
-          INPUT_REPROCESS_DELAY_MS
+          INPUT_AUTOREPEAT_DELAY_MS
         );
         prevButtonState.current = buttons;
       }
