@@ -35,6 +35,8 @@ const GAMEPAD_BUTTON_MAP = {
 
 const ANALOG_THRESHOLD = 0.5;
 
+const INPUT_REPROCESS_DELAY_MS = 150;
+
 const GAMEPAD_ACTION_TO_BUTTON_MAP = Object.fromEntries(
   Object.entries(GAMEPAD_BUTTON_MAP).map(([key, value]) => [value, key])
 );
@@ -115,6 +117,7 @@ export const InputProvider = ({ children }) => {
   const focusStackRef = useRef(focusStack);
 
   const prevButtonState = useRef({});
+  const prevButtonStateTimeout = useRef(null);
   const animationFrameId = useRef(null);
 
   useEffect(() => {
@@ -215,6 +218,10 @@ export const InputProvider = ({ children }) => {
     };
   }, []);
 
+  const clearPrevButtonState = useCallback(() => {
+    prevButtonState.current = {};
+  }, []);
+
   useEffect(() => {
     const pollGamepads = () => {
       const buttons = {};
@@ -270,11 +277,14 @@ export const InputProvider = ({ children }) => {
         }
       }
 
+      let anyButtonPressed = false;
+
       for (const [button, pressed] of Object.entries(buttons)) {
         const prevButtonPressed = prevButtonState.current[button];
         if (pressed && !prevButtonPressed) {
           const actionName = GAMEPAD_BUTTON_MAP[button];
           if (actionName) {
+            anyButtonPressed = true;
             processInput(createInput(actionName), gamepadType);
             break;
           }
@@ -286,10 +296,16 @@ export const InputProvider = ({ children }) => {
         !GAMEPAD_SUPER_BUTTON_FALLBACK.every((i) => prevButtonState.current[i]);
 
       if (superFallbackPressed) {
+        anyButtonPressed = true;
         processInput(createInput("Super"), gamepadType);
       }
 
-      prevButtonState.current = buttons;
+      if (anyButtonPressed) {
+        clearTimeout(prevButtonStateTimeout.current);
+        prevButtonStateTimeout.current = setTimeout(clearPrevButtonState, INPUT_REPROCESS_DELAY_MS);
+        prevButtonState.current = buttons;
+      }
+
       animationFrameId.current = requestAnimationFrame(pollGamepads);
     };
 
