@@ -6,14 +6,25 @@ const {
 } = require("original-fs");
 const defaultTheme = require("./generated/theme.default.json");
 const { getDefaultThemeFilePath, getThemeFilePath } = require("./storage.cjs");
-const { logError, logWarn } = require("./utils.cjs");
+const { logError, logWarn, logInfo } = require("./utils.cjs");
 const { getMainWindow } = require("./state.cjs");
+
+function ensureUserThemeFileExists() {
+  try {
+    const themePath = getThemeFilePath();
+    if (!existsSync(themePath)) {
+      writeFileSync(themePath, "{}");
+      logInfo(`Created empty user theme file at: ${themePath}`);
+    }
+  } catch (error) {
+    logError("Unable to create or check for user theme file.", error);
+  }
+}
 
 function readUserThemeFile() {
   try {
     const themePath = getThemeFilePath();
     if (!existsSync(themePath)) {
-      logWarn("User theme is not present at", themePath);
       return {};
     }
     const fileContent = readFileSync(themePath, "utf-8");
@@ -58,6 +69,8 @@ function initializeThemeManager() {
   } catch (error) {
     logError("Unable to write the default theme file for reference.", error);
   }
+
+  ensureUserThemeFileExists();
 
   try {
     watch(getThemeFilePath(), (eventType) => {
