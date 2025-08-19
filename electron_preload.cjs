@@ -46,6 +46,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
   // Theme
   getUserTheme: () => ipcRenderer.invoke("get-user-theme"),
+  onThemeUpdated: (callback) =>
+    ipcRenderer.on("user-theme-updated", () => callback()),
 
   // Generic
   removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel),

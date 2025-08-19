@@ -1,80 +1,80 @@
-const { writeFileSync, readFileSync } = require("original-fs");
+const {
+  existsSync,
+  readFileSync,
+  writeFileSync,
+  watch,
+} = require("original-fs");
 const defaultTheme = require("./generated/theme.default.json");
 const { getDefaultThemeFilePath, getThemeFilePath } = require("./storage.cjs");
 const { logError, logWarn } = require("./utils.cjs");
+const { getMainWindow } = require("./state.cjs");
+
+function readUserThemeFile() {
+  try {
+    const themePath = getThemeFilePath();
+    if (!existsSync(themePath)) {
+      return {};
+    }
+    const fileContent = readFileSync(themePath, "utf-8");
+    return JSON.parse(fileContent);
+  } catch (error) {
+    logError("Failed to read or parse user theme file. Using defaults.", error);
+    return {};
+  }
+}
+
+function mergeThemes(baseTheme, userOverrides) {
+  const computedTheme = JSON.parse(JSON.stringify(baseTheme));
+
+  for (const [selector, userProps] of Object.entries(userOverrides)) {
+    const defaultProps = baseTheme[selector];
+
+    if (!defaultProps) {
+      logWarn(
+        `User theme contains a selector not in the default theme: "${selector}". Skipping.`
+      );
+      continue;
+    }
+
+    for (const [prop, value] of Object.entries(userProps)) {
+      if (!Object.hasOwn(defaultProps, prop)) {
+        logWarn(
+          `User theme contains a property not in the default theme for selector "${selector}": "${prop}". Skipping.`
+        );
+        continue;
+      }
+      computedTheme[selector][prop] = value;
+    }
+  }
+
+  return computedTheme;
+}
 
 function initializeThemeManager() {
   try {
     const defaultThemePath = getDefaultThemeFilePath();
     writeFileSync(defaultThemePath, JSON.stringify(defaultTheme, null, 2));
-  } catch (e) {
-    logError("unable to update default theme:", e);
+  } catch (error) {
+    logError("Unable to write the default theme file for reference.", error);
+  }
+
+  try {
+    watch(getThemeFilePath(), (eventType) => {
+      if (eventType === "change") {
+        getMainWindow()?.webContents.send("user-theme-updated");
+      }
+    });
+  } catch (error) {
+    logWarn("Unable to start watching the user theme file for changes.", error);
   }
 }
 
 function getUserTheme() {
-  const computedUserTheme = {};
-
-  let themePath;
-
-  try {
-    themePath = getThemeFilePath();
-  } catch (e) {
-    logError("unable to get theme file path", e);
-  }
-
-  try {
-    const theme = JSON.parse(readFileSync(themePath));
-
-    for (const [selector, props] of Object.entries(theme)) {
-      const defaultProps = defaultTheme[selector];
-
-      if (!defaultProps) {
-        logWarn(
-          "user defined theme selector not present in default theme: ",
-          selector
-        );
-
-        continue;
-      }
-
-      const computedSelectorProps = {};
-
-      for (const [prop, value] of Object.entries(props)) {
-        const defaultValue = defaultProps[prop];
-
-        if (!defaultValue) {
-          logWarn(
-            "user defined theme prop not present in default theme:",
-            selector,
-            prop
-          );
-
-          continue;
-        }
-
-        if (value === defaultValue) {
-          continue;
-        }
-
-        computedSelectorProps[prop] = value;
-      }
-
-      if (Object.entries(computedSelectorProps).length) {
-        computedUserTheme[selector] = computedSelectorProps;
-      }
-    }
-
-    return computedUserTheme;
-  } catch (e) {
-    logError("unable to read user defined theme:", e);
-  }
-
-  try {
-    writeFileSync(themePath, JSON.stringify(computedUserTheme, null, 2));
-  } catch (e) {
-    logError("unable to rewrite user theme file:", e);
-  }
+  const userThemeOverrides = readUserThemeFile();
+  return mergeThemes(defaultTheme, userThemeOverrides);
 }
 
-module.exports = { initializeThemeManager, getUserTheme };
+module.exports = {
+  initializeThemeManager,
+  getUserTheme,
+};

@@ -75,7 +75,7 @@
   box-shadow: 0 0 15px rgba(229, 9, 20, 0.5);
 }
 
-body.mouse-active .crash-dialog-button:hover {
+.crash-dialog-button:hover {
   transform: scale(1.05);
   background-color: var(--accent-color);
   border-color: var(--accent-color);

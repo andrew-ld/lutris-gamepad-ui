@@ -1,11 +1,19 @@
-import { getUserTheme, logError } from "./ipc";
+import { getUserTheme, logError, logInfo } from "./ipc";
 
 export async function applyUserTheme() {
   try {
     const theme = await getUserTheme();
 
+    if (!theme) {
+      return;
+    }
+
     for (const styleSheet of document.styleSheets) {
       for (const rule of styleSheet.cssRules) {
+        if (!rule.style) {
+          continue;
+        }
+
         const themeRules = theme[rule.selectorText];
 
         if (!themeRules) {
@@ -17,6 +25,8 @@ export async function applyUserTheme() {
         }
       }
     }
+
+    logInfo("Sucessfully loaded user theme");
   } catch (e) {
     logError("unable to apply user theme:", e);
   }
