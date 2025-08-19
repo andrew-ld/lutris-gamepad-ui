@@ -13,6 +13,7 @@ function readUserThemeFile() {
   try {
     const themePath = getThemeFilePath();
     if (!existsSync(themePath)) {
+      logWarn("User theme is not present at", themePath);
       return {};
     }
     const fileContent = readFileSync(themePath, "utf-8");
