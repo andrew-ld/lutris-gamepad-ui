@@ -33,6 +33,51 @@ const GAMEPAD_BUTTON_MAP = {
   16: "Super",
 };
 
+const ANALOG_THRESHOLD = 0.5;
+
+const GAMEPAD_ACTION_TO_BUTTON_MAP = Object.fromEntries(
+  Object.entries(GAMEPAD_BUTTON_MAP).map(([key, value]) => [value, key])
+);
+
+const applyAnalogStickAsDPad = (axes, buttons, threshold) => {
+  const [axisX, axisY] = axes;
+
+  if (Math.abs(axisY) > threshold && Math.abs(axisY) >= Math.abs(axisX)) {
+    if (axisY < 0) {
+      buttons[GAMEPAD_ACTION_TO_BUTTON_MAP.UP] = true;
+    } else {
+      buttons[GAMEPAD_ACTION_TO_BUTTON_MAP.DOWN] = true;
+    }
+  } else if (Math.abs(axisX) > threshold && Math.abs(axisX) > Math.abs(axisY)) {
+    if (axisX < 0) {
+      buttons[GAMEPAD_ACTION_TO_BUTTON_MAP.LEFT] = true;
+    } else {
+      buttons[GAMEPAD_ACTION_TO_BUTTON_MAP.RIGHT] = true;
+    }
+  }
+};
+
+const getAggregatedAxes = (gp) => {
+  if (!gp || !gp.axes) {
+    return [0, 0];
+  }
+
+  let dominantX = 0;
+  let dominantY = 0;
+
+  const leftX = gp.axes[0] || 0;
+  const leftY = gp.axes[1] || 0;
+  if (Math.abs(leftX) > Math.abs(dominantX)) dominantX = leftX;
+  if (Math.abs(leftY) > Math.abs(dominantY)) dominantY = leftY;
+
+  const rightX = gp.axes[2] || 0;
+  const rightY = gp.axes[3] || 0;
+  if (Math.abs(rightX) > Math.abs(dominantX)) dominantX = rightX;
+  if (Math.abs(rightY) > Math.abs(dominantY)) dominantY = rightY;
+
+  return [dominantX, dominantY];
+};
+
 const getGamepadType = (gamepad) => {
   const gamepadId = gamepad?.id?.toLowerCase();
 
@@ -173,18 +218,38 @@ export const InputProvider = ({ children }) => {
   useEffect(() => {
     const pollGamepads = () => {
       const buttons = {};
+      const gamepads = navigator.getGamepads();
+
       let activeGamepad = null;
 
-      for (const gp of navigator.getGamepads()) {
+      for (const gp of gamepads) {
         if (!gp) {
           continue;
         }
+
         for (let i = 0; i < gp.buttons.length; i++) {
           if (!activeGamepad && gp.buttons[i].pressed) {
             activeGamepad = gp;
           }
           buttons[i] = buttons[i] || gp.buttons[i].pressed;
         }
+
+        if (!activeGamepad && gp.axes) {
+          const hasStickMovement = gp.axes.some(
+            (axis) => Math.abs(axis) > ANALOG_THRESHOLD
+          );
+          if (hasStickMovement) {
+            activeGamepad = gp;
+          }
+        }
+      }
+
+      if (activeGamepad) {
+        applyAnalogStickAsDPad(
+          getAggregatedAxes(activeGamepad),
+          buttons,
+          ANALOG_THRESHOLD
+        );
       }
 
       const createInput = (actionName) => {
