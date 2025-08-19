@@ -44,6 +44,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   setIcon: (dataURL) => ipcRenderer.send("set-icon", dataURL),
   openExternalLink: (url) => ipcRenderer.send("open-external-link", url),
 
+  // Theme
+  getUserTheme: () => ipcRenderer.invoke("get-user-theme"),
+
   // Generic
   removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel),
   log: (level, args) => ipcRenderer.send("log", level, args),

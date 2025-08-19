@@ -42,3 +42,5 @@ export const removeAllListeners = (channel) =>
 export const logInfo = (...args) => window.electronAPI.log("info", args);
 export const logWarn = (...args) => window.electronAPI.log("warn", args);
 export const logError = (...args) => window.electronAPI.log("error", args);
+
+export const getUserTheme = () => window.electronAPI.getUserTheme();

@@ -1,6 +1,5 @@
-const path = require("path");
-const { app } = require("electron");
 const util = require("util");
+const { getLogFilePath } = require("./storage.cjs");
 const fs = require("fs");
 
 /** @type {fs.WriteStream | null} */
@@ -18,11 +17,7 @@ function initialize() {
   }
 
   try {
-    const appName = app.getName();
-    const logDir = path.join(app.getPath("home"), ".local", appName, "logs");
-    fs.mkdirSync(logDir, { recursive: true });
-    const logFile = path.join(logDir, "app.log");
-    logStream = fs.createWriteStream(logFile, { flags: "w" });
+    logStream = fs.createWriteStream(getLogFilePath(), { flags: "w" });
   } catch (error) {
     logStream = null;
     console.error(

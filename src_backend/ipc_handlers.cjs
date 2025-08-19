@@ -28,6 +28,7 @@ const {
   logWarn,
 } = require("./utils.cjs");
 const { getMainWindow } = require("./state.cjs");
+const { getUserTheme } = require("./theme_manager.cjs");
 
 const logLevelToLogger = {
   error: logError,
@@ -104,6 +105,9 @@ function registerIpcHandlers() {
     const logger = logLevelToLogger[level] || logError;
     logger(...messageParts);
   });
+
+  // Theme
+  ipcMain.handle("get-user-theme", () => getUserTheme());
 }
 
 module.exports = { registerIpcHandlers };

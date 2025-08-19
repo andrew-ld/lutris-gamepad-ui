@@ -27,3 +27,6 @@ release
 
 # release
 release.AppImage
+
+# Generated files
+src_backend/generated
