@@ -14,7 +14,7 @@ function ensureUserThemeFileExists() {
     const themePath = getThemeFilePath();
     if (!existsSync(themePath)) {
       writeFileSync(themePath, "{}");
-      logInfo(`Created empty user theme file at: ${themePath}`);
+      logInfo("Created empty user theme file at:", themePath);
     }
   } catch (error) {
     logError("Unable to create or check for user theme file.", error);
