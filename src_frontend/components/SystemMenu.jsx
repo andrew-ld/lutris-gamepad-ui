@@ -8,16 +8,16 @@ import "../styles/SystemMenu.css";
 import { playActionSound } from "../utils/sound";
 import LegendaContainer from "./LegendaContainer";
 import BluetoothMenu from "./BluetoothMenu";
-import { useScopedInput } from "../hooks/useScopedInput";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
 import About from "./About";
+import RowBasedMenu from "./RowBasedMenu";
 
 const PowerIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="24"
     height="24"
-    viewBox="0 0 24 24"
+    viewBox="0 0 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -33,14 +33,12 @@ export const SystemMenuFocusId = "SystemMenu";
 
 const SystemMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [focusedItem, setFocusedItem] = useState(null);
   const { showModal } = useModalActions();
   const { isModalOpen } = useModalState();
 
   const menuRef = useRef(null);
   const menuPowerButtonRef = useRef(null);
-  const selectedIndexRef = useRef(selectedIndex);
-  selectedIndexRef.current = selectedIndex;
 
   const { fetchGames } = useLutris();
 
@@ -91,7 +89,12 @@ const SystemMenu = () => {
         doubleConfirm: true,
       },
     ],
-    [fetchGames, openAudioSettingsModal, openAboutModal]
+    [
+      fetchGames,
+      openAudioSettingsModal,
+      openAboutModal,
+      openBluetoothSettingsModal,
+    ]
   );
 
   const openConfirmation = useCallback(
@@ -153,54 +156,20 @@ const SystemMenu = () => {
   const toggleMenu = useCallback(() => {
     setIsOpen((prev) => {
       const isOpening = !prev;
-      if (isOpening) {
-        setSelectedIndex(0);
-      }
       return isOpening;
     });
   }, []);
 
-  const handleActionRef = useRef(handleAction);
-  handleActionRef.current = handleAction;
-
-  const menuItemsRef = useRef(menuItems);
-  menuItemsRef.current = menuItems;
-
-  const handleSelect = useCallback(() => {
-    handleActionRef.current(menuItemsRef.current[selectedIndexRef.current]);
-  }, []);
-
-  const menuInputHandler = useCallback(
-    (input) => {
-      switch (input.name) {
-        case "UP":
-          setSelectedIndex((prev) => {
-            const next = Math.max(0, prev - 1);
-            if (next !== prev) playActionSound();
-            return next;
-          });
-          break;
-        case "DOWN":
-          setSelectedIndex((prev) => {
-            const next = Math.min(menuItemsRef.current.length - 1, prev + 1);
-            if (next !== prev) playActionSound();
-            return next;
-          });
-          break;
-        case "A":
-          playActionSound();
-          handleSelect();
-          break;
-        case "B":
-          playActionSound();
-          setIsOpen(false);
-          break;
+  const handleMenuAction = useCallback(
+    (actionName, item) => {
+      if (actionName === "A") {
+        if (item) handleAction(item);
+      } else if (actionName === "B") {
+        setIsOpen(false);
       }
     },
-    [handleSelect]
+    [handleAction]
   );
-
-  useScopedInput(menuInputHandler, SystemMenuFocusId, isOpen);
 
   useGlobalShortcut([
     {
@@ -233,12 +202,32 @@ const SystemMenu = () => {
 
   const closeMenuCallback = useCallback(() => setIsOpen(false), []);
 
+  const handleSelect = useCallback(() => {
+    if (focusedItem) {
+      handleAction(focusedItem);
+    }
+  }, [focusedItem, handleAction]);
+
   const legendItems = useMemo(
     () => [
       { button: "A", label: "Select", onClick: handleSelect },
       { button: "B", label: "Back", onClick: closeMenuCallback },
     ],
     [handleSelect, closeMenuCallback]
+  );
+
+  const renderMenuItem = useCallback(
+    (item, isFocused, onMouseEnter) => (
+      <div
+        key={item.label}
+        className={`system-menu-item ${isFocused ? "focused" : ""}`}
+        onClick={() => handleAction(item)}
+        onMouseEnter={onMouseEnter}
+      >
+        {item.label}
+      </div>
+    ),
+    [handleAction]
   );
 
   return (
@@ -255,20 +244,14 @@ const SystemMenu = () => {
       {isOpen && (
         <div className="system-menu-overlay">
           <LegendaContainer legendItems={legendItems}>
-            <ul className="system-menu-list">
-              {menuItems.map((item, index) => (
-                <li
-                  key={item.label}
-                  className={`system-menu-item ${
-                    index === selectedIndex ? "focused" : ""
-                  }`}
-                  onClick={() => handleAction(item)}
-                  onMouseEnter={() => setSelectedIndex(index)}
-                >
-                  {item.label}
-                </li>
-              ))}
-            </ul>
+            <RowBasedMenu
+              items={menuItems}
+              renderItem={renderMenuItem}
+              onAction={handleMenuAction}
+              onFocusChange={setFocusedItem}
+              focusId={SystemMenuFocusId}
+              isActive={isOpen}
+            />
           </LegendaContainer>
         </div>
       )}

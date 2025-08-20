@@ -108,16 +108,16 @@ const RowBasedMenu = ({
       switch (input.name) {
         case "UP":
           setSelectedIndex((prev) => {
-            const next = Math.max(0, prev - 1);
-            if (next !== prev) playActionSound();
-            return next;
+            const next = prev - 1;
+            playActionSound();
+            return next < 0 ? items.length - 1 : next;
           });
           break;
         case "DOWN":
           setSelectedIndex((prev) => {
-            const next = Math.min(items.length - 1, prev + 1);
-            if (next !== prev) playActionSound();
-            return next;
+            const next = prev + 1;
+            playActionSound();
+            return next > items.length - 1 ? 0 : next;
           });
           break;
         case "LEFT":
