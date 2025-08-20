@@ -38,6 +38,8 @@ const defaultThemeGenerator = () => {
     "outline",
     "scrollbar-color",
     "text-shadow",
+    "--primary-background",
+    "border-top",
   ];
 
   const result = {};
