@@ -28,7 +28,6 @@ const LibraryContainer = () => {
   const shelfRefs = useRef([]);
   const gameCloseCloseModalRef = useRef(null);
   const prevFocusCoords = useRef(null);
-  const lastCardIndexByShelf = useRef([]);
 
   const setShelfRef = useCallback((el, shelfIndex) => {
     shelfRefs.current[shelfIndex] = el;
@@ -113,7 +112,6 @@ const LibraryContainer = () => {
   useEffect(() => {
     setFocusCoords({ shelf: 0, card: 0 });
     prevFocusCoords.current = null;
-    lastCardIndexByShelf.current = [];
   }, [games, searchQuery]);
 
   const handleCardFocus = useCallback((coords) => {
@@ -121,7 +119,6 @@ const LibraryContainer = () => {
       if (current.shelf === coords.shelf && current.card === coords.card) {
         return current;
       }
-      lastCardIndexByShelf.current[coords.shelf] = coords.card;
       return { ...coords, preventScroll: true };
     });
   }, []);
@@ -271,19 +268,7 @@ const LibraryContainer = () => {
             }
 
             if (nextShelf !== currentShelf) {
-              lastCardIndexByShelf.current[currentShelf] = currentCard;
-              const rememberedCard = lastCardIndexByShelf.current[nextShelf];
-
-              if (rememberedCard) {
-                nextCard = Math.min(
-                  rememberedCard,
-                  shelves[nextShelf].games.length - 1
-                );
-              } else {
-                nextCard = 0;
-              }
-            } else {
-              lastCardIndexByShelf.current[currentShelf] = nextCard;
+              nextCard = 0;
             }
 
             if (currentShelf !== nextShelf || currentCard !== nextCard) {
