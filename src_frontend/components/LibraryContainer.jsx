@@ -268,7 +268,10 @@ const LibraryContainer = () => {
             }
 
             if (nextShelf !== currentShelf) {
-              nextCard = 0;
+              nextCard = Math.min(
+                nextCard,
+                shelves[nextShelf].games.length - 1
+              );
             }
 
             if (currentShelf !== nextShelf || currentCard !== nextCard) {
