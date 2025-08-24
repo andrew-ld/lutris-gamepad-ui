@@ -5,6 +5,7 @@ const {
   protocol,
   net,
   screen,
+  app,
 } = require("electron");
 const path = require("node:path");
 const url = require("url");
@@ -18,6 +19,8 @@ const {
   forceWindowed,
   getElectronPreloadPath,
   logError,
+  logWarn,
+  logInfo,
 } = require("./utils.cjs");
 
 function toggleWindowShow() {
@@ -83,6 +86,22 @@ function createWindow(onWindowClosedCallback) {
 
     homePageUrl = "app://" + homePageUrl;
   }
+
+  app.on('web-contents-created', (_event, contents) => {
+    contents.setWindowOpenHandler((details) => {
+      logWarn("Tried to open window", details)
+      return { action: 'deny' }
+    })
+
+    contents.on('will-navigate', (event, navigationUrl) => {
+      const parsedUrl = new URL(navigationUrl)
+
+      if (parsedUrl.origin !== homePageUrl) {
+        logWarn("Tried to navigate to another page", parsedUrl)
+        event.preventDefault()
+      }
+    })
+  })
 
   const fullscreen = !forceWindowed && !isDev;
   const display = screen.getPrimaryDisplay();

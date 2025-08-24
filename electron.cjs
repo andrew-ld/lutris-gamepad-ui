@@ -5,6 +5,7 @@ const { closeRunningGameProcess } = require("./src_backend/game_manager.cjs");
 const { getMainWindow } = require("./src_backend/state.cjs");
 const { logInfo, logError } = require("./src_backend/utils.cjs");
 const { initializeThemeManager } = require("./src_backend/theme_manager.cjs");
+const { subscribeToBluetoothChanges } = require("./src_backend/bluetooth_manager.cjs");
 
 process.noAsar = true;
 
@@ -39,6 +40,7 @@ app.whenReady().then(() => {
   try {
     registerIpcHandlers();
     initializeThemeManager();
+    subscribeToBluetoothChanges()
     createWindow(() => {
       logInfo("Main window closed!");
       closeRunningGameProcess();

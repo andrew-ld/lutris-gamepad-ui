@@ -336,7 +336,7 @@ function _triggerStateUpdate() {
   debounceTimeout = setTimeout(_sendFullStateUpdate, DEBOUNCE_DELAY_MS);
 }
 
-async function subscribeToChanges() {
+async function subscribeToBluetoothChanges() {
   if (isSubscribed) return;
 
   try {
@@ -367,5 +367,5 @@ module.exports = {
   stopDiscovery,
   connectToDevice,
   disconnectFromDevice,
-  subscribeToChanges,
+  subscribeToBluetoothChanges,
 };
