@@ -1,3 +1,5 @@
+import { logError } from "./ipc.js";
+
 export function formatPlaytime(seconds) {
   if (seconds <= 0) {
     return "0m";
@@ -40,7 +42,8 @@ export function parseTimedeltaToSeconds(timedelta) {
   const match = timedelta.match(regex);
 
   if (!match) {
-    throw new Error(`Invalid timedelta string format: "${timedelta}"`);
+    logError("Invalid timedelta string format", timedelta);
+    return 0
   }
 
   const daysString = match[1];
