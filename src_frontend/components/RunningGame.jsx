@@ -2,8 +2,10 @@ import "../styles/RunningGame.css";
 import GameCover from "./GameCover";
 import { getDeterministicGradient } from "../utils/color";
 import { formatPlaytime } from "../utils/datetime";
+import { useTranslation } from "../contexts/TranslationContext";
 
 const RunningGamePage = ({ game }) => {
+  const { t } = useTranslation();
   if (!game) return null;
 
   const gradient = getDeterministicGradient(game.title);
@@ -26,9 +28,13 @@ const RunningGamePage = ({ game }) => {
           <GameCover game={game} className="running-game-cover" />
         )}
         <div className="running-game-info">
-          <h2>Now Playing</h2>
+          <h2>{t("Now Playing")}</h2>
           <h1>{game.title}</h1>
-          <p>Playtime: {formatPlaytime(game.playtimeSeconds)}</p>
+          <p>
+            {t("Playtime: {{playtime}}", {
+              playtime: formatPlaytime(game.playtimeSeconds),
+            })}
+          </p>
         </div>
       </div>
     </div>

@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { useInput } from "../contexts/InputContext";
 import { useAudio } from "../contexts/AudioContext";
 import "../styles/TopBar.css";
+import { useTranslation } from "../contexts/TranslationContext";
 
 const TopBar = () => {
+  const { t } = useTranslation();
   const { gamepadCount } = useInput();
   const { volume, isMuted, isLoading: audioIsLoading } = useAudio();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -43,7 +45,7 @@ const TopBar = () => {
   };
 
   const getNetworkIndicator = () => {
-    return isOnline ? "📶" : "❌ Offline";
+    return isOnline ? "📶" : `❌ ${t("Offline")}`;
   };
 
   return (
@@ -58,7 +60,7 @@ const TopBar = () => {
           <>
             <span className="top-bar-item top-bar-separator">|</span>
             <span className="top-bar-item top-bar-volume">
-              {getVolumeIcon()} {isMuted ? "Muted" : `${volume}%`}
+              {getVolumeIcon()} {isMuted ? t("Muted") : `${volume}%`}
             </span>
           </>
         )}

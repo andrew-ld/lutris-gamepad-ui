@@ -28,6 +28,9 @@
     "paclient": "github:andrew-ld/paclient#450fc5046e2bb6b3ce7920211ec89bc3748d0463"
   },
   "devDependencies": {
+    "@babel/parser": "^7.28.3",
+    "@babel/plugin-syntax-jsx": "^7.27.1",
+    "@babel/traverse": "^7.28.3",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",

@@ -2,8 +2,10 @@ import React from "react";
 import "../styles/GameCard.css";
 import GameCover from "./GameCover";
 import { formatDate, formatPlaytime } from "../utils/datetime";
+import { useTranslation } from "../contexts/TranslationContext";
 
 const GameCard = React.forwardRef(({ game, onFocus, onClick }, ref) => {
+  const { t } = useTranslation();
   return (
     <div
       ref={ref}
@@ -31,8 +33,16 @@ const GameCard = React.forwardRef(({ game, onFocus, onClick }, ref) => {
       <div className="game-card-overlay">
         <div className="game-card-info">
           <h3 className="game-card-title">{game.title}</h3>
-          <p>Playtime: {formatPlaytime(game.playtimeSeconds)}</p>
-          <p>Last played: {formatDate(game.lastPlayed)}</p>
+          <p>
+            {t("Playtime: {{playtime}}", {
+              playtime: formatPlaytime(game.playtimeSeconds),
+            })}
+          </p>
+          <p>
+            {t("Last played: {{date}}", {
+              date: formatDate(game.lastPlayed) || t("Never"),
+            })}
+          </p>
         </div>
       </div>
     </div>

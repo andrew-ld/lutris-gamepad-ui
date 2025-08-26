@@ -3,18 +3,12 @@ import { useScopedInput } from "../hooks/useScopedInput";
 import "../styles/OnScreenKeyboard.css";
 import { playActionSound } from "../utils/sound";
 import LegendaContainer from "./LegendaContainer";
+import { useTranslation } from "../contexts/TranslationContext";
 
 export const OnScreenKeyboardFocusID = "OnScreenKeyboard";
 
-const KEY_LAYOUT = [
-  ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
-  ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
-  ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
-  ["z", "x", "c", "v", "b", "n", "m", "Backspace"],
-  ["Close", "Space", "Enter"],
-];
-
 const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
+  const { t } = useTranslation();
   const [inputValue, setInputValue] = useState(initialValue || "");
   const [focusCoords, setFocusCoords] = useState({ x: 0, y: 0 });
 
@@ -30,10 +24,34 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
 
-  const handleKeyPress = useCallback((key) => {
-    if (typeof key !== "string") return;
+  const keyLayout = useMemo(
+    () => [
+      ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+      ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+      ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
+      [
+        "z",
+        "x",
+        "c",
+        "v",
+        "b",
+        "n",
+        "m",
+        { id: "Backspace", label: t("Backspace") },
+      ],
+      [
+        { id: "Close", label: t("Close") },
+        { id: "Space", label: t("Space") },
+        { id: "Enter", label: t("Enter") },
+      ],
+    ],
+    [t]
+  );
 
-    switch (key) {
+  const handleKeyPress = useCallback((keyId) => {
+    if (typeof keyId !== "string") return;
+
+    switch (keyId) {
       case "Backspace":
         setInputValue((prev) => prev.slice(0, -1));
         break;
@@ -47,7 +65,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
         onCloseRef.current();
         break;
       default:
-        setInputValue((prev) => prev + key);
+        setInputValue((prev) => prev + keyId);
         break;
     }
   }, []);
@@ -62,13 +80,12 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
           setFocusCoords((prev) => {
             const originalCoords = { ...prev };
             let { x, y } = prev;
-            const currentLayout = KEY_LAYOUT;
 
             if (input.name === "UP") y = Math.max(0, y - 1);
             if (input.name === "DOWN")
-              y = Math.min(currentLayout.length - 1, y + 1);
+              y = Math.min(keyLayout.length - 1, y + 1);
 
-            const targetRowLength = currentLayout[y].length;
+            const targetRowLength = keyLayout[y].length;
             x = Math.min(x, targetRowLength - 1);
 
             if (input.name === "LEFT") x = Math.max(0, x - 1);
@@ -84,9 +101,11 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
           break;
         case "A":
           playActionSound();
-          handleKeyPress(
-            KEY_LAYOUT[focusCoordsRef.current.y][focusCoordsRef.current.x]
-          );
+          const keyObject =
+            keyLayout[focusCoordsRef.current.y][focusCoordsRef.current.x];
+          const keyId =
+            typeof keyObject === "string" ? keyObject : keyObject.id;
+          handleKeyPress(keyId);
           break;
         case "X":
           playActionSound();
@@ -98,16 +117,17 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
           break;
       }
     },
-    [handleKeyPress]
+    [handleKeyPress, keyLayout]
   );
 
   useScopedInput(inputHandler, OnScreenKeyboardFocusID);
 
   const onSelectCallback = useCallback(() => {
-    handleKeyPress(
-      KEY_LAYOUT[focusCoordsRef.current.y][focusCoordsRef.current.x]
-    );
-  }, [handleKeyPress]);
+    const keyObject =
+      keyLayout[focusCoordsRef.current.y][focusCoordsRef.current.x];
+    const keyId = typeof keyObject === "string" ? keyObject : keyObject.id;
+    handleKeyPress(keyId);
+  }, [handleKeyPress, keyLayout]);
 
   const onConfirmCallback = useCallback(() => {
     onConfirmRef.current(inputValueRef.current);
@@ -121,17 +141,17 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
     () => [
       {
         button: "A",
-        label: "Select",
+        label: t("Select"),
         onClick: onSelectCallback,
       },
       {
         button: "X",
-        label: "Submit",
+        label: t("Submit"),
         onClick: onConfirmCallback,
       },
-      { button: "B", label: "Close", onClick: onCloseCallback },
+      { button: "B", label: t("Close"), onClick: onCloseCallback },
     ],
-    [onSelectCallback, onConfirmCallback, onCloseCallback]
+    [onSelectCallback, onConfirmCallback, onCloseCallback, t]
   );
 
   return (
@@ -146,19 +166,22 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
             </div>
           </div>
           <div className="osk-layout">
-            {KEY_LAYOUT.map((row, y) => (
+            {keyLayout.map((row, y) => (
               <div className="osk-row" key={`row-${y}`}>
-                {row.map((key, x) => {
+                {row.map((keyObject, x) => {
                   const isFocused = focusCoords.x === x && focusCoords.y === y;
+                  const isSpecial = typeof keyObject !== "string";
+                  const keyLabel = isSpecial ? keyObject.label : keyObject;
+                  const keyId = isSpecial ? keyObject.id : keyObject;
                   return (
                     <button
-                      key={key}
-                      className={`osk-key ${key.length > 1 ? "special" : ""} ${
+                      key={keyId}
+                      className={`osk-key ${isSpecial ? "special" : ""} ${
                         isFocused ? "focused" : ""
                       }`}
-                      onClick={() => handleKeyPress(key)}
+                      onClick={() => handleKeyPress(keyId)}
                     >
-                      {key}
+                      {keyLabel}
                     </button>
                   );
                 })}

@@ -10,10 +10,12 @@ import FocusableRow from "./FocusableRow";
 import LoadingIndicator from "./LoadingIndicator";
 import ConfirmationDialog from "./ConfirmationDialog";
 import "../styles/BluetoothMenu.css";
+import { useTranslation } from "../contexts/TranslationContext";
 
 export const BluetoothMenuFocusId = "BluetoothMenu";
 
 const BluetoothMenu = ({ onClose }) => {
+  const { t } = useTranslation();
   const { devices, adapters, isLoading, isDiscovering } = useBluetoothState();
   const {
     startDiscovery,
@@ -28,11 +30,20 @@ const BluetoothMenu = ({ onClose }) => {
 
   const handleDeviceAction = useCallback(
     (device) => {
-      const action = device.isConnected ? "Disconnect from" : "Connect to";
       const targetName = device.name || device.address;
+
+      const title = device.isConnected
+        ? t('Disconnect from "{{targetName}}"?', { targetName })
+        : t('Connect to "{{targetName}}"?', { targetName });
+
+      const description = device.isConnected
+        ? t("The device will be disconnected from the system.")
+        : t("Attempting to establish a connection with the device.");
+
       showModal((hideThisModal) => (
         <ConfirmationDialog
-          message={`${action}\n"${targetName}"?`}
+          message={title}
+          description={description}
           onConfirm={() => {
             if (device.isConnected) {
               disconnectDevice(device.path);
@@ -45,7 +56,7 @@ const BluetoothMenu = ({ onClose }) => {
         />
       ));
     },
-    [showModal, connectDevice, disconnectDevice]
+    [showModal, connectDevice, disconnectDevice, t]
   );
 
   const handleAction = useCallback(
@@ -79,7 +90,9 @@ const BluetoothMenu = ({ onClose }) => {
       .filter((a) => !a.powered)
       .map((adapter) => ({
         id: adapter.path,
-        label: `Power on ${adapter.name || "Bluetooth"}`,
+        label: t("Power on {{adapterName}}", {
+          adapterName: adapter.name || t("Bluetooth"),
+        }),
         action: () => powerOnAdapter(adapter.path),
         isAdapter: true,
       }));
@@ -100,64 +113,69 @@ const BluetoothMenu = ({ onClose }) => {
       }));
 
     return [...powerOnItems, ...deviceItems];
-  }, [devices, adapters, handleDeviceAction, powerOnAdapter]);
+  }, [devices, adapters, handleDeviceAction, powerOnAdapter, t]);
 
-  const renderItem = useCallback((item, isFocused, onMouseEnter) => {
-    const actionButtonLabel = item.isAdapter
-      ? "Power On"
-      : item.device.isConnected
-      ? "Disconnect"
-      : "Connect";
+  const renderItem = useCallback(
+    (item, isFocused, onMouseEnter) => {
+      const actionButtonLabel = item.isAdapter
+        ? t("Power On")
+        : item.device.isConnected
+        ? t("Disconnect")
+        : t("Connect");
 
-    return (
-      <FocusableRow
-        key={item.id}
-        isFocused={isFocused}
-        onMouseEnter={onMouseEnter}
-        onClick={item.action}
-      >
-        <div className="bt-menu-row-content">
-          <span className="bt-menu-row-label">{item.label}</span>
-          {item.device?.isConnected && (
-            <span className="bt-status-indicator connected">Connected</span>
-          )}
-          {!item.device?.isConnected && item.device?.isPaired && (
-            <span className="bt-status-indicator paired">Paired</span>
-          )}
-        </div>
-        <div className="bt-menu-row-right">
-          <button
-            className="bt-menu-action-button"
-            onClick={(e) => {
-              e.stopPropagation();
-              if (item.action) item.action();
-            }}
-          >
-            {actionButtonLabel}
-          </button>
-        </div>
-      </FocusableRow>
-    );
-  }, []);
+      return (
+        <FocusableRow
+          key={item.id}
+          isFocused={isFocused}
+          onMouseEnter={onMouseEnter}
+          onClick={item.action}
+        >
+          <div className="bt-menu-row-content">
+            <span className="bt-menu-row-label">{item.label}</span>
+            {item.device?.isConnected && (
+              <span className="bt-status-indicator connected">
+                {t("Connected")}
+              </span>
+            )}
+            {!item.device?.isConnected && item.device?.isPaired && (
+              <span className="bt-status-indicator paired">{t("Paired")}</span>
+            )}
+          </div>
+          <div className="bt-menu-row-right">
+            <button
+              className="bt-menu-action-button"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (item.action) item.action();
+              }}
+            >
+              {actionButtonLabel}
+            </button>
+          </div>
+        </FocusableRow>
+      );
+    },
+    [t]
+  );
 
   const legendItems = useMemo(
     () => [
       {
         button: "A",
-        label: "Select",
+        label: t("Select"),
         onClick: () => {
           currentMenuItem.current?.action();
         },
       },
       {
         button: "X",
-        label: isDiscovering ? "Stop discovery" : "Start discovery",
+        label: isDiscovering ? t("Stop discovery") : t("Start discovery"),
         onClick: isDiscovering ? stopDiscovery : startDiscovery,
       },
-      { button: "Y", label: "Refresh", onClick: forceRefresh },
-      { button: "B", label: "Close", onClick: onClose },
+      { button: "Y", label: t("Refresh"), onClick: forceRefresh },
+      { button: "B", label: t("Close"), onClick: onClose },
     ],
-    [onClose, isDiscovering, startDiscovery, stopDiscovery, forceRefresh]
+    [onClose, isDiscovering, startDiscovery, stopDiscovery, forceRefresh, t]
   );
 
   useEffect(() => {
@@ -176,9 +194,9 @@ const BluetoothMenu = ({ onClose }) => {
     <div className="bt-menu-container">
       <LegendaContainer legendItems={legendItems}>
         <div className="bt-menu-content">
-          <h2 className="bt-menu-title">Bluetooth Settings</h2>
+          <h2 className="bt-menu-title">{t("Bluetooth Settings")}</h2>
           {isLoading && !isDiscovering ? (
-            <LoadingIndicator message="Loading..." />
+            <LoadingIndicator />
           ) : (
             <RowBasedMenu
               items={menuItems}
@@ -189,7 +207,9 @@ const BluetoothMenu = ({ onClose }) => {
               onFocusChange={(item) => {
                 currentMenuItem.current = item;
               }}
-              emptyMessage="No devices found. Ensure Bluetooth is powered on and press 'X' to start discovery."
+              emptyMessage={t(
+                "No devices found. Ensure Bluetooth is powered on and press 'X' to start discovery."
+              )}
             />
           )}
         </div>

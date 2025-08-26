@@ -4,6 +4,7 @@ import "../styles/VolumeControl.css";
 import LegendaContainer from "./LegendaContainer";
 import RowBasedMenu from "./RowBasedMenu";
 import FocusableRow from "./FocusableRow";
+import { useTranslation } from "../contexts/TranslationContext";
 
 export const VolumeControlFocusID = "VolumeControl";
 
@@ -14,6 +15,7 @@ const CONTROL_TYPES = {
 };
 
 const VolumeControl = ({ onClose }) => {
+  const { t } = useTranslation();
   const {
     volume,
     isMuted,
@@ -44,11 +46,11 @@ const VolumeControl = ({ onClose }) => {
 
   const menuItems = useMemo(
     () => [
-      { type: CONTROL_TYPES.MUTE, label: "Mute" },
-      { type: CONTROL_TYPES.VOLUME, label: "Volume" },
-      { type: CONTROL_TYPES.OUTPUT_DEVICE, label: "Select Output" },
+      { type: CONTROL_TYPES.MUTE, label: t("Mute") },
+      { type: CONTROL_TYPES.VOLUME, label: t("Volume") },
+      { type: CONTROL_TYPES.OUTPUT_DEVICE, label: t("Select Output") },
     ],
-    []
+    [t]
   );
 
   const handleAction = useCallback(
@@ -108,7 +110,7 @@ const VolumeControl = ({ onClose }) => {
           <span className="volume-control-label">{item.label}</span>
           {item.type === CONTROL_TYPES.MUTE && (
             <button className="mute-button" onClick={toggleMute}>
-              {isMuted ? "Unmute" : "Mute"}
+              {isMuted ? t("Unmute") : t("Mute")}
             </button>
           )}
           {item.type === CONTROL_TYPES.VOLUME && (
@@ -137,52 +139,54 @@ const VolumeControl = ({ onClose }) => {
                   </span>
                 </>
               ) : (
-                <span className="output-device-name">No devices found</span>
+                <span className="output-device-name">
+                  {t("No devices found")}
+                </span>
               )}
             </div>
           )}
         </FocusableRow>
       );
     },
-    [volume, isMuted, toggleMute, availableSinks, highlightedSinkIndex]
+    [volume, isMuted, toggleMute, availableSinks, highlightedSinkIndex, t]
   );
 
   const legendItems = useMemo(() => {
     const items = [];
     if (!focusedItem)
-      return [{ button: "B", label: "Close", onClick: onClose }];
+      return [{ button: "B", label: t("Close"), onClick: onClose }];
 
     switch (focusedItem.type) {
       case CONTROL_TYPES.MUTE:
         items.push({
           button: "A",
-          label: isMuted ? "Unmute" : "Mute",
+          label: isMuted ? t("Unmute") : t("Mute"),
           onClick: toggleMute,
         });
         break;
       case CONTROL_TYPES.VOLUME:
         items.push({
           button: "LEFT",
-          label: "Decrease",
+          label: t("Decrease"),
           onClick: decreaseVolume,
         });
         items.push({
           button: "RIGHT",
-          label: "Increase",
+          label: t("Increase"),
           onClick: increaseVolume,
         });
         break;
       case CONTROL_TYPES.OUTPUT_DEVICE:
         if (availableSinks?.length > 1) {
-          items.push({ button: "LEFT", label: "Prev" });
-          items.push({ button: "RIGHT", label: "Next" });
+          items.push({ button: "LEFT", label: t("Prev") });
+          items.push({ button: "RIGHT", label: t("Next") });
         }
         if (availableSinks?.length > 0) {
-          items.push({ button: "A", label: "Set Device" });
+          items.push({ button: "A", label: t("Set Device") });
         }
         break;
     }
-    items.push({ button: "B", label: "Close", onClick: onClose });
+    items.push({ button: "B", label: t("Close"), onClick: onClose });
     return items;
   }, [
     focusedItem,
@@ -192,6 +196,7 @@ const VolumeControl = ({ onClose }) => {
     increaseVolume,
     availableSinks,
     onClose,
+    t,
   ]);
 
   const currentDefaultSinkObject =
@@ -201,10 +206,12 @@ const VolumeControl = ({ onClose }) => {
     return (
       <div className="volume-control-container">
         <LegendaContainer
-          legendItems={[{ button: "B", label: "Close", onClick: onClose }]}
+          legendItems={[{ button: "B", label: t("Close"), onClick: onClose }]}
         >
           <div style={{ padding: "24px 0", margin: 0 }}>
-            <p className="volume-control-title">Loading Audio Settings...</p>
+            <p className="volume-control-title">
+              {t("Loading Audio Settings...")}
+            </p>
           </div>
         </LegendaContainer>
       </div>
@@ -215,10 +222,12 @@ const VolumeControl = ({ onClose }) => {
     <div className="volume-control-container">
       <LegendaContainer legendItems={legendItems}>
         <div>
-          <h2 className="volume-control-title">Audio Settings</h2>
+          <h2 className="volume-control-title">{t("Audio Settings")}</h2>
           {currentDefaultSinkObject && (
             <div className="volume-control-current-sink-display">
-              <span className="volume-control-label">Current Output:</span>
+              <span className="volume-control-label">
+                {t("Current Output:")}
+              </span>
               <span
                 className="current-sink-name"
                 title={currentDefaultSinkObject.description}

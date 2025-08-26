@@ -1,4 +1,5 @@
 const { writeFileSync } = require("fs");
+const path = require("path");
 const { Rule } = require("postcss");
 
 const hoverWrapperPlugin = () => {
@@ -64,7 +65,7 @@ const defaultThemeGenerator = () => {
     },
     OnceExit() {
       writeFileSync(
-        "src_backend/generated/theme.default.json",
+        path.join(__dirname, "src_backend/generated/theme.default.json"),
         JSON.stringify(result, null, 2)
       );
     },

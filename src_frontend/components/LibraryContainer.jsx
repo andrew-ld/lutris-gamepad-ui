@@ -11,10 +11,12 @@ import { toggleWindowShow } from "../utils/ipc";
 import ConfirmationDialog from "./ConfirmationDialog";
 import { useScopedInput } from "../hooks/useScopedInput";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
+import { useTranslation } from "../contexts/TranslationContext";
 
 export const LibraryContainerFocusID = "LibraryContainer";
 
 const LibraryContainer = () => {
+  const { t } = useTranslation();
   const { games, loading, runningGame, launchGame, closeRunningGame } =
     useLutris();
 
@@ -49,7 +51,7 @@ const LibraryContainer = () => {
       );
       const searchShelves = [
         {
-          title: `Results for "${searchQuery}"`,
+          title: t('Results for "{{searchQuery}}"', { searchQuery }),
           games: filteredGames.sort((a, b) => a.title.localeCompare(b.title)),
         },
       ];
@@ -102,7 +104,7 @@ const LibraryContainer = () => {
     cardRefs.current = newShelves.map((shelf) => Array(shelf.games.length));
 
     return newShelves;
-  }, [games, searchQuery]);
+  }, [games, searchQuery, t]);
 
   const shelvesRef = useRef(shelves);
   shelvesRef.current = shelves;
@@ -187,7 +189,7 @@ const LibraryContainer = () => {
   const showSearchModalCb = useCallback(() => {
     showModal((hideThisModal) => (
       <OnScreenKeyboard
-        label="Search Library"
+        label={t("Search Library")}
         initialValue={searchQuery}
         onConfirm={(query) => {
           setSearchQuery(query);
@@ -196,7 +198,7 @@ const LibraryContainer = () => {
         onClose={hideThisModal}
       />
     ));
-  }, [setSearchQuery, showModal, searchQuery]);
+  }, [setSearchQuery, showModal, searchQuery, t]);
 
   const clearSearchCb = useCallback(() => {
     setSearchQuery("");
@@ -217,7 +219,12 @@ const LibraryContainer = () => {
       gameCloseCloseModalRef.current = hideThisModal;
       return (
         <ConfirmationDialog
-          message={`Are you sure you want to close\n${runningGame.title}?`}
+          message={t("Are you sure you want to close\n{{title}}?", {
+            title: runningGame.title,
+          })}
+          description={t(
+            "This action will force-quit the game. Any unsaved progress may be lost."
+          )}
           onConfirm={() => {
             closeRunningGame();
             hideThisModal();
@@ -226,7 +233,7 @@ const LibraryContainer = () => {
         />
       );
     });
-  }, [closeRunningGame, showModal, runningGame]);
+  }, [closeRunningGame, showModal, runningGame, t]);
 
   const libraryInputHandler = useCallback(
     (input) => {
@@ -357,7 +364,7 @@ const LibraryContainer = () => {
   }, [launchGame]);
 
   if (loading) {
-    return <LoadingIndicator message="Loading library..." />;
+    return <LoadingIndicator message={t("Loading library...")} />;
   }
 
   const controlsOverlayProps = {

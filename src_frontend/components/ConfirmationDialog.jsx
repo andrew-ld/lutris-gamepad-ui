@@ -3,10 +3,12 @@ import { useScopedInput } from "../hooks/useScopedInput";
 import "../styles/ConfirmationDialog.css";
 import { playActionSound } from "../utils/sound";
 import LegendaContainer from "./LegendaContainer";
+import { useTranslation } from "../contexts/TranslationContext";
 
 export const ConfirmationDialogFocusId = "ConfirmationDialog";
 
-const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
+const ConfirmationDialog = ({ message, description, onConfirm, onDeny }) => {
+  const { t } = useTranslation();
   const [confirmSelection, setConfirmSelection] = useState(0);
 
   const confirmSelectionRef = useRef(confirmSelection);
@@ -52,17 +54,20 @@ const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
 
   const legendItems = useMemo(
     () => [
-      { button: "A", label: "Select", onClick: handleSubmit },
-      { button: "B", label: "Cancel", onClick: handleDeny },
+      { button: "A", label: t("Select"), onClick: handleSubmit },
+      { button: "B", label: t("Cancel"), onClick: handleDeny },
     ],
-    [handleSubmit, handleDeny]
+    [handleSubmit, handleDeny, t]
   );
 
   return (
     <div className="confirmation-dialog">
       <LegendaContainer legendItems={legendItems}>
         <div className="confirmation-content">
-          <p className="confirmation-message">{message}</p>
+          <h3 className="confirmation-title">{message}</h3>
+          {description && (
+            <p className="confirmation-description">{description}</p>
+          )}
           <div className="confirmation-buttons">
             <button
               className={`confirmation-button ${
@@ -70,7 +75,7 @@ const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
               }`}
               onClick={handleConfirm}
             >
-              Confirm
+              {t("Confirm")}
             </button>
             <button
               className={`confirmation-button ${
@@ -78,7 +83,7 @@ const ConfirmationDialog = ({ message, onConfirm, onDeny }) => {
               }`}
               onClick={handleDeny}
             >
-              Cancel
+              {t("Cancel")}
             </button>
           </div>
         </div>

@@ -3,6 +3,7 @@ import { useScopedInput } from "../hooks/useScopedInput";
 import { playActionSound } from "../utils/sound";
 import "../styles/RowBasedMenu.css";
 import { findScrollableParent } from "../utils/dom";
+import { useTranslation } from "../contexts/TranslationContext";
 
 const defaultKeyExtractor = (item, index) => item.id ?? item.label ?? index;
 
@@ -15,8 +16,9 @@ const RowBasedMenu = ({
   onFocusChange,
   itemKey = defaultKeyExtractor,
   renderEmpty,
-  emptyMessage = "No items available.",
+  emptyMessage,
 }) => {
+  const { t } = useTranslation();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedIndexRef = useRef(selectedIndex);
   selectedIndexRef.current = selectedIndex;
@@ -144,7 +146,7 @@ const RowBasedMenu = ({
     }
     return (
       <div className="row-based-menu-empty">
-        <p>{emptyMessage}</p>
+        <p>{emptyMessage || t("No items available.")}</p>
       </div>
     );
   }

@@ -1,0 +1,137 @@
+{
+  "components/About.jsx": {
+    "Author": "Autore",
+    "Close": "Chiudi",
+    "Homepage": "Sito web",
+    "License": "Licenza",
+    "Open Link": "Apri link",
+    "Version": "Versione"
+  },
+  "components/BluetoothMenu.jsx": {
+    "Attempting to establish a connection with the device.": "Connessione al dispositivo in corso...",
+    "Bluetooth": "Bluetooth",
+    "Bluetooth Settings": "Impostazioni Bluetooth",
+    "Close": "Chiudi",
+    "Connect": "Connetti",
+    "Connect to \"{{targetName}}\"?": "Connettere a \"{{targetName}}\"?",
+    "Connected": "Connesso",
+    "Disconnect": "Disconnetti",
+    "Disconnect from \"{{targetName}}\"?": "Disconnettere da \"{{targetName}}\"?",
+    "No devices found. Ensure Bluetooth is powered on and press 'X' to start discovery.": "Nessun dispositivo rilevato. Assicurati che il Bluetooth sia attivo e premi 'X' per avviare la ricerca.",
+    "Paired": "Associato",
+    "Power On": "Attiva",
+    "Power on {{adapterName}}": "Attiva {{adapterName}}",
+    "Refresh": "Aggiorna",
+    "Select": "Seleziona",
+    "Start discovery": "Avvia ricerca",
+    "Stop discovery": "Interrompi ricerca",
+    "The device will be disconnected from the system.": "Il dispositivo sta per essere disconnesso."
+  },
+  "components/ConfirmationDialog.jsx": {
+    "Cancel": "Annulla",
+    "Confirm": "Conferma",
+    "Select": "Seleziona"
+  },
+  "components/ControlsOverlay.jsx": {
+    "Clear Search": "Annulla ricerca",
+    "Force close {{gameTitle}}": "Forza chiusura di {{gameTitle}}",
+    "Launch Game": "Avvia gioco",
+    "Power": "Menu di sistema",
+    "Search": "Cerca",
+    "Toggle Overlay": "Visualizza overlay",
+    "game": "gioco"
+  },
+  "components/CrashDialog.jsx": {
+    "Close Application": "Chiudi applicazione",
+    "Hide Error Details": "Nascondi dettagli",
+    "Navigate": "Sposta",
+    "No component stack available.": "Nessuna informazione sullo stack disponibile.",
+    "No error message provided.": "Nessun messaggio di errore disponibile.",
+    "Oops! Something went wrong.": "Oops! Si è verificato un problema.",
+    "Reload Application": "Riavvia applicazione",
+    "Scroll Down": "Scorri giù",
+    "Scroll Up": "Scorri su",
+    "Select": "Seleziona",
+    "Show Error Details": "Mostra dettagli",
+    "The application has encountered an unexpected error.": "L'applicazione ha riscontrato un errore imprevisto."
+  },
+  "components/GameCard.jsx": {
+    "Last played: {{date}}": "Ultimo avvio: {{date}}",
+    "Never": "Mai giocato",
+    "Playtime: {{playtime}}": "Ore di gioco: {{playtime}}"
+  },
+  "components/GameLibrary.jsx": {
+    "Add games in Lutris and reload.": "Aggiungi giochi da Lutris e aggiorna la libreria.",
+    "My Library": "La mia Libreria",
+    "No games found": "Nessun gioco presente",
+    "No results for \"{{searchQuery}}\"": "Nessun risultato per \"{{searchQuery}}\"",
+    "Search": "Ricerca",
+    "Try a different search term or press 'B' to clear.": "Prova un'altra ricerca o premi 'B' per annullare."
+  },
+  "components/LibraryContainer.jsx": {
+    "All Games": "Tutti i giochi",
+    "Are you sure you want to close\n{{title}}?": "Forzare la chiusura di\n{{title}}?",
+    "Loading library...": "Caricamento libreria...",
+    "Recently Played": "Giocati di recente",
+    "Results for \"{{searchQuery}}\"": "Risultati per \"{{searchQuery}}\"",
+    "Search Library": "Cerca nella libreria",
+    "This action will force-quit the game. Any unsaved progress may be lost.": "Questa operazione forzerà la chiusura del gioco. Eventuali progressi non salvati andranno persi."
+  },
+  "components/LoadingIndicator.jsx": {
+    "Loading...": "Caricamento..."
+  },
+  "components/OnScreenKeyboard.jsx": {
+    "Backspace": "Cancella",
+    "Close": "Chiudi",
+    "Enter": "Invio",
+    "Select": "Seleziona",
+    "Space": "Spazio",
+    "Submit": "Conferma"
+  },
+  "components/RowBasedMenu.jsx": {
+    "No items available.": "Nessun elemento disponibile."
+  },
+  "components/RunningGame.jsx": {
+    "Now Playing": "In gioco",
+    "Playtime: {{playtime}}": "Ore di gioco: {{playtime}}"
+  },
+  "components/SystemMenu.jsx": {
+    "About": "Informazioni",
+    "Are you sure you want to exit the application?": "Vuoi davvero uscire?",
+    "Are you sure you want to power off the system?": "Sei sicuro di voler spegnere il sistema?",
+    "Are you sure you want to reboot the system?": "Sei sicuro di voler riavviare il sistema?",
+    "Audio Settings": "Impostazioni Audio",
+    "Back": "Indietro",
+    "Bluetooth Settings": "Impostazioni Bluetooth",
+    "Continue with exiting the application?": "Uscire dall'applicazione?",
+    "Continue with system power off?": "Procedere con lo spegnimento del sistema?",
+    "Continue with system reboot?": "Procedere con il riavvio del sistema?",
+    "Exit Application": "Esci",
+    "Open Lutris": "Apri Lutris",
+    "Power Off System": "Spegni il sistema",
+    "Reboot System": "Riavvia il sistema",
+    "Reload Library": "Aggiorna libreria",
+    "Select": "Seleziona",
+    "This action is final and cannot be undone.": "Questa azione è irreversibile."
+  },
+  "components/TopBar.jsx": {
+    "Muted": "Silenzioso",
+    "Offline": "Offline"
+  },
+  "components/VolumeControl.jsx": {
+    "Audio Settings": "Impostazioni Audio",
+    "Close": "Chiudi",
+    "Current Output:": "Uscita corrente:",
+    "Decrease": "Abbassa",
+    "Increase": "Alza",
+    "Loading Audio Settings...": "Caricamento impostazioni audio...",
+    "Mute": "Silenzia",
+    "Next": "Successivo",
+    "No devices found": "Nessun dispositivo trovato",
+    "Prev": "Precedente",
+    "Select Output": "Seleziona uscita",
+    "Set Device": "Imposta come predefinito",
+    "Unmute": "Riattiva audio",
+    "Volume": "Volume"
+  }
+}

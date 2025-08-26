@@ -11,6 +11,7 @@ import BluetoothMenu from "./BluetoothMenu";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
 import About from "./About";
 import RowBasedMenu from "./RowBasedMenu";
+import { useTranslation } from "../contexts/TranslationContext";
 
 const PowerIcon = () => (
   <svg
@@ -32,6 +33,7 @@ const PowerIcon = () => (
 export const SystemMenuFocusId = "SystemMenu";
 
 const SystemMenu = () => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [focusedItem, setFocusedItem] = useState(null);
   const { showModal } = useModalActions();
@@ -59,34 +61,40 @@ const SystemMenu = () => {
 
   const menuItems = useMemo(
     () => [
-      { label: "Reload Library", action: fetchGames },
+      { label: t("Reload Library"), action: fetchGames },
       {
-        label: "About",
+        label: t("About"),
         action: openAboutModal,
       },
       {
-        label: "Audio Settings",
+        label: t("Audio Settings"),
         action: openAudioSettingsModal,
       },
       {
-        label: "Bluetooth Settings",
+        label: t("Bluetooth Settings"),
         action: openBluetoothSettingsModal,
       },
-      { label: "Open Lutris", action: () => api.openLutris() },
+      { label: t("Open Lutris"), action: () => api.openLutris() },
       {
-        label: "Reboot System",
+        label: t("Reboot System"),
         action: () => api.rebootPC(),
         doubleConfirm: true,
+        firstConfirm: t("Are you sure you want to reboot the system?"),
+        secondConfirm: t("Continue with system reboot?"),
       },
       {
-        label: "Power Off System",
+        label: t("Power Off System"),
         action: () => api.powerOffPC(),
         doubleConfirm: true,
+        firstConfirm: t("Are you sure you want to power off the system?"),
+        secondConfirm: t("Continue with system power off?"),
       },
       {
-        label: "Exit Application",
+        label: t("Exit Application"),
         action: () => window.close(),
         doubleConfirm: true,
+        firstConfirm: t("Are you sure you want to exit the application?"),
+        secondConfirm: t("Continue with exiting the application?"),
       },
     ],
     [
@@ -94,14 +102,16 @@ const SystemMenu = () => {
       openAudioSettingsModal,
       openAboutModal,
       openBluetoothSettingsModal,
+      t,
     ]
   );
 
   const openConfirmation = useCallback(
-    (message, onConfirmAction, closeOnConfirm = true) => {
+    ({ title, description }, onConfirmAction, closeOnConfirm = true) => {
       showModal((hideThisModal) => (
         <ConfirmationDialog
-          message={message}
+          message={title}
+          description={description}
           onConfirm={() => {
             onConfirmAction();
             if (closeOnConfirm) {
@@ -119,30 +129,27 @@ const SystemMenu = () => {
     (item) => {
       setIsOpen(false);
 
-      if (item.doubleConfirm || item.confirm) {
-        let action;
-
-        if (item.confirm) {
-          action = item.action;
-        } else {
-          action = () => {
-            openConfirmation(
-              `This action is final and cannot be undone.\nContinue with "${item.label}"?`,
-              item.action
-            );
-          };
-        }
+      if (item.doubleConfirm) {
+        const secondConfirmAction = () => {
+          openConfirmation(
+            {
+              title: item.secondConfirm,
+              description: t("This action is final and cannot be undone."),
+            },
+            item.action
+          );
+        };
 
         openConfirmation(
-          `Are you sure you want to\n${item.label}?`,
-          action,
-          !!item.confirm
+          { title: item.firstConfirm },
+          secondConfirmAction,
+          false
         );
       } else {
         item.action();
       }
     },
-    [openConfirmation]
+    [openConfirmation, t]
   );
 
   useEffect(() => {
@@ -210,10 +217,10 @@ const SystemMenu = () => {
 
   const legendItems = useMemo(
     () => [
-      { button: "A", label: "Select", onClick: handleSelect },
-      { button: "B", label: "Back", onClick: closeMenuCallback },
+      { button: "A", label: t("Select"), onClick: handleSelect },
+      { button: "B", label: t("Back"), onClick: closeMenuCallback },
     ],
-    [handleSelect, closeMenuCallback]
+    [handleSelect, closeMenuCallback, t]
   );
 
   const renderMenuItem = useCallback(

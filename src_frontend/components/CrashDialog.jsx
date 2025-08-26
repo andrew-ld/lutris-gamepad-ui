@@ -3,10 +3,12 @@ import { useScopedInput } from "../hooks/useScopedInput";
 import { playActionSound } from "../utils/sound";
 import "../styles/CrashDialog.css";
 import LegendaContainer from "./LegendaContainer";
+import { useTranslation } from "../contexts/TranslationContext";
 
 const SCROLL_AMOUNT = 50;
 
 const CrashDialog = ({ error, errorInfo }) => {
+  const { t } = useTranslation();
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [focusedButtonIndex, setFocusedButtonIndex] = useState(0);
   const containerRef = useRef(null);
@@ -25,14 +27,16 @@ const CrashDialog = ({ error, errorInfo }) => {
 
   const buttons = useMemo(
     () => [
-      { label: "Reload Application", action: handleReload },
-      { label: "Close Application", action: handleClose },
+      { label: t("Reload Application"), action: handleReload },
+      { label: t("Close Application"), action: handleClose },
       {
-        label: detailsVisible ? "Hide Error Details" : "Show Error Details",
+        label: detailsVisible
+          ? t("Hide Error Details")
+          : t("Show Error Details"),
         action: toggleDetails,
       },
     ],
-    [detailsVisible, handleReload, handleClose, toggleDetails]
+    [detailsVisible, handleReload, handleClose, toggleDetails, t]
   );
 
   const selectedButtonAction = useCallback(() => {
@@ -81,37 +85,42 @@ const CrashDialog = ({ error, errorInfo }) => {
     if (detailsVisible) {
       items.push({
         button: "UP",
-        label: "Scroll Up",
+        label: t("Scroll Up"),
         onClick: () => handleScroll("up"),
       });
       items.push({
         button: "DOWN",
-        label: "Scroll Down",
+        label: t("Scroll Down"),
         onClick: () => handleScroll("down"),
       });
     }
     items.push(
-      { button: "LEFT", label: "Navigate" },
-      { button: "RIGHT", label: "Navigate" },
-      { button: "A", label: "Select", onClick: selectedButtonAction }
+      { button: "LEFT", label: t("Navigate") },
+      { button: "RIGHT", label: t("Navigate") },
+      { button: "A", label: t("Select"), onClick: selectedButtonAction }
     );
     return items;
-  }, [selectedButtonAction, detailsVisible, handleScroll]);
+  }, [selectedButtonAction, detailsVisible, handleScroll, t]);
 
-  const errorString = error ? error.toString() : "No error message provided.";
+  const errorString = error
+    ? error.toString()
+    : t("No error message provided.");
+
   const componentStackString =
     errorInfo && errorInfo.componentStack
       ? errorInfo.componentStack.toString()
-      : "No component stack available.";
+      : t("No component stack available.");
 
   return (
     <div className="crash-dialog-overlay">
       <div className="crash-dialog-container" ref={containerRef}>
         <LegendaContainer legendItems={legendItems}>
           <div className="crash-dialog-content">
-            <h1 className="crash-dialog-title">Oops! Something went wrong.</h1>
+            <h1 className="crash-dialog-title">
+              {t("Oops! Something went wrong.")}
+            </h1>
             <p className="crash-dialog-message">
-              The application has encountered an unexpected error.
+              {t("The application has encountered an unexpected error.")}
             </p>
             <div className="crash-dialog-actions">
               {buttons.map((button, index) => (

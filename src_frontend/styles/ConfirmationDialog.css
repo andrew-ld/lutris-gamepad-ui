@@ -9,11 +9,20 @@
   text-align: center;
 }
 
-.confirmation-message {
-  margin: 0 0 24px 0;
-  font-size: 1.1rem;
+.confirmation-title {
+  margin: 0 0 8px 0;
+  font-size: 1.2rem;
+  font-weight: bold;
   line-height: 1.4;
   color: var(--text-primary);
+  white-space: pre-wrap;
+}
+
+.confirmation-description {
+  margin: 0 0 24px 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
   white-space: pre-wrap;
 }
 

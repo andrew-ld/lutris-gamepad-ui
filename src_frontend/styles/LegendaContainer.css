@@ -34,7 +34,12 @@
   padding: 12px 16px;
   display: flex;
   justify-content: center;
+  flex-shrink: 0;
+}
+
+.legenda-items-wrapper {
+  display: flex;
+  justify-content: flex-start;
   gap: 16px;
   flex-wrap: wrap;
-  flex-shrink: 0;
 }

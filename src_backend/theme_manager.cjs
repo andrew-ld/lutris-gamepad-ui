@@ -28,7 +28,7 @@ function readUserThemeFile() {
       return {};
     }
     const fileContent = readFileSync(themePath, "utf-8");
-    return JSON.parse(fileContent);
+    return JSON.parse(fileContent || "{}");
   } catch (error) {
     logError("Failed to read or parse user theme file. Using defaults.", error);
     return {};

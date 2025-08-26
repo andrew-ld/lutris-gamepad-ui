@@ -9,6 +9,7 @@ import SystemMenu from "./components/SystemMenu";
 import ModalRenderer from "./components/ModalRenderer";
 import TopBar from "./components/TopBar";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { TranslationProvider } from "./contexts/TranslationContext";
 
 const AppMouseFocus = () => {
   const { subscribe } = useInput();
@@ -58,18 +59,20 @@ function App() {
   return (
     <InputProvider>
       <AppMouseFocus />
-      <ErrorBoundary>
-        <LutrisProvider>
-          <ModalProvider>
-            <AudioProvider>
-              <BluetoothProvider>
-                <AppContent />
-                <ModalRenderer />
-              </BluetoothProvider>
-            </AudioProvider>
-          </ModalProvider>
-        </LutrisProvider>
-      </ErrorBoundary>
+      <TranslationProvider>
+        <ErrorBoundary>
+          <LutrisProvider>
+            <ModalProvider>
+              <AudioProvider>
+                <BluetoothProvider>
+                  <AppContent />
+                  <ModalRenderer />
+                </BluetoothProvider>
+              </AudioProvider>
+            </ModalProvider>
+          </LutrisProvider>
+        </ErrorBoundary>
+      </TranslationProvider>
     </InputProvider>
   );
 }

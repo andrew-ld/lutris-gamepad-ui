@@ -5,24 +5,26 @@ import FocusableRow from "./FocusableRow";
 import packageJson from "../../package.json";
 import "../styles/About.css";
 import { openExternalLink } from "../utils/ipc";
+import { useTranslation } from "../contexts/TranslationContext";
 
 export const AboutFocusId = "About";
 
 const About = ({ onClose }) => {
+  const { t } = useTranslation();
   const [focusedItem, setFocusedItem] = useState(null);
 
   const menuItems = useMemo(
     () => [
-      { label: "Version", value: packageJson.version },
-      { label: "Author", value: packageJson.author.name },
+      { label: t("Version"), value: packageJson.version },
+      { label: t("Author"), value: packageJson.author.name },
       {
-        label: "Homepage",
+        label: t("Homepage"),
         value: packageJson.homepage,
         isLink: true,
       },
-      { label: "License", value: packageJson.license },
+      { label: t("License"), value: packageJson.license },
     ],
-    []
+    [t]
   );
 
   const handleAction = useCallback(
@@ -77,13 +79,13 @@ const About = ({ onClose }) => {
     if (focusedItem?.isLink) {
       items.push({
         button: "A",
-        label: "Open Link",
+        label: t("Open Link"),
         onClick: () => openExternalLink(focusedItem.value),
       });
     }
-    items.push({ button: "B", label: "Close", onClick: onClose });
+    items.push({ button: "B", label: t("Close"), onClick: onClose });
     return items;
-  }, [focusedItem, onClose]);
+  }, [focusedItem, onClose, t]);
 
   return (
     <div className="about-container">
