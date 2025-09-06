@@ -37,7 +37,7 @@ function toggleWindowShow() {
 
   if (getRemoteDesktopSessionHandle()) {
     logInfo("toggleWindowShow: using remote desktop portal");
-    sendAltTab().then((e) => {
+    sendAltTab().catch((e) => {
       logError("unable to send alt+tab using remote desktop portal", e);
     });
   } else {
