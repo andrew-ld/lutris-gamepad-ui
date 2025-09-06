@@ -14,7 +14,7 @@ const SESSION_IFACE = "org.freedesktop.portal.Session";
 const KEYSYMS = { Alt_L: 0xffe9, Tab: 0xff09 };
 const DEVICE_TYPE = { KEYBOARD: 1, POINTER: 2 };
 const KEY_STATE = { RELEASE: 0, PRESS: 1 };
-const ALT_TAB_TIMEOUT_MS = 500;
+const ALT_TAB_TIMEOUT_MS = 1000;
 
 function _getBus() {
   return getSessionBus("remote_desktop_manager", false);
