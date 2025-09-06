@@ -109,6 +109,7 @@
     "Power Off System": "Power Off System",
     "Reboot System": "Reboot System",
     "Reload Library": "Reload Library",
+    "Reloading library...": "Reloading library...",
     "Select": "Select",
     "This action is final and cannot be undone.": "This action is final and cannot be undone."
   },

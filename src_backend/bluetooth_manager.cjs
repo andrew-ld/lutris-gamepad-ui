@@ -7,6 +7,7 @@ const {
   execPromise,
   retryAsync,
   debounce,
+  toastError,
 } = require("./utils.cjs");
 const { getSessionBus } = require("./dbus_manager.cjs");
 
@@ -329,6 +330,7 @@ async function subscribeToBluetoothChanges() {
   } catch (e) {
     isSubscribed = false;
     logError("Could not subscribe to Bluetooth changes.", e.message);
+    toastError("Bluetooth Manager", e);
   }
 }
 

@@ -6,7 +6,7 @@ const {
 } = require("original-fs");
 const defaultTheme = require("./generated/theme.default.json");
 const { getDefaultThemeFilePath, getThemeFilePath } = require("./storage.cjs");
-const { logError, logWarn, logInfo } = require("./utils.cjs");
+const { logError, logWarn, logInfo, toastError } = require("./utils.cjs");
 const { getMainWindow } = require("./state.cjs");
 
 function ensureUserThemeFileExists() {
@@ -31,6 +31,7 @@ function readUserThemeFile() {
     return JSON.parse(fileContent || "{}");
   } catch (error) {
     logError("Failed to read or parse user theme file. Using defaults.", error);
+    toastError("Theme Manager", error);
     return {};
   }
 }

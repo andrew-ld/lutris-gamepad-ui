@@ -16,6 +16,7 @@ const {
   logError,
   logInfo,
   logWarn,
+  toastError,
 } = require("./utils.cjs");
 const { toggleWindowShow } = require("./window_manager.cjs");
 
@@ -197,6 +198,8 @@ function launchGame(gameId) {
     throw new Error("A game is already running.");
   }
 
+  const gameStartTime = Date.now();
+
   const newGameProcess = spawn(
     "bash",
     [getLutrisWrapperPath(), `lutris:rungameid/${gameId}`],
@@ -224,7 +227,17 @@ function launchGame(gameId) {
   };
 
   newGameProcess.on("close", onGameClosed);
-  newGameProcess.on("error", onGameClosed);
+
+  newGameProcess.on("error", (e) => {
+    logError("game process error:", e);
+
+    const gameCloseTime = Date.now();
+    if (gameCloseTime - gameStartTime < 10_000) {
+      toastError("launchGame", e);
+    }
+
+    onGameClosed();
+  });
 }
 
 module.exports = { getGames, launchGame, closeRunningGameProcess };

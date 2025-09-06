@@ -1,5 +1,4 @@
 const { ipcMain, shell, nativeImage } = require("electron");
-const { exec } = require("child_process");
 const {
   getAudioInfo,
   setAudioVolume,
@@ -25,6 +24,8 @@ const {
   logError,
   logInfo,
   logWarn,
+  execPromise,
+  toastError,
 } = require("./utils.cjs");
 const { getMainWindow } = require("./state.cjs");
 const { getUserTheme } = require("./theme_manager.cjs");
@@ -39,37 +40,58 @@ const isValidDBusPath = (path, prefix) => {
   return typeof path === "string" && path.startsWith(prefix);
 };
 
-function registerIpcHandlers() {
-  ipcMain.handle("get-games", getGames);
+const ipcHandleWithError = (channel, listener) => {
+  ipcMain.handle(channel, async (event, ...args) => {
+    try {
+      return await listener(event, ...args);
+    } catch (error) {
+      logError("ipcHandleWithError", channel, error);
+      toastError(channel, error);
+      throw error;
+    }
+  });
+};
 
-  ipcMain.on("launch-game", (_event, gameId) => {
+const ipcOnWithError = (channel, listener) => {
+  ipcMain.on(channel, async (event, ...args) => {
+    try {
+      await listener(event, ...args);
+    } catch (error) {
+      logError("ipcOnWithError", channel, error);
+      toastError(channel, error);
+    }
+  });
+};
+
+function registerIpcHandlers() {
+  ipcHandleWithError("get-games", async () => {
+    return await getGames();
+  });
+
+  ipcOnWithError("launch-game", async (_event, gameId) => {
     if (typeof gameId !== "number" || !Number.isInteger(gameId) || gameId < 0) {
-      logError(
-        `Invalid gameId received for launch-game: ${gameId}. Must be a non-negative integer.`
+      throw new Error(
+        `Invalid gameId: ${gameId}. Must be a non-negative integer.`
       );
-      return;
     }
     launchGame(gameId);
   });
 
-  ipcMain.on("close-game", closeRunningGameProcess);
+  ipcOnWithError("close-game", async () => closeRunningGameProcess());
 
-  ipcMain.on("open-lutris", () => {
-    exec(`bash ${getLutrisWrapperPath()}`, (err) => {
-      if (err) logError("Open Lutris error", err);
-    });
+  ipcOnWithError("open-lutris", async () => {
+    await execPromise(`bash ${getLutrisWrapperPath()}`);
   });
 
   // Window & App Management
-  ipcMain.on("toggle-window-show", toggleWindowShow);
+  ipcOnWithError("toggle-window-show", async () => toggleWindowShow());
 
-  ipcMain.on("set-icon", (_event, dataURL) => {
+  ipcOnWithError("set-icon", async (_event, dataURL) => {
     if (
       typeof dataURL !== "string" ||
       !dataURL.startsWith("data:image/png;base64,")
     ) {
-      logError(`Invalid dataURL received for set-icon.`);
-      return;
+      throw new Error(`Invalid dataURL received for set-icon.`);
     }
     const mainWindow = getMainWindow();
     if (mainWindow) {
@@ -77,106 +99,107 @@ function registerIpcHandlers() {
     }
   });
 
-  ipcMain.on("open-external-link", (_event, url) => {
+  ipcOnWithError("open-external-link", async (_event, url) => {
     if (typeof url !== "string") {
-      logError("Invalid URL received for open-external-link: not a string.");
-      return;
+      throw new Error("Invalid URL received: not a string.");
     }
     try {
       const parsedUrl = new URL(url);
       if (parsedUrl.protocol !== "https:") {
-        logError("Attempted to open a non-HTTPS URL:", url);
-        return;
+        throw new Error("Attempted to open a non-HTTPS URL.");
       }
-      shell.openExternal(url);
+      await shell.openExternal(url);
     } catch (e) {
-      logError("Invalid URL received for open-external-link:", url, e);
+      logError("Invalid URL for open-external-link:", url, e);
+      throw new Error(`Could not open invalid URL: ${url}`);
     }
   });
 
   // System Control
-  ipcMain.on("reboot-pc", () => {
+  ipcOnWithError("reboot-pc", async () => {
     logInfo("Requesting PC reboot...");
-    exec("systemctl reboot", (err) => {
-      if (err) logError("Reboot error", err);
-    });
+    await execPromise("systemctl reboot");
   });
 
-  ipcMain.on("poweroff-pc", () => {
+  ipcOnWithError("poweroff-pc", async () => {
     logInfo("Requesting PC power off...");
-    exec("systemctl poweroff", (err) => {
-      if (err) logError("Poweroff error", err);
-    });
+    await execPromise("systemctl poweroff");
   });
 
   // Audio Management
-  ipcMain.handle("get-audio-info", getAudioInfo);
+  ipcHandleWithError("get-audio-info", async () => {
+    return await getAudioInfo();
+  });
 
-  ipcMain.on("set-audio-volume", (_event, volume) => {
+  ipcOnWithError("set-audio-volume", async (_event, volume) => {
     if (typeof volume !== "number" || volume < 0) {
-      logError(
-        `Invalid volume received for set-audio-volume: ${volume}. Must be a non-negative number.`
+      throw new Error(
+        `Invalid volume: ${volume}. Must be a non-negative number.`
       );
-      return;
     }
-    setAudioVolume(volume);
+    await setAudioVolume(volume);
   });
 
-  ipcMain.on("set-default-sink", (_event, sinkName) => {
+  ipcOnWithError("set-default-sink", async (_event, sinkName) => {
     if (typeof sinkName !== "string" || !sinkName.length) {
-      logError(
-        `Invalid sinkName received for set-default-sink: ${sinkName}. Must be a non-empty string.`
+      throw new Error(
+        `Invalid sinkName: ${sinkName}. Must be a non-empty string.`
       );
-      return;
     }
-    setDefaultSink(sinkName);
+    await setDefaultSink(sinkName);
   });
 
-  ipcMain.on("set-audio-mute", (_event, mute) => {
+  ipcOnWithError("set-audio-mute", async (_event, mute) => {
     if (typeof mute !== "boolean") {
-      logError(
-        `Invalid mute value received for set-audio-mute: ${mute}. Must be a boolean.`
-      );
-      return;
+      throw new Error(`Invalid mute value: ${mute}. Must be a boolean.`);
     }
-    setAudioMute(mute);
+    await setAudioMute(mute);
   });
 
   // Bluetooth Management
-  ipcMain.handle("bluetooth-get-state", getBluetoothState);
+  ipcHandleWithError("bluetooth-get-state", async () => {
+    return await getBluetoothState();
+  });
 
-  ipcMain.on("bluetooth-power-on-adapter", (_event, adapterPath) => {
+  ipcOnWithError("bluetooth-power-on-adapter", async (_event, adapterPath) => {
     if (!isValidDBusPath(adapterPath, "/org/bluez/")) {
-      logError(
+      throw new Error(
         `Invalid adapterPath for bluetooth-power-on-adapter: ${adapterPath}`
       );
-      return;
     }
-    powerOnAdapter(adapterPath);
+    await powerOnAdapter(adapterPath);
   });
 
-  ipcMain.on("bluetooth-start-discovery", bluetoothStartDiscovery);
+  ipcOnWithError(
+    "bluetooth-start-discovery",
+    async () => await bluetoothStartDiscovery()
+  );
 
-  ipcMain.on("bluetooth-stop-discovery", bluetoothStopDiscovery);
+  ipcOnWithError(
+    "bluetooth-stop-discovery",
+    async () => await bluetoothStopDiscovery()
+  );
 
-  ipcMain.on("bluetooth-connect", (_event, devicePath) => {
+  ipcOnWithError("bluetooth-connect", async (_event, devicePath) => {
     if (!isValidDBusPath(devicePath, "/org/bluez/")) {
-      logError(`Invalid devicePath for bluetooth-connect: ${devicePath}`);
-      return;
+      throw new Error(
+        `Invalid devicePath for bluetooth-connect: ${devicePath}`
+      );
     }
-    bluetoothConnect(devicePath);
+    await bluetoothConnect(devicePath);
   });
 
-  ipcMain.on("bluetooth-disconnect", (_event, devicePath) => {
+  ipcOnWithError("bluetooth-disconnect", async (_event, devicePath) => {
     if (!isValidDBusPath(devicePath, "/org/bluez/")) {
-      logError(`Invalid devicePath for bluetooth-disconnect: ${devicePath}`);
-      return;
+      throw new Error(
+        `Invalid devicePath for bluetooth-disconnect: ${devicePath}`
+      );
     }
-    bluetoothDisconnect(devicePath);
+    await bluetoothDisconnect(devicePath);
   });
 
   // Logging from Renderer
-  ipcMain.on("log", (_event, level, messageParts) => {
+  ipcOnWithError("log", async (_event, level, messageParts) => {
     if (!Object.prototype.hasOwnProperty.call(logLevelToLogger, level)) {
       logError(`Invalid log level received from renderer: ${level}`);
       return;
@@ -190,7 +213,9 @@ function registerIpcHandlers() {
   });
 
   // Theme
-  ipcMain.handle("get-user-theme", () => getUserTheme());
+  ipcHandleWithError("get-user-theme", async () => {
+    return getUserTheme();
+  });
 }
 
 module.exports = { registerIpcHandlers };

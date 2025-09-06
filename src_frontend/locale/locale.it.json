@@ -107,10 +107,12 @@
     "Continue with system power off?": "Procedere con lo spegnimento del sistema?",
     "Continue with system reboot?": "Procedere con il riavvio del sistema?",
     "Exit Application": "Esci",
+    "Library reloaded successfully!": "Libreria ricaricata con successo!",
     "Open Lutris": "Apri Lutris",
     "Power Off System": "Spegni il sistema",
     "Reboot System": "Riavvia il sistema",
     "Reload Library": "Aggiorna libreria",
+    "Reloading library...": "Ricaricamento libreria...",
     "Select": "Seleziona",
     "This action is final and cannot be undone.": "Questa azione è irreversibile."
   },

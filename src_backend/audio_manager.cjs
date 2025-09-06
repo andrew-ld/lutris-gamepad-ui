@@ -8,7 +8,7 @@ const {
   getPulseAudioClient,
   setPulseAudioClient,
 } = require("./state.cjs");
-const { logError, logInfo, debounce } = require("./utils.cjs");
+const { logError, logInfo, debounce, toastError } = require("./utils.cjs");
 
 /** @param {PAClient} pulseAudioClient */
 async function getSinkInfoFromPA(pulseAudioClient) {
@@ -90,6 +90,7 @@ async function initializePulseAudioClient() {
 
     return pa;
   } catch (e) {
+    toastError("Audio Manager", e);
     logError("Unable to get PulseAudio client:", e);
     return null;
   }

@@ -3,7 +3,13 @@ const {
   getRemoteDesktopSessionHandle,
   setRemoteDesktopSessionHandle,
 } = require("./state.cjs");
-const { logInfo, logError, logWarn, debounce } = require("./utils.cjs");
+const {
+  logInfo,
+  logError,
+  logWarn,
+  debounce,
+  toastError,
+} = require("./utils.cjs");
 
 const PORTAL_DESTINATION = "org.freedesktop.portal.Desktop";
 const PORTAL_PATH = "/org/freedesktop/portal/desktop";
@@ -148,6 +154,7 @@ async function startRemoteDesktopSession() {
     logInfo("Remote desktop session started successfully.");
   } catch (error) {
     logError("Failed to start remote desktop session:", error.message);
+    toastError("Remote Desktop Manager", error);
     await stopRemoteDesktopSession();
     throw error;
   }

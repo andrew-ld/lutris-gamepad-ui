@@ -49,6 +49,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
   onThemeUpdated: (callback) =>
     ipcRenderer.on("user-theme-updated", () => callback()),
 
+  // Toasts
+  onShowToast: (callback) =>
+    ipcRenderer.on("show-toast", (_event, payload) => callback(payload)),
+
   // Generic
   removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel),
   log: (level, args) => ipcRenderer.send("log", level, args),

@@ -28,6 +28,8 @@ const {
   startRemoteDesktopSession,
   sendAltTab,
 } = require("./remote_desktop_manager.cjs");
+const { initializeThemeManager } = require("./theme_manager.cjs");
+const { subscribeToBluetoothChanges } = require("./bluetooth_manager.cjs");
 
 function toggleWindowShow() {
   const mainWindow = getMainWindow();
@@ -165,6 +167,11 @@ function createWindow(onWindowClosedCallback) {
     if (onWindowClosedCallback) {
       onWindowClosedCallback();
     }
+  });
+
+  win.webContents.once("did-stop-loading", () => {
+    initializeThemeManager();
+    subscribeToBluetoothChanges();
   });
 
   win.loadURL(homePageUrl);

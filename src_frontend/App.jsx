@@ -4,12 +4,15 @@ import { LutrisProvider } from "./contexts/LutrisContext";
 import { ModalProvider } from "./contexts/ModalContext";
 import { AudioProvider } from "./contexts/AudioContext";
 import { BluetoothProvider } from "./contexts/BluetoothContext";
+import { ToastProvider, useToastActions } from "./contexts/ToastContext";
 import LibraryContainer from "./components/LibraryContainer";
 import SystemMenu from "./components/SystemMenu";
 import ModalRenderer from "./components/ModalRenderer";
+import ToastContainer from "./components/ToastContainer";
 import TopBar from "./components/TopBar";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { TranslationProvider } from "./contexts/TranslationContext";
+import { onShowToast, removeAllListeners } from "./utils/ipc";
 
 const AppMouseFocus = () => {
   const { subscribe } = useInput();
@@ -46,6 +49,16 @@ const AppMouseFocus = () => {
 };
 
 const AppContent = () => {
+  const { showToast } = useToastActions();
+
+  useEffect(() => {
+    const handleShowToast = (payload) => {
+      showToast(payload);
+    };
+
+    onShowToast(handleShowToast);
+  }, [showToast]);
+
   return (
     <div className="App">
       <TopBar />
@@ -65,8 +78,11 @@ function App() {
             <ModalProvider>
               <AudioProvider>
                 <BluetoothProvider>
-                  <AppContent />
-                  <ModalRenderer />
+                  <ToastProvider>
+                    <AppContent />
+                    <ModalRenderer />
+                    <ToastContainer />
+                  </ToastProvider>
                 </BluetoothProvider>
               </AudioProvider>
             </ModalProvider>

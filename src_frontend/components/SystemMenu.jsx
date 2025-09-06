@@ -12,6 +12,7 @@ import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
 import About from "./About";
 import RowBasedMenu from "./RowBasedMenu";
 import { useTranslation } from "../contexts/TranslationContext";
+import { useToastActions } from "../contexts/ToastContext";
 
 const PowerIcon = () => (
   <svg
@@ -37,6 +38,7 @@ const SystemMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [focusedItem, setFocusedItem] = useState(null);
   const { showModal } = useModalActions();
+  const { showToast } = useToastActions();
   const { isModalOpen } = useModalState();
 
   const menuRef = useRef(null);
@@ -59,9 +61,17 @@ const SystemMenu = () => {
     setIsOpen(false);
   }, [showModal]);
 
+  const reloadLibraryAction = useCallback(async () => {
+    showToast({
+      title: t("Reloading library..."),
+      type: "info",
+    });
+    await fetchGames();
+  }, [fetchGames, showToast, t]);
+
   const menuItems = useMemo(
     () => [
-      { label: t("Reload Library"), action: fetchGames },
+      { label: t("Reload Library"), action: reloadLibraryAction },
       {
         label: t("About"),
         action: openAboutModal,
@@ -98,7 +108,7 @@ const SystemMenu = () => {
       },
     ],
     [
-      fetchGames,
+      reloadLibraryAction,
       openAudioSettingsModal,
       openAboutModal,
       openBluetoothSettingsModal,

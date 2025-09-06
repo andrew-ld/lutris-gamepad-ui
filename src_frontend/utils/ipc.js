@@ -45,3 +45,5 @@ export const logError = (...args) => window.electronAPI.log("error", args);
 
 export const getUserTheme = () => window.electronAPI.getUserTheme();
 export const onThemeUpdated = (cb) => window.electronAPI.onThemeUpdated(cb);
+
+export const onShowToast = (cb) => window.electronAPI.onShowToast(cb);

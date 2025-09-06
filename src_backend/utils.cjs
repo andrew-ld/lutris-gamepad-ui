@@ -9,6 +9,7 @@ const {
   warn: logWarn,
   error: logError,
 } = require("./logger.cjs");
+const { getMainWindow } = require("./state.cjs");
 
 const execPromise = promisify(exec);
 
@@ -82,6 +83,28 @@ const debounce = (func, wait) => {
   };
 };
 
+function showToastOnUi(payload) {
+  const mainWindow = getMainWindow();
+  if (mainWindow) {
+    mainWindow.webContents.send("show-toast", payload);
+  }
+}
+
+function toastError(title, error) {
+  let description = "An unknown error occurred.";
+  if (error instanceof Error) {
+    description = error.message;
+  } else if (typeof error === "string") {
+    description = error;
+  }
+
+  showToastOnUi({
+    title,
+    description,
+    type: "error",
+  });
+}
+
 module.exports = {
   isDev,
   forceWindowed,
@@ -93,4 +116,6 @@ module.exports = {
   logWarn,
   logError,
   debounce,
+  showToastOnUi,
+  toastError,
 };
