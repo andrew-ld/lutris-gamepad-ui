@@ -20,4 +20,8 @@ module.exports = {
   getLogFilePath: () => {
     return path.join(getAppHomeDir(), "logs.txt");
   },
+
+  getKvStorageFilePath: () => {
+    return path.join(getAppHomeDir(), "config.json");
+  },
 };

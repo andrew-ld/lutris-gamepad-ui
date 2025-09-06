@@ -10,6 +10,8 @@ const {
   debounce,
   toastError,
 } = require("./utils.cjs");
+const { getKvStore, setKvStore } = require("./storage_kv.cjs");
+const { app } = require("electron");
 
 const PORTAL_DESTINATION = "org.freedesktop.portal.Desktop";
 const PORTAL_PATH = "/org/freedesktop/portal/desktop";
@@ -20,7 +22,18 @@ const SESSION_IFACE = "org.freedesktop.portal.Session";
 const KEYSYMS = { Alt_L: 0xffe9, Tab: 0xff09 };
 const DEVICE_TYPE = { KEYBOARD: 1, POINTER: 2 };
 const KEY_STATE = { RELEASE: 0, PRESS: 1 };
+const PERSIST_MODE = { UNTIL_REVOKED: 2 };
 const ALT_TAB_TIMEOUT_MS = 1000;
+
+const KV_STORAGE_TOKEN_KEY = "remote_desktop_manager.token";
+
+function getRemoteDesktopRestoreToken() {
+  return getKvStore(KV_STORAGE_TOKEN_KEY);
+}
+
+function setRemoteDesktopRestoreToken(token) {
+  setKvStore(KV_STORAGE_TOKEN_KEY, token);
+}
 
 function _getBus() {
   return getSessionBus("remote_desktop_manager", false);
@@ -109,8 +122,6 @@ async function startRemoteDesktopSession() {
     return;
   }
 
-  const token = `lutris_gamepad_ui_${Date.now()}`;
-
   try {
     const bus = await _getBus();
 
@@ -120,7 +131,7 @@ async function startRemoteDesktopSession() {
       interface: REMOTE_DESKTOP_IFACE,
       member: "CreateSession",
       signature: "a{sv}",
-      body: [[["session_handle_token", ["s", token]]]],
+      body: [[["session_handle_token", ["s", "lutris_gamepad_ui"]]]],
     });
 
     const sessionHandle = getVariantValue(createResults, "session_handle");
@@ -129,20 +140,26 @@ async function startRemoteDesktopSession() {
     }
     setRemoteDesktopSessionHandle(sessionHandle);
 
+    const selectDeviceOptions = [
+      ["types", ["u", DEVICE_TYPE.KEYBOARD | DEVICE_TYPE.POINTER]],
+      ["persist_mode", ["u", PERSIST_MODE.UNTIL_REVOKED]],
+    ];
+
+    const restoreToken = getRemoteDesktopRestoreToken();
+    if (restoreToken) {
+      selectDeviceOptions.push(["restore_token", ["s", restoreToken]]);
+    }
+
     await invoke(bus, {
       destination: PORTAL_DESTINATION,
       path: PORTAL_PATH,
       interface: REMOTE_DESKTOP_IFACE,
       member: "SelectDevices",
       signature: "oa{sv}",
-      body: [
-        sessionHandle,
-        [["types", ["u", DEVICE_TYPE.KEYBOARD | DEVICE_TYPE.POINTER]]],
-      ],
+      body: [sessionHandle, selectDeviceOptions],
     });
 
-    logInfo("Starting remote session... Please approve the permission prompt.");
-    await _portalRequest(bus, {
+    const startResults = await _portalRequest(bus, {
       destination: PORTAL_DESTINATION,
       path: PORTAL_PATH,
       interface: REMOTE_DESKTOP_IFACE,
@@ -150,6 +167,11 @@ async function startRemoteDesktopSession() {
       signature: "osa{sv}",
       body: [sessionHandle, "", []],
     });
+
+    const newRestoreToken = getVariantValue(startResults, "restore_token");
+    if (newRestoreToken) {
+      setRemoteDesktopRestoreToken(newRestoreToken);
+    }
 
     logInfo("Remote desktop session started successfully.");
   } catch (error) {
