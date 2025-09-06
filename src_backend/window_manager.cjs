@@ -13,6 +13,7 @@ const {
   setMainWindow,
   getMainWindow,
   getWhitelistedFiles,
+  getRemoteDesktopSessionHandle,
 } = require("./state.cjs");
 const {
   isDev,
@@ -20,8 +21,13 @@ const {
   getElectronPreloadPath,
   logError,
   logWarn,
+  debounce,
   logInfo,
 } = require("./utils.cjs");
+const {
+  startRemoteDesktopSession,
+  sendAltTab,
+} = require("./remote_desktop_manager.cjs");
 
 function toggleWindowShow() {
   const mainWindow = getMainWindow();
@@ -29,10 +35,18 @@ function toggleWindowShow() {
     return;
   }
 
-  if (mainWindow.isFocused()) {
-    mainWindow.minimize();
+  if (getRemoteDesktopSessionHandle()) {
+    logInfo("toggleWindowShow: using remote desktop portal");
+    sendAltTab().then((e) => {
+      logError("unable to send alt+tab using remote desktop portal", e);
+    });
   } else {
-    mainWindow.show();
+    logInfo("toggleWindowShow: using window minimize/show fallback");
+    if (mainWindow.isFocused()) {
+      mainWindow.minimize();
+    } else {
+      mainWindow.show();
+    }
   }
 }
 
@@ -128,6 +142,16 @@ function createWindow(onWindowClosedCallback) {
   });
 
   setMainWindow(win);
+
+  const startRemoteDesktopSessionDebounced = debounce(() => {
+    startRemoteDesktopSession().catch((e) => {
+      logError("unable to start remote desktop session", e);
+    });
+  }, 1000);
+
+  win.on("focus", () => {
+    startRemoteDesktopSessionDebounced();
+  });
 
   win.on("focus", () => fullscreen && win.setFullScreen(true));
   win.on("show", () => {

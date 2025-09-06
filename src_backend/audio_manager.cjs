@@ -8,7 +8,7 @@ const {
   getPulseAudioClient,
   setPulseAudioClient,
 } = require("./state.cjs");
-const { logError, logInfo } = require("./utils.cjs");
+const { logError, logInfo, debounce } = require("./utils.cjs");
 
 /** @param {PAClient} pulseAudioClient */
 async function getSinkInfoFromPA(pulseAudioClient) {
@@ -44,6 +44,8 @@ async function sendCurrentAudioInfo(pulseClient) {
   const audioInfo = await getSinkInfoFromPA(pulseClient);
   mainWindow.webContents.send("audio-info-changed", audioInfo);
 }
+
+const sendCurrentAudioInfoDebounced = debounce(sendCurrentAudioInfo, 100);
 
 /** @returns {Promise<PAClient | null>} */
 async function initializePulseAudioClient() {
@@ -81,9 +83,9 @@ async function initializePulseAudioClient() {
 
     setPulseAudioClient(pa);
 
-    pa.on("change", () => sendCurrentAudioInfo(pa));
-    pa.on("new", () => sendCurrentAudioInfo(pa));
-    pa.on("remove", () => sendCurrentAudioInfo(pa));
+    pa.on("change", () => sendCurrentAudioInfoDebounced(pa));
+    pa.on("new", () => sendCurrentAudioInfoDebounced(pa));
+    pa.on("remove", () => sendCurrentAudioInfoDebounced(pa));
     pa.subscribe("all");
 
     return pa;

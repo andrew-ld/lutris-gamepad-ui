@@ -68,6 +68,20 @@ async function retryAsync(fn, options = {}) {
   }
 }
 
+const debounce = (func, wait) => {
+  let timeout;
+
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+};
+
 module.exports = {
   isDev,
   forceWindowed,
@@ -78,4 +92,5 @@ module.exports = {
   logInfo,
   logWarn,
   logError,
+  debounce,
 };

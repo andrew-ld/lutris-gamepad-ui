@@ -6,7 +6,9 @@ const {
   logWarn,
   execPromise,
   retryAsync,
+  debounce,
 } = require("./utils.cjs");
+const { getSessionBus } = require("./dbus_manager.cjs");
 
 const BLUEZ_SERVICE_NAME = "org.bluez";
 const BLUEZ_OBJECT_PATH = "/";
@@ -16,38 +18,11 @@ const DEVICE_INTERFACE = "org.bluez.Device1";
 const ADAPTER_INTERFACE = "org.bluez.Adapter1";
 const DEBOUNCE_DELAY_MS = 250;
 
-let systemBus = null;
 let objectManager = null;
-let initializationPromise = null;
 let isSubscribed = false;
-let debounceTimeout = null;
 
 function _getBus() {
-  if (systemBus) return Promise.resolve(systemBus);
-  if (initializationPromise) return initializationPromise.then(() => systemBus);
-
-  initializationPromise = new Promise((resolve, reject) => {
-    try {
-      const bus = dbus.systemBus();
-      bus.connection.on("connect", () => {
-        logInfo("Bluetooth manager connected to D-Bus successfully.");
-        systemBus = bus;
-        resolve();
-      });
-      bus.connection.on("error", (err) => {
-        logError("D-Bus connection error.", err);
-        initializationPromise = null;
-        systemBus = null;
-        reject(err);
-      });
-    } catch (e) {
-      logError("Failed to initialize D-Bus connection.", e);
-      initializationPromise = null;
-      reject(e);
-    }
-  });
-
-  return initializationPromise.then(() => systemBus);
+  return getSessionBus("bluetooth_manager", true);
 }
 
 async function _getObjectManager() {
@@ -331,10 +306,7 @@ async function _sendFullStateUpdate() {
   }
 }
 
-function _triggerStateUpdate() {
-  if (debounceTimeout) clearTimeout(debounceTimeout);
-  debounceTimeout = setTimeout(_sendFullStateUpdate, DEBOUNCE_DELAY_MS);
-}
+const _triggerStateUpdate = debounce(_sendFullStateUpdate, DEBOUNCE_DELAY_MS);
 
 async function subscribeToBluetoothChanges() {
   if (isSubscribed) return;

@@ -4,6 +4,7 @@ let mainWindow = null;
 let runningGameProcess = null;
 /** @type {import('paclient') | null} */
 let pulseAudioClient = null;
+let remoteDesktopSessionHandle = null;
 
 const whitelistedAppProtocolFiles = new Set();
 
@@ -22,4 +23,8 @@ module.exports = {
   },
   getWhitelistedFiles: () => whitelistedAppProtocolFiles,
   addWhitelistedFile: (file) => whitelistedAppProtocolFiles.add(file),
+  getRemoteDesktopSessionHandle: () => remoteDesktopSessionHandle,
+  setRemoteDesktopSessionHandle: (handle) => {
+    remoteDesktopSessionHandle = handle;
+  },
 };
