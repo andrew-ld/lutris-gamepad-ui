@@ -3,7 +3,7 @@ const {
   getRemoteDesktopSessionHandle,
   setRemoteDesktopSessionHandle,
 } = require("./state.cjs");
-const { logInfo, logError, logWarn } = require("./utils.cjs");
+const { logInfo, logError, logWarn, debounce } = require("./utils.cjs");
 
 const PORTAL_DESTINATION = "org.freedesktop.portal.Desktop";
 const PORTAL_PATH = "/org/freedesktop/portal/desktop";
@@ -14,6 +14,7 @@ const SESSION_IFACE = "org.freedesktop.portal.Session";
 const KEYSYMS = { Alt_L: 0xffe9, Tab: 0xff09 };
 const DEVICE_TYPE = { KEYBOARD: 1, POINTER: 2 };
 const KEY_STATE = { RELEASE: 0, PRESS: 1 };
+const ALT_TAB_TIMEOUT_MS = 500;
 
 function _getBus() {
   return getSessionBus("remote_desktop_manager", false);
@@ -65,17 +66,18 @@ async function _portalRequest(bus, parameters) {
           new Error(`Failed to add signal match for ${requestHandle}: ${err}`)
         );
       }
-
       bus.connection.on("message", onResponse);
     });
   });
 }
 
-async function _sendKey(bus, keysym, state) {
+async function _sendKey(keysym, state) {
   const sessionHandle = getRemoteDesktopSessionHandle();
   if (!sessionHandle) {
     throw new Error("Cannot send key: No active remote desktop session.");
   }
+
+  const bus = await _getBus();
 
   await invoke(bus, {
     destination: PORTAL_DESTINATION,
@@ -87,16 +89,25 @@ async function _sendKey(bus, keysym, state) {
   });
 }
 
+async function _pressKey(keysym) {
+  return _sendKey(keysym, KEY_STATE.PRESS);
+}
+
+async function _releaseKey(keysym) {
+  return _sendKey(keysym, KEY_STATE.RELEASE);
+}
+
 async function startRemoteDesktopSession() {
   if (getRemoteDesktopSessionHandle()) {
     logWarn("A remote desktop session is already active. Aborting start.");
     return;
   }
 
-  const bus = await _getBus();
   const token = `lutris_gamepad_ui_${Date.now()}`;
 
   try {
+    const bus = await _getBus();
+
     const createResults = await _portalRequest(bus, {
       destination: PORTAL_DESTINATION,
       path: PORTAL_PATH,
@@ -146,8 +157,8 @@ async function stopRemoteDesktopSession() {
   const sessionHandle = getRemoteDesktopSessionHandle();
   if (!sessionHandle) return;
 
-  const bus = await _getBus();
   try {
+    const bus = await _getBus();
     await invoke(bus, {
       destination: PORTAL_DESTINATION,
       path: sessionHandle,
@@ -161,33 +172,25 @@ async function stopRemoteDesktopSession() {
   }
 }
 
-async function sendKeyCombination(keysyms) {
-  if (!getRemoteDesktopSessionHandle()) {
-    throw new Error("Cannot send key combination: Session not active.");
-  }
-
-  const bus = await _getBus();
-  try {
-    for (const key of keysyms) {
-      await _sendKey(bus, key, KEY_STATE.PRESS);
-    }
-
-    for (const key of keysyms.slice().reverse()) {
-      await _sendKey(bus, key, KEY_STATE.RELEASE);
-    }
-  } catch (error) {
-    logError("Failed to send key combination:", error.message);
-    throw error;
-  }
-}
+const releaseAltDebounced = debounce(() => {
+  _releaseKey(KEYSYMS.Alt_L).catch((e) => {
+    logError("unable to release alt key", e);
+  });
+}, ALT_TAB_TIMEOUT_MS);
 
 async function sendAltTab() {
-  await sendKeyCombination([KEYSYMS.Alt_L, KEYSYMS.Tab]);
+  if (!getRemoteDesktopSessionHandle()) {
+    throw new Error("Cannot send Alt+Tab: Session not active.");
+  }
+
+  await _pressKey(KEYSYMS.Alt_L);
+  releaseAltDebounced();
+  await _pressKey(KEYSYMS.Tab);
+  await _releaseKey(KEYSYMS.Tab);
 }
 
 module.exports = {
   startRemoteDesktopSession,
   stopRemoteDesktopSession,
   sendAltTab,
-  sendKeyCombination,
 };
