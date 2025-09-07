@@ -116,7 +116,7 @@ async function _releaseKey(keysym) {
   return _sendKey(keysym, KEY_STATE.RELEASE);
 }
 
-async function startRemoteDesktopSession() {
+async function _startRemoteDesktopSession(restoreToken) {
   if (getRemoteDesktopSessionHandle()) {
     logWarn("A remote desktop session is already active. Aborting start.");
     return;
@@ -145,7 +145,6 @@ async function startRemoteDesktopSession() {
       ["persist_mode", ["u", PERSIST_MODE.UNTIL_REVOKED]],
     ];
 
-    const restoreToken = getRemoteDesktopRestoreToken();
     if (restoreToken) {
       selectDeviceOptions.push(["restore_token", ["s", restoreToken]]);
     }
@@ -175,10 +174,27 @@ async function startRemoteDesktopSession() {
 
     logInfo("Remote desktop session started successfully.");
   } catch (error) {
-    logError("Failed to start remote desktop session:", error.message);
     toastError("Remote Desktop Manager", error);
     await stopRemoteDesktopSession();
     throw error;
+  }
+}
+
+async function startRemoteDesktopSession() {
+  const restoreToken = getRemoteDesktopRestoreToken();
+
+  if (restoreToken) {
+    try {
+      return await _startRemoteDesktopSession(restoreToken);
+    } catch (e) {
+      logError("Failed to restore remote desktop session:", error.message);
+    }
+  }
+
+  try {
+    return await _startRemoteDesktopSession();
+  } catch (e) {
+    logError("Failed to start remote desktop session:", error.message);
   }
 }
 
