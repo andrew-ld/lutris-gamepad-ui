@@ -14,6 +14,7 @@ const {
   getMainWindow,
   getWhitelistedFiles,
   getRemoteDesktopSessionHandle,
+  getRunningGameProcess,
 } = require("./state.cjs");
 const {
   isDev,
@@ -35,6 +36,12 @@ const { subscribeToBluetoothChanges } = require("./bluetooth_manager.cjs");
 function toggleWindowShow() {
   const mainWindow = getMainWindow();
   if (!mainWindow) {
+    return;
+  }
+
+  if (!getRunningGameProcess()) {
+    logWarn("toggleWindowShow: game is not running");
+    mainWindow.show();
     return;
   }
 
