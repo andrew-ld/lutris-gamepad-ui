@@ -187,14 +187,14 @@ async function startRemoteDesktopSession() {
     try {
       return await _startRemoteDesktopSession(restoreToken);
     } catch (e) {
-      logError("Failed to restore remote desktop session:", error.message);
+      logError("Failed to restore remote desktop session:", e);
     }
   }
 
   try {
     return await _startRemoteDesktopSession();
   } catch (e) {
-    logError("Failed to start remote desktop session:", error.message);
+    logError("Failed to start remote desktop session:", e);
   }
 }
 
