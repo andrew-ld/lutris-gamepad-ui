@@ -11,7 +11,6 @@ const {
   toastError,
 } = require("./utils.cjs");
 const { getKvStore, setKvStore } = require("./storage_kv.cjs");
-const { app } = require("electron");
 
 const PORTAL_DESTINATION = "org.freedesktop.portal.Desktop";
 const PORTAL_PATH = "/org/freedesktop/portal/desktop";

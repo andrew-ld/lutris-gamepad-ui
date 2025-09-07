@@ -83,6 +83,10 @@ const debounce = (func, wait) => {
   };
 };
 
+function isRunningInsideGamescope() {
+  return process.env.XDG_CURRENT_DESKTOP === "gamescope";
+}
+
 function showToastOnUi(payload) {
   const mainWindow = getMainWindow();
   if (mainWindow) {
@@ -118,4 +122,5 @@ module.exports = {
   debounce,
   showToastOnUi,
   toastError,
+  isRunningInsideGamescope,
 };

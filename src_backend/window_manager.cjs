@@ -23,6 +23,7 @@ const {
   logWarn,
   debounce,
   logInfo,
+  isRunningInsideGamescope,
 } = require("./utils.cjs");
 const {
   startRemoteDesktopSession,
@@ -43,9 +44,9 @@ function toggleWindowShow() {
       logError("unable to send alt+tab using remote desktop portal", e);
     });
   } else {
-    logInfo("toggleWindowShow: using window minimize/show fallback");
-    if (mainWindow.isFocused()) {
-      mainWindow.minimize();
+    logInfo("toggleWindowShow: using hide/show fallback");
+    if (mainWindow.isFocused() || mainWindow.isVisible()) {
+      mainWindow.hide();
     } else {
       mainWindow.show();
     }
@@ -152,14 +153,23 @@ function createWindow(onWindowClosedCallback) {
   }, 1000);
 
   win.on("focus", () => {
-    startRemoteDesktopSessionDebounced();
+    if (!isRunningInsideGamescope()) {
+      startRemoteDesktopSessionDebounced();
+    }
   });
 
-  win.on("focus", () => fullscreen && win.setFullScreen(true));
+  win.on("focus", () => {
+    if (fullscreen) {
+      win.setFullScreen(true);
+    }
+  });
+
   win.on("show", () => {
     win.restore();
     win.focus();
-    if (fullscreen) win.setFullScreen(true);
+    if (fullscreen) {
+      win.setFullScreen(true);
+    }
   });
 
   win.on("closed", () => {
