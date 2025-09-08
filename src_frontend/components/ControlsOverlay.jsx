@@ -10,6 +10,8 @@ const ControlsOverlay = ({
   onClearSearch,
   onShowSearchModal,
   onOpenSystemMenu,
+  onPrevCategory,
+  onNextCategory,
 }) => {
   const { t } = useTranslation();
   return (
@@ -57,6 +59,22 @@ const ControlsOverlay = ({
             onClick={onOpenSystemMenu}
             button="Y"
             label={t("Power")}
+          />
+        )}
+
+        {onPrevCategory && (
+          <ButtonIcon
+            button="L1"
+            label={t("Previous Category")}
+            onClick={onPrevCategory}
+          />
+        )}
+
+        {onNextCategory && (
+          <ButtonIcon
+            button="R1"
+            label={t("Next Category")}
+            onClick={onNextCategory}
           />
         )}
       </div>

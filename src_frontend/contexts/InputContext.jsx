@@ -17,6 +17,8 @@ const KEY_MAP = {
   b: "B",
   x: "X",
   y: "Y",
+  1: "L1",
+  2: "R1",
 };
 
 const GAMEPAD_SUPER_BUTTON_FALLBACK = [8, 9];
@@ -26,6 +28,8 @@ const GAMEPAD_BUTTON_MAP = {
   1: "B",
   2: "X",
   3: "Y",
+  4: "L1",
+  5: "R1",
   12: "UP",
   13: "DOWN",
   14: "LEFT",

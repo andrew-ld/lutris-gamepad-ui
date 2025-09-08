@@ -142,19 +142,28 @@ const CtrlXIcon = () => (
 const BUTTON_CONTENT_MAP = {
   keyboard: {
     super: <CtrlXIcon />,
+    l1: "1",
+    r1: "2",
   },
-  xbox: {},
+  xbox: {
+    l1: "LB",
+    r1: "RB",
+  },
   playstation: {
     a: <PlayStationCrossIcon />,
     b: <PlayStationCircleIcon />,
     x: <PlayStationSquareIcon />,
     y: <PlayStationTriangleIcon />,
+    l1: "L1",
+    r1: "R1",
   },
   generic: {
     a: "A",
     b: "B",
     x: "X",
     y: "Y",
+    l1: "1",
+    r1: "2",
     super: <SuperIcon />,
     left: <LeftArrowIcon />,
     right: <RightArrowIcon />,

@@ -235,6 +235,25 @@ const LibraryContainer = () => {
     });
   }, [closeRunningGame, showModal, runningGame, t]);
 
+  const handlePrevCategory = useCallback(() => {
+    setFocusCoords((current) => {
+      if (shelves.length <= 1) return current;
+      playActionSound();
+      const nextShelf =
+        (current.shelf - 1 + shelves.length) % shelves.length;
+      return { shelf: nextShelf, card: 0 };
+    });
+  }, [shelves.length]);
+
+  const handleNextCategory = useCallback(() => {
+    setFocusCoords((current) => {
+      if (shelves.length <= 1) return current;
+      playActionSound();
+      const nextShelf = (current.shelf + 1) % shelves.length;
+      return { shelf: nextShelf, card: 0 };
+    });
+  }, [shelves.length]);
+
   const libraryInputHandler = useCallback(
     (input) => {
       let currentFocusedGame;
@@ -302,6 +321,12 @@ const LibraryContainer = () => {
             clearSearchCb();
           }
           break;
+        case "L1":
+          handlePrevCategory();
+          break;
+        case "R1":
+          handleNextCategory();
+          break;
         case "X":
           playActionSound();
           showSearchModalCb();
@@ -315,6 +340,8 @@ const LibraryContainer = () => {
       handleLaunchGame,
       clearSearchCb,
       showSearchModalCb,
+      handlePrevCategory,
+      handleNextCategory,
     ]
   );
 
@@ -382,6 +409,10 @@ const LibraryContainer = () => {
       controlsOverlayProps.onClearSearch = clearSearchCb;
     }
     controlsOverlayProps.onShowSearchModal = showSearchModalCb;
+    if (shelves.length > 1) {
+      controlsOverlayProps.onPrevCategory = handlePrevCategory;
+      controlsOverlayProps.onNextCategory = handleNextCategory;
+    }
   }
 
   if (runningGame) {
