@@ -9,6 +9,7 @@ const GameLibrary = ({
   onCardClick,
   setCardRef,
   setShelfRef,
+  setGridRef,
   libraryContainerRef,
   searchQuery,
 }) => {
@@ -29,6 +30,7 @@ const GameLibrary = ({
             shelfIndex={shelfIndex}
             setCardRef={setCardRef}
             setShelfRef={setShelfRef}
+            setGridRef={setGridRef}
             onCardFocus={onCardFocus}
             onCardClick={onCardClick}
           />

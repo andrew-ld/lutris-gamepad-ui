@@ -8,13 +8,14 @@ const GameShelf = ({
   shelfIndex,
   setCardRef,
   setShelfRef,
+  setGridRef,
   onCardFocus,
   onCardClick,
 }) => {
   return (
     <section ref={(el) => setShelfRef(el, shelfIndex)} className="game-shelf">
       <h2 className="game-shelf-title">{title}</h2>
-      <div className="game-shelf-scroll-container">
+      <div ref={(el) => setGridRef(el, shelfIndex)} className="game-grid">
         {games.map((game, cardIndex) => (
           <GameCard
             key={game.id}

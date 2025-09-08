@@ -22,12 +22,14 @@ const LibraryContainer = () => {
 
   const [focusCoords, setFocusCoords] = useState({ shelf: 0, card: 0 });
   const [searchQuery, setSearchQuery] = useState("");
+  const [numColumns, setNumColumns] = useState(0);
   const { showModal } = useModalActions();
   const { isModalOpen } = useModalState();
 
   const libraryContainerRef = useRef(null);
   const cardRefs = useRef([[]]);
   const shelfRefs = useRef([]);
+  const gridRefs = useRef([]);
   const gameCloseCloseModalRef = useRef(null);
   const prevFocusCoords = useRef(null);
 
@@ -40,6 +42,10 @@ const LibraryContainer = () => {
       cardRefs.current[shelfIndex] = [];
     }
     cardRefs.current[shelfIndex][cardIndex] = el;
+  }, []);
+
+  const setGridRef = useCallback((el, shelfIndex) => {
+    gridRefs.current[shelfIndex] = el;
   }, []);
 
   const shelves = useMemo(() => {
@@ -108,8 +114,48 @@ const LibraryContainer = () => {
 
   const shelvesRef = useRef(shelves);
   shelvesRef.current = shelves;
+
   const focusCoordsRef = useRef(focusCoords);
   focusCoordsRef.current = focusCoords;
+
+  useEffect(() => {
+    const calculateAndUpdateColumns = () => {
+      let maxColumns = 0;
+
+      gridRefs.current.forEach((gridEl) => {
+        if (gridEl) {
+          const style = window.getComputedStyle(gridEl);
+          const columns = style
+            .getPropertyValue("grid-template-columns")
+            .split(" ").length;
+          if (columns > maxColumns) {
+            maxColumns = columns;
+          }
+        }
+      });
+
+      setNumColumns((currentNumColumns) => {
+        if (maxColumns !== currentNumColumns) {
+          return maxColumns;
+        }
+        return currentNumColumns;
+      });
+    };
+
+    calculateAndUpdateColumns();
+
+    const observers = [];
+    gridRefs.current.forEach((gridEl) => {
+      if (!gridEl) return;
+      const observer = new ResizeObserver(calculateAndUpdateColumns);
+      observer.observe(gridEl);
+      observers.push(observer);
+    });
+
+    return () => {
+      observers.forEach((observer) => observer.disconnect());
+    };
+  }, [shelves]);
 
   useEffect(() => {
     setFocusCoords({ shelf: 0, card: 0 });
@@ -164,19 +210,20 @@ const LibraryContainer = () => {
 
     const prevShelf = prevFocusCoords.current?.shelf;
     if (shelf !== prevShelf) {
-      if (shelf === 0) {
-        libraryContainerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
-      } else {
-        const targetShelfNode = shelfRefs.current[shelf];
-        targetShelfNode?.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-        });
-      }
+      const targetShelfNode = shelfRefs.current[shelf];
+      targetShelfNode?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }
+
+    const currentRow = numColumns > 0 ? Math.floor(card / numColumns) : 0;
+    if (shelf === 0 && currentRow === 0) {
+      libraryContainerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     prevFocusCoords.current = focusCoords;
-  }, [focusCoords, loading, runningGame, shelves.length]);
+  }, [focusCoords, loading, runningGame, shelves.length, numColumns]);
 
   const focusedGame = useMemo(
     () =>
@@ -235,80 +282,140 @@ const LibraryContainer = () => {
     });
   }, [closeRunningGame, showModal, runningGame, t]);
 
+  const handleNavigation = useCallback(
+    (direction) => {
+      setFocusCoords((current) => {
+        const { shelf } = current;
+        const currentShelfGames = shelves[shelf]?.games;
+
+        if (numColumns === 0 || !currentShelfGames?.length) {
+          return current;
+        }
+
+        const move = (current, direction, numColumns, shelves) => {
+          const { shelf, card } = current;
+          const currentShelfGames = shelves[shelf]?.games;
+
+          if (!currentShelfGames?.length) return current;
+
+          const totalRows = Math.ceil(currentShelfGames.length / numColumns);
+          const currentRow = Math.floor(card / numColumns);
+          const currentCol = card % numColumns;
+
+          switch (direction) {
+            case "UP": {
+              if (currentRow > 0) {
+                return { shelf, card: card - numColumns };
+              } else {
+                const prevShelfIndex =
+                  (shelf - 1 + shelves.length) % shelves.length;
+                const prevShelfGames = shelves[prevShelfIndex].games;
+                if (!prevShelfGames.length) return current;
+
+                const lastCardInPrevShelf = prevShelfGames.length - 1;
+                const lastRowInPrevShelf = Math.floor(
+                  lastCardInPrevShelf / numColumns
+                );
+
+                return {
+                  shelf: prevShelfIndex,
+                  card: Math.min(
+                    lastRowInPrevShelf * numColumns + currentCol,
+                    lastCardInPrevShelf
+                  ),
+                };
+              }
+            }
+            case "DOWN": {
+              if (currentRow < totalRows - 1) {
+                return {
+                  shelf,
+                  card: Math.min(
+                    card + numColumns,
+                    currentShelfGames.length - 1
+                  ),
+                };
+              } else {
+                const nextShelfIndex = (shelf + 1) % shelves.length;
+                const nextShelfGames = shelves[nextShelfIndex].games;
+                if (!nextShelfGames.length) return current;
+                return {
+                  shelf: nextShelfIndex,
+                  card: Math.min(currentCol, nextShelfGames.length - 1),
+                };
+              }
+            }
+            case "LEFT":
+            case "RIGHT": {
+              const rowStartCard = currentRow * numColumns;
+              const rowEndCard = Math.min(
+                rowStartCard + numColumns - 1,
+                currentShelfGames.length - 1
+              );
+
+              const gamesInCurrentRow = rowEndCard - rowStartCard + 1;
+              if (gamesInCurrentRow <= 1) {
+                return current;
+              }
+
+              if (direction === "LEFT") {
+                return card === rowStartCard
+                  ? { shelf, card: rowEndCard }
+                  : { shelf, card: card - 1 };
+              } else {
+                return card === rowEndCard
+                  ? { shelf, card: rowStartCard }
+                  : { shelf, card: card + 1 };
+              }
+            }
+            default:
+              return current;
+          }
+        };
+
+        const nextFocus = move(current, direction, numColumns, shelves);
+
+        if (
+          nextFocus.shelf !== current.shelf ||
+          nextFocus.card !== current.card
+        ) {
+          playActionSound();
+          return nextFocus;
+        }
+
+        return current;
+      });
+    },
+    [shelves, numColumns]
+  );
+
   const handlePrevCategory = useCallback(() => {
     setFocusCoords((current) => {
       if (shelves.length <= 1) return current;
-      playActionSound();
-      const nextShelf =
-        (current.shelf - 1 + shelves.length) % shelves.length;
+      const nextShelf = (current.shelf - 1 + shelves.length) % shelves.length;
       return { shelf: nextShelf, card: 0 };
     });
-  }, [shelves.length]);
+  }, [shelves]);
 
   const handleNextCategory = useCallback(() => {
     setFocusCoords((current) => {
       if (shelves.length <= 1) return current;
-      playActionSound();
       const nextShelf = (current.shelf + 1) % shelves.length;
       return { shelf: nextShelf, card: 0 };
     });
-  }, [shelves.length]);
+  }, [shelves]);
 
   const libraryInputHandler = useCallback(
     (input) => {
-      let currentFocusedGame;
       switch (input.name) {
         case "UP":
         case "DOWN":
         case "LEFT":
         case "RIGHT":
-          setFocusCoords((current) => {
-            const { shelf: currentShelf, card: currentCard } = current;
-            if (
-              shelves.length === 0 ||
-              shelves[currentShelf]?.games.length === 0
-            )
-              return current;
-
-            let nextShelf = currentShelf;
-            let nextCard = currentCard;
-
-            switch (input.name) {
-              case "UP":
-                nextShelf = Math.max(0, currentShelf - 1);
-                break;
-              case "DOWN":
-                nextShelf = Math.min(shelves.length - 1, currentShelf + 1);
-                break;
-              case "LEFT":
-                nextCard = Math.max(0, currentCard - 1);
-                break;
-              case "RIGHT":
-                nextCard = Math.min(
-                  shelves[currentShelf].games.length - 1,
-                  currentCard + 1
-                );
-                break;
-              default:
-                return current;
-            }
-
-            if (nextShelf !== currentShelf) {
-              nextCard = Math.min(
-                nextCard,
-                shelves[nextShelf].games.length - 1
-              );
-            }
-
-            if (currentShelf !== nextShelf || currentCard !== nextCard) {
-              playActionSound();
-            }
-
-            return { shelf: nextShelf, card: nextCard };
-          });
+          handleNavigation(input.name);
           break;
         case "A":
-          currentFocusedGame =
+          const currentFocusedGame =
             shelves[focusCoords.shelf]?.games[focusCoords.card];
           if (currentFocusedGame) {
             playActionSound();
@@ -322,9 +429,11 @@ const LibraryContainer = () => {
           }
           break;
         case "L1":
+          playActionSound();
           handlePrevCategory();
           break;
         case "R1":
+          playActionSound();
           handleNextCategory();
           break;
         case "X":
@@ -342,6 +451,7 @@ const LibraryContainer = () => {
       showSearchModalCb,
       handlePrevCategory,
       handleNextCategory,
+      handleNavigation,
     ]
   );
 
@@ -432,6 +542,7 @@ const LibraryContainer = () => {
         onCardClick={handleLaunchGame}
         setCardRef={setCardRef}
         setShelfRef={setShelfRef}
+        setGridRef={setGridRef}
         libraryContainerRef={libraryContainerRef}
         searchQuery={searchQuery}
       />

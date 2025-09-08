@@ -1,5 +1,5 @@
 .game-shelf {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
 }
 
 .game-shelf-title {
@@ -8,42 +8,10 @@
   font-weight: bold;
 }
 
-.game-shelf-scroll-container {
-  display: flex;
-  overflow-x: auto;
-  overflow-y: hidden;
-  gap: 12px;
-
-  padding-left: 20px;
-  padding-right: 20px;
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 16px;
   padding-top: 1rem;
   padding-bottom: 1rem;
-
-  margin-left: -20px;
-  margin-right: -20px;
-
-  scrollbar-color: transparent transparent;
-  transition: scrollbar-color 0.3s ease;
-}
-
-.game-shelf-scroll-container:hover {
-  scrollbar-color: var(--accent-color) var(--secondary-background);
-}
-
-.game-shelf-scroll-container::-webkit-scrollbar {
-  height: 8px;
-}
-
-.game-shelf-scroll-container::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.game-shelf-scroll-container::-webkit-scrollbar-thumb {
-  background-color: transparent;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
-}
-
-.game-shelf-scroll-container:hover::-webkit-scrollbar-thumb {
-  background-color: var(--accent-color);
 }
