@@ -27,9 +27,14 @@ def get_runtime_icon_path_main(icon_name: str):
 
 
 def get_all_games_categories_main():
+    try:
+        all_games_categories = categories.get_all_games_categories()
+    except AttributeError:
+        all_games_categories = {}
+
     result = {
         "categories": categories.get_categories(),
-        "all_games_categories": categories.get_all_games_categories()
+        "all_games_categories": all_games_categories
     }
 
     print(json.dumps(result))
