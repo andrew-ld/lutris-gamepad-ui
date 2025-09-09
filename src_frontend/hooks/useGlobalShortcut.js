@@ -8,10 +8,6 @@ export const useGlobalShortcut = (shortcuts) => {
 
   useEffect(() => {
     const handleInput = (input) => {
-      if (input.isConsumed) {
-        return;
-      }
-
       for (const shortcut of latestShortcuts.current) {
         if (shortcut.active && input.name === shortcut.key) {
           input.isConsumed = true;

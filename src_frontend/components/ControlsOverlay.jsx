@@ -61,11 +61,12 @@ const ControlsOverlay = ({
             label={t("Power")}
           />
         )}
-
+      </div>
+      <div className="hints-list">
         {onPrevCategory && (
           <ButtonIcon
             button="L1"
-            label={t("Previous Category")}
+            label={t("Prev Category")}
             onClick={onPrevCategory}
           />
         )}

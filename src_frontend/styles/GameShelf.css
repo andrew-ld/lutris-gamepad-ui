@@ -11,7 +11,8 @@
 .game-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 16px;
+  gap: 10px;
   padding-top: 1rem;
   padding-bottom: 1rem;
+  justify-content: center;
 }

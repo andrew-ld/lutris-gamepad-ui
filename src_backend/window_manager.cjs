@@ -40,9 +40,7 @@ function toggleWindowShow() {
   }
 
   if (!getRunningGameProcess()) {
-    logWarn("toggleWindowShow: game is not running");
     mainWindow.show();
-    return;
   }
 
   if (getRemoteDesktopSessionHandle()) {

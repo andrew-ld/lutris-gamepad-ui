@@ -484,7 +484,7 @@ const LibraryContainer = () => {
         playActionSound();
         toggleWindowShow();
       },
-      active: !!runningGame,
+      active: true,
     },
   ]);
 
