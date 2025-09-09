@@ -27,6 +27,8 @@
 .button-keyboard-right,
 .button-keyboard-up,
 .button-keyboard-down,
+.button-keyboard-l1,
+.button-keyboard-r1,
 .button-keyboard-super {
   background-color: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.2);
