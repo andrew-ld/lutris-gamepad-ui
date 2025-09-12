@@ -3,6 +3,7 @@ import { useInput } from "../contexts/InputContext";
 import { useAudio } from "../contexts/AudioContext";
 import "../styles/TopBar.css";
 import { useTranslation } from "../contexts/TranslationContext";
+import packageJson from "../../package.json";
 
 const TopBar = () => {
   const { t } = useTranslation();
@@ -66,6 +67,8 @@ const TopBar = () => {
         )}
         <span className="top-bar-item top-bar-separator">|</span>
         <span className="top-bar-item">{getNetworkIndicator()}</span>
+        <span className="top-bar-item top-bar-separator">|</span>
+        <span className="top-bar-item">v{packageJson.version}</span>
       </div>
     </div>
   );
