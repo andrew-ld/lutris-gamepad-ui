@@ -19,7 +19,7 @@ SUBCOMMAND_OUTPUT_HEADER = "lutris-subcommand-output:"
 
 def _print_subcommand_output(json_serializable: typing.Any):
     data = json.dumps(json_serializable, ensure_ascii=True)
-    print("\r\n" + SUBCOMMAND_OUTPUT_HEADER + data)
+    print("\r\n" + SUBCOMMAND_OUTPUT_HEADER + data, end="\r\n")
 
 
 def get_coverart_path_main():

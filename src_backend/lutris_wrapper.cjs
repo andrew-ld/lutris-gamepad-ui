@@ -7,7 +7,7 @@ async function invokeLutrisSubcommand(subcommandName, args = []) {
     const { stdout } = await invokeLutris(["--" + subcommandName, ...args]);
 
     const outputLine = stdout
-      .split("\n")
+      .split("\r\n")
       .find((line) => line.startsWith(SUBCOMMAND_OUTPUT_HEADER));
 
     if (outputLine) {
