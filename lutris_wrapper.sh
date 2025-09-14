@@ -18,20 +18,22 @@ get_python_cmd() {
     fi
 }
 
-declare -a CMD_TO_RUN
-
 if [[ "$FLATPAK_ID" == "net.lutris.Lutris" ]]; then
-    CMD_TO_RUN=("$(get_python_cmd)" "$SCRIPT_DIR/lutris_wrapper.py" "$@")
-
-elif command -v lutris &>/dev/null; then
-    CMD_TO_RUN=("$(get_python_cmd)" "$SCRIPT_DIR/lutris_wrapper.py" "$@")
-
-elif flatpak info net.lutris.Lutris &>/dev/null; then
-    CMD_TO_RUN=(flatpak run --command=bash --filesystem="$SCRIPT_DIR" net.lutris.Lutris "$SCRIPT_PATH" "$@")
-
-else
-    echo "Error: Lutris installation not found." >&2
-    exit 1
+    exec "$(get_python_cmd)" "$SCRIPT_DIR/lutris_wrapper.py" "$@"
 fi
 
-exec "${CMD_TO_RUN[@]}"
+if command -v lutris &>/dev/null; then
+    exec "$(get_python_cmd)" "$SCRIPT_DIR/lutris_wrapper.py" "$@"
+fi
+
+if [[ -x "/usr/games/lutris" ]]; then
+    export PATH="/usr/games/:$PATH"
+    exec "$(get_python_cmd)" "$SCRIPT_DIR/lutris_wrapper.py" "$@"
+fi
+
+if flatpak info net.lutris.Lutris &>/dev/null; then
+    exec flatpak run --command=bash --filesystem="$SCRIPT_DIR" net.lutris.Lutris "$SCRIPT_PATH" "$@"
+fi
+
+echo "Error: Lutris installation not found." >&2
+exit 1
