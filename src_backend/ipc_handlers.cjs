@@ -29,6 +29,7 @@ const {
 } = require("./utils.cjs");
 const { getMainWindow } = require("./state.cjs");
 const { getUserTheme } = require("./theme_manager.cjs");
+const { invokeLutris } = require("./lutris_wrapper.cjs");
 
 const logLevelToLogger = {
   error: logError,
@@ -80,7 +81,9 @@ function registerIpcHandlers() {
   ipcOnWithError("close-game", async () => closeRunningGameProcess());
 
   ipcOnWithError("open-lutris", async () => {
-    await execPromise(`bash ${getLutrisWrapperPath()}`);
+    invokeLutris().catch((e) => {
+      logError("unable to open lutris", e);
+    });
   });
 
   // Window & App Management

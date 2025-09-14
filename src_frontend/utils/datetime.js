@@ -1,5 +1,3 @@
-import { logError } from "./ipc.js";
-
 export function formatPlaytime(seconds) {
   if (seconds <= 0) {
     return "0m";
@@ -30,51 +28,4 @@ export function formatDate(date) {
     month: "long",
     year: "numeric",
   });
-}
-
-export function parseTimedeltaToSeconds(timedelta) {
-  if (!timedelta) {
-    return 0
-  }
-
-  const regex =
-    /^(?:(-?\d+)\s+days?,\s+)?(-)?(\d{1,2}):(\d{2}):(\d{2})(?:\.(\d{1,6}))?$/;
-  const match = timedelta.match(regex);
-
-  if (!match) {
-    logError("Invalid timedelta string format", timedelta);
-    return 0
-  }
-
-  const daysString = match[1];
-  const hmsOverallSignStr = match[2];
-  const hoursString = match[3];
-  const minutesString = match[4];
-  const integerSecondsString = match[5];
-  const fractionalSecondsString = match[6];
-
-  let totalSeconds = 0;
-
-  let hmsMagnitudeSeconds = 0;
-  hmsMagnitudeSeconds += parseInt(hoursString, 10) * 3600;
-  hmsMagnitudeSeconds += parseInt(minutesString, 10) * 60;
-
-  let secondsComponent = parseInt(integerSecondsString, 10);
-  if (fractionalSecondsString) {
-    secondsComponent += parseFloat("0." + fractionalSecondsString);
-  }
-  hmsMagnitudeSeconds += secondsComponent;
-
-  if (daysString !== undefined) {
-    const daysValue = parseInt(daysString, 10);
-    totalSeconds = daysValue * 86400 + hmsMagnitudeSeconds;
-  } else {
-    if (hmsOverallSignStr === "-") {
-      totalSeconds = -hmsMagnitudeSeconds;
-    } else {
-      totalSeconds = hmsMagnitudeSeconds;
-    }
-  }
-
-  return totalSeconds;
 }

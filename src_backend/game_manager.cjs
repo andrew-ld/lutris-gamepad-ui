@@ -19,6 +19,13 @@ const {
   toastError,
 } = require("./utils.cjs");
 const { toggleWindowShow } = require("./window_manager.cjs");
+const {
+  getCoverartPath,
+  getRuntimeIconPath,
+  getAllGamesCategories,
+  invokeLutris,
+  getLutrisGames,
+} = require("./lutris_wrapper.cjs");
 
 const runtimeIconCache = new Map();
 
@@ -91,22 +98,18 @@ function closeRunningGameProcess() {
 }
 
 async function getGames() {
-  const wrapperPath = getLutrisWrapperPath();
+  const [games, gamesCategories] = await Promise.all([
+    getLutrisGames(),
+    getAllGamesCategories(),
+  ]);
 
-  const [{ stdout: rawGames }, { stdout: rawCategoriesData }] =
-    await Promise.all([
-      execPromise(`bash ${wrapperPath} -l -j`),
-      execPromise(`bash ${wrapperPath} --get-all-games-categories`),
-    ]);
-
-  const games = JSON.parse(rawGames);
   if (!games.length) return games;
 
   try {
     const {
       categories: allCategories,
       all_games_categories: gameCategoriesMap,
-    } = JSON.parse(rawCategoriesData);
+    } = gamesCategories;
 
     const categoryIdToNameMap = new Map(
       allCategories.map((cat) => [cat.id, cat.name])
@@ -133,10 +136,7 @@ async function getGames() {
     if (runnersToFetch.length > 0) {
       const iconPromises = runnersToFetch.map(async (runner) => {
         try {
-          const { stdout } = await execPromise(
-            `bash ${wrapperPath} --get-runtime-icon-path "${runner}"`
-          );
-          const path = stdout.trim();
+          const path = await getRuntimeIconPath(runner);
           if (path) {
             runtimeIconCache.set(runner, path);
             addWhitelistedFile(path);
@@ -164,10 +164,7 @@ async function getGames() {
   }
 
   try {
-    const { stdout } = await execPromise(
-      `bash ${wrapperPath} --get-coverart-path`
-    );
-    const lutrisCoverDir = stdout.trim();
+    const lutrisCoverDir = await getCoverartPath();
     const lutrisCoverDirFiles = await readdir(lutrisCoverDir);
 
     for (const game of games) {

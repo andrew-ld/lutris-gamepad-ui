@@ -6,7 +6,6 @@ import {
   useCallback,
 } from "react";
 import * as ipc from "../utils/ipc";
-import { parseTimedeltaToSeconds } from "../utils/datetime";
 
 const LutrisContext = createContext(null);
 export const useLutris = () => useContext(LutrisContext);
@@ -24,10 +23,8 @@ export const LutrisProvider = ({ children }) => {
       const mappedGames = allGames.map((game) => ({
         id: game.id,
         title: game.name || game.slug,
-        playtimeSeconds: game.playtimeSeconds
-          ? game.playtimeSeconds
-          : parseTimedeltaToSeconds(game.playtime),
-        lastPlayed: game.lastplayed ? new Date(game.lastplayed) : null,
+        playtimeSeconds: game.playtime * 3600,
+        lastPlayed: game.lastplayed ? new Date(game.lastplayed * 1000) : null,
         coverPath: game.coverPath,
         runtimeIconPath: game.runtimeIconPath || null,
         categories: game.categories || [],
