@@ -175,7 +175,6 @@ async function _startRemoteDesktopSession(restoreToken) {
     logInfo("Remote desktop session started successfully.");
   } catch (error) {
     toastError("Remote Desktop Manager", error);
-    setRemoteDesktopSessionHandle(null);
     await stopRemoteDesktopSession();
     throw error;
   }
