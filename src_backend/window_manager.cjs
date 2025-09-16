@@ -39,11 +39,10 @@ function toggleWindowShow() {
     return;
   }
 
-  if (!getRunningGameProcess()) {
-    mainWindow.show();
-  }
-
   if (getRemoteDesktopSessionHandle()) {
+    if (!getRunningGameProcess()) {
+      mainWindow.show();
+    }
     logInfo("toggleWindowShow: using remote desktop portal");
     sendAltTab().catch((e) => {
       logError("unable to send alt+tab using remote desktop portal", e);
@@ -127,17 +126,9 @@ function createWindow(onWindowClosedCallback) {
   });
 
   const fullscreen = !forceWindowed && !isDev;
-  const display = screen.getPrimaryDisplay();
-
-  const { width, height } = fullscreen
-    ? display.size
-    : { width: 800, height: 600 };
 
   const win = new BrowserWindow({
-    width,
-    height,
     fullscreen,
-    resizable: !fullscreen,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,

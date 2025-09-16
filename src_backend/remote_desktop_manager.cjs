@@ -137,7 +137,6 @@ async function _startRemoteDesktopSession(restoreToken) {
     if (!sessionHandle) {
       throw new Error("Portal did not return a session_handle.");
     }
-    setRemoteDesktopSessionHandle(sessionHandle);
 
     const selectDeviceOptions = [
       ["types", ["u", DEVICE_TYPE.KEYBOARD | DEVICE_TYPE.POINTER]],
@@ -171,9 +170,12 @@ async function _startRemoteDesktopSession(restoreToken) {
       setRemoteDesktopRestoreToken(newRestoreToken);
     }
 
+    setRemoteDesktopSessionHandle(sessionHandle);
+
     logInfo("Remote desktop session started successfully.");
   } catch (error) {
     toastError("Remote Desktop Manager", error);
+    setRemoteDesktopSessionHandle(null);
     await stopRemoteDesktopSession();
     throw error;
   }
