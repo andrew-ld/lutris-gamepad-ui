@@ -40,7 +40,7 @@ function toggleWindowShow() {
   }
 
   if (getRemoteDesktopSessionHandle()) {
-    if (!getRunningGameProcess()) {
+    if (!mainWindow.isVisible()) {
       mainWindow.show();
     }
     logInfo("toggleWindowShow: using remote desktop portal");
