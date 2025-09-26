@@ -1,0 +1,53 @@
+.settings-menu-container {
+  display: flex;
+  flex-direction: column;
+  width: 90vw;
+  max-width: 500px;
+  box-sizing: border-box;
+}
+
+.settings-menu-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.settings-menu-label {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+
+.focusable-row.focused .settings-menu-label {
+  color: var(--text-primary);
+}
+
+.settings-menu-value {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--text-primary);
+}
+
+.zoom-factor-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.zoom-factor-bar-container {
+  width: 120px;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.zoom-factor-bar-fill {
+  height: 100%;
+  background-color: var(--accent-color);
+  border-radius: 4px;
+  transition: width 0.1s linear;
+}

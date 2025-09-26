@@ -18,7 +18,11 @@ const {
   connectToDevice: bluetoothConnect,
   disconnectFromDevice: bluetoothDisconnect,
 } = require("./bluetooth_manager.cjs");
-const { toggleWindowShow } = require("./window_manager.cjs");
+const {
+  toggleWindowShow,
+  setWindowZoomFactor,
+  getWindowZoomFactor,
+} = require("./window_manager.cjs");
 const {
   getLutrisWrapperPath,
   logError,
@@ -88,6 +92,14 @@ function registerIpcHandlers() {
 
   // Window & App Management
   ipcOnWithError("toggle-window-show", async () => toggleWindowShow());
+
+  ipcOnWithError("set-window-zoom-factor", async (_event, factor) =>
+    setWindowZoomFactor(factor)
+  );
+
+  ipcHandleWithError("get-window-zoom-factor", async () =>
+    getWindowZoomFactor()
+  );
 
   ipcOnWithError("set-icon", async (_event, dataURL) => {
     if (

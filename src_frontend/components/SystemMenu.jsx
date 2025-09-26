@@ -1,18 +1,19 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { useModalActions, useModalState } from "../contexts/ModalContext";
-import ConfirmationDialog from "./ConfirmationDialog";
-import VolumeControl from "./VolumeControl";
-import * as api from "../utils/ipc";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLutris } from "../contexts/LutrisContext";
-import "../styles/SystemMenu.css";
-import { playActionSound } from "../utils/sound";
-import LegendaContainer from "./LegendaContainer";
-import BluetoothMenu from "./BluetoothMenu";
-import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
-import About from "./About";
-import RowBasedMenu from "./RowBasedMenu";
-import { useTranslation } from "../contexts/TranslationContext";
+import { useModalActions, useModalState } from "../contexts/ModalContext";
 import { useToastActions } from "../contexts/ToastContext";
+import { useTranslation } from "../contexts/TranslationContext";
+import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
+import "../styles/SystemMenu.css";
+import * as api from "../utils/ipc";
+import { playActionSound } from "../utils/sound";
+import About from "./About";
+import BluetoothMenu from "./BluetoothMenu";
+import ConfirmationDialog from "./ConfirmationDialog";
+import LegendaContainer from "./LegendaContainer";
+import RowBasedMenu from "./RowBasedMenu";
+import SettingsMenu from "./SettingsMenu";
+import VolumeControl from "./VolumeControl";
 
 const PowerIcon = () => (
   <svg
@@ -69,12 +70,21 @@ const SystemMenu = () => {
     await fetchGames();
   }, [fetchGames, showToast, t]);
 
+  const openSettingsModal = useCallback(() => {
+    showModal((hideThisModal) => <SettingsMenu onClose={hideThisModal} />);
+    setIsOpen(false);
+  }, [showModal]);
+
   const menuItems = useMemo(
     () => [
       { label: t("Reload Library"), action: reloadLibraryAction },
       {
         label: t("About"),
         action: openAboutModal,
+      },
+      {
+        label: t("Settings"),
+        action: openSettingsModal,
       },
       {
         label: t("Audio Settings"),
@@ -112,6 +122,7 @@ const SystemMenu = () => {
       openAudioSettingsModal,
       openAboutModal,
       openBluetoothSettingsModal,
+      openSettingsModal,
       t,
     ]
   );

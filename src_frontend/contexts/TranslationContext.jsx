@@ -1,11 +1,12 @@
 import {
   createContext,
-  useContext,
-  useState,
-  useEffect,
   useCallback,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
 import * as ipc from "../utils/ipc";
+import { applyReplacements } from "../utils/string";
 
 const TranslationContext = createContext(null);
 
@@ -49,7 +50,6 @@ function mergeLocales(base, target) {
 
 export const TranslationProvider = ({ children }) => {
   const [translations, setTranslations] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   const loadTranslations = async () => {
     try {
@@ -64,6 +64,8 @@ export const TranslationProvider = ({ children }) => {
 
       if (defaultLocale !== bestFitLocale && bestFitLocale !== null) {
         setTranslations(mergeLocales(defaultLocale, bestFitLocale));
+      } else {
+        setTranslations(defaultLocale);
       }
     } catch (error) {
       ipc.logError("Failed to load translations:", error);
@@ -71,8 +73,8 @@ export const TranslationProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    loadTranslations().finally(() => {
-      setIsLoading(false);
+    loadTranslations().catch((e) => {
+      ipc.logError("unable to load translations", e);
     });
   }, []);
 
@@ -86,18 +88,12 @@ export const TranslationProvider = ({ children }) => {
         result = key;
       }
 
-      if (replacements) {
-        for (const [k, v] of Object.entries(replacements)) {
-          result = result.replaceAll(`{{${k}}}`, v);
-        }
-      }
-
-      return result;
+      return applyReplacements(result, replacements);
     },
     [translations]
   );
 
-  if (isLoading) {
+  if (translations === null) {
     return null;
   }
 

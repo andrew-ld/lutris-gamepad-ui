@@ -1,5 +1,5 @@
-import "../styles/LoadingIndicator.css";
 import { useTranslation } from "../contexts/TranslationContext";
+import "../styles/LoadingIndicator.css";
 
 const LoadingIndicator = ({ message }) => {
   const { t } = useTranslation();

@@ -41,8 +41,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
   powerOffPC: () => ipcRenderer.send("poweroff-pc"),
   openLutris: () => ipcRenderer.send("open-lutris"),
   toggleWindowShow: () => ipcRenderer.send("toggle-window-show"),
-  setIcon: (dataURL) => ipcRenderer.send("set-icon", dataURL),
   openExternalLink: (url) => ipcRenderer.send("open-external-link", url),
+
+  // Window
+  getWindowZoomFactor: () => ipcRenderer.invoke("get-window-zoom-factor"),
+  setWindowZoomFactor: (factor) =>
+    ipcRenderer.send("set-window-zoom-factor", factor),
+  setIcon: (dataURL) => ipcRenderer.send("set-icon", dataURL),
 
   // Theme
   getUserTheme: () => ipcRenderer.invoke("get-user-theme"),

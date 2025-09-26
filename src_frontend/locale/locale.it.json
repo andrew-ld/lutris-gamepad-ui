@@ -97,6 +97,13 @@
     "Now Playing": "In gioco",
     "Playtime: {{playtime}}": "Ore di gioco: {{playtime}}"
   },
+  "components/SettingsMenu.jsx": {
+    "Close": "Chiudi",
+    "Decrease": "Diminuisci",
+    "Increase": "Aumenta",
+    "Settings": "Impostazioni",
+    "Zoom Level": "Livello Zoom"
+  },
   "components/SystemMenu.jsx": {
     "About": "Informazioni",
     "Are you sure you want to exit the application?": "Vuoi davvero uscire?",
@@ -116,6 +123,7 @@
     "Reload Library": "Aggiorna libreria",
     "Reloading library...": "Ricaricamento libreria...",
     "Select": "Seleziona",
+    "Settings": "Settings",
     "This action is final and cannot be undone.": "Questa azione è irreversibile."
   },
   "components/TopBar.jsx": {

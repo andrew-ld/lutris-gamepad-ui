@@ -28,15 +28,15 @@ function _writeStore(data) {
   }
 }
 
-function getKvStore(key) {
+function getKvStoreValue(key) {
   const data = _readStore();
   return data[key];
 }
 
-function setKvStore(key, value) {
+function setKvStoreValue(key, value) {
   const data = _readStore();
   data[key] = value;
   _writeStore(data);
 }
 
-module.exports = { getKvStore, setKvStore };
+module.exports = { getKvStoreValue, setKvStoreValue };

@@ -95,6 +95,13 @@
     "Now Playing": "Now Playing",
     "Playtime: {{playtime}}": "Playtime: {{playtime}}"
   },
+  "components/SettingsMenu.jsx": {
+    "Close": "Close",
+    "Decrease": "Decrease",
+    "Increase": "Increase",
+    "Settings": "Settings",
+    "Zoom Level": "Zoom Level"
+  },
   "components/SystemMenu.jsx": {
     "About": "About",
     "Are you sure you want to exit the application?": "Are you sure you want to exit the application?",
@@ -113,6 +120,7 @@
     "Reload Library": "Reload Library",
     "Reloading library...": "Reloading library...",
     "Select": "Select",
+    "Settings": "Settings",
     "This action is final and cannot be undone.": "This action is final and cannot be undone."
   },
   "components/TopBar.jsx": {

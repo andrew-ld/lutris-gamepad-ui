@@ -1,17 +1,28 @@
-import { useState, useCallback, useMemo, useRef } from "react";
-import { useScopedInput } from "../hooks/useScopedInput";
-import { playActionSound } from "../utils/sound";
-import "../styles/CrashDialog.css";
-import LegendaContainer from "./LegendaContainer";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "../contexts/TranslationContext";
+import { useScopedInput } from "../hooks/useScopedInput";
+import "../styles/CrashDialog.css";
+import { logError } from "../utils/ipc";
+import { playActionSound } from "../utils/sound";
+import { applyReplacements } from "../utils/string";
+import LegendaContainer from "./LegendaContainer";
 
 const SCROLL_AMOUNT = 50;
 
 const CrashDialog = ({ error, errorInfo }) => {
-  const { t } = useTranslation();
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [focusedButtonIndex, setFocusedButtonIndex] = useState(0);
   const containerRef = useRef(null);
+
+  const t = useCallback((key, replacements, filename) => {
+    try {
+      const { t } = useTranslation();
+      return t(key, replacements, filename);
+    } catch (e) {
+      logError("unable to use 'useTranslation' in CrashDialog", e);
+      return applyReplacements(key, replacements);
+    }
+  });
 
   const handleReload = useCallback(() => {
     window.location.reload();

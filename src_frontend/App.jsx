@@ -1,18 +1,18 @@
 import { useEffect } from "react";
+import ErrorBoundary from "./components/ErrorBoundary";
+import LibraryContainer from "./components/LibraryContainer";
+import ModalRenderer from "./components/ModalRenderer";
+import SystemMenu from "./components/SystemMenu";
+import ToastContainer from "./components/ToastContainer";
+import TopBar from "./components/TopBar";
+import { AudioProvider } from "./contexts/AudioContext";
+import { BluetoothProvider } from "./contexts/BluetoothContext";
 import { InputProvider, useInput } from "./contexts/InputContext";
 import { LutrisProvider } from "./contexts/LutrisContext";
 import { ModalProvider } from "./contexts/ModalContext";
-import { AudioProvider } from "./contexts/AudioContext";
-import { BluetoothProvider } from "./contexts/BluetoothContext";
 import { ToastProvider, useToastActions } from "./contexts/ToastContext";
-import LibraryContainer from "./components/LibraryContainer";
-import SystemMenu from "./components/SystemMenu";
-import ModalRenderer from "./components/ModalRenderer";
-import ToastContainer from "./components/ToastContainer";
-import TopBar from "./components/TopBar";
-import ErrorBoundary from "./components/ErrorBoundary";
 import { TranslationProvider } from "./contexts/TranslationContext";
-import { onShowToast, removeAllListeners } from "./utils/ipc";
+import { onShowToast } from "./utils/ipc";
 
 const AppMouseFocus = () => {
   const { subscribe } = useInput();

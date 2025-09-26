@@ -1,9 +1,9 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "../contexts/TranslationContext";
 import { useScopedInput } from "../hooks/useScopedInput";
-import { playActionSound } from "../utils/sound";
 import "../styles/RowBasedMenu.css";
 import { findScrollableParent } from "../utils/dom";
-import { useTranslation } from "../contexts/TranslationContext";
+import { playActionSound } from "../utils/sound";
 
 const defaultKeyExtractor = (item, index) => item.id ?? item.label ?? index;
 
@@ -31,6 +31,12 @@ const RowBasedMenu = ({
 
   const containerRef = useRef(null);
   const selectedItemKeyRef = useRef(null);
+
+  useEffect(() => {
+    if (onFocusChangeRef.current) {
+      onFocusChangeRef.current(items[selectedIndex] ?? null);
+    }
+  }, [selectedIndex, items]);
 
   useEffect(() => {
     if (items.length > 0 && items[selectedIndex]) {
@@ -61,10 +67,6 @@ const RowBasedMenu = ({
   }, [items, itemKey]);
 
   useEffect(() => {
-    if (onFocusChangeRef.current) {
-      onFocusChangeRef.current(items[selectedIndex] ?? null);
-    }
-
     if (!containerRef.current || items.length === 0) return;
 
     const scrollParent = findScrollableParent(containerRef.current);

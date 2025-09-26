@@ -4,7 +4,6 @@ const {
   powerSaveBlocker,
   protocol,
   net,
-  screen,
   app,
 } = require("electron");
 const path = require("node:path");
@@ -14,7 +13,6 @@ const {
   getMainWindow,
   getWhitelistedFiles,
   getRemoteDesktopSessionHandle,
-  getRunningGameProcess,
 } = require("./state.cjs");
 const {
   isDev,
@@ -32,6 +30,29 @@ const {
 } = require("./remote_desktop_manager.cjs");
 const { initializeThemeManager } = require("./theme_manager.cjs");
 const { subscribeToBluetoothChanges } = require("./bluetooth_manager.cjs");
+const { getKvStoreValue, setKvStoreValue } = require("./storage_kv.cjs");
+const { ZOOM_FACTOR_KEY } = require("./constants.cjs");
+
+function getWindowZoomFactor() {
+  const rawValue = getKvStoreValue(ZOOM_FACTOR_KEY);
+  if (rawValue) {
+    return parseFloat(rawValue) || 1.0;
+  }
+  return 1.0;
+}
+
+function setWindowZoomFactor(factor) {
+  if (!factor) {
+    factor = 1.0;
+  }
+
+  setKvStoreValue(ZOOM_FACTOR_KEY, factor);
+
+  const mainWindow = getMainWindow();
+  if (mainWindow) {
+    mainWindow.webContents.setZoomFactor(factor);
+  }
+}
 
 function toggleWindowShow() {
   const mainWindow = getMainWindow();
@@ -178,9 +199,15 @@ function createWindow(onWindowClosedCallback) {
   win.webContents.once("did-stop-loading", () => {
     initializeThemeManager();
     subscribeToBluetoothChanges();
+    win.webContents.setZoomFactor(getWindowZoomFactor());
   });
 
   win.loadURL(homePageUrl);
 }
 
-module.exports = { createWindow, toggleWindowShow };
+module.exports = {
+  createWindow,
+  toggleWindowShow,
+  setWindowZoomFactor,
+  getWindowZoomFactor,
+};

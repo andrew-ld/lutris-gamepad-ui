@@ -3,7 +3,6 @@ export const launchGame = (game) => window.electronAPI.launchGame(game.id);
 export const closeGame = (game) => window.electronAPI.closeGame(game.id);
 export const openLutris = () => window.electronAPI.openLutris();
 
-export const setIcon = (dataURL) => window.electronAPI.setIcon(dataURL);
 export const rebootPC = () => window.electronAPI.rebootPC();
 export const powerOffPC = () => window.electronAPI.powerOffPC();
 export const toggleWindowShow = () => window.electronAPI.toggleWindowShow();
@@ -47,3 +46,9 @@ export const getUserTheme = () => window.electronAPI.getUserTheme();
 export const onThemeUpdated = (cb) => window.electronAPI.onThemeUpdated(cb);
 
 export const onShowToast = (cb) => window.electronAPI.onShowToast(cb);
+
+export const setIcon = (dataURL) => window.electronAPI.setIcon(dataURL);
+export const getWindowZoomFactor = () =>
+  window.electronAPI.getWindowZoomFactor();
+export const setWindowZoomFactor = (factor) =>
+  window.electronAPI.setWindowZoomFactor(factor);
