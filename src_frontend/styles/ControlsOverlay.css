@@ -4,23 +4,25 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
+
   background-color: rgba(20, 20, 20, 0.8);
   backdrop-filter: blur(5px);
-  padding: 10px 20px;
+  padding: 8px 12px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  max-width: calc(100% - 40px);
+
   box-sizing: border-box;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px 12px;
+  font-size: clamp(10px, 1.6vw, 16px);
 }
 
 .hints-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 12px;
+  gap: inherit;
 }

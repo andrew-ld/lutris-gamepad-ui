@@ -519,10 +519,6 @@ const LibraryContainer = () => {
       controlsOverlayProps.onClearSearch = clearSearchCb;
     }
     controlsOverlayProps.onShowSearchModal = showSearchModalCb;
-    if (shelves.length > 1) {
-      controlsOverlayProps.onPrevCategory = handlePrevCategory;
-      controlsOverlayProps.onNextCategory = handleNextCategory;
-    }
   }
 
   if (runningGame) {
