@@ -1,7 +1,7 @@
 {
   "name": "lutris-gamepad-ui",
   "private": true,
-  "version": "0.1.20",
+  "version": "0.1.21",
   "main": "electron.cjs",
   "type": "module",
   "description": "A simple, TV-friendly, gamepad-navigable frontend for the Lutris game launcher on Linux.",
