@@ -4,7 +4,6 @@ import "../styles/SettingsMenu.css";
 import * as ipc from "../utils/ipc";
 import FocusableRow from "./FocusableRow";
 import LegendaContainer from "./LegendaContainer";
-import LoadingIndicator from "./LoadingIndicator";
 import RowBasedMenu from "./RowBasedMenu";
 
 export const SettingsMenuFocusId = "SettingsMenu";
@@ -16,7 +15,6 @@ const ZOOM_STEP = 0.05; // 5%
 const SettingsMenu = ({ onClose }) => {
   const { t } = useTranslation();
   const [zoomFactor, setZoomFactor] = useState(1.0);
-  const [isLoading, setIsLoading] = useState(true);
   const [focusedItem, setFocusedItem] = useState(null);
 
   useEffect(() => {
@@ -26,8 +24,6 @@ const SettingsMenu = ({ onClose }) => {
         setZoomFactor(factor);
       } catch (error) {
         ipc.logError("Failed to get window zoom factor:", error);
-      } finally {
-        setIsLoading(false);
       }
     };
     fetchZoom();
@@ -48,10 +44,15 @@ const SettingsMenu = ({ onClose }) => {
     handleZoomChange(zoomFactor + ZOOM_STEP);
   }, [zoomFactor, handleZoomChange]);
 
-  const menuItems = useMemo(
-    () => [{ type: "ZOOM", label: t("Zoom Level") }],
-    [t]
-  );
+  const menuItems = useMemo(() => {
+    const result = [];
+
+    if (zoomFactor !== null) {
+      result.push({ type: "ZOOM", label: t("Zoom Level") });
+    }
+
+    return result;
+  }, [t, zoomFactor]);
 
   const handleAction = useCallback(
     (actionName, item) => {
@@ -119,14 +120,6 @@ const SettingsMenu = ({ onClose }) => {
 
     return buttons;
   }, [decreaseZoom, increaseZoom, onClose, t, focusedItem]);
-
-  if (isLoading) {
-    return (
-      <div className="settings-menu-container">
-        <LoadingIndicator />
-      </div>
-    );
-  }
 
   return (
     <div className="settings-menu-container">
