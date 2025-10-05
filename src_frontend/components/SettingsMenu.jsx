@@ -8,6 +8,7 @@ import "../styles/SettingsMenu.css";
 import FocusableRow from "./FocusableRow";
 import LegendaContainer from "./LegendaContainer";
 import RowBasedMenu from "./RowBasedMenu";
+import ToggleButton from "./ToggleButton";
 
 export const SettingsMenuFocusId = "SettingsMenu";
 
@@ -49,25 +50,21 @@ const SettingsMenu = ({ onClose }) => {
 
   const menuItems = useMemo(() => {
     const result = [];
-
     if (settings.zoomFactor !== undefined) {
       result.push({ type: "ZOOM", label: t("Zoom Level") });
     }
-
     if (settings.showRecentlyPlayed !== undefined) {
       result.push({
         type: "RECENTLY_PLAYED",
         label: t("Recently Played Shelf"),
       });
     }
-
     if (settings.showHiddenGames !== undefined) {
       result.push({
         type: "SHOW_HIDDEN",
         label: t("Show Hidden Games"),
       });
     }
-
     return result;
   }, [t, settings]);
 
@@ -141,9 +138,12 @@ const SettingsMenu = ({ onClose }) => {
               onClick={toggleShowRecentlyPlayed}
             >
               <span className="settings-menu-label">{item.label}</span>
-              <span className="settings-menu-value">
-                {settings.showRecentlyPlayed ? t("Enabled") : t("Disabled")}
-              </span>
+              <ToggleButton
+                isToggledOn={settings.showRecentlyPlayed}
+                labelOn={t("Disable")}
+                labelOff={t("Enable")}
+                onClick={toggleShowRecentlyPlayed}
+              />
             </FocusableRow>
           );
         case "SHOW_HIDDEN":
@@ -155,9 +155,12 @@ const SettingsMenu = ({ onClose }) => {
               onClick={toggleShowHiddenGames}
             >
               <span className="settings-menu-label">{item.label}</span>
-              <span className="settings-menu-value">
-                {settings.showHiddenGames ? t("Enabled") : t("Disabled")}
-              </span>
+              <ToggleButton
+                isToggledOn={settings.showHiddenGames}
+                labelOn={t("Disable")}
+                labelOff={t("Enable")}
+                onClick={toggleShowHiddenGames}
+              />
             </FocusableRow>
           );
         default:

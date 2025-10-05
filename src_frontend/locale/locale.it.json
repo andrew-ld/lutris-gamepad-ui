@@ -98,8 +98,12 @@
   "components/SettingsMenu.jsx": {
     "Close": "Chiudi",
     "Decrease": "Diminuisci",
+    "Disable": "Disattiva",
+    "Enable": "Attivta",
     "Increase": "Aumenta",
+    "Recently Played Shelf": "Giocati di recent",
     "Settings": "Impostazioni",
+    "Show Hidden Games": "Mostra giochi nascosti",
     "Zoom Level": "Livello Zoom"
   },
   "components/SystemMenu.jsx": {

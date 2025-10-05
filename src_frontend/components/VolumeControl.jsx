@@ -5,6 +5,7 @@ import LegendaContainer from "./LegendaContainer";
 import RowBasedMenu from "./RowBasedMenu";
 import FocusableRow from "./FocusableRow";
 import { useTranslation } from "../contexts/TranslationContext";
+import ToggleButton from "./ToggleButton";
 
 export const VolumeControlFocusID = "VolumeControl";
 
@@ -106,12 +107,16 @@ const VolumeControl = ({ onClose }) => {
           key={item.type}
           isFocused={isFocused}
           onMouseEnter={onMouseEnter}
+          onClick={item.type === CONTROL_TYPES.MUTE ? toggleMute : undefined}
         >
           <span className="volume-control-label">{item.label}</span>
           {item.type === CONTROL_TYPES.MUTE && (
-            <button className="mute-button" onClick={toggleMute}>
-              {isMuted ? t("Unmute") : t("Mute")}
-            </button>
+            <ToggleButton
+              isToggledOn={isMuted}
+              labelOn={t("Unmute")}
+              labelOff={t("Mute")}
+              onClick={toggleMute}
+            />
           )}
           {item.type === CONTROL_TYPES.VOLUME && (
             <div className="volume-bar-display">

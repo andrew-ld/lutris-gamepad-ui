@@ -96,8 +96,12 @@
   "components/SettingsMenu.jsx": {
     "Close": "Close",
     "Decrease": "Decrease",
+    "Disable": "Disable",
+    "Enable": "Enable",
     "Increase": "Increase",
+    "Recently Played Shelf": "Recently Played Shelf",
     "Settings": "Settings",
+    "Show Hidden Games": "Show Hidden Games",
     "Zoom Level": "Zoom Level"
   },
   "components/SystemMenu.jsx": {
