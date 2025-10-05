@@ -34,6 +34,7 @@ const {
   getAppConfig,
   subscribeConfigValueChange,
 } = require("./config_manager.cjs");
+const { checkForUpdates } = require("./update_checker.cjs");
 
 function getWindowZoomFactor() {
   return getAppConfig().zoomFactor || 1.0;
@@ -194,6 +195,9 @@ function createWindow(onWindowClosedCallback) {
     initializeThemeManager();
     subscribeToBluetoothChanges();
     win.webContents.setZoomFactor(getWindowZoomFactor());
+    checkForUpdates().catch((e) => {
+      logError("unable to check for new updates:", e);
+    });
   });
 
   win.loadURL(homePageUrl);

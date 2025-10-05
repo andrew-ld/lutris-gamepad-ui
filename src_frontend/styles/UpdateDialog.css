@@ -1,0 +1,48 @@
+.update-dialog-container {
+  display: flex;
+  flex-direction: column;
+  width: 90vw;
+  max-width: 450px;
+}
+
+.update-dialog-content {
+  text-align: center;
+  padding: 16px;
+}
+
+.update-dialog-title {
+  margin: 0 0 12px 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--accent-color);
+}
+
+.update-dialog-description {
+  margin: 0 0 24px 0;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.update-dialog-button {
+  background-color: var(--accent-color);
+  color: var(--text-primary);
+  border: 1px solid transparent;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  outline: none;
+  width: 100%;
+}
+
+.update-dialog-button:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 15px rgba(229, 9, 20, 0.5);
+}
+
+.update-dialog-container .legenda-content {
+  padding-bottom: 0;
+}

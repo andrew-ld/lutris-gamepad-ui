@@ -42,6 +42,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   openLutris: () => ipcRenderer.send("open-lutris"),
   toggleWindowShow: () => ipcRenderer.send("toggle-window-show"),
   openExternalLink: (url) => ipcRenderer.send("open-external-link", url),
+  onUpdateAvailable: (callback) =>
+    ipcRenderer.on("update-available", (_event, ...args) => callback(...args)),
 
   // Config
   getAppConfig: () => ipcRenderer.invoke("get-app-config"),

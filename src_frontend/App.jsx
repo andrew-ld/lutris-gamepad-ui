@@ -5,15 +5,16 @@ import ModalRenderer from "./components/ModalRenderer";
 import SystemMenu from "./components/SystemMenu";
 import ToastContainer from "./components/ToastContainer";
 import TopBar from "./components/TopBar";
+import UpdateDialog from "./components/UpdateDialog";
 import { AudioProvider } from "./contexts/AudioContext";
 import { BluetoothProvider } from "./contexts/BluetoothContext";
 import { InputProvider, useInput } from "./contexts/InputContext";
 import { LutrisProvider } from "./contexts/LutrisContext";
-import { ModalProvider } from "./contexts/ModalContext";
+import { ModalProvider, useModalActions } from "./contexts/ModalContext";
+import { SettingsProvider } from "./contexts/SettingsContext";
 import { ToastProvider, useToastActions } from "./contexts/ToastContext";
 import { TranslationProvider } from "./contexts/TranslationContext";
-import { onShowToast } from "./utils/ipc";
-import { SettingsProvider } from "./contexts/SettingsContext";
+import { onShowToast, onUpdateAvailable } from "./utils/ipc";
 
 const AppMouseFocus = () => {
   const { subscribe } = useInput();
@@ -51,6 +52,7 @@ const AppMouseFocus = () => {
 
 const AppContent = () => {
   const { showToast } = useToastActions();
+  const { showModal } = useModalActions();
 
   useEffect(() => {
     const handleShowToast = (payload) => {
@@ -58,7 +60,19 @@ const AppContent = () => {
     };
 
     onShowToast(handleShowToast);
-  }, [showToast]);
+
+    const handleUpdateAvailable = ({ version, url }) => {
+      showModal((hideModal) => (
+        <UpdateDialog
+          newVersion={version}
+          releaseUrl={url}
+          onClose={hideModal}
+        />
+      ));
+    };
+
+    onUpdateAvailable(handleUpdateAvailable);
+  }, [showToast, showModal]);
 
   return (
     <div className="App">

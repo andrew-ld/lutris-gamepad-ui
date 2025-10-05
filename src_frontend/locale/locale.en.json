@@ -129,6 +129,12 @@
     "Muted": "Muted",
     "Offline": "Offline"
   },
+  "components/UpdateDialog.jsx": {
+    "A new version, {{version}}, is available for download.": "A new version, {{version}}, is available for download.",
+    "Go to Downloads": "Go to Downloads",
+    "Later": "Later",
+    "Update Available": "Update Available"
+  },
   "components/VolumeControl.jsx": {
     "Audio Settings": "Audio Settings",
     "Close": "Close",

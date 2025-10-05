@@ -46,6 +46,8 @@ export const getUserTheme = () => window.electronAPI.getUserTheme();
 export const onThemeUpdated = (cb) => window.electronAPI.onThemeUpdated(cb);
 
 export const onShowToast = (cb) => window.electronAPI.onShowToast(cb);
+export const onUpdateAvailable = (cb) =>
+  window.electronAPI.onUpdateAvailable(cb);
 
 export const setIcon = (dataURL) => window.electronAPI.setIcon(dataURL);
 
