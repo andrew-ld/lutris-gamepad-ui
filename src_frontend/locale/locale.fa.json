@@ -132,7 +132,7 @@
   "components/VolumeControl.jsx": {
     "Audio Settings": "تنظیمات صدا",
     "Close": "بستن",
-    "Current Output": "خروجی کنونی",
+    "Current Output:": "خروجی کنونی",
     "Decrease": "کاهش",
     "Increase": "افزایش",
     "Loading Audio Settings...": "در حال بارگذاری تنظیمات صدا...",
