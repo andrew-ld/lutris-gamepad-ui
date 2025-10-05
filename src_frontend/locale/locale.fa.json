@@ -96,8 +96,12 @@
   "components/SettingsMenu.jsx": {
     "Close": "بستن",
     "Decrease": "کاهش",
+    "Disable": "غیرفعال کردن",
+    "Enable": "فعال کردن",
     "Increase": "افزایش",
+    "Recently Played Shelf": "قفسه اخیرا بازی شده",
     "Settings": "تنظیمات",
+    "Show Hidden Games": "نمایش بازی‌های پنهان",
     "Zoom Level": "میزان بزرگ‌نمایی"
   },
   "components/SystemMenu.jsx": {
