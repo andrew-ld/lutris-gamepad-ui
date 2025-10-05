@@ -125,7 +125,7 @@ async function getGames() {
         .map((id) => categoryIdToNameMap.get(id))
         .filter(Boolean);
 
-      if (hiddenGamesCategory) {
+      if (hiddenGamesCategory && !game.hidden) {
         game.hidden = categoryIds.includes(hiddenGamesCategory.id);
       }
 
