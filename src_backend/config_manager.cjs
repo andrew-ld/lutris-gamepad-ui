@@ -19,7 +19,6 @@ function getAppConfig() {
 function subscribeConfigValueChange(key, cb) {
   const subscribers = (SUBSCRIPTIONS[key] = SUBSCRIPTIONS[key] || []);
   subscribers.push(cb);
-  SUBSCRIPTIONS[key] = subscribers;
 }
 
 function setAppConfig(key, value) {
