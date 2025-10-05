@@ -12,11 +12,13 @@ import ConfirmationDialog from "./ConfirmationDialog";
 import { useScopedInput } from "../hooks/useScopedInput";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
 import { useTranslation } from "../contexts/TranslationContext";
+import { useSettingsState } from "../contexts/SettingsContext";
 
 export const LibraryContainerFocusID = "LibraryContainer";
 
 const LibraryContainer = () => {
   const { t } = useTranslation();
+  const { settings } = useSettingsState();
   const { games, loading, runningGame, launchGame, closeRunningGame } =
     useLutris();
 
@@ -32,6 +34,23 @@ const LibraryContainer = () => {
   const gridRefs = useRef([]);
   const gameCloseCloseModalRef = useRef(null);
   const prevFocusCoords = useRef(null);
+
+  const currentGames = useMemo(() => {
+    return (games || []).filter((g) => {
+      if (!settings.showHiddenGames && g.hidden) {
+        return false;
+      }
+
+      if (
+        searchQuery &&
+        !g.title.toLowerCase().includes(searchQuery.toLowerCase())
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [searchQuery, settings.showHiddenGames, games]);
 
   const setShelfRef = useCallback((el, shelfIndex) => {
     shelfRefs.current[shelfIndex] = el;
@@ -49,16 +68,11 @@ const LibraryContainer = () => {
   }, []);
 
   const shelves = useMemo(() => {
-    if (!games || games.length === 0) return [];
-
     if (searchQuery) {
-      const filteredGames = games.filter((g) =>
-        g.title.toLowerCase().includes(searchQuery.toLowerCase())
-      );
       const searchShelves = [
         {
           title: t('Results for "{{searchQuery}}"', { searchQuery }),
-          games: filteredGames.sort((a, b) => a.title.localeCompare(b.title)),
+          games: currentGames.sort((a, b) => a.title.localeCompare(b.title)),
         },
       ];
       cardRefs.current = searchShelves.map((shelf) =>
@@ -75,18 +89,23 @@ const LibraryContainer = () => {
 
     const newShelves = [];
 
-    const recentlyPlayedGames = sortByLastPlayed(games).slice(0, 10);
-    if (recentlyPlayedGames.length > 0) {
-      newShelves.push({ title: "Recently Played", games: recentlyPlayedGames });
+    if (settings.showRecentlyPlayed) {
+      const recentlyPlayedGames = sortByLastPlayed(currentGames).slice(0, 10);
+      if (recentlyPlayedGames.length > 0) {
+        newShelves.push({
+          title: "Recently Played",
+          games: recentlyPlayedGames,
+        });
+      }
     }
 
-    const allGamesSorted = [...games].sort((a, b) =>
+    const allGamesSorted = currentGames.sort((a, b) =>
       a.title.localeCompare(b.title)
     );
     newShelves.push({ title: "All Games", games: allGamesSorted });
 
     const categoriesMap = new Map();
-    games.forEach((game) => {
+    currentGames.forEach((game) => {
       game.categories.forEach((categoryName) => {
         if (!categoriesMap.has(categoryName)) {
           categoriesMap.set(categoryName, []);
@@ -110,7 +129,7 @@ const LibraryContainer = () => {
     cardRefs.current = newShelves.map((shelf) => Array(shelf.games.length));
 
     return newShelves;
-  }, [games, searchQuery, t]);
+  }, [currentGames, searchQuery, t, settings.showRecentlyPlayed]);
 
   const shelvesRef = useRef(shelves);
   shelvesRef.current = shelves;
@@ -160,7 +179,7 @@ const LibraryContainer = () => {
   useEffect(() => {
     setFocusCoords({ shelf: 0, card: 0 });
     prevFocusCoords.current = null;
-  }, [games, searchQuery]);
+  }, [currentGames, searchQuery, setFocusCoords, shelves]);
 
   const handleCardFocus = useCallback((coords) => {
     setFocusCoords((current) => {
@@ -183,13 +202,13 @@ const LibraryContainer = () => {
   useEffect(() => {
     if (loading || runningGame) return;
 
-    if (prevFocusCoords.current) {
-      const { shelf: prevShelf, card: prevCard } = prevFocusCoords.current;
-      const prevNode = cardRefs.current[prevShelf]?.[prevCard];
-      if (prevNode) {
-        prevNode.classList.remove("focused");
+    cardRefs.current?.forEach((shelfOfRefs) => {
+      if (Array.isArray(shelfOfRefs)) {
+        shelfOfRefs.forEach((cardNode) => {
+          cardNode?.classList.remove("focused");
+        });
       }
-    }
+    });
 
     const { shelf, card, preventScroll } = focusCoords;
 

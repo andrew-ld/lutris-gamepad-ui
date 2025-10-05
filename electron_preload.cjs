@@ -43,10 +43,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
   toggleWindowShow: () => ipcRenderer.send("toggle-window-show"),
   openExternalLink: (url) => ipcRenderer.send("open-external-link", url),
 
+  // Config
+  getAppConfig: () => ipcRenderer.invoke("get-app-config"),
+  setAppConfig: (key, value) => ipcRenderer.send("set-app-config", key, value),
+  onAppConfigChanged: (callback) =>
+    ipcRenderer.on("app-config-changed", (_event, config) => callback(config)),
+
   // Window
-  getWindowZoomFactor: () => ipcRenderer.invoke("get-window-zoom-factor"),
-  setWindowZoomFactor: (factor) =>
-    ipcRenderer.send("set-window-zoom-factor", factor),
   setIcon: (dataURL) => ipcRenderer.send("set-icon", dataURL),
 
   // Theme

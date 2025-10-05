@@ -13,6 +13,7 @@ import { ModalProvider } from "./contexts/ModalContext";
 import { ToastProvider, useToastActions } from "./contexts/ToastContext";
 import { TranslationProvider } from "./contexts/TranslationContext";
 import { onShowToast } from "./utils/ipc";
+import { SettingsProvider } from "./contexts/SettingsContext";
 
 const AppMouseFocus = () => {
   const { subscribe } = useInput();
@@ -79,9 +80,11 @@ function App() {
               <AudioProvider>
                 <BluetoothProvider>
                   <ToastProvider>
-                    <AppContent />
-                    <ModalRenderer />
-                    <ToastContainer />
+                    <SettingsProvider>
+                      <AppContent />
+                      <ModalRenderer />
+                      <ToastContainer />
+                    </SettingsProvider>
                   </ToastProvider>
                 </BluetoothProvider>
               </AudioProvider>

@@ -11,7 +11,6 @@ const {
   toastError,
 } = require("./utils.cjs");
 const { getKvStoreValue, setKvStoreValue } = require("./storage_kv.cjs");
-const { KV_STORAGE_TOKEN_KEY } = require("./constants.cjs");
 
 const PORTAL_DESTINATION = "org.freedesktop.portal.Desktop";
 const PORTAL_PATH = "/org/freedesktop/portal/desktop";
@@ -24,6 +23,8 @@ const DEVICE_TYPE = { KEYBOARD: 1, POINTER: 2 };
 const KEY_STATE = { RELEASE: 0, PRESS: 1 };
 const PERSIST_MODE = { UNTIL_REVOKED: 2 };
 const ALT_TAB_TIMEOUT_MS = 1000;
+
+const KV_STORAGE_TOKEN_KEY = "remote_desktop_manager.token";
 
 function getRemoteDesktopRestoreToken() {
   return getKvStoreValue(KV_STORAGE_TOKEN_KEY);

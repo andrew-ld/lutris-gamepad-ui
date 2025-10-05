@@ -28,6 +28,7 @@ export const LutrisProvider = ({ children }) => {
         coverPath: game.coverPath,
         runtimeIconPath: game.runtimeIconPath || null,
         categories: game.categories || [],
+        hidden: game.hidden || false,
       }));
 
       setGames(mappedGames);

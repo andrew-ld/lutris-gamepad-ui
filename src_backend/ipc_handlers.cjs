@@ -24,7 +24,6 @@ const {
   getWindowZoomFactor,
 } = require("./window_manager.cjs");
 const {
-  getLutrisWrapperPath,
   logError,
   logInfo,
   logWarn,
@@ -34,6 +33,7 @@ const {
 const { getMainWindow } = require("./state.cjs");
 const { getUserTheme } = require("./theme_manager.cjs");
 const { invokeLutris } = require("./lutris_wrapper.cjs");
+const { getAppConfig, setAppConfig } = require("./config_manager.cjs");
 
 const logLevelToLogger = {
   error: logError,
@@ -90,16 +90,7 @@ function registerIpcHandlers() {
     });
   });
 
-  // Window & App Management
   ipcOnWithError("toggle-window-show", async () => toggleWindowShow());
-
-  ipcOnWithError("set-window-zoom-factor", async (_event, factor) =>
-    setWindowZoomFactor(factor)
-  );
-
-  ipcHandleWithError("get-window-zoom-factor", async () =>
-    getWindowZoomFactor()
-  );
 
   ipcOnWithError("set-icon", async (_event, dataURL) => {
     if (
@@ -129,6 +120,13 @@ function registerIpcHandlers() {
       throw new Error(`Could not open invalid URL: ${url}`);
     }
   });
+
+  // App Config
+  ipcOnWithError("set-app-config", async (_event, key, value) => {
+    setAppConfig(key, value);
+  });
+
+  ipcHandleWithError("get-app-config", async () => getAppConfig());
 
   // System Control
   ipcOnWithError("reboot-pc", async () => {

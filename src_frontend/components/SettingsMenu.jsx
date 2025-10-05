@@ -1,7 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "../contexts/TranslationContext";
+import {
+  useSettingsActions,
+  useSettingsState,
+} from "../contexts/SettingsContext";
 import "../styles/SettingsMenu.css";
-import * as ipc from "../utils/ipc";
 import FocusableRow from "./FocusableRow";
 import LegendaContainer from "./LegendaContainer";
 import RowBasedMenu from "./RowBasedMenu";
@@ -14,112 +17,197 @@ const ZOOM_STEP = 0.05; // 5%
 
 const SettingsMenu = ({ onClose }) => {
   const { t } = useTranslation();
-  const [zoomFactor, setZoomFactor] = useState(1.0);
   const [focusedItem, setFocusedItem] = useState(null);
 
-  useEffect(() => {
-    const fetchZoom = async () => {
-      try {
-        const factor = await ipc.getWindowZoomFactor();
-        setZoomFactor(factor);
-      } catch (error) {
-        ipc.logError("Failed to get window zoom factor:", error);
-      }
-    };
-    fetchZoom();
-  }, []);
+  const { settings } = useSettingsState();
+  const { updateSetting } = useSettingsActions();
 
-  const handleZoomChange = useCallback((newFactor) => {
-    const clampedFactor = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newFactor));
-    const roundedFactor = Math.round(clampedFactor * 100) / 100;
-    setZoomFactor(roundedFactor);
-    ipc.setWindowZoomFactor(roundedFactor);
-  }, []);
+  const handleZoomChange = useCallback(
+    (newFactor) => {
+      const clampedFactor = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, newFactor));
+      const roundedFactor = Math.round(clampedFactor * 100) / 100;
+      updateSetting("zoomFactor", roundedFactor);
+    },
+    [updateSetting]
+  );
 
   const decreaseZoom = useCallback(() => {
-    handleZoomChange(zoomFactor - ZOOM_STEP);
-  }, [zoomFactor, handleZoomChange]);
+    handleZoomChange(settings.zoomFactor - ZOOM_STEP);
+  }, [settings.zoomFactor, handleZoomChange]);
 
   const increaseZoom = useCallback(() => {
-    handleZoomChange(zoomFactor + ZOOM_STEP);
-  }, [zoomFactor, handleZoomChange]);
+    handleZoomChange(settings.zoomFactor + ZOOM_STEP);
+  }, [settings.zoomFactor, handleZoomChange]);
+
+  const toggleShowRecentlyPlayed = useCallback(() => {
+    updateSetting("showRecentlyPlayed", !settings.showRecentlyPlayed);
+  }, [settings.showRecentlyPlayed, updateSetting]);
+
+  const toggleShowHiddenGames = useCallback(() => {
+    updateSetting("showHiddenGames", !settings.showHiddenGames);
+  }, [settings.showHiddenGames, updateSetting]);
 
   const menuItems = useMemo(() => {
     const result = [];
 
-    if (zoomFactor !== null) {
+    if (settings.zoomFactor !== undefined) {
       result.push({ type: "ZOOM", label: t("Zoom Level") });
     }
 
+    if (settings.showRecentlyPlayed !== undefined) {
+      result.push({
+        type: "RECENTLY_PLAYED",
+        label: t("Recently Played Shelf"),
+      });
+    }
+
+    if (settings.showHiddenGames !== undefined) {
+      result.push({
+        type: "SHOW_HIDDEN",
+        label: t("Show Hidden Games"),
+      });
+    }
+
     return result;
-  }, [t, zoomFactor]);
+  }, [t, settings]);
 
   const handleAction = useCallback(
     (actionName, item) => {
+      if (!item) return;
+
       if (actionName === "B") {
         onClose();
         return;
       }
-      if (item.type === "ZOOM") {
-        if (actionName === "LEFT") decreaseZoom();
-        else if (actionName === "RIGHT") increaseZoom();
+
+      switch (item.type) {
+        case "RECENTLY_PLAYED":
+          if (actionName === "A") toggleShowRecentlyPlayed();
+          break;
+        case "SHOW_HIDDEN":
+          if (actionName === "A") toggleShowHiddenGames();
+          break;
+        case "ZOOM":
+          if (actionName === "LEFT") decreaseZoom();
+          else if (actionName === "RIGHT") increaseZoom();
+          break;
       }
     },
-    [onClose, decreaseZoom, increaseZoom]
+    [
+      onClose,
+      decreaseZoom,
+      increaseZoom,
+      toggleShowRecentlyPlayed,
+      toggleShowHiddenGames,
+    ]
   );
 
   const renderItem = useCallback(
     (item, isFocused, onMouseEnter) => {
-      return (
-        <FocusableRow
-          key={item.type}
-          isFocused={isFocused}
-          onMouseEnter={onMouseEnter}
-        >
-          <span className="settings-menu-label">{item.label}</span>
-          <div className="zoom-factor-display">
-            <div className="zoom-factor-bar-container">
-              <div
-                className="zoom-factor-bar-fill"
-                style={{
-                  width: `${
-                    ((zoomFactor - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM)) * 100
-                  }%`,
-                }}
-              ></div>
-            </div>
-            <span className="settings-menu-value">{`${Math.round(
-              zoomFactor * 100
-            )}%`}</span>
-          </div>
-        </FocusableRow>
-      );
+      switch (item.type) {
+        case "ZOOM":
+          return (
+            <FocusableRow
+              key={item.type}
+              isFocused={isFocused}
+              onMouseEnter={onMouseEnter}
+            >
+              <span className="settings-menu-label">{item.label}</span>
+              <div className="zoom-factor-display">
+                <div className="zoom-factor-bar-container">
+                  <div
+                    className="zoom-factor-bar-fill"
+                    style={{
+                      width: `${
+                        ((settings.zoomFactor - MIN_ZOOM) /
+                          (MAX_ZOOM - MIN_ZOOM)) *
+                        100
+                      }%`,
+                    }}
+                  />
+                </div>
+                <span className="settings-menu-value">{`${Math.round(
+                  settings.zoomFactor * 100
+                )}%`}</span>
+              </div>
+            </FocusableRow>
+          );
+        case "RECENTLY_PLAYED":
+          return (
+            <FocusableRow
+              key={item.type}
+              isFocused={isFocused}
+              onMouseEnter={onMouseEnter}
+              onClick={toggleShowRecentlyPlayed}
+            >
+              <span className="settings-menu-label">{item.label}</span>
+              <span className="settings-menu-value">
+                {settings.showRecentlyPlayed ? t("Enabled") : t("Disabled")}
+              </span>
+            </FocusableRow>
+          );
+        case "SHOW_HIDDEN":
+          return (
+            <FocusableRow
+              key={item.type}
+              isFocused={isFocused}
+              onMouseEnter={onMouseEnter}
+              onClick={toggleShowHiddenGames}
+            >
+              <span className="settings-menu-label">{item.label}</span>
+              <span className="settings-menu-value">
+                {settings.showHiddenGames ? t("Enabled") : t("Disabled")}
+              </span>
+            </FocusableRow>
+          );
+        default:
+          return null;
+      }
     },
-    [zoomFactor]
+    [settings, t, toggleShowRecentlyPlayed, toggleShowHiddenGames]
   );
 
   const legendItems = useMemo(() => {
     const buttons = [];
 
     if (focusedItem?.type === "ZOOM") {
-      buttons.push(
-        {
-          button: "LEFT",
-          label: t("Decrease"),
-          onClick: decreaseZoom,
-        },
-        {
-          button: "RIGHT",
-          label: t("Increase"),
-          onClick: increaseZoom,
-        }
-      );
+      buttons.push({
+        button: "LEFT",
+        label: t("Decrease"),
+        onClick: decreaseZoom,
+      });
+      buttons.push({
+        button: "RIGHT",
+        label: t("Increase"),
+        onClick: increaseZoom,
+      });
+    } else if (focusedItem?.type === "RECENTLY_PLAYED") {
+      buttons.push({
+        button: "A",
+        label: settings.showRecentlyPlayed ? t("Disable") : t("Enable"),
+        onClick: toggleShowRecentlyPlayed,
+      });
+    } else if (focusedItem?.type === "SHOW_HIDDEN") {
+      buttons.push({
+        button: "A",
+        label: settings.showHiddenGames ? t("Disable") : t("Enable"),
+        onClick: toggleShowHiddenGames,
+      });
     }
 
     buttons.push({ button: "B", label: t("Close"), onClick: onClose });
 
     return buttons;
-  }, [decreaseZoom, increaseZoom, onClose, t, focusedItem]);
+  }, [
+    focusedItem,
+    settings,
+    decreaseZoom,
+    increaseZoom,
+    toggleShowRecentlyPlayed,
+    toggleShowHiddenGames,
+    onClose,
+    t,
+  ]);
 
   return (
     <div className="settings-menu-container">

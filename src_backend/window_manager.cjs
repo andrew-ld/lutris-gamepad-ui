@@ -30,27 +30,19 @@ const {
 } = require("./remote_desktop_manager.cjs");
 const { initializeThemeManager } = require("./theme_manager.cjs");
 const { subscribeToBluetoothChanges } = require("./bluetooth_manager.cjs");
-const { getKvStoreValue, setKvStoreValue } = require("./storage_kv.cjs");
-const { ZOOM_FACTOR_KEY } = require("./constants.cjs");
+const {
+  getAppConfig,
+  subscribeConfigValueChange,
+} = require("./config_manager.cjs");
 
 function getWindowZoomFactor() {
-  const rawValue = getKvStoreValue(ZOOM_FACTOR_KEY);
-  if (rawValue) {
-    return parseFloat(rawValue) || 1.0;
-  }
-  return 1.0;
+  return getAppConfig().zoomFactor || 1.0;
 }
 
 function setWindowZoomFactor(factor) {
-  if (!factor) {
-    factor = 1.0;
-  }
-
-  setKvStoreValue(ZOOM_FACTOR_KEY, factor);
-
   const mainWindow = getMainWindow();
   if (mainWindow) {
-    mainWindow.webContents.setZoomFactor(factor);
+    mainWindow.webContents.setZoomFactor(factor || 1.0);
   }
 }
 
@@ -163,6 +155,8 @@ function createWindow(onWindowClosedCallback) {
 
   setMainWindow(win);
 
+  subscribeConfigValueChange("zoomFactor", setWindowZoomFactor);
+
   const startRemoteDesktopSessionDebounced = debounce(() => {
     startRemoteDesktopSession().catch((e) => {
       logError("unable to start remote desktop session", e);
@@ -208,6 +202,4 @@ function createWindow(onWindowClosedCallback) {
 module.exports = {
   createWindow,
   toggleWindowShow,
-  setWindowZoomFactor,
-  getWindowZoomFactor,
 };

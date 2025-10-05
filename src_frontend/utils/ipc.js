@@ -48,7 +48,11 @@ export const onThemeUpdated = (cb) => window.electronAPI.onThemeUpdated(cb);
 export const onShowToast = (cb) => window.electronAPI.onShowToast(cb);
 
 export const setIcon = (dataURL) => window.electronAPI.setIcon(dataURL);
-export const getWindowZoomFactor = () =>
-  window.electronAPI.getWindowZoomFactor();
-export const setWindowZoomFactor = (factor) =>
-  window.electronAPI.setWindowZoomFactor(factor);
+
+export const getAppConfig = () => window.electronAPI.getAppConfig();
+export const setAppConfig = (key, value) =>
+  window.electronAPI.setAppConfig(key, value);
+export const onAppConfigChanged = (cb) => {
+  window.electronAPI.onAppConfigChanged(cb);
+  return () => window.electronAPI.removeAllListeners("app-config-changed");
+};
