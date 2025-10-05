@@ -55,10 +55,10 @@ export const AudioProvider = ({ children }) => {
       processAudioInfo(info);
     };
 
-    ipc.onAudioInfoChanged(handleAudioInfoChanged);
+    const unsubscribe = ipc.onAudioInfoChanged(handleAudioInfoChanged);
 
     return () => {
-      ipc.removeAllListeners("audio-info-changed");
+      unsubscribe();
     };
   }, [fetchAudioInfo]);
 

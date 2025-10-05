@@ -1,14 +1,33 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
+const ALLOWED_RECEIVE_CHANNELS = [
+  "game-started",
+  "game-closed",
+  "audio-info-changed",
+  "bluetooth-state-changed",
+  "user-theme-updated",
+  "show-toast",
+  "update-available",
+  "app-config-changed",
+];
+
 contextBridge.exposeInMainWorld("electronAPI", {
+  // Listeners
+  createListener: (channel, cb) => {
+    if (!ALLOWED_RECEIVE_CHANNELS.includes(channel)) {
+      return;
+    }
+    const safeCb = (_event, ...args) => cb(...args);
+    ipcRenderer.on(channel, safeCb);
+    return () => {
+      ipcRenderer.removeListener(channel, safeCb);
+    };
+  },
+
   // Games
   getGames: () => ipcRenderer.invoke("get-games"),
   launchGame: (gameId) => ipcRenderer.send("launch-game", gameId),
   closeGame: (gameId) => ipcRenderer.send("close-game", gameId),
-  onGameStarted: (callback) =>
-    ipcRenderer.on("game-started", (_event, ...args) => callback(...args)),
-  onGameClosed: (callback) =>
-    ipcRenderer.on("game-closed", (_event, ...args) => callback(...args)),
 
   // Audio
   getAudioInfo: () => ipcRenderer.invoke("get-audio-info"),
@@ -16,10 +35,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.send("set-audio-volume", volumePercent),
   setAudioMute: (isMuted) => ipcRenderer.send("set-audio-mute", isMuted),
   setDefaultSink: (sinkName) => ipcRenderer.send("set-default-sink", sinkName),
-  onAudioInfoChanged: (callback) =>
-    ipcRenderer.on("audio-info-changed", (_event, ...args) =>
-      callback(...args)
-    ),
 
   // Bluetooth
   bluetoothGetState: () => ipcRenderer.invoke("bluetooth-get-state"),
@@ -31,10 +46,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.send("bluetooth-connect", devicePath),
   bluetoothDisconnect: (devicePath) =>
     ipcRenderer.send("bluetooth-disconnect", devicePath),
-  onBluetoothStateChanged: (callback) =>
-    ipcRenderer.on("bluetooth-state-changed", (_event, ...args) =>
-      callback(...args)
-    ),
 
   // System & App
   rebootPC: () => ipcRenderer.send("reboot-pc"),
@@ -42,28 +53,17 @@ contextBridge.exposeInMainWorld("electronAPI", {
   openLutris: () => ipcRenderer.send("open-lutris"),
   toggleWindowShow: () => ipcRenderer.send("toggle-window-show"),
   openExternalLink: (url) => ipcRenderer.send("open-external-link", url),
-  onUpdateAvailable: (callback) =>
-    ipcRenderer.on("update-available", (_event, ...args) => callback(...args)),
 
   // Config
   getAppConfig: () => ipcRenderer.invoke("get-app-config"),
   setAppConfig: (key, value) => ipcRenderer.send("set-app-config", key, value),
-  onAppConfigChanged: (callback) =>
-    ipcRenderer.on("app-config-changed", (_event, config) => callback(config)),
 
   // Window
   setIcon: (dataURL) => ipcRenderer.send("set-icon", dataURL),
 
   // Theme
   getUserTheme: () => ipcRenderer.invoke("get-user-theme"),
-  onThemeUpdated: (callback) =>
-    ipcRenderer.on("user-theme-updated", () => callback()),
-
-  // Toasts
-  onShowToast: (callback) =>
-    ipcRenderer.on("show-toast", (_event, payload) => callback(payload)),
 
   // Generic
-  removeAllListeners: (channel) => ipcRenderer.removeAllListeners(channel),
   log: (level, args) => ipcRenderer.send("log", level, args),
 });

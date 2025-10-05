@@ -58,12 +58,12 @@ export const LutrisProvider = ({ children }) => {
       fetchGames();
     };
 
-    ipc.onGameStarted(handleGameStarted);
-    ipc.onGameClosed(handleGameClosed);
+    const unsubscribeOnGameStarted = ipc.onGameStarted(handleGameStarted);
+    const unsubscribeOnGameClosed = ipc.onGameClosed(handleGameClosed);
 
     return () => {
-      ipc.removeAllListeners("game-started");
-      ipc.removeAllListeners("game-closed");
+      unsubscribeOnGameStarted();
+      unsubscribeOnGameClosed();
     };
   }, [games, fetchGames]);
 

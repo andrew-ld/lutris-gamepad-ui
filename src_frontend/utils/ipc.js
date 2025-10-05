@@ -29,32 +29,29 @@ export const bluetoothConnect = (path) =>
 export const bluetoothDisconnect = (path) =>
   window.electronAPI.bluetoothDisconnect(path);
 
-export const onGameStarted = (cb) => window.electronAPI.onGameStarted(cb);
-export const onGameClosed = (cb) => window.electronAPI.onGameClosed(cb);
-export const onAudioInfoChanged = (cb) =>
-  window.electronAPI.onAudioInfoChanged(cb);
-export const onBluetoothStateChanged = (cb) =>
-  window.electronAPI.onBluetoothStateChanged(cb);
-export const removeAllListeners = (channel) =>
-  window.electronAPI.removeAllListeners(channel);
-
 export const logInfo = (...args) => window.electronAPI.log("info", args);
 export const logWarn = (...args) => window.electronAPI.log("warn", args);
 export const logError = (...args) => window.electronAPI.log("error", args);
 
 export const getUserTheme = () => window.electronAPI.getUserTheme();
-export const onThemeUpdated = (cb) => window.electronAPI.onThemeUpdated(cb);
-
-export const onShowToast = (cb) => window.electronAPI.onShowToast(cb);
-export const onUpdateAvailable = (cb) =>
-  window.electronAPI.onUpdateAvailable(cb);
 
 export const setIcon = (dataURL) => window.electronAPI.setIcon(dataURL);
 
 export const getAppConfig = () => window.electronAPI.getAppConfig();
 export const setAppConfig = (key, value) =>
   window.electronAPI.setAppConfig(key, value);
-export const onAppConfigChanged = (cb) => {
-  window.electronAPI.onAppConfigChanged(cb);
-  return () => window.electronAPI.removeAllListeners("app-config-changed");
+
+const createSubscriber = (channel) => (cb) => {
+  return window.electronAPI.createListener(channel, cb);
 };
+
+export const onGameStarted = createSubscriber("game-started");
+export const onGameClosed = createSubscriber("game-closed");
+export const onAudioInfoChanged = createSubscriber("audio-info-changed");
+export const onBluetoothStateChanged = createSubscriber(
+  "bluetooth-state-changed"
+);
+export const onThemeUpdated = createSubscriber("user-theme-updated");
+export const onShowToast = createSubscriber("show-toast");
+export const onUpdateAvailable = createSubscriber("update-available");
+export const onAppConfigChanged = createSubscriber("app-config-changed");

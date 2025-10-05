@@ -41,9 +41,9 @@ export const BluetoothProvider = ({ children }) => {
       }
     };
 
-    ipc.onBluetoothStateChanged(handleStateChanged);
+    const unsubscribe = ipc.onBluetoothStateChanged(handleStateChanged);
 
-    return () => ipc.removeAllListeners("bluetooth-state-changed");
+    return () => unsubscribe();
   }, []);
 
   const powerOnAdapter = useCallback((adapterPath) => {

@@ -59,7 +59,7 @@ const AppContent = () => {
       showToast(payload);
     };
 
-    onShowToast(handleShowToast);
+    const unsubscribeOnShowToast = onShowToast(handleShowToast);
 
     const handleUpdateAvailable = ({ version, url }) => {
       showModal((hideModal) => (
@@ -71,7 +71,14 @@ const AppContent = () => {
       ));
     };
 
-    onUpdateAvailable(handleUpdateAvailable);
+    const unsubsctibeOnUpdateAvaiable = onUpdateAvailable(
+      handleUpdateAvailable
+    );
+
+    return () => {
+      unsubscribeOnShowToast();
+      unsubsctibeOnUpdateAvaiable();
+    };
   }, [showToast, showModal]);
 
   return (
