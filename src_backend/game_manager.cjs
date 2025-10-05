@@ -23,7 +23,6 @@ const {
   getCoverartPath,
   getRuntimeIconPath,
   getAllGamesCategories,
-  invokeLutris,
   getLutrisGames,
 } = require("./lutris_wrapper.cjs");
 
@@ -111,15 +110,26 @@ async function getGames() {
       all_games_categories: gameCategoriesMap,
     } = gamesCategories;
 
+    const hiddenGamesCategory = allCategories.find((c) => c.name === ".hidden");
+
     const categoryIdToNameMap = new Map(
-      allCategories.map((cat) => [cat.id, cat.name])
+      allCategories
+        .filter((c) => c !== hiddenGamesCategory)
+        .map((cat) => [cat.id, cat.name])
     );
 
     for (const game of games) {
-      const categoryIds = gameCategoriesMap[String(game.id)];
-      game.categories = categoryIds
-        ? categoryIds.map((id) => categoryIdToNameMap.get(id)).filter(Boolean)
-        : [];
+      const categoryIds = gameCategoriesMap[String(game.id)] || [];
+
+      const categories = categoryIds
+        .map((id) => categoryIdToNameMap.get(id))
+        .filter(Boolean);
+
+      if (hiddenGamesCategory) {
+        game.hidden = categoryIds.includes(hiddenGamesCategory.id);
+      }
+
+      game.categories = categories;
     }
   } catch (e) {
     logError("Could not process game categories:", e);
