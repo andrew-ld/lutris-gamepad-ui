@@ -1,0 +1,144 @@
+{
+  "components/About.jsx": {
+    "Author": "سازنده",
+    "Close": "بستن",
+    "Homepage": "وبگاه",
+    "License": "مجوز",
+    "Open Link": "باز کردن پیوند",
+    "Version": "نگارش"
+  },
+  "components/BluetoothMenu.jsx": {
+    "Attempting to establish a connection with the device.": "تلاش برای برقراری اتصال با دستگاه.",
+    "Bluetooth": "بلوتوث",
+    "Bluetooth Settings": "تنظیمات بلوتوث",
+    "Close": "بستن",
+    "Connect": "اتصال",
+    "Connect to \"{{targetName}}\"?": "اتصال به \"{{targetName}}\"؟",
+    "Connected": "متصل",
+    "Disconnect": "قطع اتصال",
+    "Disconnect from \"{{targetName}}\"?": "قطع اتصال از \"{{targetName}}\"؟",
+    "No devices found. Ensure Bluetooth is powered on and press 'X' to start discovery.": "دستگاهی پیدا نشد. از روشن بودن بلوتوث مطمئن شوید و برای شروع کاوش، 'X' را فشار دهید.",
+    "Paired": "جفت‌شده",
+    "Power On": "روشن کردن",
+    "Power on {{adapterName}}": "روشن کردن {{adapterName}}",
+    "Refresh": "تازه‌سازی",
+    "Select": "انتخاب",
+    "Start discovery": "آغاز کاوش",
+    "Stop discovery": "توقف کاوش",
+    "The device will be disconnected from the system.": "دستگاه از سامانه قطع خواهد شد."
+  },
+  "components/ConfirmationDialog.jsx": {
+    "Cancel": "رد کردن",
+    "Confirm": "پذیرفتن",
+    "Select": "انتخاب"
+  },
+  "components/ControlsOverlay.jsx": {
+    "Clear Search": "پاک‌کردن جستجو",
+    "Force close {{gameTitle}}": "بستن اجباری {{gameTitle}}",
+    "Launch Game": "راه‌اندازی بازی",
+    "Power": "نیرو",
+    "Search": "جستجو",
+    "Toggle Overlay": "تغییر نمای رویی",
+    "game": "بازی"
+  },
+  "components/CrashDialog.jsx": {
+    "Close Application": "بستن برنامه",
+    "Hide Error Details": "پنهان کردن جزئیات خطا",
+    "Navigate": "پیمایش",
+    "No component stack available.": "هیچ یک از پشته اجزا در دسترس نیست.",
+    "No error message provided.": "هیچ پیام خطایی ارائه نشده.",
+    "Oops! Something went wrong.": "اوه! چیزی اشتباه پیش رفت.",
+    "Reload Application": "بارگذاری دوباره برنامه",
+    "Scroll Down": "پیمایش به پایین",
+    "Scroll Up": "پیمایش به بالا",
+    "Select": "انتخاب",
+    "Show Error Details": "نمایش جزئیات خطا",
+    "The application has encountered an unexpected error.": "برنامه با خطای غیرمنتظره‌ای مواجه شده."
+  },
+  "components/GameCard.jsx": {
+    "Last played: {{date}}": "آخرین بازی: {{date}}",
+    "Never": "هرگز",
+    "Playtime: {{playtime}}": "زمان بازی: {{playtime}}"
+  },
+  "components/GameLibrary.jsx": {
+    "Add games in Lutris and reload.": "بازی‌ها را در لوتریس بیافزایید و دوباره بارگذاری کنید.",
+    "My Library": "کتابخانه من",
+    "No games found": "هیچ بازی‌ای یافت نشد",
+    "No results for \"{{searchQuery}}\"": "هیچ نتیجه‌ای برای \"{{searchQuery}}\" یافت نشد",
+    "Search": "جستجو",
+    "Try a different search term or press 'B' to clear.": "متن دیگری را جستجو کنید یا برای پاک‌کردن 'B' را فشار دهید."
+  },
+  "components/LibraryContainer.jsx": {
+    "Are you sure you want to close\n{{title}}?": "آیا مطمئنید که می‌خواهید\n{{title}} را ببندید؟",
+    "Loading library...": "در حال بارگذاری کتابخانه...",
+    "Results for \"{{searchQuery}}\"": "نتایج برای \"{{searchQuery}}\"",
+    "Search Library": "جستجوی کتابخانه",
+    "This action will force-quit the game. Any unsaved progress may be lost.": "این کنش بازی را به‌صورت اجباری می‌بندد. هر پیشرفت ذخیره‌نشده‌ای ممکن است از دست برود."
+  },
+  "components/LoadingIndicator.jsx": {
+    "Loading...": "در حال بارگذاری..."
+  },
+  "components/OnScreenKeyboard.jsx": {
+    "Backspace": "پاک‌کردن",
+    "Close": "بستن",
+    "Enter": "وارد کردن",
+    "Select": "انتخاب",
+    "Space": "فاصله",
+    "Submit": "تائید"
+  },
+  "components/RowBasedMenu.jsx": {
+    "No items available.": "هیچ موردی در دسترس نیست."
+  },
+  "components/RunningGame.jsx": {
+    "Now Playing": "در حال بازی",
+    "Playtime: {{playtime}}": "زمان بازی: {{playtime}}"
+  },
+  "components/SettingsMenu.jsx": {
+    "Close": "بستن",
+    "Decrease": "کاهش",
+    "Increase": "افزایش",
+    "Settings": "تنظیمات",
+    "Zoom Level": "میزان بزرگ‌نمایی"
+  },
+  "components/SystemMenu.jsx": {
+    "About": "درباره",
+    "Are you sure you want to exit the application?": "آیا مطمئنید که می‌خواهید از برنامه خارج شوید؟",
+    "Are you sure you want to power off the system?": "آیا مطمئنید که می‌خواهید سامانه را خاموش کنید؟",
+    "Are you sure you want to reboot the system?": "آیا مطمئنید که می‌خواهید سامانه را باز راه‌اندازی کنید؟",
+    "Audio Settings": "تنظیمات صدا",
+    "Back": "بازگشت",
+    "Bluetooth Settings": "تنظیمات بلوتوث",
+    "Continue with exiting the application?": "ادامه دادن به خروج از برنامه؟",
+    "Continue with system power off?": "ادامه دادن به خاموش کردن سامانه؟",
+    "Continue with system reboot?": "ادامه دادن به باز راه‌اندازی سامانه؟",
+    "Exit Application": "خروج از برنامه",
+    "Open Lutris": "باز کردن لوتریس",
+    "Power Off System": "خاموش‌کردن سامانه",
+    "Reboot System": "باز راه‌اندازی سامانه",
+    "Reload Library": "بارگذاری دوباره کتابخانه",
+    "Reloading library...": "در حال بارگذاری دوباره کتابخانه...",
+    "Select": "انتخاب",
+    "Settings": "تنظیمات",
+    "This action is final and cannot be undone.": "این کنش نهایی است و قابل بازگشت نیست."
+  },
+  "components/TopBar.jsx": {
+    "Muted": "بی‌صدا",
+    "Offline": "آفلاین"
+  },
+  "components/VolumeControl.jsx": {
+    "Audio Settings": "تنظیمات صدا",
+    "Close": "بستن",
+    "Current Output": "خروجی کنونی",
+    "Decrease": "کاهش",
+    "Increase": "افزایش",
+    "Loading Audio Settings...": "در حال بارگذاری تنظیمات صدا...",
+    "Mute": "بی‌صدا کردن",
+    "Next": "بعدی",
+    "No devices found": "هیچ دستگاهی یافت نشد",
+    "Prev": "قبلی",
+    "Select Output": "انتخاب خروجی",
+    "Set Device": "تنظیم دستگاه",
+    "Unmute": "فعال کردن صدا",
+    "Volume": "میزان صدا"
+  }
+}
