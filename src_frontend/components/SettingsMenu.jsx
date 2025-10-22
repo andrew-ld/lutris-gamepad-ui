@@ -48,6 +48,13 @@ const SettingsMenu = ({ onClose }) => {
     updateSetting("showHiddenGames", !settings.showHiddenGames);
   }, [settings.showHiddenGames, updateSetting]);
 
+  const toggleDoubleConfirmPowerManagement = useCallback(() => {
+    updateSetting(
+      "doubleConfirmPowerManagement",
+      !settings.doubleConfirmPowerManagement
+    );
+  }, [settings.doubleConfirmPowerManagement, updateSetting]);
+
   const menuItems = useMemo(() => {
     const result = [];
     if (settings.zoomFactor !== undefined) {
@@ -65,6 +72,12 @@ const SettingsMenu = ({ onClose }) => {
         label: t("Show Hidden Games"),
       });
     }
+    if (settings.doubleConfirmPowerManagement !== undefined) {
+      result.push({
+        type: "DOUBLE_CONFIRM_POWER_MANAGEMENT",
+        label: t("Double confirm power management"),
+      });
+    }
     return result;
   }, [t, settings]);
 
@@ -78,6 +91,9 @@ const SettingsMenu = ({ onClose }) => {
       }
 
       switch (item.type) {
+        case "DOUBLE_CONFIRM_POWER_MANAGEMENT":
+          if (actionName === "A") toggleDoubleConfirmPowerManagement();
+          break;
         case "RECENTLY_PLAYED":
           if (actionName === "A") toggleShowRecentlyPlayed();
           break;
@@ -96,6 +112,7 @@ const SettingsMenu = ({ onClose }) => {
       increaseZoom,
       toggleShowRecentlyPlayed,
       toggleShowHiddenGames,
+      toggleDoubleConfirmPowerManagement,
     ]
   );
 
@@ -146,6 +163,23 @@ const SettingsMenu = ({ onClose }) => {
               />
             </FocusableRow>
           );
+        case "DOUBLE_CONFIRM_POWER_MANAGEMENT":
+          return (
+            <FocusableRow
+              key={item.type}
+              isFocused={isFocused}
+              onMouseEnter={onMouseEnter}
+              onClick={toggleDoubleConfirmPowerManagement}
+            >
+              <span className="settings-menu-label">{item.label}</span>
+              <ToggleButton
+                isToggledOn={settings.doubleConfirmPowerManagement}
+                labelOn={t("Disable")}
+                labelOff={t("Enable")}
+                onClick={toggleDoubleConfirmPowerManagement}
+              />
+            </FocusableRow>
+          );
         case "SHOW_HIDDEN":
           return (
             <FocusableRow
@@ -167,7 +201,13 @@ const SettingsMenu = ({ onClose }) => {
           return null;
       }
     },
-    [settings, t, toggleShowRecentlyPlayed, toggleShowHiddenGames]
+    [
+      settings,
+      t,
+      toggleShowRecentlyPlayed,
+      toggleShowHiddenGames,
+      toggleDoubleConfirmPowerManagement,
+    ]
   );
 
   const legendItems = useMemo(() => {

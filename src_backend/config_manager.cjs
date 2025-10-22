@@ -7,6 +7,7 @@ const defaultConfig = {
   zoomFactor: 1.0,
   showRecentlyPlayed: true,
   showHiddenGames: false,
+  doubleConfirmPowerManagement: true,
 };
 
 const SUBSCRIPTIONS = {};

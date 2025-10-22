@@ -14,6 +14,7 @@ import LegendaContainer from "./LegendaContainer";
 import RowBasedMenu from "./RowBasedMenu";
 import SettingsMenu from "./SettingsMenu";
 import VolumeControl from "./VolumeControl";
+import { useSettingsState } from "../contexts/SettingsContext";
 
 const PowerIcon = () => (
   <svg
@@ -41,6 +42,7 @@ const SystemMenu = () => {
   const { showModal } = useModalActions();
   const { showToast } = useToastActions();
   const { isModalOpen } = useModalState();
+  const { settings } = useSettingsState();
 
   const menuRef = useRef(null);
   const menuPowerButtonRef = useRef(null);
@@ -98,14 +100,14 @@ const SystemMenu = () => {
       {
         label: t("Reboot System"),
         action: () => api.rebootPC(),
-        doubleConfirm: true,
+        doubleConfirm: settings.doubleConfirmPowerManagement,
         firstConfirm: t("Are you sure you want to reboot the system?"),
         secondConfirm: t("Continue with system reboot?"),
       },
       {
         label: t("Power Off System"),
         action: () => api.powerOffPC(),
-        doubleConfirm: true,
+        doubleConfirm: settings.doubleConfirmPowerManagement,
         firstConfirm: t("Are you sure you want to power off the system?"),
         secondConfirm: t("Continue with system power off?"),
       },
@@ -124,6 +126,7 @@ const SystemMenu = () => {
       openBluetoothSettingsModal,
       openSettingsModal,
       t,
+      settings.doubleConfirmPowerManagement,
     ]
   );
 
@@ -166,6 +169,8 @@ const SystemMenu = () => {
           secondConfirmAction,
           false
         );
+      } else if (item.firstConfirm) {
+        openConfirmation({ title: item.firstConfirm }, item.action, false);
       } else {
         item.action();
       }
