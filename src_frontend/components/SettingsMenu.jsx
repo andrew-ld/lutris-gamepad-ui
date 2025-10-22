@@ -236,6 +236,14 @@ const SettingsMenu = ({ onClose }) => {
         label: settings.showHiddenGames ? t("Disable") : t("Enable"),
         onClick: toggleShowHiddenGames,
       });
+    } else if (focusedItem?.type === "DOUBLE_CONFIRM_POWER_MANAGEMENT") {
+      buttons.push({
+        button: "A",
+        label: settings.doubleConfirmPowerManagement
+          ? t("Disable")
+          : t("Enable"),
+        onClick: toggleDoubleConfirmPowerManagement,
+      });
     }
 
     buttons.push({ button: "B", label: t("Close"), onClick: onClose });
