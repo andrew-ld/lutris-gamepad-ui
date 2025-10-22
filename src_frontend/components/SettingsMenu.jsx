@@ -256,6 +256,7 @@ const SettingsMenu = ({ onClose }) => {
     increaseZoom,
     toggleShowRecentlyPlayed,
     toggleShowHiddenGames,
+    toggleDoubleConfirmPowerManagement,
     onClose,
     t,
   ]);
