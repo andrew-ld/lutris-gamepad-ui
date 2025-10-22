@@ -131,12 +131,32 @@ function registerIpcHandlers() {
   // System Control
   ipcOnWithError("reboot-pc", async () => {
     logInfo("Requesting PC reboot...");
-    await execPromise("systemctl reboot");
+
+    try {
+      await execPromise("systemctl reboot");
+    } catch (e) {
+      logError(
+        "Unable to reboot system using systemd, trying directly reboot command",
+        e
+      );
+
+      await execPromise("reboot");
+    }
   });
 
   ipcOnWithError("poweroff-pc", async () => {
     logInfo("Requesting PC power off...");
-    await execPromise("systemctl poweroff");
+
+    try {
+      await execPromise("systemctl poweroff");
+    } catch (e) {
+      logError(
+        "Unable to poweroff system using systemd, trying directly poweroff command",
+        e
+      );
+
+      await execPromise("poweroff");
+    }
   });
 
   // Audio Management
