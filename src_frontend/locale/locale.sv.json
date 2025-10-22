@@ -1,0 +1,154 @@
+{
+  "components/About.jsx": {
+    "Author": "Upphovsman",
+    "Close": "Stäng",
+    "Homepage": "Hemsida",
+    "License": "Licens",
+    "Open Link": "Öppna länk",
+    "Version": "Version"
+  },
+  "components/BluetoothMenu.jsx": {
+    "Attempting to establish a connection with the device.": "Försöker upprätta en anslutning till enheten.",
+    "Bluetooth": "Bluetooth",
+    "Bluetooth Settings": "Bluetooth-inställningar",
+    "Close": "Stäng",
+    "Connect": "Anslut",
+    "Connect to \"{{targetName}}\"?": "Anslut till \"{{targetName}}\"?",
+    "Connected": "Ansluten",
+    "Disconnect": "Koppla från",
+    "Disconnect from \"{{targetName}}\"?": "Koppla från \"{{targetName}}\"?",
+    "No devices found. Ensure Bluetooth is powered on and press 'X' to start discovery.": "Inga enheter hittades. Se till att Bluetooth är påslaget och tryck 'X' för att starta sökning.",
+    "Paired": "Parkopplad",
+    "Power On": "Slå på",
+    "Power on {{adapterName}}": "Slå på {{adapterName}}",
+    "Refresh": "Uppdatera",
+    "Select": "Välj",
+    "Start discovery": "Starta sökning",
+    "Stop discovery": "Stoppa sökning",
+    "The device will be disconnected from the system.": "Enheten kommer att kopplas bort från systemet."
+  },
+  "components/ConfirmationDialog.jsx": {
+    "Cancel": "Avbryt",
+    "Confirm": "Bekräfta",
+    "Select": "Välj"
+  },
+  "components/ControlsOverlay.jsx": {
+    "Clear Search": "Rensa sökning",
+    "Force close {{gameTitle}}": "Tvinga stängning av {{gameTitle}}",
+    "Launch Game": "Starta spel",
+    "Power": "Ström",
+    "Search": "Sök",
+    "Toggle Overlay": "Växla överlägg",
+    "game": "spel"
+  },
+  "components/CrashDialog.jsx": {
+    "Close Application": "Stäng programmet",
+    "Hide Error Details": "Dölj felinformation",
+    "Navigate": "Navigera",
+    "No component stack available.": "Ingen komponentstack tillgänglig.",
+    "No error message provided.": "Inget felmeddelande angivet.",
+    "Oops! Something went wrong.": "Hoppsan! Något gick fel.",
+    "Reload Application": "Ladda om programmet",
+    "Scroll Down": "Skrolla ned",
+    "Scroll Up": "Skrolla upp",
+    "Select": "Välj",
+    "Show Error Details": "Visa felinformation",
+    "The application has encountered an unexpected error.": "Programmet har stött på ett oväntat fel."
+  },
+  "components/GameCard.jsx": {
+    "Last played: {{date}}": "Senast spelad: {{date}}",
+    "Never": "Aldrig",
+    "Playtime: {{playtime}}": "Speltid: {{playtime}}"
+  },
+  "components/GameLibrary.jsx": {
+    "Add games in Lutris and reload.": "Lägg till spel i Lutris och ladda om.",
+    "My Library": "Mitt bibliotek",
+    "No games found": "Inga spel hittades",
+    "No results for \"{{searchQuery}}\"": "Inga resultat för \"{{searchQuery}}\"",
+    "Search": "Sök",
+    "Try a different search term or press 'B' to clear.": "Prova en annan sökterm eller tryck 'B' för att rensa."
+  },
+  "components/LibraryContainer.jsx": {
+    "Are you sure you want to close\n{{title}}?": "Är du säker på att du vill stänga\n{{title}}?",
+    "Loading library...": "Laddar bibliotek...",
+    "Results for \"{{searchQuery}}\"": "Resultat för \"{{searchQuery}}\"",
+    "Search Library": "Sök i biblioteket",
+    "This action will force-quit the game. Any unsaved progress may be lost.": "Denna åtgärd kommer att tvinga spelet att avslutas. Alla osparade framsteg kan gå förlorade."
+  },
+  "components/LoadingIndicator.jsx": {
+    "Loading...": "Laddar..."
+  },
+  "components/OnScreenKeyboard.jsx": {
+    "Backspace": "Backsteg",
+    "Close": "Stäng",
+    "Enter": "Enter",
+    "Select": "Välj",
+    "Space": "Mellanslag",
+    "Submit": "Skicka"
+  },
+  "components/RowBasedMenu.jsx": {
+    "No items available.": "Inga objekt tillgängliga."
+  },
+  "components/RunningGame.jsx": {
+    "Now Playing": "Spelas nu",
+    "Playtime: {{playtime}}": "Speltid: {{playtime}}"
+  },
+  "components/SettingsMenu.jsx": {
+    "Close": "Stäng",
+    "Decrease": "Minska",
+    "Disable": "Inaktivera",
+    "Enable": "Aktivera",
+    "Increase": "Öka",
+    "Recently Played Shelf": "Nyligen spelade",
+    "Settings": "Inställningar",
+    "Show Hidden Games": "Visa dolda spel",
+    "Zoom Level": "Zoomnivå"
+  },
+  "components/SystemMenu.jsx": {
+    "About": "Om",
+    "Are you sure you want to exit the application?": "Är du säker på att du vill avsluta programmet?",
+    "Are you sure you want to power off the system?": "Är du säker på att du vill stänga av systemet?",
+    "Are you sure you want to reboot the system?": "Är du säker på att du vill starta om systemet?",
+    "Audio Settings": "Ljudinställningar",
+    "Back": "Tillbaka",
+    "Bluetooth Settings": "Bluetooth-inställningar",
+    "Continue with exiting the application?": "Fortsätt med att avsluta programmet?",
+    "Continue with system power off?": "Fortsätt med att stänga av systemet?",
+    "Continue with system reboot?": "Fortsätt med att starta om systemet?",
+    "Exit Application": "Avsluta programmet",
+    "Open Lutris": "Öppna Lutris",
+    "Power Off System": "Stäng av systemet",
+    "Reboot System": "Starta om systemet",
+    "Reload Library": "Ladda om biblioteket",
+    "Reloading library...": "Laddar om biblioteket...",
+    "Select": "Välj",
+    "Settings": "Inställningar",
+    "This action is final and cannot be undone.": "Denna åtgärd är slutgiltig och kan inte ångras."
+  },
+  "components/TopBar.jsx": {
+    "Muted": "Ljud av",
+    "Offline": "Offline"
+  },
+  "components/UpdateDialog.jsx": {
+    "A new version, {{version}}, is available for download.": "En ny version, {{version}}, finns tillgänglig för nedladdning.",
+    "Go to Downloads": "Gå till nedladdningar",
+    "Later": "Senare",
+    "Update Available": "Uppdatering tillgänglig"
+  },
+  "components/VolumeControl.jsx": {
+    "Audio Settings": "Ljudinställningar",
+    "Close": "Stäng",
+    "Current Output:": "Nuvarande utgång:",
+    "Decrease": "Minska",
+    "Increase": "Öka",
+    "Loading Audio Settings...": "Laddar ljudinställningar...",
+    "Mute": "Tysta",
+    "Next": "Nästa",
+    "No devices found": "Inga enheter hittades",
+    "Prev": "Föreg.",
+    "Select Output": "Välj utgång",
+    "Set Device": "Ställ in enhet",
+    "Unmute": "Slå på ljud",
+    "Volume": "Volym"
+  }
+}
