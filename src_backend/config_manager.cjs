@@ -32,7 +32,7 @@ function setAppConfig(key, value) {
     mainWindow.webContents.send("app-config-changed", newConfig);
   }
 
-  subscribers = SUBSCRIPTIONS[key];
+  const subscribers = SUBSCRIPTIONS[key];
   if (subscribers) {
     subscribers.forEach((cb) => cb(value));
   }
