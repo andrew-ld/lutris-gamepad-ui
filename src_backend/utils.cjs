@@ -94,13 +94,22 @@ function showToastOnUi(payload) {
   }
 }
 
-function toastError(title, error) {
+function errorToDescription(error) {
   let description = "An unknown error occurred.";
+
   if (error instanceof Error) {
     description = error.message;
   } else if (typeof error === "string") {
     description = error;
+  } else if (Array.isArray(error)) {
+    description = error.map(errorToDescription).join("\n");
   }
+
+  return description;
+}
+
+function toastError(title, error) {
+  const description = errorToDescription(error);
 
   showToastOnUi({
     title,
