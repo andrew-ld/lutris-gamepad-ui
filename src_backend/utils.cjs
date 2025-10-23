@@ -109,6 +109,40 @@ function toastError(title, error) {
   });
 }
 
+async function rebootPc() {
+  const commands = ["systemctl reboot", "loginctl reboot", "reboot"];
+  const errors = [];
+
+  for (const command of commands) {
+    try {
+      await execPromise(command);
+      return;
+    } catch (e) {
+      logError("unable to reboot pc using", command, e);
+      errors.push(e);
+    }
+  }
+
+  throw errors;
+}
+
+async function powerOffPc() {
+  const commands = ["systemctl poweroff", "loginctl poweroff", "poweroff"];
+  const errors = [];
+
+  for (const command of commands) {
+    try {
+      await execPromise(command);
+      return;
+    } catch (e) {
+      logError("unable to poweroff pc using", command, e);
+      errors.push(e);
+    }
+  }
+
+  throw errors;
+}
+
 module.exports = {
   isDev,
   forceWindowed,
@@ -123,4 +157,6 @@ module.exports = {
   showToastOnUi,
   toastError,
   isRunningInsideGamescope,
+  rebootPc,
+  powerOffPc,
 };

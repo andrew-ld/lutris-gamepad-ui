@@ -29,6 +29,8 @@ const {
   logWarn,
   execPromise,
   toastError,
+  powerOffPc,
+  rebootPc,
 } = require("./utils.cjs");
 const { getMainWindow } = require("./state.cjs");
 const { getUserTheme } = require("./theme_manager.cjs");
@@ -131,32 +133,12 @@ function registerIpcHandlers() {
   // System Control
   ipcOnWithError("reboot-pc", async () => {
     logInfo("Requesting PC reboot...");
-
-    try {
-      await execPromise("systemctl reboot");
-    } catch (e) {
-      logError(
-        "Unable to reboot system using systemd, trying directly reboot command",
-        e
-      );
-
-      await execPromise("reboot");
-    }
+    await rebootPc();
   });
 
   ipcOnWithError("poweroff-pc", async () => {
     logInfo("Requesting PC power off...");
-
-    try {
-      await execPromise("systemctl poweroff");
-    } catch (e) {
-      logError(
-        "Unable to poweroff system using systemd, trying directly poweroff command",
-        e
-      );
-
-      await execPromise("poweroff");
-    }
+    await powerOffPc();
   });
 
   // Audio Management
