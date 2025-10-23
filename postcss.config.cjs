@@ -22,7 +22,7 @@ const hoverWrapperPlugin = () => {
 hoverWrapperPlugin.postcss = true;
 
 const defaultThemeGenerator = () => {
-  const colorProps = [
+  const themeProps = [
     "--accent-color",
     "--secondary-background",
     "--text-primary",
@@ -41,6 +41,8 @@ const defaultThemeGenerator = () => {
     "text-shadow",
     "--primary-background",
     "border-top",
+    "font-family",
+    "--font-family",
   ];
 
   const result = {};
@@ -52,7 +54,7 @@ const defaultThemeGenerator = () => {
         /** @param {Rule} rule */
         Rule(rule) {
           rule.walkDecls((decl) => {
-            if (colorProps.includes(decl.prop)) {
+            if (themeProps.includes(decl.prop)) {
               for (const selector of decl.parent.selectors) {
                 const selectorProps = result[selector] || {};
                 result[selector] = selectorProps;
