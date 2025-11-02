@@ -2,6 +2,11 @@
 
 set -xe
 
+if [[ -r "/etc/profile" ]]; then
+    # shellcheck source=/dev/null
+    source "/etc/profile"
+fi
+
 SCRIPT_PATH=$(readlink -f "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
 
@@ -18,17 +23,17 @@ get_python_cmd() {
     fi
 }
 
-if [[ "$FLATPAK_ID" == "net.lutris.Lutris" ]]; then
-    exec "$(get_python_cmd)" "$SCRIPT_DIR/lutris_wrapper.py" "$@"
+if [[ -x "/usr/games/lutris" ]]; then
+    export PATH="$PATH:/usr/games/"
 fi
 
 if command -v lutris &>/dev/null; then
     exec "$(get_python_cmd)" "$SCRIPT_DIR/lutris_wrapper.py" "$@"
 fi
 
-if [[ -x "/usr/games/lutris" ]]; then
-    export PATH="/usr/games/:$PATH"
-    exec "$(get_python_cmd)" "$SCRIPT_DIR/lutris_wrapper.py" "$@"
+if [[ "$FLATPAK_ID" == "net.lutris.Lutris" ]]; then
+    echo "Error: Broken flatpak lutris installation." >&2
+    exit 1
 fi
 
 if flatpak info net.lutris.Lutris &>/dev/null; then
