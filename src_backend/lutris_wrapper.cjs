@@ -28,7 +28,7 @@ async function invokeLutrisSubcommand(subcommandName, args = []) {
 }
 
 async function invokeLutris(args = []) {
-  return await execPromise(`env -i bash --norc ${getLutrisWrapperPath()} ${args.join(" ")}`);
+  return await execPromise(`bash ${getLutrisWrapperPath()} ${args.join(" ")}`);
 }
 
 async function getCoverartPath() {
