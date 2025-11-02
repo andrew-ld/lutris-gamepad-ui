@@ -108,6 +108,7 @@
   "components/SystemMenu.jsx": {
     "About": "درباره",
     "Are you sure you want to exit the application?": "آیا مطمئنید که می‌خواهید از برنامه خارج شوید؟",
+    "Are you sure you want to generate the bug report file?": "Are you sure you want to generate the bug report file?",
     "Are you sure you want to power off the system?": "آیا مطمئنید که می‌خواهید سامانه را خاموش کنید؟",
     "Are you sure you want to reboot the system?": "آیا مطمئنید که می‌خواهید سامانه را باز راه‌اندازی کنید؟",
     "Audio Settings": "تنظیمات صدا",
@@ -117,6 +118,7 @@
     "Continue with system power off?": "ادامه دادن به خاموش کردن سامانه؟",
     "Continue with system reboot?": "ادامه دادن به باز راه‌اندازی سامانه؟",
     "Exit Application": "خروج از برنامه",
+    "Generate Bug Report": "Generate Bug Report",
     "Open Lutris": "باز کردن لوتریس",
     "Power Off System": "خاموش‌کردن سامانه",
     "Reboot System": "باز راه‌اندازی سامانه",

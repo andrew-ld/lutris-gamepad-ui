@@ -66,4 +66,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
   // Generic
   log: (level, args) => ipcRenderer.send("log", level, args),
+
+  // Bug Report
+  createBugReportFile: () => ipcRenderer.send("create-bug-report"),
 });

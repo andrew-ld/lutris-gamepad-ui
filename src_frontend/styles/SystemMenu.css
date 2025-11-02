@@ -50,6 +50,9 @@
   min-width: 200px;
   padding-top: 8px;
   animation: fadeInMenu 0.2s ease-out;
+  max-height: calc(100vh - 85px);
+  display: flex;
+  flex-direction: column;
 }
 
 .system-menu-overlay .legenda-content {

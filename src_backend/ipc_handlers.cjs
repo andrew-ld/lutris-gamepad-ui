@@ -36,6 +36,7 @@ const { getMainWindow } = require("./state.cjs");
 const { getUserTheme } = require("./theme_manager.cjs");
 const { invokeLutris } = require("./lutris_wrapper.cjs");
 const { getAppConfig, setAppConfig } = require("./config_manager.cjs");
+const { createBugReportFile } = require("./bugreport.cjs");
 
 const logLevelToLogger = {
   error: logError,
@@ -230,6 +231,11 @@ function registerIpcHandlers() {
   // Theme
   ipcHandleWithError("get-user-theme", async () => {
     return getUserTheme();
+  });
+
+  // Bug Reporter
+  ipcOnWithError("create-bug-report", async () => {
+    await createBugReportFile();
   });
 }
 

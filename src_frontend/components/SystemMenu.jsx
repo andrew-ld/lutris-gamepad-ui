@@ -112,6 +112,13 @@ const SystemMenu = () => {
         secondConfirm: t("Continue with system power off?"),
       },
       {
+        label: t("Generate Bug Report"),
+        action: () => api.createBugReportFile(),
+        firstConfirm: t(
+          "Are you sure you want to generate the bug report file?"
+        ),
+      },
+      {
         label: t("Exit Application"),
         action: () => window.close(),
         doubleConfirm: true,
@@ -170,7 +177,7 @@ const SystemMenu = () => {
           false
         );
       } else if (item.firstConfirm) {
-        openConfirmation({ title: item.firstConfirm }, item.action, false);
+        openConfirmation({ title: item.firstConfirm }, item.action);
       } else {
         item.action();
       }

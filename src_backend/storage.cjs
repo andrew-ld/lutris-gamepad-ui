@@ -24,4 +24,9 @@ module.exports = {
   getKvStorageFilePath: () => {
     return path.join(getAppHomeDir(), "config.json");
   },
+
+  generateBugReportFilePath: () => {
+    const filename = `bugreport-${new Date().toISOString()}.tar`;
+    return path.join(getAppHomeDir(), filename);
+  },
 };

@@ -108,6 +108,7 @@
   "components/SystemMenu.jsx": {
     "About": "Om",
     "Are you sure you want to exit the application?": "Är du säker på att du vill avsluta programmet?",
+    "Are you sure you want to generate the bug report file?": "Are you sure you want to generate the bug report file?",
     "Are you sure you want to power off the system?": "Är du säker på att du vill stänga av systemet?",
     "Are you sure you want to reboot the system?": "Är du säker på att du vill starta om systemet?",
     "Audio Settings": "Ljudinställningar",
@@ -117,6 +118,7 @@
     "Continue with system power off?": "Fortsätt med att stänga av systemet?",
     "Continue with system reboot?": "Fortsätt med att starta om systemet?",
     "Exit Application": "Avsluta programmet",
+    "Generate Bug Report": "Generate Bug Report",
     "Open Lutris": "Öppna Lutris",
     "Power Off System": "Stäng av systemet",
     "Reboot System": "Starta om systemet",

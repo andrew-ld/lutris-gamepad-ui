@@ -55,3 +55,6 @@ export const onThemeUpdated = createSubscriber("user-theme-updated");
 export const onShowToast = createSubscriber("show-toast");
 export const onUpdateAvailable = createSubscriber("update-available");
 export const onAppConfigChanged = createSubscriber("app-config-changed");
+
+export const createBugReportFile = () =>
+  window.electronAPI.createBugReportFile();

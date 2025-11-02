@@ -28,7 +28,7 @@ async function invokeLutrisSubcommand(subcommandName, args = []) {
 }
 
 async function invokeLutris(args = []) {
-  return await execPromise(`bash ${getLutrisWrapperPath()} ${args.join(" ")}`);
+  return await execPromise(`bash --login ${getLutrisWrapperPath()} ${args.join(" ")}`);
 }
 
 async function getCoverartPath() {
@@ -48,7 +48,6 @@ async function getLutrisGames() {
 }
 
 module.exports = {
-  invokeLutrisSubroutine: invokeLutrisSubcommand,
   getCoverartPath,
   getRuntimeIconPath,
   getAllGamesCategories,

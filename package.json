@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@homebridge/dbus-native": "github:andrew-ld/dbus-native#b1e7adc7daf54a3c1d23912cb020832085322109",
+    "modern-tar": "^0.6.1",
     "paclient": "github:andrew-ld/paclient#450fc5046e2bb6b3ce7920211ec89bc3748d0463"
   },
   "devDependencies": {
