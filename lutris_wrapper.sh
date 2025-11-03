@@ -2,8 +2,8 @@
 
 set -xe
 
-SCRIPT_PATH=$(readlink -f "$0")
-SCRIPT_DIR=$(dirname "$SCRIPT_PATH")
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+SCRIPT_PATH="$SCRIPT_DIR/$(basename "$0")"
 
 export PYTHONDONTWRITEBYTECODE=1
 
@@ -17,19 +17,20 @@ validate_python() {
 
 get_python_cmd() {
     while IFS= read -r -d: directory; do
-    if [[ -d "$directory" ]]; then
-        if validate_python "$directory/python3"; then
-            echo "$directory/python3"
-            return 0
+        if [[ -d "$directory" ]]; then
+            directory=$(cd "$directory" && pwd)
+            if validate_python "$directory/python3"; then
+                echo "$directory/python3"
+                return 0
+            fi
+            if validate_python "$directory/python"; then
+                echo "$directory/python"
+                return 0
+            fi
         fi
-        if validate_python "$directory/python"; then
-            echo "$directory/python"
-            return 0
-        fi
-    fi
     done < <(printf '%s:' "$PATH")
 
-    echo "Error: Could not find 'python3' or 'python' in your PATH." >&2
+    echo "Error: Could not find a valid 'python3' or 'python' with the 'lutris' module in your PATH." >&2
     exit 1
 }
 
