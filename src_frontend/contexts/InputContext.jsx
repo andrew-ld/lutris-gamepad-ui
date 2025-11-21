@@ -365,7 +365,7 @@ export const InputProvider = ({ children }) => {
         animationFrameId.current = null;
       }
     };
-  }, [updateGamepadCount, settings.gamepadAutoRepeatMs]);
+  }, [updateGamepadCount, settings]);
 
   const value = {
     subscribe,

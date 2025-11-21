@@ -47,6 +47,22 @@ function setWindowZoomFactor(factor) {
   }
 }
 
+function createSendAltTabDebounced(delayMs) {
+  return debounce(() => {
+    sendAltTab().catch((e) => {
+      logError("unable to send alt+tab using remote desktop portal", e);
+    });
+  }, delayMs);
+}
+
+let sendAltTabDebounced = createSendAltTabDebounced(
+  getAppConfig().gamepadAutorepeatMs
+);
+
+subscribeConfigValueChange("gamepadAutorepeatMs", (newValue) => {
+  sendAltTabDebounced = createSendAltTabDebounced(newValue);
+});
+
 function toggleWindowShow() {
   const mainWindow = getMainWindow();
   if (!mainWindow) {
@@ -58,9 +74,7 @@ function toggleWindowShow() {
       mainWindow.show();
     }
     logInfo("toggleWindowShow: using remote desktop portal");
-    sendAltTab().catch((e) => {
-      logError("unable to send alt+tab using remote desktop portal", e);
-    });
+    sendAltTabDebounced();
   } else {
     logInfo("toggleWindowShow: using hide/show fallback");
     if (mainWindow.isFocused() || mainWindow.isVisible()) {

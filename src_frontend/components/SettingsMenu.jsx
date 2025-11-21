@@ -38,11 +38,11 @@ const SettingsMenu = ({ onClose }) => {
 
   const decreaseZoom = useCallback(() => {
     handleZoomChange(settings.zoomFactor - ZOOM_STEP);
-  }, [settings.zoomFactor, handleZoomChange]);
+  }, [settings, handleZoomChange]);
 
   const increaseZoom = useCallback(() => {
     handleZoomChange(settings.zoomFactor + ZOOM_STEP);
-  }, [settings.zoomFactor, handleZoomChange]);
+  }, [settings, handleZoomChange]);
 
   const handleAutorepeatChange = useCallback(
     (newVal) => {
@@ -57,26 +57,26 @@ const SettingsMenu = ({ onClose }) => {
 
   const decreaseAutorepeat = useCallback(() => {
     handleAutorepeatChange(settings.gamepadAutorepeatMs - AUTOREPEAT_STEP);
-  }, [settings.gamepadAutorepeatMs, handleAutorepeatChange]);
+  }, [settings, handleAutorepeatChange]);
 
   const increaseAutorepeat = useCallback(() => {
     handleAutorepeatChange(settings.gamepadAutorepeatMs + AUTOREPEAT_STEP);
-  }, [settings.gamepadAutorepeatMs, handleAutorepeatChange]);
+  }, [settings, handleAutorepeatChange]);
 
   const toggleShowRecentlyPlayed = useCallback(() => {
     updateSetting("showRecentlyPlayed", !settings.showRecentlyPlayed);
-  }, [settings.showRecentlyPlayed, updateSetting]);
+  }, [settings, updateSetting]);
 
   const toggleShowHiddenGames = useCallback(() => {
     updateSetting("showHiddenGames", !settings.showHiddenGames);
-  }, [settings.showHiddenGames, updateSetting]);
+  }, [settings, updateSetting]);
 
   const toggleDoubleConfirmPowerManagement = useCallback(() => {
     updateSetting(
       "doubleConfirmPowerManagement",
       !settings.doubleConfirmPowerManagement
     );
-  }, [settings.doubleConfirmPowerManagement, updateSetting]);
+  }, [settings, updateSetting]);
 
   const menuItems = useMemo(() => {
     const result = [];

@@ -50,7 +50,7 @@ const LibraryContainer = () => {
 
       return true;
     });
-  }, [searchQuery, settings.showHiddenGames, games]);
+  }, [searchQuery, settings, games]);
 
   const setShelfRef = useCallback((el, shelfIndex) => {
     shelfRefs.current[shelfIndex] = el;
@@ -129,7 +129,7 @@ const LibraryContainer = () => {
     cardRefs.current = newShelves.map((shelf) => Array(shelf.games.length));
 
     return newShelves;
-  }, [currentGames, searchQuery, t, settings.showRecentlyPlayed]);
+  }, [currentGames, searchQuery, t, settings]);
 
   const shelvesRef = useRef(shelves);
   shelvesRef.current = shelves;
