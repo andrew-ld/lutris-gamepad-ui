@@ -25,25 +25,25 @@
   },
   "dependencies": {
     "@homebridge/dbus-native": "github:andrew-ld/dbus-native#b1e7adc7daf54a3c1d23912cb020832085322109",
-    "modern-tar": "^0.6.1",
+    "modern-tar": "^0.7.2",
     "paclient": "github:andrew-ld/paclient#450fc5046e2bb6b3ce7920211ec89bc3748d0463"
   },
   "devDependencies": {
-    "@babel/parser": "^7.28.3",
+    "@babel/parser": "^7.28.5",
     "@babel/plugin-syntax-jsx": "^7.27.1",
-    "@babel/traverse": "^7.28.3",
-    "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
-    "@vitejs/plugin-react": "^5.0.0",
-    "concurrently": "^9.2.0",
+    "@babel/traverse": "^7.28.5",
+    "@types/react": "^19.2.6",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "concurrently": "^9.2.1",
     "electron": "^37.3.0",
     "electron-builder": "^26.0.12",
     "postcss": "^8.5.6",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "react-scan": "^0.4.3",
-    "vite": "^7.1.2",
-    "wait-on": "^8.0.4"
+    "vite": "^7.2.4",
+    "wait-on": "^9.0.3"
   },
   "build": {
     "appId": "com.electron.${name}",
