@@ -3,7 +3,7 @@ const { app } = require("electron");
 const fs = require("fs");
 
 function getAppHomeDir() {
-  const result = path.join(app.getPath("home"), ".local", app.getName());
+  const result = path.join(app.getPath("home"), ".local", "lutris-gamepad-ui");
   fs.mkdirSync(result, { recursive: true });
   return result;
 }
