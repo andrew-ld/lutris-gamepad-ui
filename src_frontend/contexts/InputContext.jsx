@@ -7,6 +7,7 @@ import {
   useCallback,
 } from "react";
 import { logInfo } from "../utils/ipc";
+import { useSettingsState } from "./SettingsContext";
 
 const KEY_MAP = {
   ArrowUp: "UP",
@@ -38,8 +39,6 @@ const GAMEPAD_BUTTON_MAP = {
 };
 
 const ANALOG_THRESHOLD = 0.5;
-
-const INPUT_AUTOREPEAT_DELAY_MS = 150;
 
 const GAMEPAD_ACTION_TO_BUTTON_MAP = Object.fromEntries(
   Object.entries(GAMEPAD_BUTTON_MAP).map(([key, value]) => [value, key])
@@ -123,6 +122,8 @@ export const InputProvider = ({ children }) => {
   const prevButtonState = useRef({});
   const prevButtonStateTimeout = useRef(null);
   const animationFrameId = useRef(null);
+
+  const { settings } = useSettingsState();
 
   useEffect(() => {
     return () => {
@@ -314,7 +315,7 @@ export const InputProvider = ({ children }) => {
         clearTimeout(prevButtonStateTimeout.current);
         prevButtonStateTimeout.current = setTimeout(
           clearPrevButtonState,
-          INPUT_AUTOREPEAT_DELAY_MS
+          settings.gamepadAutorepeatMs
         );
         prevButtonState.current = buttons;
       }
@@ -364,7 +365,7 @@ export const InputProvider = ({ children }) => {
         animationFrameId.current = null;
       }
     };
-  }, [updateGamepadCount]);
+  }, [updateGamepadCount, settings.gamepadAutoRepeatMs]);
 
   const value = {
     subscribe,

@@ -92,28 +92,28 @@ const AppContent = () => {
 
 function App() {
   return (
-    <InputProvider>
-      <AppMouseFocus />
-      <TranslationProvider>
-        <ErrorBoundary>
-          <LutrisProvider>
-            <ModalProvider>
-              <AudioProvider>
-                <BluetoothProvider>
-                  <ToastProvider>
-                    <SettingsProvider>
+    <SettingsProvider>
+      <InputProvider>
+        <AppMouseFocus />
+        <TranslationProvider>
+          <ErrorBoundary>
+            <LutrisProvider>
+              <ModalProvider>
+                <AudioProvider>
+                  <BluetoothProvider>
+                    <ToastProvider>
                       <AppContent />
                       <ModalRenderer />
                       <ToastContainer />
-                    </SettingsProvider>
-                  </ToastProvider>
-                </BluetoothProvider>
-              </AudioProvider>
-            </ModalProvider>
-          </LutrisProvider>
-        </ErrorBoundary>
-      </TranslationProvider>
-    </InputProvider>
+                    </ToastProvider>
+                  </BluetoothProvider>
+                </AudioProvider>
+              </ModalProvider>
+            </LutrisProvider>
+          </ErrorBoundary>
+        </TranslationProvider>
+      </InputProvider>
+    </SettingsProvider>
   );
 }
 

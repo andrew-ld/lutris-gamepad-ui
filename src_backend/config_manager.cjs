@@ -8,12 +8,21 @@ const defaultConfig = {
   showRecentlyPlayed: true,
   showHiddenGames: false,
   doubleConfirmPowerManagement: true,
+  gamepadAutorepeatMs: 150,
 };
 
 const SUBSCRIPTIONS = {};
 
 function getAppConfig() {
   const storedConfig = getKvStoreValue(CONFIG_KEY);
+
+  for ([k, v] of Object.entries(storedConfig)) {
+    const defaultValue = defaultConfig[k];
+    if (typeof v !== typeof defaultValue) {
+      delete storedConfig[k];
+    }
+  }
+
   return { ...defaultConfig, ...(storedConfig || {}) };
 }
 

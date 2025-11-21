@@ -16,6 +16,10 @@ const MIN_ZOOM = 0.5; // 50%
 const MAX_ZOOM = 2.0; // 200%
 const ZOOM_STEP = 0.05; // 5%
 
+const MIN_AUTOREPEAT = 100; // 100ms
+const MAX_AUTOREPEAT = 500; // 500ms
+const AUTOREPEAT_STEP = 25; // 25ms
+
 const SettingsMenu = ({ onClose }) => {
   const { t } = useTranslation();
   const [focusedItem, setFocusedItem] = useState(null);
@@ -40,6 +44,25 @@ const SettingsMenu = ({ onClose }) => {
     handleZoomChange(settings.zoomFactor + ZOOM_STEP);
   }, [settings.zoomFactor, handleZoomChange]);
 
+  const handleAutorepeatChange = useCallback(
+    (newVal) => {
+      const clampedVal = Math.max(
+        MIN_AUTOREPEAT,
+        Math.min(MAX_AUTOREPEAT, newVal)
+      );
+      updateSetting("gamepadAutorepeatMs", clampedVal);
+    },
+    [updateSetting]
+  );
+
+  const decreaseAutorepeat = useCallback(() => {
+    handleAutorepeatChange(settings.gamepadAutorepeatMs - AUTOREPEAT_STEP);
+  }, [settings.gamepadAutorepeatMs, handleAutorepeatChange]);
+
+  const increaseAutorepeat = useCallback(() => {
+    handleAutorepeatChange(settings.gamepadAutorepeatMs + AUTOREPEAT_STEP);
+  }, [settings.gamepadAutorepeatMs, handleAutorepeatChange]);
+
   const toggleShowRecentlyPlayed = useCallback(() => {
     updateSetting("showRecentlyPlayed", !settings.showRecentlyPlayed);
   }, [settings.showRecentlyPlayed, updateSetting]);
@@ -59,6 +82,12 @@ const SettingsMenu = ({ onClose }) => {
     const result = [];
     if (settings.zoomFactor !== undefined) {
       result.push({ type: "ZOOM", label: t("Zoom Level") });
+    }
+    if (settings.gamepadAutorepeatMs !== undefined) {
+      result.push({
+        type: "GAMEPAD_AUTOREPEAT",
+        label: t("Gamepad Autorepeat Delay"),
+      });
     }
     if (settings.showRecentlyPlayed !== undefined) {
       result.push({
@@ -104,12 +133,18 @@ const SettingsMenu = ({ onClose }) => {
           if (actionName === "LEFT") decreaseZoom();
           else if (actionName === "RIGHT") increaseZoom();
           break;
+        case "GAMEPAD_AUTOREPEAT":
+          if (actionName === "LEFT") decreaseAutorepeat();
+          else if (actionName === "RIGHT") increaseAutorepeat();
+          break;
       }
     },
     [
       onClose,
       decreaseZoom,
       increaseZoom,
+      decreaseAutorepeat,
+      increaseAutorepeat,
       toggleShowRecentlyPlayed,
       toggleShowHiddenGames,
       toggleDoubleConfirmPowerManagement,
@@ -143,6 +178,33 @@ const SettingsMenu = ({ onClose }) => {
                 <span className="settings-menu-value">{`${Math.round(
                   settings.zoomFactor * 100
                 )}%`}</span>
+              </div>
+            </FocusableRow>
+          );
+        case "GAMEPAD_AUTOREPEAT":
+          return (
+            <FocusableRow
+              key={item.type}
+              isFocused={isFocused}
+              onMouseEnter={onMouseEnter}
+            >
+              <span className="settings-menu-label">{item.label}</span>
+              <div className="zoom-factor-display">
+                <div className="zoom-factor-bar-container">
+                  <div
+                    className="zoom-factor-bar-fill"
+                    style={{
+                      width: `${
+                        ((settings.gamepadAutorepeatMs - MIN_AUTOREPEAT) /
+                          (MAX_AUTOREPEAT - MIN_AUTOREPEAT)) *
+                        100
+                      }%`,
+                    }}
+                  />
+                </div>
+                <span className="settings-menu-value">
+                  {settings.gamepadAutorepeatMs}ms
+                </span>
               </div>
             </FocusableRow>
           );
@@ -224,6 +286,17 @@ const SettingsMenu = ({ onClose }) => {
         label: t("Increase"),
         onClick: increaseZoom,
       });
+    } else if (focusedItem?.type === "GAMEPAD_AUTOREPEAT") {
+      buttons.push({
+        button: "LEFT",
+        label: t("Decrease"),
+        onClick: decreaseAutorepeat,
+      });
+      buttons.push({
+        button: "RIGHT",
+        label: t("Increase"),
+        onClick: increaseAutorepeat,
+      });
     } else if (focusedItem?.type === "RECENTLY_PLAYED") {
       buttons.push({
         button: "A",
@@ -254,6 +327,8 @@ const SettingsMenu = ({ onClose }) => {
     settings,
     decreaseZoom,
     increaseZoom,
+    decreaseAutorepeat,
+    increaseAutorepeat,
     toggleShowRecentlyPlayed,
     toggleShowHiddenGames,
     toggleDoubleConfirmPowerManagement,
