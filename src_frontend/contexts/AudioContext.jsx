@@ -6,6 +6,7 @@ import {
   useCallback,
 } from "react";
 import * as ipc from "../utils/ipc";
+import { useIsMounted } from "../hooks/useIsMounted";
 
 const AudioContext = createContext(null);
 export const useAudio = () => useContext(AudioContext);
@@ -18,6 +19,7 @@ export const AudioProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [defaultSinkName, setDefaultSinkName] = useState(null);
   const [availableSinks, setAvailableSinks] = useState([]);
+  const isMounted = useIsMounted();
 
   const processAudioInfo = (info) => {
     if (!info) {
@@ -41,12 +43,16 @@ export const AudioProvider = ({ children }) => {
   const fetchAudioInfo = useCallback(async () => {
     try {
       const info = await ipc.getAudioInfo();
-      processAudioInfo(info);
+      if (isMounted()) {
+        processAudioInfo(info);
+      }
     } catch (err) {
       ipc.logError("Failed to fetch initial audio info:", err);
-      setIsLoading(false);
+      if (isMounted()) {
+        setIsLoading(false);
+      }
     }
-  }, []);
+  }, [isMounted]);
 
   useEffect(() => {
     fetchAudioInfo();

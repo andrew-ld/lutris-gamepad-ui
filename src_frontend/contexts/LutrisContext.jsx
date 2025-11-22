@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import * as ipc from "../utils/ipc";
+import { useIsMounted } from "../hooks/useIsMounted";
 
 const LutrisContext = createContext(null);
 export const useLutris = () => useContext(LutrisContext);
@@ -14,6 +15,7 @@ export const LutrisProvider = ({ children }) => {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [runningGame, setRunningGame] = useState(null);
+  const isMounted = useIsMounted();
 
   const fetchGames = useCallback(async () => {
     setLoading(true);
@@ -31,13 +33,17 @@ export const LutrisProvider = ({ children }) => {
         hidden: game.hidden || false,
       }));
 
-      setGames(mappedGames);
+      if (isMounted()) {
+        setGames(mappedGames);
+      }
     } catch (error) {
       ipc.logError("Error fetching games in context:", error);
     } finally {
-      setLoading(false);
+      if (isMounted()) {
+        setLoading(false);
+      }
     }
-  }, []);
+  }, [isMounted]);
 
   useEffect(() => {
     fetchGames();

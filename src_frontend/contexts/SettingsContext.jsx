@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import * as ipc from "../utils/ipc";
+import { useIsMounted } from "../hooks/useIsMounted";
 
 const SettingsStateContext = createContext(null);
 const SettingsActionsContext = createContext(null);
@@ -16,16 +17,21 @@ export const useSettingsActions = () => useContext(SettingsActionsContext);
 
 export const SettingsProvider = ({ children }) => {
   const [settings, setSettings] = useState(null);
+  const isMounted = useIsMounted();
 
   useEffect(() => {
     ipc
       .getAppConfig()
       .then((config) => {
-        setSettings(config || {});
+        if (isMounted()) {
+          setSettings(config || {});
+        }
       })
       .catch((err) => {
         ipc.logError("Failed to get initial app config:", err);
-        setSettings({});
+        if (isMounted()) {
+          setSettings({});
+        }
       });
 
     const unsubscribe = ipc.onAppConfigChanged((newConfig) => {
@@ -35,7 +41,7 @@ export const SettingsProvider = ({ children }) => {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [isMounted]);
 
   const updateSetting = useCallback((key, value) => {
     ipc.setAppConfig(key, value);

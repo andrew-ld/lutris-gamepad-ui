@@ -7,6 +7,7 @@ import {
 } from "react";
 import * as ipc from "../utils/ipc";
 import { applyReplacements } from "../utils/string";
+import { useIsMounted } from "../hooks/useIsMounted";
 
 const TranslationContext = createContext(null);
 
@@ -50,33 +51,36 @@ function mergeLocales(base, target) {
 
 export const TranslationProvider = ({ children }) => {
   const [translations, setTranslations] = useState(null);
-
-  const loadTranslations = async () => {
-    try {
-      const packagedLocales = await loadPackagedLocales();
-      const preferredLangs = navigator.languages;
-
-      const defaultLocale = packagedLocales.get("en");
-      if (!defaultLocale) {
-        throw new Error("Missing default locale file!");
-      }
-      const bestFitLocale = selectBestLocale(packagedLocales, preferredLangs);
-
-      if (defaultLocale !== bestFitLocale && bestFitLocale !== null) {
-        setTranslations(mergeLocales(defaultLocale, bestFitLocale));
-      } else {
-        setTranslations(defaultLocale);
-      }
-    } catch (error) {
-      ipc.logError("Failed to load translations:", error);
-    }
-  };
+  const isMounted = useIsMounted();
 
   useEffect(() => {
+    const loadTranslations = async () => {
+      try {
+        const packagedLocales = await loadPackagedLocales();
+        const preferredLangs = navigator.languages;
+
+        const defaultLocale = packagedLocales.get("en");
+        if (!defaultLocale) {
+          throw new Error("Missing default locale file!");
+        }
+        const bestFitLocale = selectBestLocale(packagedLocales, preferredLangs);
+
+        if (isMounted()) {
+          if (defaultLocale !== bestFitLocale && bestFitLocale !== null) {
+            setTranslations(mergeLocales(defaultLocale, bestFitLocale));
+          } else {
+            setTranslations(defaultLocale);
+          }
+        }
+      } catch (error) {
+        ipc.logError("Failed to load translations:", error);
+      }
+    };
+
     loadTranslations().catch((e) => {
       ipc.logError("unable to load translations", e);
     });
-  }, []);
+  }, [isMounted]);
 
   const t = useCallback(
     (key, replacements, filename) => {
@@ -92,10 +96,6 @@ export const TranslationProvider = ({ children }) => {
     },
     [translations]
   );
-
-  if (translations === null) {
-    return null;
-  }
 
   return (
     <TranslationContext.Provider value={{ t }}>

@@ -7,6 +7,7 @@ import {
   useMemo,
 } from "react";
 import * as ipc from "../utils/ipc";
+import { useIsMounted } from "../hooks/useIsMounted";
 
 const BluetoothStateContext = createContext(null);
 const BluetoothActionsContext = createContext(null);
@@ -19,17 +20,24 @@ export const BluetoothProvider = ({ children }) => {
   const [adapters, setAdapters] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDiscovering, setIsDiscovering] = useState(false);
+  const isMounted = useIsMounted();
 
   useEffect(() => {
     setIsLoading(true);
     ipc
       .bluetoothGetState()
       .then(({ devices, adapters }) => {
-        setDevices(devices);
-        setAdapters(adapters);
+        if (isMounted()) {
+          setDevices(devices);
+          setAdapters(adapters);
+        }
       })
       .catch((err) => ipc.logError("Failed to get initial BT state:", err))
-      .finally(() => setIsLoading(false));
+      .finally(() => {
+        if (isMounted()) {
+          setIsLoading(false);
+        }
+      });
 
     const handleStateChanged = ({ devices, adapters }) => {
       setDevices(devices);
@@ -72,11 +80,17 @@ export const BluetoothProvider = ({ children }) => {
     ipc
       .bluetoothGetState()
       .then(({ devices, adapters }) => {
-        setDevices(devices);
-        setAdapters(adapters);
+        if (isMounted()) {
+          setDevices(devices);
+          setAdapters(adapters);
+        }
       })
       .catch((err) => ipc.logError("Failed to force refresh BT devices:", err))
-      .finally(() => setIsLoading(false));
+      .finally(() => {
+        if (isMounted()) {
+          setIsLoading(false);
+        }
+      });
   }, []);
 
   const stateValue = useMemo(
