@@ -2,7 +2,6 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "../contexts/TranslationContext";
 import { useScopedInput } from "../hooks/useScopedInput";
 import "../styles/CrashDialog.css";
-import { logError } from "../utils/ipc";
 import { playActionSound } from "../utils/sound";
 import { applyReplacements } from "../utils/string";
 import LegendaContainer from "./LegendaContainer";
