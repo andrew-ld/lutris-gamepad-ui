@@ -29,7 +29,7 @@ const LibraryContainer = () => {
   const { isModalOpen } = useModalState();
 
   const libraryContainerRef = useRef(null);
-  const cardRefs = useRef([[]]);
+  const cardRefs = useRef([]);
   const shelfRefs = useRef([]);
   const gridRefs = useRef([]);
   const gameCloseCloseModalRef = useRef(null);
@@ -68,6 +68,8 @@ const LibraryContainer = () => {
   }, []);
 
   const shelves = useMemo(() => {
+    cardRefs.current = [];
+
     if (searchQuery) {
       const searchShelves = [
         {
@@ -75,9 +77,6 @@ const LibraryContainer = () => {
           games: currentGames.sort((a, b) => a.title.localeCompare(b.title)),
         },
       ];
-      cardRefs.current = searchShelves.map((shelf) =>
-        Array(shelf.games.length)
-      );
       return searchShelves;
     }
 
@@ -126,16 +125,19 @@ const LibraryContainer = () => {
       });
     });
 
-    cardRefs.current = newShelves.map((shelf) => Array(shelf.games.length));
-
     return newShelves;
   }, [currentGames, searchQuery, t, settings]);
 
   const shelvesRef = useRef(shelves);
-  shelvesRef.current = shelves;
-
   const focusCoordsRef = useRef(focusCoords);
-  focusCoordsRef.current = focusCoords;
+
+  useEffect(() => {
+    shelvesRef.current = shelves;
+  }, [shelves]);
+
+  useEffect(() => {
+    focusCoordsRef.current = focusCoords;
+  }, [focusCoords]);
 
   useEffect(() => {
     const calculateAndUpdateColumns = () => {

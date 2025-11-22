@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useMemo } from "react";
+import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import { useScopedInput } from "../hooks/useScopedInput";
 import "../styles/OnScreenKeyboard.css";
 import { playActionSound } from "../utils/sound";
@@ -13,16 +13,25 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
   const [focusCoords, setFocusCoords] = useState({ x: 0, y: 0 });
 
   const inputValueRef = useRef(inputValue);
-  inputValueRef.current = inputValue;
-
   const focusCoordsRef = useRef(focusCoords);
-  focusCoordsRef.current = focusCoords;
-
   const onConfirmRef = useRef(onConfirm);
-  onConfirmRef.current = onConfirm;
-
   const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
+
+  useEffect(() => {
+    inputValueRef.current = inputValue;
+  }, [inputValue]);
+
+  useEffect(() => {
+    focusCoordsRef.current = focusCoords;
+  }, [focusCoords]);
+
+  useEffect(() => {
+    onConfirmRef.current = onConfirm;
+  }, [onConfirm]);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   const keyLayout = useMemo(
     () => [

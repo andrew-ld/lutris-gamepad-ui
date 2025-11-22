@@ -122,8 +122,13 @@ export const InputProvider = ({ children }) => {
   const prevButtonState = useRef({});
   const prevButtonStateTimeout = useRef(null);
   const animationFrameId = useRef(null);
+  const gamepadAutorepeatMs = useRef();
 
   const { settings } = useSettingsState();
+
+  useEffect(() => {
+    gamepadAutorepeatMs.current = settings.gamepadAutorepeatMs;
+  }, [settings]);
 
   useEffect(() => {
     return () => {
@@ -315,7 +320,7 @@ export const InputProvider = ({ children }) => {
         clearTimeout(prevButtonStateTimeout.current);
         prevButtonStateTimeout.current = setTimeout(
           clearPrevButtonState,
-          settings.gamepadAutorepeatMs
+          gamepadAutorepeatMs.current
         );
         prevButtonState.current = buttons;
       }
@@ -365,7 +370,7 @@ export const InputProvider = ({ children }) => {
         animationFrameId.current = null;
       }
     };
-  }, [updateGamepadCount, settings]);
+  }, [updateGamepadCount]);
 
   const value = {
     subscribe,

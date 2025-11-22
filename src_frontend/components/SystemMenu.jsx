@@ -132,6 +132,8 @@ const SystemMenu = () => {
       openAboutModal,
       openBluetoothSettingsModal,
       openSettingsModal,
+      reloadLibraryAction,
+      openAudioSettingsModal,
       t,
       settings.doubleConfirmPowerManagement,
     ]

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useRef } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { useScopedInput } from "../hooks/useScopedInput";
 import "../styles/ConfirmationDialog.css";
 import { playActionSound } from "../utils/sound";
@@ -12,7 +12,10 @@ const ConfirmationDialog = ({ message, description, onConfirm, onDeny }) => {
   const [confirmSelection, setConfirmSelection] = useState(0);
 
   const confirmSelectionRef = useRef(confirmSelection);
-  confirmSelectionRef.current = confirmSelection;
+
+  useEffect(() => {
+    confirmSelectionRef.current = confirmSelection;
+  }, [confirmSelection]);
 
   const handleConfirm = useCallback(() => {
     onConfirm();

@@ -4,7 +4,10 @@ import { useInput } from "../contexts/InputContext";
 export const useGlobalShortcut = (shortcuts) => {
   const { subscribe } = useInput();
   const latestShortcuts = useRef(shortcuts);
-  latestShortcuts.current = shortcuts;
+
+  useEffect(() => {
+    latestShortcuts.current = shortcuts;
+  }, [shortcuts]);
 
   useEffect(() => {
     const handleInput = (input) => {

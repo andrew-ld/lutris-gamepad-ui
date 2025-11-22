@@ -21,16 +21,23 @@ const RowBasedMenu = ({
   const { t } = useTranslation();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedIndexRef = useRef(selectedIndex);
-  selectedIndexRef.current = selectedIndex;
-
   const onActionRef = useRef(onAction);
-  onActionRef.current = onAction;
-
   const onFocusChangeRef = useRef(onFocusChange);
-  onFocusChangeRef.current = onFocusChange;
 
   const containerRef = useRef(null);
   const selectedItemKeyRef = useRef(null);
+
+  useEffect(() => {
+    selectedIndexRef.current = selectedIndex;
+  }, [selectedIndex]);
+
+  useEffect(() => {
+    onActionRef.current = onAction;
+  }, [onAction]);
+
+  useEffect(() => {
+    onFocusChangeRef.current = onFocusChange;
+  }, [onFocusChange]);
 
   useEffect(() => {
     if (onFocusChangeRef.current) {
