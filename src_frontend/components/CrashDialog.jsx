@@ -13,16 +13,17 @@ const CrashDialog = ({ error, errorInfo }) => {
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [focusedButtonIndex, setFocusedButtonIndex] = useState(0);
   const containerRef = useRef(null);
+  const translationContext = useTranslation();
 
-  const t = useCallback((key, replacements, filename) => {
-    try {
-      const { t } = useTranslation();
-      return t(key, replacements, filename);
-    } catch (e) {
-      logError("unable to use 'useTranslation' in CrashDialog", e);
+  const t = useCallback(
+    (key, replacements, filename) => {
+      if (translationContext && translationContext.t) {
+        return translationContext.t(key, replacements, filename);
+      }
       return applyReplacements(key, replacements);
-    }
-  });
+    },
+    [translationContext]
+  );
 
   const handleReload = useCallback(() => {
     window.location.reload();

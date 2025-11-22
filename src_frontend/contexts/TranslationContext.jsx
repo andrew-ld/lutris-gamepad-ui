@@ -9,7 +9,9 @@ import * as ipc from "../utils/ipc";
 import { applyReplacements } from "../utils/string";
 import { useIsMounted } from "../hooks/useIsMounted";
 
-const TranslationContext = createContext(null);
+const TranslationContext = createContext({
+  t: (key, replacements) => applyReplacements(key, replacements),
+});
 
 export const useTranslation = () => useContext(TranslationContext);
 
