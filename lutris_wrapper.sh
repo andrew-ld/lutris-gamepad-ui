@@ -9,13 +9,29 @@ export PYTHONDONTWRITEBYTECODE=1
 
 validate_python() {
     local executable=$1
+
+    if [[ "$executable" != /* ]]; then
+        executable=$(command -v "$executable" 2>/dev/null) || return 1
+    fi
+
     if [[ ! -x "$executable" ]]; then
         return 1
     fi
-    "$executable" -c "import lutris" &> /dev/null
+
+    "$executable" -c "import lutris" &> /dev/null || return 1
 }
 
 get_python_cmd() {
+    if validate_python "python3"; then
+        echo "python3"
+        return 0
+    fi
+
+    if validate_python "python"; then
+        echo "python"
+        return 0
+    fi
+
     while IFS= read -r -d: directory; do
         if [[ -d "$directory" ]]; then
             directory=$(cd "$directory" && pwd)
@@ -23,6 +39,7 @@ get_python_cmd() {
                 echo "$directory/python3"
                 return 0
             fi
+
             if validate_python "$directory/python"; then
                 echo "$directory/python"
                 return 0
