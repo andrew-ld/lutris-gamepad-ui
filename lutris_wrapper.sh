@@ -32,9 +32,11 @@ get_python_cmd() {
         return 0
     fi
 
-    while IFS= read -r -d: directory; do
+    IFS=':' read -ra ADDR <<< "$PATH"
+    for directory in "${ADDR[@]}"; do
         if [[ -d "$directory" ]]; then
-            directory=$(cd "$directory" && pwd)
+            directory=$(cd "$directory" && pwd) || continue
+
             if validate_python "$directory/python3"; then
                 echo "$directory/python3"
                 return 0
@@ -45,7 +47,7 @@ get_python_cmd() {
                 return 0
             fi
         fi
-    done < <(printf '%s:' "$PATH")
+    done
 
     echo "Error: Could not find a valid 'python3' or 'python' with the 'lutris' module in your PATH." >&2
     exit 1
