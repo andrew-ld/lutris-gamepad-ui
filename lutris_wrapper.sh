@@ -68,10 +68,10 @@ if command -v lutris &>/dev/null; then
     }
 
     export PYTHONNOUSERSITE=1
-    launch_wrapper || true
+    launch_wrapper "$@" || true
 
     unset PYTHONNOUSERSITE
-    launch_wrapper || true
+    launch_wrapper "$@" || true
 
     echo "Warning: Lutris binary found, but could not import 'lutris' python module." >&2
     exit 1
