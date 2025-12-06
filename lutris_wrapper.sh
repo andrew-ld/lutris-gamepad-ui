@@ -4,6 +4,7 @@ set -xe
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 SCRIPT_PATH="$SCRIPT_DIR/$(basename "$0")"
+WRAPPER_PATH="$SCRIPT_DIR/lutris_wrapper.py"
 
 export PYTHONDONTWRITEBYTECODE=1
 
@@ -58,11 +59,26 @@ if [[ -x "/usr/games/lutris" ]]; then
 fi
 
 if command -v lutris &>/dev/null; then
-    exec "$(get_python_cmd)" "$SCRIPT_DIR/lutris_wrapper.py" "$@"
+    launch_wrapper() {
+        local py_cmd
+        if py_cmd=$(get_python_cmd); then
+            exec "$py_cmd" "$WRAPPER_PATH" "$@"
+        fi
+        return 1
+    }
+
+    export PYTHONNOUSERSITE=1
+    launch_wrapper || true
+
+    unset PYTHONNOUSERSITE
+    launch_wrapper || true
+
+    echo "Warning: Lutris binary found, but could not import 'lutris' python module." >&2
+    exit 1
 fi
 
 if [[ "$FLATPAK_ID" == "net.lutris.Lutris" ]]; then
-    echo "Error: Broken flatpak lutris installation." >&2
+    echo "Error: Running inside Flatpak but installation appears broken." >&2
     exit 1
 fi
 
