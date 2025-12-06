@@ -94,6 +94,8 @@ function closeRunningGameProcess() {
       logError("Unable to kill pid", killablePid, e);
     }
   }
+
+  runningGameProcess.stdin.end();
 }
 
 async function getGames() {
@@ -207,14 +209,22 @@ function launchGame(gameId) {
 
   const gameStartTime = Date.now();
 
-  const newGameProcess = spawn(
-    "bash",
-    [getLutrisWrapperPath(), `lutris:rungameid/${gameId}`],
-    {
-      detached: true,
-      stdio: "ignore",
-    }
-  );
+  const newGameProcess = spawn("bash", [
+    getLutrisWrapperPath(),
+    `lutris:rungameid/${gameId}`,
+  ]);
+
+  const stdoutTextDecoder = new TextDecoder();
+  const stderrTextDecoder = new TextDecoder();
+
+  newGameProcess.stdout.on("data", (stdout) => {
+    logInfo("rungameid", stdoutTextDecoder.decode(stdout));
+  });
+
+  newGameProcess.stderr.on("data", (stderr) => {
+    logError("rungameid", stderrTextDecoder.decode(stderr));
+  });
+
   setRunningGameProcess(newGameProcess);
 
   const mainWindow = getMainWindow();
@@ -245,6 +255,10 @@ function launchGame(gameId) {
 
     onGameClosed();
   });
+
+  if (newGameProcess.exitCode !== null) {
+    onGameClosed();
+  }
 }
 
 module.exports = { getGames, launchGame, closeRunningGameProcess };
