@@ -1,4 +1,4 @@
-const PAClient = require("paclient");
+const PAClient = require("@futpib/paclient");
 const path = require("node:path");
 const { homedir } = require("os");
 const { existsSync } = require("fs");
