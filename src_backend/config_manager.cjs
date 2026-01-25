@@ -8,7 +8,7 @@ const defaultConfig = {
   showRecentlyPlayed: true,
   showHiddenGames: false,
   doubleConfirmPowerManagement: true,
-  gamepadAutorepeatMs: 150,
+  gamepadAutorepeatMs: 225,
 };
 
 const SUBSCRIPTIONS = {};
