@@ -47,7 +47,7 @@ function invoke(bus, parameters) {
       if (err) {
         logError("DBus invocation failed for member:", parameters.member, err);
         return reject(
-          new Error(`${parameters.member} call failed: ${JSON.stringify(err)}`)
+          new Error(`${parameters.member} call failed: ${JSON.stringify(err)}`),
         );
       }
       resolve(result);
@@ -63,7 +63,12 @@ function getVariantValue(resultsArray, key) {
 async function _portalRequest(bus, parameters) {
   logInfo("Initiating portal request for:", parameters.member);
   const requestHandle = await invoke(bus, parameters);
-  logInfo("Portal request returned handle:", requestHandle, "for member:", parameters.member);
+  logInfo(
+    "Portal request returned handle:",
+    requestHandle,
+    "for member:",
+    parameters.member,
+  );
 
   const signalMatchRule = `type='signal',interface='${REQUEST_IFACE}',path='${requestHandle}'`;
 
@@ -71,17 +76,27 @@ async function _portalRequest(bus, parameters) {
     const onResponse = (msg) => {
       if (msg.path === requestHandle && msg.member === "Response") {
         bus.connection.removeListener("message", onResponse);
-        bus.removeMatch(signalMatchRule, () => { });
+        bus.removeMatch(signalMatchRule, () => {});
 
         const [responseCode, results] = msg.body;
-        logInfo("Received portal response signal for:", parameters.member, "Code:", responseCode);
+        logInfo(
+          "Received portal response signal for:",
+          parameters.member,
+          "Code:",
+          responseCode,
+        );
 
         if (responseCode !== 0) {
-          logError("Portal request failed with non-zero response code:", responseCode, "for member:", parameters.member);
+          logError(
+            "Portal request failed with non-zero response code:",
+            responseCode,
+            "for member:",
+            parameters.member,
+          );
           return reject(
             new Error(
-              `${parameters.member} request failed with code ${responseCode}.`
-            )
+              `${parameters.member} request failed with code ${responseCode}.`,
+            ),
           );
         }
         resolve(results);
@@ -91,7 +106,7 @@ async function _portalRequest(bus, parameters) {
     bus.addMatch(signalMatchRule, (err) => {
       if (err) {
         return reject(
-          new Error(`Failed to add signal match for ${requestHandle}: ${err}`)
+          new Error(`Failed to add signal match for ${requestHandle}: ${err}`),
         );
       }
       bus.connection.on("message", onResponse);
@@ -126,7 +141,10 @@ async function _releaseKey(keysym) {
 }
 
 async function _startRemoteDesktopSession(restoreToken) {
-  logInfo("Starting remote desktop session sequence. Existing restore token:", restoreToken);
+  logInfo(
+    "Starting remote desktop session sequence. Existing restore token:",
+    restoreToken,
+  );
 
   try {
     const bus = await _getBus();
@@ -153,13 +171,21 @@ async function _startRemoteDesktopSession(restoreToken) {
     ];
 
     if (restoreToken) {
-      logInfo("Appending existing restore token to device selection options:", restoreToken);
+      logInfo(
+        "Appending existing restore token to device selection options:",
+        restoreToken,
+      );
       selectDeviceOptions.push(["restore_token", ["s", restoreToken]]);
     } else {
-      logInfo("No restore token provided; proceeding with fresh device selection.");
+      logInfo(
+        "No restore token provided; proceeding with fresh device selection.",
+      );
     }
 
-    logInfo("Invoking SelectDevices with payload:", JSON.stringify(selectDeviceOptions));
+    logInfo(
+      "Invoking SelectDevices with payload:",
+      JSON.stringify(selectDeviceOptions),
+    );
 
     await invoke(bus, {
       destination: PORTAL_DESTINATION,
@@ -181,27 +207,37 @@ async function _startRemoteDesktopSession(restoreToken) {
       body: [sessionHandle, "", []],
     });
 
-    logInfo("Session start request completed. Analyzing results");
+    logInfo(
+      "Session start request completed. Analyzing results",
+      JSON.stringify(startResults),
+    );
 
     const newRestoreToken = getVariantValue(startResults, "restore_token");
     logInfo("Portal returned restore token after start:", newRestoreToken);
 
     if (newRestoreToken) {
       if (newRestoreToken !== restoreToken) {
-        logInfo("New restore token received differs from the old one. Updating storage.");
+        logInfo(
+          "New restore token received differs from the old one. Updating storage.",
+        );
         setRemoteDesktopRestoreToken(newRestoreToken);
       } else {
         logInfo("Restore token remains unchanged.");
       }
     } else {
-      logWarn("Portal did not return a restore token despite persist mode request.");
+      logWarn(
+        "Portal did not return a restore token despite persist mode request.",
+      );
     }
 
     setRemoteDesktopSessionHandle(sessionHandle);
 
     logInfo("Remote desktop session started successfully.");
   } catch (error) {
-    logError("Fatal error occurred during remote desktop session startup:", error);
+    logError(
+      "Fatal error occurred during remote desktop session startup:",
+      error,
+    );
     toastError("Remote Desktop Manager", error);
     await stopRemoteDesktopSession();
     throw error;
@@ -221,7 +257,10 @@ async function startRemoteDesktopSession() {
       logInfo("Attempting to restore session with token:", restoreToken);
       return await _startRemoteDesktopSession(restoreToken);
     } catch (e) {
-      logError("Failed to restore remote desktop session with existing token:", e);
+      logError(
+        "Failed to restore remote desktop session with existing token:",
+        e,
+      );
     }
   }
 
@@ -265,7 +304,7 @@ async function sendAltTab() {
     throw new Error("Cannot send Alt+Tab: Session not active.");
   }
 
-  logInfo("Sending alt+tab using remote desktop session")
+  logInfo("Sending alt+tab using remote desktop session");
 
   await _pressKey(KEYSYMS.Alt_L);
   releaseAltDebounced();
