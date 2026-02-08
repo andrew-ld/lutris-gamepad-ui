@@ -104,6 +104,7 @@
     "Recently Played Shelf": "Recently Played Shelf",
     "Settings": "Settings",
     "Show Hidden Games": "Show Hidden Games",
+    "Use Remote Desktop Portal": "Use Remote Desktop Portal",
     "Zoom Level": "Zoom Level"
   },
   "components/SystemMenu.jsx": {

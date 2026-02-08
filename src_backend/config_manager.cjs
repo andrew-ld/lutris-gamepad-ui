@@ -9,6 +9,7 @@ const defaultConfig = {
   showHiddenGames: false,
   doubleConfirmPowerManagement: true,
   gamepadAutorepeatMs: 225,
+  useRemoteDesktopPortal: true,
 };
 
 const SUBSCRIPTIONS = {};

@@ -33,7 +33,7 @@ const SettingsMenu = ({ onClose }) => {
       const roundedFactor = Math.round(clampedFactor * 100) / 100;
       updateSetting("zoomFactor", roundedFactor);
     },
-    [updateSetting]
+    [updateSetting],
   );
 
   const decreaseZoom = useCallback(() => {
@@ -48,11 +48,11 @@ const SettingsMenu = ({ onClose }) => {
     (newVal) => {
       const clampedVal = Math.max(
         MIN_AUTOREPEAT,
-        Math.min(MAX_AUTOREPEAT, newVal)
+        Math.min(MAX_AUTOREPEAT, newVal),
       );
       updateSetting("gamepadAutorepeatMs", clampedVal);
     },
-    [updateSetting]
+    [updateSetting],
   );
 
   const decreaseAutorepeat = useCallback(() => {
@@ -74,8 +74,12 @@ const SettingsMenu = ({ onClose }) => {
   const toggleDoubleConfirmPowerManagement = useCallback(() => {
     updateSetting(
       "doubleConfirmPowerManagement",
-      !settings.doubleConfirmPowerManagement
+      !settings.doubleConfirmPowerManagement,
     );
+  }, [settings, updateSetting]);
+
+  const toggleUseRemoteDesktopPortal = useCallback(() => {
+    updateSetting("useRemoteDesktopPortal", !settings.useRemoteDesktopPortal);
   }, [settings, updateSetting]);
 
   const menuItems = useMemo(() => {
@@ -107,6 +111,12 @@ const SettingsMenu = ({ onClose }) => {
         label: t("Double confirm power management"),
       });
     }
+    if (settings.useRemoteDesktopPortal !== undefined) {
+      result.push({
+        type: "USE_REMOTE_DESKTOP_PORTAL",
+        label: t("Use Remote Desktop Portal"),
+      });
+    }
     return result;
   }, [t, settings]);
 
@@ -120,6 +130,9 @@ const SettingsMenu = ({ onClose }) => {
       }
 
       switch (item.type) {
+        case "USE_REMOTE_DESKTOP_PORTAL":
+          if (actionName === "A") toggleUseRemoteDesktopPortal();
+          break;
         case "DOUBLE_CONFIRM_POWER_MANAGEMENT":
           if (actionName === "A") toggleDoubleConfirmPowerManagement();
           break;
@@ -148,7 +161,8 @@ const SettingsMenu = ({ onClose }) => {
       toggleShowRecentlyPlayed,
       toggleShowHiddenGames,
       toggleDoubleConfirmPowerManagement,
-    ]
+      toggleUseRemoteDesktopPortal,
+    ],
   );
 
   const renderItem = useCallback(
@@ -176,7 +190,7 @@ const SettingsMenu = ({ onClose }) => {
                   />
                 </div>
                 <span className="settings-menu-value">{`${Math.round(
-                  settings.zoomFactor * 100
+                  settings.zoomFactor * 100,
                 )}%`}</span>
               </div>
             </FocusableRow>
@@ -259,6 +273,23 @@ const SettingsMenu = ({ onClose }) => {
               />
             </FocusableRow>
           );
+        case "USE_REMOTE_DESKTOP_PORTAL":
+          return (
+            <FocusableRow
+              key={item.type}
+              isFocused={isFocused}
+              onMouseEnter={onMouseEnter}
+              onClick={toggleUseRemoteDesktopPortal}
+            >
+              <span className="settings-menu-label">{item.label}</span>
+              <ToggleButton
+                isToggledOn={settings.useRemoteDesktopPortal}
+                labelOn={t("Disable")}
+                labelOff={t("Enable")}
+                onClick={toggleUseRemoteDesktopPortal}
+              />
+            </FocusableRow>
+          );
         default:
           return null;
       }
@@ -269,7 +300,8 @@ const SettingsMenu = ({ onClose }) => {
       toggleShowRecentlyPlayed,
       toggleShowHiddenGames,
       toggleDoubleConfirmPowerManagement,
-    ]
+      toggleUseRemoteDesktopPortal,
+    ],
   );
 
   const legendItems = useMemo(() => {
@@ -317,6 +349,12 @@ const SettingsMenu = ({ onClose }) => {
           : t("Enable"),
         onClick: toggleDoubleConfirmPowerManagement,
       });
+    } else if (focusedItem?.type === "USE_REMOTE_DESKTOP_PORTAL") {
+      buttons.push({
+        button: "A",
+        label: settings.useRemoteDesktopPortal ? t("Disable") : t("Enable"),
+        onClick: toggleUseRemoteDesktopPortal,
+      });
     }
 
     buttons.push({ button: "B", label: t("Close"), onClick: onClose });
@@ -332,6 +370,7 @@ const SettingsMenu = ({ onClose }) => {
     toggleShowRecentlyPlayed,
     toggleShowHiddenGames,
     toggleDoubleConfirmPowerManagement,
+    toggleUseRemoteDesktopPortal,
     onClose,
     t,
   ]);

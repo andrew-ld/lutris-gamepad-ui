@@ -27,6 +27,7 @@ const {
 const {
   startRemoteDesktopSession,
   sendAltTab,
+  stopRemoteDesktopSession,
 } = require("./remote_desktop_manager.cjs");
 const { initializeThemeManager } = require("./theme_manager.cjs");
 const { subscribeToBluetoothChanges } = require("./bluetooth_manager.cjs");
@@ -56,7 +57,7 @@ function createSendAltTabDebounced(delayMs) {
 }
 
 let sendAltTabDebounced = createSendAltTabDebounced(
-  getAppConfig().gamepadAutorepeatMs
+  getAppConfig().gamepadAutorepeatMs,
 );
 
 subscribeConfigValueChange("gamepadAutorepeatMs", (newValue) => {
@@ -212,6 +213,16 @@ function createWindow(onWindowClosedCallback) {
     checkForUpdates().catch((e) => {
       logError("unable to check for new updates:", e);
     });
+  });
+
+  subscribeConfigValueChange("useRemoteDesktopPortal", (enabled) => {
+    if (enabled) {
+      startRemoteDesktopSessionDebounced();
+    } else {
+      stopRemoteDesktopSession().catch((e) => {
+        logError("unable to stop remote desktop session", e);
+      });
+    }
   });
 
   win.loadURL(homePageUrl);

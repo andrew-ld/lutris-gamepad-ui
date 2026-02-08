@@ -11,6 +11,7 @@ const {
   toastError,
 } = require("./utils.cjs");
 const { getKvStoreValue, setKvStoreValue } = require("./storage_kv.cjs");
+const { getAppConfig } = require("./config_manager.cjs");
 
 const PORTAL_DESTINATION = "org.freedesktop.portal.Desktop";
 const PORTAL_PATH = "/org/freedesktop/portal/desktop";
@@ -247,6 +248,11 @@ async function _startRemoteDesktopSession(restoreToken) {
 async function startRemoteDesktopSession() {
   if (getRemoteDesktopSessionHandle()) {
     logWarn("A remote desktop session is already active. Aborting start.");
+    return;
+  }
+
+  if (!getAppConfig().useRemoteDesktopPortal) {
+    logWarn("Remote desktop portal is disabled. Aborting start.");
     return;
   }
 
