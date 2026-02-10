@@ -86,6 +86,10 @@ const SettingsMenu = ({ onClose }) => {
     updateSetting("useRemoteDesktopPortal", !settings.useRemoteDesktopPortal);
   }, [settings, updateSetting]);
 
+  const toggleKeepGamesRunningOnQuit = useCallback(() => {
+    updateSetting("keepGamesRunningOnQuit", !settings.keepGamesRunningOnQuit);
+  }, [settings, updateSetting]);
+
   const menuItems = useMemo(() => {
     const result = [];
     if (settings.zoomFactor !== undefined) {
@@ -118,13 +122,19 @@ const SettingsMenu = ({ onClose }) => {
     if (settings.doubleConfirmPowerManagement !== undefined) {
       result.push({
         type: "DOUBLE_CONFIRM_POWER_MANAGEMENT",
-        label: t("Double confirm power management"),
+        label: t("Double Confirm Power Management"),
       });
     }
     if (settings.useRemoteDesktopPortal !== undefined) {
       result.push({
         type: "USE_REMOTE_DESKTOP_PORTAL",
         label: t("Use Remote Desktop Portal"),
+      });
+    }
+    if (settings.keepGamesRunningOnQuit !== undefined) {
+      result.push({
+        type: "KEEP_GAMES_RUNNING",
+        label: t("Keep Games Running On Quit"),
       });
     }
     return result;
@@ -140,6 +150,9 @@ const SettingsMenu = ({ onClose }) => {
       }
 
       switch (item.type) {
+        case "KEEP_GAMES_RUNNING":
+          if (actionName === "A") toggleKeepGamesRunningOnQuit();
+          break;
         case "USE_REMOTE_DESKTOP_PORTAL":
           if (actionName === "A") toggleUseRemoteDesktopPortal();
           break;
@@ -176,6 +189,7 @@ const SettingsMenu = ({ onClose }) => {
       toggleShowRunnerIcon,
       toggleDoubleConfirmPowerManagement,
       toggleUseRemoteDesktopPortal,
+      toggleKeepGamesRunningOnQuit,
     ],
   );
 
@@ -321,6 +335,23 @@ const SettingsMenu = ({ onClose }) => {
               />
             </FocusableRow>
           );
+        case "KEEP_GAMES_RUNNING":
+          return (
+            <FocusableRow
+              key={item.type}
+              isFocused={isFocused}
+              onMouseEnter={onMouseEnter}
+              onClick={toggleKeepGamesRunningOnQuit}
+            >
+              <span className="settings-menu-label">{item.label}</span>
+              <ToggleButton
+                isToggledOn={settings.keepGamesRunningOnQuit}
+                labelOn={t("Disable")}
+                labelOff={t("Enable")}
+                onClick={toggleKeepGamesRunningOnQuit}
+              />
+            </FocusableRow>
+          );
         default:
           return null;
       }
@@ -333,6 +364,7 @@ const SettingsMenu = ({ onClose }) => {
       toggleShowRunnerIcon,
       toggleDoubleConfirmPowerManagement,
       toggleUseRemoteDesktopPortal,
+      toggleKeepGamesRunningOnQuit,
     ],
   );
 
@@ -393,6 +425,12 @@ const SettingsMenu = ({ onClose }) => {
         label: settings.useRemoteDesktopPortal ? t("Disable") : t("Enable"),
         onClick: toggleUseRemoteDesktopPortal,
       });
+    } else if (focusedItem?.type === "KEEP_GAMES_RUNNING") {
+      buttons.push({
+        button: "A",
+        label: settings.keepGamesRunningOnQuit ? t("Disable") : t("Enable"),
+        onClick: toggleKeepGamesRunningOnQuit,
+      });
     }
 
     buttons.push({ button: "B", label: t("Close"), onClick: onClose });
@@ -410,6 +448,7 @@ const SettingsMenu = ({ onClose }) => {
     toggleShowRunnerIcon,
     toggleDoubleConfirmPowerManagement,
     toggleUseRemoteDesktopPortal,
+    toggleKeepGamesRunningOnQuit,
     onClose,
     t,
   ]);

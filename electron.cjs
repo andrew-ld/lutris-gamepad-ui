@@ -4,6 +4,7 @@ const { registerIpcHandlers } = require("./src_backend/ipc_handlers.cjs");
 const { closeRunningGameProcess } = require("./src_backend/game_manager.cjs");
 const { getMainWindow } = require("./src_backend/state.cjs");
 const { logInfo, logError } = require("./src_backend/utils.cjs");
+const { getAppConfig } = require("./src_backend/config_manager.cjs");
 
 process.noAsar = true;
 
@@ -26,7 +27,9 @@ app.on("second-instance", () => {
 });
 
 app.on("window-all-closed", () => {
-  closeRunningGameProcess();
+  if (!getAppConfig().keepGamesRunningOnQuit) {
+    closeRunningGameProcess();
+  }
   app.quit();
 });
 
@@ -39,7 +42,9 @@ app.whenReady().then(() => {
     registerIpcHandlers();
     createWindow(() => {
       logInfo("Main window closed!");
-      closeRunningGameProcess();
+      if (!getAppConfig().keepGamesRunningOnQuit) {
+        closeRunningGameProcess();
+      }
     });
   } catch (e) {
     logError("Failed to initialize the application:", e);

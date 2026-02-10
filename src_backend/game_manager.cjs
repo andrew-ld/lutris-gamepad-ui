@@ -11,7 +11,6 @@ const {
   addWhitelistedFile,
 } = require("./state.cjs");
 const {
-  execPromise,
   getLutrisWrapperPath,
   logError,
   logInfo,
@@ -25,6 +24,7 @@ const {
   getAllGamesCategories,
   getLutrisGames,
 } = require("./lutris_wrapper.cjs");
+const { getAppConfig } = require("./config_manager.cjs");
 
 const runtimeIconCache = new Map();
 
@@ -53,7 +53,7 @@ function findLutrisWrapperChildren(pid, visitedPids) {
       }
       const lutrisGrandchildren = findLutrisWrapperChildren(
         childPid,
-        visitedPids
+        visitedPids,
       );
       return directLutrisChild.concat(lutrisGrandchildren);
     });
@@ -71,7 +71,7 @@ function closeRunningGameProcess() {
   try {
     lutrisWrapperPids = findLutrisWrapperChildren(
       runningGameProcess.pid,
-      new Set()
+      new Set(),
     );
   } catch (e) {
     logError("Unable to find lutris wrapper child", e);
@@ -117,7 +117,7 @@ async function getGames() {
     const categoryIdToNameMap = new Map(
       allCategories
         .filter((c) => c !== hiddenGamesCategory)
-        .map((cat) => [cat.id, cat.name])
+        .map((cat) => [cat.id, cat.name]),
     );
 
     for (const game of games) {
@@ -142,7 +142,7 @@ async function getGames() {
       ...new Set(games.map((g) => g.runner).filter(Boolean)),
     ];
     const runnersToFetch = uniqueRunners.filter(
-      (runner) => !runtimeIconCache.has(runner)
+      (runner) => !runtimeIconCache.has(runner),
     );
 
     if (runnersToFetch.length > 0) {
@@ -186,7 +186,7 @@ async function getGames() {
       }
       if (game.slug) {
         const coverFilename = lutrisCoverDirFiles.find((f) =>
-          f.startsWith(`${game.slug}.`)
+          f.startsWith(`${game.slug}.`),
         );
         if (coverFilename) {
           const coverPath = path.join(lutrisCoverDir, coverFilename);
@@ -209,10 +209,13 @@ function launchGame(gameId) {
 
   const gameStartTime = Date.now();
 
-  const newGameProcess = spawn("bash", [
-    getLutrisWrapperPath(),
-    `lutris:rungameid/${gameId}`,
-  ]);
+  const newGameProcess = spawn(
+    "bash",
+    [getLutrisWrapperPath(), `lutris:rungameid/${gameId}`],
+    {
+      detached: getAppConfig().keepGamesRunningOnQuit,
+    },
+  );
 
   const stdoutTextDecoder = new TextDecoder();
   const stderrTextDecoder = new TextDecoder();

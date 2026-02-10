@@ -11,6 +11,7 @@ const defaultConfig = {
   gamepadAutorepeatMs: 225,
   useRemoteDesktopPortal: true,
   showRunnerIcon: true,
+  keepGamesRunningOnQuit: false,
 };
 
 const SUBSCRIPTIONS = {};
