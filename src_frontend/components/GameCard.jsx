@@ -3,9 +3,12 @@ import "../styles/GameCard.css";
 import GameCover from "./GameCover";
 import { formatDate, formatPlaytime } from "../utils/datetime";
 import { useTranslation } from "../contexts/TranslationContext";
+import { useSettingsState } from "../contexts/SettingsContext";
 
 const GameCard = React.forwardRef(({ game, onFocus, onClick }, ref) => {
   const { t } = useTranslation();
+  const { settings } = useSettingsState();
+
   return (
     <div
       ref={ref}
@@ -23,7 +26,7 @@ const GameCard = React.forwardRef(({ game, onFocus, onClick }, ref) => {
       ) : (
         <GameCover game={game} className="game-card-cover" />
       )}
-      {game.runtimeIconPath && (
+      {settings.showRunnerIcon && game.runtimeIconPath && (
         <img
           src={`app://${game.runtimeIconPath}`}
           alt="Runner Icon"

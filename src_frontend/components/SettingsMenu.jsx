@@ -71,6 +71,10 @@ const SettingsMenu = ({ onClose }) => {
     updateSetting("showHiddenGames", !settings.showHiddenGames);
   }, [settings, updateSetting]);
 
+  const toggleShowRunnerIcon = useCallback(() => {
+    updateSetting("showRunnerIcon", !settings.showRunnerIcon);
+  }, [settings, updateSetting]);
+
   const toggleDoubleConfirmPowerManagement = useCallback(() => {
     updateSetting(
       "doubleConfirmPowerManagement",
@@ -103,6 +107,12 @@ const SettingsMenu = ({ onClose }) => {
       result.push({
         type: "SHOW_HIDDEN",
         label: t("Show Hidden Games"),
+      });
+    }
+    if (settings.showRunnerIcon !== undefined) {
+      result.push({
+        type: "SHOW_RUNNER_ICON",
+        label: t("Show Runner Icon"),
       });
     }
     if (settings.doubleConfirmPowerManagement !== undefined) {
@@ -142,6 +152,9 @@ const SettingsMenu = ({ onClose }) => {
         case "SHOW_HIDDEN":
           if (actionName === "A") toggleShowHiddenGames();
           break;
+        case "SHOW_RUNNER_ICON":
+          if (actionName === "A") toggleShowRunnerIcon();
+          break;
         case "ZOOM":
           if (actionName === "LEFT") decreaseZoom();
           else if (actionName === "RIGHT") increaseZoom();
@@ -160,6 +173,7 @@ const SettingsMenu = ({ onClose }) => {
       increaseAutorepeat,
       toggleShowRecentlyPlayed,
       toggleShowHiddenGames,
+      toggleShowRunnerIcon,
       toggleDoubleConfirmPowerManagement,
       toggleUseRemoteDesktopPortal,
     ],
@@ -273,6 +287,23 @@ const SettingsMenu = ({ onClose }) => {
               />
             </FocusableRow>
           );
+        case "SHOW_RUNNER_ICON":
+          return (
+            <FocusableRow
+              key={item.type}
+              isFocused={isFocused}
+              onMouseEnter={onMouseEnter}
+              onClick={toggleShowRunnerIcon}
+            >
+              <span className="settings-menu-label">{item.label}</span>
+              <ToggleButton
+                isToggledOn={settings.showRunnerIcon}
+                labelOn={t("Disable")}
+                labelOff={t("Enable")}
+                onClick={toggleShowRunnerIcon}
+              />
+            </FocusableRow>
+          );
         case "USE_REMOTE_DESKTOP_PORTAL":
           return (
             <FocusableRow
@@ -299,6 +330,7 @@ const SettingsMenu = ({ onClose }) => {
       t,
       toggleShowRecentlyPlayed,
       toggleShowHiddenGames,
+      toggleShowRunnerIcon,
       toggleDoubleConfirmPowerManagement,
       toggleUseRemoteDesktopPortal,
     ],
@@ -341,6 +373,12 @@ const SettingsMenu = ({ onClose }) => {
         label: settings.showHiddenGames ? t("Disable") : t("Enable"),
         onClick: toggleShowHiddenGames,
       });
+    } else if (focusedItem?.type === "SHOW_RUNNER_ICON") {
+      buttons.push({
+        button: "A",
+        label: settings.showRunnerIcon ? t("Disable") : t("Enable"),
+        onClick: toggleShowRunnerIcon,
+      });
     } else if (focusedItem?.type === "DOUBLE_CONFIRM_POWER_MANAGEMENT") {
       buttons.push({
         button: "A",
@@ -369,6 +407,7 @@ const SettingsMenu = ({ onClose }) => {
     increaseAutorepeat,
     toggleShowRecentlyPlayed,
     toggleShowHiddenGames,
+    toggleShowRunnerIcon,
     toggleDoubleConfirmPowerManagement,
     toggleUseRemoteDesktopPortal,
     onClose,

@@ -10,6 +10,7 @@ const defaultConfig = {
   doubleConfirmPowerManagement: true,
   gamepadAutorepeatMs: 225,
   useRemoteDesktopPortal: true,
+  showRunnerIcon: true,
 };
 
 const SUBSCRIPTIONS = {};
