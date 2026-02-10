@@ -4,6 +4,8 @@
   width: 90vw;
   max-width: 500px;
   box-sizing: border-box;
+  flex: 1;
+  min-height: 0;
 }
 
 .settings-menu-title {
