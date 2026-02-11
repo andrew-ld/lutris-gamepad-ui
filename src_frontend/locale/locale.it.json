@@ -107,8 +107,8 @@
     "Recently Played Shelf": "Giocati di recente",
     "Settings": "Impostazioni",
     "Show Hidden Games": "Mostra giochi nascosti",
-    "Show Runner Icon": "Mostra l'icona dell'ambiente",
-    "Use Remote Desktop Portal": "Usa il portale desktop remoto",
+    "Show Runner Icon": "Mostra l'icona del runner",
+    "Use Remote Desktop Portal": "Usa il Desktop Remote Portal",
     "Zoom Level": "Livello Zoom"
   },
   "components/SystemMenu.jsx": {
