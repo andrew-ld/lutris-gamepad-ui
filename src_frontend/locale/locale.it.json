@@ -99,22 +99,22 @@
     "Close": "Chiudi",
     "Decrease": "Diminuisci",
     "Disable": "Disattiva",
-    "Double Confirm Power Management": "Double Confirm Power Management",
+    "Double Confirm Power Management": "Doppia conferma menu spegnimento",
     "Enable": "Attiva",
-    "Gamepad Autorepeat Delay": "Gamepad Autorepeat Delay",
+    "Gamepad Autorepeat Delay": "Ritardo autoripetizione gamepad",
     "Increase": "Aumenta",
-    "Keep Games Running On Quit": "Keep Games Running On Quit",
+    "Keep Games Running On Quit": "Mantieni i giochi in esecuzione alla chiusura",
     "Recently Played Shelf": "Giocati di recente",
     "Settings": "Impostazioni",
     "Show Hidden Games": "Mostra giochi nascosti",
-    "Show Runner Icon": "Show Runner Icon",
-    "Use Remote Desktop Portal": "Use Remote Desktop Portal",
+    "Show Runner Icon": "Mostra l'icona dell'ambiente",
+    "Use Remote Desktop Portal": "Usa il portale desktop remoto",
     "Zoom Level": "Livello Zoom"
   },
   "components/SystemMenu.jsx": {
     "About": "Informazioni",
     "Are you sure you want to exit the application?": "Vuoi davvero uscire?",
-    "Are you sure you want to generate the bug report file?": "Are you sure you want to generate the bug report file?",
+    "Are you sure you want to generate the bug report file?": "Sei sicuro di voler generare il file di segnalazione bug?",
     "Are you sure you want to power off the system?": "Sei sicuro di voler spegnere il sistema?",
     "Are you sure you want to reboot the system?": "Sei sicuro di voler riavviare il sistema?",
     "Audio Settings": "Impostazioni Audio",
@@ -124,7 +124,7 @@
     "Continue with system power off?": "Procedere con lo spegnimento del sistema?",
     "Continue with system reboot?": "Procedere con il riavvio del sistema?",
     "Exit Application": "Esci",
-    "Generate Bug Report": "Generate Bug Report",
+    "Generate Bug Report": "Genera segnalazione bug",
     "Library reloaded successfully!": "Libreria ricaricata con successo!",
     "Open Lutris": "Apri Lutris",
     "Power Off System": "Spegni il sistema",
@@ -132,7 +132,7 @@
     "Reload Library": "Aggiorna libreria",
     "Reloading library...": "Ricaricamento libreria...",
     "Select": "Seleziona",
-    "Settings": "Settings",
+    "Settings": "Impostazioni",
     "This action is final and cannot be undone.": "Questa azione è irreversibile."
   },
   "components/TopBar.jsx": {
@@ -140,10 +140,10 @@
     "Offline": "Offline"
   },
   "components/UpdateDialog.jsx": {
-    "A new version, {{version}}, is available for download.": "A new version, {{version}}, is available for download.",
-    "Go to Downloads": "Go to Downloads",
-    "Later": "Later",
-    "Update Available": "Update Available"
+    "A new version, {{version}}, is available for download.": "Una nuova versione, {{version}}, è disponibile per il download.",
+    "Go to Downloads": "Vai ai download",
+    "Later": "Più tardi",
+    "Update Available": "Aggiornamento disponibile"
   },
   "components/VolumeControl.jsx": {
     "Audio Settings": "Impostazioni Audio",
