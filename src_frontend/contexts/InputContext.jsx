@@ -41,7 +41,7 @@ const GAMEPAD_BUTTON_MAP = {
 const ANALOG_THRESHOLD = 0.5;
 
 const GAMEPAD_ACTION_TO_BUTTON_MAP = Object.fromEntries(
-  Object.entries(GAMEPAD_BUTTON_MAP).map(([key, value]) => [value, key])
+  Object.entries(GAMEPAD_BUTTON_MAP).map(([key, value]) => [value, key]),
 );
 
 const applyAnalogStickAsDPad = (axes, buttons, threshold) => {
@@ -119,22 +119,15 @@ export const InputProvider = ({ children }) => {
   const focusIdCounter = useRef(0);
   const focusStackRef = useRef(focusStack);
 
-  const prevButtonState = useRef({});
-  const prevButtonStateTimeout = useRef(null);
   const animationFrameId = useRef(null);
   const gamepadAutorepeatMs = useRef();
+  const gamepadAutorepeatMap = useRef({});
 
   const { settings } = useSettingsState();
 
   useEffect(() => {
     gamepadAutorepeatMs.current = settings.gamepadAutorepeatMs;
   }, [settings]);
-
-  useEffect(() => {
-    return () => {
-      clearTimeout(prevButtonStateTimeout.current);
-    };
-  }, []);
 
   useEffect(() => {
     focusStackRef.current = focusStack;
@@ -203,7 +196,7 @@ export const InputProvider = ({ children }) => {
 
       return token;
     },
-    [releaseFocus]
+    [releaseFocus],
   );
 
   const updateGamepadCount = useCallback(() => {
@@ -213,6 +206,9 @@ export const InputProvider = ({ children }) => {
 
   useEffect(() => {
     const handleKeyDown = (event) => {
+      if (event.repeat) {
+        return;
+      }
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
@@ -222,9 +218,9 @@ export const InputProvider = ({ children }) => {
           {
             type: "key",
             name: actionName,
-            timestamp: Date.now(),
+            timestamp: performance.now(),
           },
-          "keyboard"
+          "keyboard",
         );
       }
     };
@@ -234,12 +230,9 @@ export const InputProvider = ({ children }) => {
     };
   }, []);
 
-  const clearPrevButtonState = useCallback(() => {
-    prevButtonState.current = {};
-  }, []);
-
   useEffect(() => {
     const pollGamepads = () => {
+      const currentTimestamp = performance.now();
       const buttons = {};
       const gamepads = navigator.getGamepads();
 
@@ -259,7 +252,7 @@ export const InputProvider = ({ children }) => {
 
         if (!activeGamepad && gp.axes) {
           const hasStickMovement = gp.axes.some(
-            (axis) => Math.abs(axis) > ANALOG_THRESHOLD
+            (axis) => Math.abs(axis) > ANALOG_THRESHOLD,
           );
           if (hasStickMovement) {
             activeGamepad = gp;
@@ -271,7 +264,7 @@ export const InputProvider = ({ children }) => {
         applyAnalogStickAsDPad(
           getAggregatedAxes(activeGamepad),
           buttons,
-          ANALOG_THRESHOLD
+          ANALOG_THRESHOLD,
         );
       }
 
@@ -279,7 +272,7 @@ export const InputProvider = ({ children }) => {
         return {
           type: "gamepad",
           name: actionName,
-          timestamp: Date.now(),
+          timestamp: currentTimestamp,
         };
       };
 
@@ -293,36 +286,39 @@ export const InputProvider = ({ children }) => {
         }
       }
 
-      let anyButtonPressed = false;
+      const currentActiveActions = new Set();
 
-      for (const [button, pressed] of Object.entries(buttons)) {
-        const prevButtonPressed = prevButtonState.current[button];
-        if (pressed && !prevButtonPressed) {
-          const actionName = GAMEPAD_BUTTON_MAP[button];
+      for (const [buttonIndex, pressed] of Object.entries(buttons)) {
+        if (pressed) {
+          const actionName = GAMEPAD_BUTTON_MAP[buttonIndex];
           if (actionName) {
-            anyButtonPressed = true;
-            processInput(createInput(actionName), gamepadType);
-            break;
+            currentActiveActions.add(actionName);
           }
         }
       }
 
-      const superFallbackPressed =
-        GAMEPAD_SUPER_BUTTON_FALLBACK.every((i) => buttons[i]) &&
-        !GAMEPAD_SUPER_BUTTON_FALLBACK.every((i) => prevButtonState.current[i]);
+      const isSuperPressed = GAMEPAD_SUPER_BUTTON_FALLBACK.every(
+        (i) => buttons[i],
+      );
 
-      if (superFallbackPressed) {
-        anyButtonPressed = true;
-        processInput(createInput("Super"), gamepadType);
+      if (isSuperPressed) {
+        currentActiveActions.add("Super");
       }
 
-      if (anyButtonPressed) {
-        clearTimeout(prevButtonStateTimeout.current);
-        prevButtonStateTimeout.current = setTimeout(
-          clearPrevButtonState,
-          gamepadAutorepeatMs.current
-        );
-        prevButtonState.current = buttons;
+      for (const actionName of Object.keys(gamepadAutorepeatMap.current)) {
+        if (!currentActiveActions.has(actionName)) {
+          delete gamepadAutorepeatMap.current[actionName];
+        }
+      }
+
+      for (const actionName of currentActiveActions) {
+        const nextTriggerTime = gamepadAutorepeatMap.current[actionName];
+
+        if (!nextTriggerTime || currentTimestamp >= nextTriggerTime) {
+          processInput(createInput(actionName), gamepadType);
+          gamepadAutorepeatMap.current[actionName] =
+            currentTimestamp + gamepadAutorepeatMs.current;
+        }
       }
 
       animationFrameId.current = requestAnimationFrame(pollGamepads);
@@ -363,7 +359,7 @@ export const InputProvider = ({ children }) => {
       window.removeEventListener("gamepadconnected", handleGamepadConnected);
       window.removeEventListener(
         "gamepaddisconnected",
-        handleGamepadDisconnected
+        handleGamepadDisconnected,
       );
       if (animationFrameId.current) {
         cancelAnimationFrame(animationFrameId.current);
