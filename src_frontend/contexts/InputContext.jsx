@@ -212,6 +212,7 @@ export const InputProvider = ({ children }) => {
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
+      logInfo("keyboard event", JSON.stringify(event));
       const actionName = KEY_MAP[event.key] || KEY_MAP[event.key.toLowerCase()];
       if (actionName) {
         processInput(
@@ -260,12 +261,11 @@ export const InputProvider = ({ children }) => {
         }
       }
 
+      let axes = null;
+
       if (activeGamepad) {
-        applyAnalogStickAsDPad(
-          getAggregatedAxes(activeGamepad),
-          buttons,
-          ANALOG_THRESHOLD,
-        );
+        axes = getAggregatedAxes(activeGamepad);
+        applyAnalogStickAsDPad(axes, buttons, ANALOG_THRESHOLD);
       }
 
       const createInput = (actionName) => {
@@ -303,6 +303,10 @@ export const InputProvider = ({ children }) => {
 
       if (isSuperPressed) {
         currentActiveActions.add("Super");
+      }
+
+      if (currentActiveActions.size > 0) {
+        logInfo("gamepad input", JSON.stringify(buttons), JSON.stringify(axes));
       }
 
       for (const actionName of Object.keys(gamepadAutorepeatMap.current)) {
