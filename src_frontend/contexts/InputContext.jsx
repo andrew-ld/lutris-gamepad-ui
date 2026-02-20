@@ -67,20 +67,10 @@ const getAggregatedAxes = (gp) => {
     return [0, 0];
   }
 
-  let dominantX = 0;
-  let dominantY = 0;
-
   const leftX = gp.axes[0] || 0;
   const leftY = gp.axes[1] || 0;
-  if (Math.abs(leftX) > Math.abs(dominantX)) dominantX = leftX;
-  if (Math.abs(leftY) > Math.abs(dominantY)) dominantY = leftY;
 
-  const rightX = gp.axes[2] || 0;
-  const rightY = gp.axes[3] || 0;
-  if (Math.abs(rightX) > Math.abs(dominantX)) dominantX = rightX;
-  if (Math.abs(rightY) > Math.abs(dominantY)) dominantY = rightY;
-
-  return [dominantX, dominantY];
+  return [leftX, leftY];
 };
 
 const getGamepadType = (gamepad) => {
