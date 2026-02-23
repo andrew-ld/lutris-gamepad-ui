@@ -72,10 +72,12 @@
   },
   "components/LibraryContainer.jsx": {
     "Are you sure you want to close\n{{title}}?": "آیا مطمئنید که می‌خواهید\n{{title}} را ببندید؟",
+    "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
     "Loading library...": "در حال بارگذاری کتابخانه...",
     "Results for \"{{searchQuery}}\"": "نتایج برای \"{{searchQuery}}\"",
     "Search Library": "جستجوی کتابخانه",
-    "This action will force-quit the game. Any unsaved progress may be lost.": "این کنش بازی را به‌صورت اجباری می‌بندد. هر پیشرفت ذخیره‌نشده‌ای ممکن است از دست برود."
+    "This action will force-quit the game. Any unsaved progress may be lost.": "این کنش بازی را به‌صورت اجباری می‌بندد. هر پیشرفت ذخیره‌نشده‌ای ممکن است از دست برود.",
+    "This feature is experimental. Pausing the game may cause issues.": "This feature is experimental. Pausing the game may cause issues."
   },
   "components/LoadingIndicator.jsx": {
     "Loading...": "در حال بارگذاری..."

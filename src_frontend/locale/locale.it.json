@@ -73,11 +73,13 @@
   "components/LibraryContainer.jsx": {
     "All Games": "Tutti i giochi",
     "Are you sure you want to close\n{{title}}?": "Forzare la chiusura di\n{{title}}?",
+    "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
     "Loading library...": "Caricamento libreria...",
     "Recently Played": "Giocati di recente",
     "Results for \"{{searchQuery}}\"": "Risultati per \"{{searchQuery}}\"",
     "Search Library": "Cerca nella libreria",
-    "This action will force-quit the game. Any unsaved progress may be lost.": "Questa operazione forzerà la chiusura del gioco. Eventuali progressi non salvati andranno persi."
+    "This action will force-quit the game. Any unsaved progress may be lost.": "Questa operazione forzerà la chiusura del gioco. Eventuali progressi non salvati andranno persi.",
+    "This feature is experimental. Pausing the game may cause issues.": "This feature is experimental. Pausing the game may cause issues."
   },
   "components/LoadingIndicator.jsx": {
     "Loading...": "Caricamento..."

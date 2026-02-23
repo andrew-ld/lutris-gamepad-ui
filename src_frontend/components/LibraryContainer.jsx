@@ -299,8 +299,30 @@ const LibraryContainer = () => {
       gameCloseCloseModalRef.current();
       gameCloseCloseModalRef.current = null;
     }
-    toggleGamePause();
-  }, [runningGame]);
+
+    if (!isGamePaused) {
+      showModal((hideThisModal) => {
+        gameCloseCloseModalRef.current = hideThisModal;
+        return (
+          <ConfirmationDialog
+            message={t("Are you sure you want to pause\n{{title}}?", {
+              title: runningGame.title,
+            })}
+            description={t(
+              "This feature is experimental. Pausing the game may cause issues.",
+            )}
+            onConfirm={() => {
+              toggleGamePause();
+              hideThisModal();
+            }}
+            onDeny={hideThisModal}
+          />
+        );
+      });
+    } else {
+      toggleGamePause();
+    }
+  }, [runningGame, isGamePaused, t, showModal]);
 
   const closeRunningGameDialogCb = useCallback(() => {
     if (!runningGame) {

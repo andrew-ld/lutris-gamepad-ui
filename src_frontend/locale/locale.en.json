@@ -71,10 +71,12 @@
   },
   "components/LibraryContainer.jsx": {
     "Are you sure you want to close\n{{title}}?": "Are you sure you want to close\n{{title}}?",
+    "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
     "Loading library...": "Loading library...",
     "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\"",
     "Search Library": "Search Library",
-    "This action will force-quit the game. Any unsaved progress may be lost.": "This action will force-quit the game. Any unsaved progress may be lost."
+    "This action will force-quit the game. Any unsaved progress may be lost.": "This action will force-quit the game. Any unsaved progress may be lost.",
+    "This feature is experimental. Pausing the game may cause issues.": "This feature is experimental. Pausing the game may cause issues."
   },
   "components/LoadingIndicator.jsx": {
     "Loading...": "Loading..."

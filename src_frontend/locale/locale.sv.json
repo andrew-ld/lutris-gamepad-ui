@@ -72,10 +72,12 @@
   },
   "components/LibraryContainer.jsx": {
     "Are you sure you want to close\n{{title}}?": "Är du säker på att du vill stänga\n{{title}}?",
+    "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
     "Loading library...": "Laddar bibliotek...",
     "Results for \"{{searchQuery}}\"": "Resultat för \"{{searchQuery}}\"",
     "Search Library": "Sök i biblioteket",
-    "This action will force-quit the game. Any unsaved progress may be lost.": "Denna åtgärd kommer att tvinga spelet att avslutas. Alla osparade framsteg kan gå förlorade."
+    "This action will force-quit the game. Any unsaved progress may be lost.": "Denna åtgärd kommer att tvinga spelet att avslutas. Alla osparade framsteg kan gå förlorade.",
+    "This feature is experimental. Pausing the game may cause issues.": "This feature is experimental. Pausing the game may cause issues."
   },
   "components/LoadingIndicator.jsx": {
     "Loading...": "Laddar..."
