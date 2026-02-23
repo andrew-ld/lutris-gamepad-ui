@@ -202,7 +202,7 @@ async function getGames() {
   return games;
 }
 
-function toggleGamePause() {
+function toggleGamePause(opts) {
   const runningGameProcess = getRunningGameProcess();
   if (!runningGameProcess) return;
 
@@ -213,6 +213,18 @@ function toggleGamePause() {
   } catch (e) {
     logError("Unable to determine if process is paused", e);
     isGamePaused = true;
+  }
+
+  switch (opts?.forceStatus) {
+    case "running": {
+      if (!isGamePaused) return;
+      break;
+    }
+
+    case "paused": {
+      if (isGamePaused) return;
+      break;
+    }
   }
 
   let allProcesses;

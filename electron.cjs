@@ -1,8 +1,14 @@
 const { app } = require("electron");
 const { createWindow } = require("./src_backend/window_manager.cjs");
 const { registerIpcHandlers } = require("./src_backend/ipc_handlers.cjs");
-const { closeRunningGameProcess } = require("./src_backend/game_manager.cjs");
-const { getMainWindow } = require("./src_backend/state.cjs");
+const {
+  closeRunningGameProcess,
+  toggleGamePause,
+} = require("./src_backend/game_manager.cjs");
+const {
+  getMainWindow,
+  getRunningGameProcess,
+} = require("./src_backend/state.cjs");
 const { logInfo, logError } = require("./src_backend/utils.cjs");
 const { getAppConfig } = require("./src_backend/config_manager.cjs");
 
@@ -27,7 +33,9 @@ app.on("second-instance", () => {
 });
 
 app.on("window-all-closed", () => {
-  if (!getAppConfig().keepGamesRunningOnQuit) {
+  if (getAppConfig().keepGamesRunningOnQuit) {
+    toggleGamePause({ forceStatus: "running" });
+  } else {
     closeRunningGameProcess();
   }
   app.quit();
