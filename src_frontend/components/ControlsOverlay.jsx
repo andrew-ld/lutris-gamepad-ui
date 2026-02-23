@@ -5,11 +5,12 @@ import { useTranslation } from "../contexts/TranslationContext";
 
 const ControlsOverlay = ({
   onCloseRunningGame,
-  runningGameTitle,
   onLaunchGame,
   onClearSearch,
   onShowSearchModal,
   onOpenSystemMenu,
+  onToggleGamePause,
+  isGamePaused,
 }) => {
   const { t } = useTranslation();
   return (
@@ -18,13 +19,22 @@ const ControlsOverlay = ({
         {onCloseRunningGame && (
           <>
             <ButtonIcon button="Super" label={t("Toggle Overlay")} />
-            <ButtonIcon
-              button="B"
-              onClick={onCloseRunningGame}
-              label={t("Force close {{gameTitle}}", {
-                gameTitle: runningGameTitle || t("game"),
-              })}
-            />
+
+            {onToggleGamePause && (
+              <ButtonIcon
+                button="X"
+                label={isGamePaused ? t("Resume Game") : t("Pause Game")}
+                onClick={onToggleGamePause}
+              />
+            )}
+
+            {onCloseRunningGame && (
+              <ButtonIcon
+                button="B"
+                onClick={onCloseRunningGame}
+                label={t("Force close")}
+              />
+            )}
           </>
         )}
 

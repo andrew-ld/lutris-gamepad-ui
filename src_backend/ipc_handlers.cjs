@@ -9,6 +9,7 @@ const {
   getGames,
   launchGame,
   closeRunningGameProcess,
+  toggleGamePause,
 } = require("./game_manager.cjs");
 const {
   getBluetoothState,
@@ -18,16 +19,11 @@ const {
   connectToDevice: bluetoothConnect,
   disconnectFromDevice: bluetoothDisconnect,
 } = require("./bluetooth_manager.cjs");
-const {
-  toggleWindowShow,
-  setWindowZoomFactor,
-  getWindowZoomFactor,
-} = require("./window_manager.cjs");
+const { toggleWindowShow } = require("./window_manager.cjs");
 const {
   logError,
   logInfo,
   logWarn,
-  execPromise,
   toastError,
   powerOffPc,
   rebootPc,
@@ -76,10 +72,14 @@ function registerIpcHandlers() {
     return await getGames();
   });
 
+  ipcOnWithError("toggle-game-pause", async () => {
+    toggleGamePause();
+  });
+
   ipcOnWithError("launch-game", async (_event, gameId) => {
     if (typeof gameId !== "number" || !Number.isInteger(gameId) || gameId < 0) {
       throw new Error(
-        `Invalid gameId: ${gameId}. Must be a non-negative integer.`
+        `Invalid gameId: ${gameId}. Must be a non-negative integer.`,
       );
     }
     launchGame(gameId);
@@ -150,7 +150,7 @@ function registerIpcHandlers() {
   ipcOnWithError("set-audio-volume", async (_event, volume) => {
     if (typeof volume !== "number" || volume < 0) {
       throw new Error(
-        `Invalid volume: ${volume}. Must be a non-negative number.`
+        `Invalid volume: ${volume}. Must be a non-negative number.`,
       );
     }
     await setAudioVolume(volume);
@@ -159,7 +159,7 @@ function registerIpcHandlers() {
   ipcOnWithError("set-default-sink", async (_event, sinkName) => {
     if (typeof sinkName !== "string" || !sinkName.length) {
       throw new Error(
-        `Invalid sinkName: ${sinkName}. Must be a non-empty string.`
+        `Invalid sinkName: ${sinkName}. Must be a non-empty string.`,
       );
     }
     await setDefaultSink(sinkName);
@@ -180,7 +180,7 @@ function registerIpcHandlers() {
   ipcOnWithError("bluetooth-power-on-adapter", async (_event, adapterPath) => {
     if (!isValidDBusPath(adapterPath, "/org/bluez/")) {
       throw new Error(
-        `Invalid adapterPath for bluetooth-power-on-adapter: ${adapterPath}`
+        `Invalid adapterPath for bluetooth-power-on-adapter: ${adapterPath}`,
       );
     }
     await powerOnAdapter(adapterPath);
@@ -188,18 +188,18 @@ function registerIpcHandlers() {
 
   ipcOnWithError(
     "bluetooth-start-discovery",
-    async () => await bluetoothStartDiscovery()
+    async () => await bluetoothStartDiscovery(),
   );
 
   ipcOnWithError(
     "bluetooth-stop-discovery",
-    async () => await bluetoothStopDiscovery()
+    async () => await bluetoothStopDiscovery(),
   );
 
   ipcOnWithError("bluetooth-connect", async (_event, devicePath) => {
     if (!isValidDBusPath(devicePath, "/org/bluez/")) {
       throw new Error(
-        `Invalid devicePath for bluetooth-connect: ${devicePath}`
+        `Invalid devicePath for bluetooth-connect: ${devicePath}`,
       );
     }
     await bluetoothConnect(devicePath);
@@ -208,7 +208,7 @@ function registerIpcHandlers() {
   ipcOnWithError("bluetooth-disconnect", async (_event, devicePath) => {
     if (!isValidDBusPath(devicePath, "/org/bluez/")) {
       throw new Error(
-        `Invalid devicePath for bluetooth-disconnect: ${devicePath}`
+        `Invalid devicePath for bluetooth-disconnect: ${devicePath}`,
       );
     }
     await bluetoothDisconnect(devicePath);

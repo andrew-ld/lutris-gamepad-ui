@@ -169,6 +169,10 @@ function createWindow(onWindowClosedCallback) {
     title: "Lutris Gamepad UI",
   });
 
+  if (!fullscreen) {
+    win.setSize(1280, 800);
+  }
+
   setMainWindow(win);
 
   subscribeConfigValueChange("zoomFactor", setWindowZoomFactor);

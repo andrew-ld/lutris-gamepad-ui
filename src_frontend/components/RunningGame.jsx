@@ -4,7 +4,7 @@ import { getDeterministicGradient } from "../utils/color";
 import { formatPlaytime } from "../utils/datetime";
 import { useTranslation } from "../contexts/TranslationContext";
 
-const RunningGamePage = ({ game }) => {
+const RunningGamePage = ({ game, isPaused }) => {
   const { t } = useTranslation();
   if (!game) return null;
 
@@ -30,6 +30,9 @@ const RunningGamePage = ({ game }) => {
         <div className="running-game-info">
           <h2>{t("Now Playing")}</h2>
           <h1>{game.title}</h1>
+          {isPaused && (
+            <h2 className="running-game-paused-text">{t("Paused")}</h2>
+          )}
           <p>
             {t("Playtime: {{playtime}}", {
               playtime: formatPlaytime(game.playtimeSeconds),

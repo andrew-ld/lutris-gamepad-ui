@@ -34,9 +34,11 @@
   },
   "components/ControlsOverlay.jsx": {
     "Clear Search": "Rensa sökning",
-    "Force close {{gameTitle}}": "Tvinga stängning av {{gameTitle}}",
+    "Force close": "Tvinga stängning av",
     "Launch Game": "Starta spel",
+    "Pause Game": "Pause Game",
     "Power": "Ström",
+    "Resume Game": "Resume Game",
     "Search": "Sök",
     "Toggle Overlay": "Växla överlägg",
     "game": "spel"
@@ -91,6 +93,7 @@
   },
   "components/RunningGame.jsx": {
     "Now Playing": "Spelas nu",
+    "Paused": "Paused",
     "Playtime: {{playtime}}": "Speltid: {{playtime}}"
   },
   "components/SettingsMenu.jsx": {

@@ -10,6 +10,7 @@ const {
   error: logError,
 } = require("./logger.cjs");
 const { getMainWindow } = require("./state.cjs");
+const { readFileSync } = require("node:fs");
 
 const execPromise = promisify(exec);
 
@@ -152,6 +153,56 @@ async function powerOffPc() {
   throw errors;
 }
 
+function isProcessPaused(pid) {
+  const statusFile = readFileSync(`/proc/${pid}/status`, "utf8");
+
+  const processStateLine = statusFile
+    .split("\n")
+    .map((l) => l.split(":"))
+    .find((e) => e[0] === "State");
+
+  if (!processStateLine) {
+    throw new Error("Unable to find process state in status file");
+  }
+
+  const processStateValue = processStateLine[1].trim();
+
+  logInfo(
+    "process",
+    pid,
+    "stateline",
+    processStateLine,
+    "statevalue",
+    processStateValue,
+  );
+
+  return processStateValue.startsWith("T");
+}
+
+function getProcessDescendants(pid, visitedPids) {
+  if (visitedPids.has(pid)) return [];
+  visitedPids.add(pid);
+
+  const childrenPath = `/proc/${pid}/task/${pid}/children`;
+  try {
+    const childrenContent = readFileSync(childrenPath, "utf8");
+    const childPids = childrenContent
+      .trim()
+      .split(" ")
+      .map(Number)
+      .filter(Boolean);
+
+    const descendants = childPids.flatMap((childPid) =>
+      getProcessDescendants(childPid, visitedPids),
+    );
+
+    return childPids.concat(descendants);
+  } catch (e) {
+    logError("Unable to read children of pid", pid, e);
+    return [];
+  }
+}
+
 module.exports = {
   isDev,
   forceWindowed,
@@ -168,4 +219,6 @@ module.exports = {
   isRunningInsideGamescope,
   rebootPc,
   powerOffPc,
+  getProcessDescendants,
+  isProcessPaused,
 };

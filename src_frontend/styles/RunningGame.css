@@ -3,7 +3,7 @@
   top: var(--top-bar-height);
   left: 0;
   width: 100%;
-  height: calc(100vh - var(--top-bar-height));
+  height: calc(100vh - var(--top-bar-height) - var(--bottom-bar-height));
   display: flex;
   justify-content: center;
   align-items: center;
@@ -72,6 +72,12 @@
   font-weight: bold;
   margin: 0.5rem 0 1rem 0;
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+.running-game-info .running-game-paused-text {
+  color: var(--accent-color);
+  font-weight: bold;
+  margin-bottom: 0.5rem;
 }
 
 .running-game-info p {

@@ -16,6 +16,8 @@ const {
   logInfo,
   logWarn,
   toastError,
+  getProcessDescendants,
+  isProcessPaused,
 } = require("./utils.cjs");
 const { toggleWindowShow } = require("./window_manager.cjs");
 const {
@@ -28,39 +30,17 @@ const { getAppConfig } = require("./config_manager.cjs");
 
 const runtimeIconCache = new Map();
 
-function findLutrisWrapperChildren(pid, visitedPids) {
-  if (visitedPids.has(pid)) return [];
-  visitedPids.add(pid);
-
-  const childrenPath = `/proc/${pid}/task/${pid}/children`;
-  try {
-    const childrenContent = readFileSync(childrenPath, "utf8");
-    const childPids = childrenContent
-      .trim()
-      .split(" ")
-      .map(Number)
-      .filter(Boolean);
-
-    return childPids.flatMap((childPid) => {
-      let directLutrisChild = [];
-      try {
-        const cmdline = readFileSync(`/proc/${childPid}/cmdline`, "utf8");
-        if (cmdline.startsWith("lutris-wrapper")) {
-          directLutrisChild.push(childPid);
-        }
-      } catch (e) {
-        logError("Unable to read cmdline of pid", childPid, e);
-      }
-      const lutrisGrandchildren = findLutrisWrapperChildren(
-        childPid,
-        visitedPids,
-      );
-      return directLutrisChild.concat(lutrisGrandchildren);
-    });
-  } catch (e) {
-    logError("Unable to read children of pid", pid, e);
-    return [];
-  }
+function findLutrisWrapperChildren(pid) {
+  const allSubprocesses = getProcessDescendants(pid, new Set());
+  return allSubprocesses.filter((childPid) => {
+    try {
+      const cmdline = readFileSync(`/proc/${childPid}/cmdline`, "utf8");
+      return cmdline.startsWith("lutris-wrapper");
+    } catch (e) {
+      logError("Unable to read cmdline of pid", childPid, e);
+      return false;
+    }
+  });
 }
 
 function closeRunningGameProcess() {
@@ -69,10 +49,7 @@ function closeRunningGameProcess() {
 
   let lutrisWrapperPids = [];
   try {
-    lutrisWrapperPids = findLutrisWrapperChildren(
-      runningGameProcess.pid,
-      new Set(),
-    );
+    lutrisWrapperPids = findLutrisWrapperChildren(runningGameProcess.pid);
   } catch (e) {
     logError("Unable to find lutris wrapper child", e);
   }
@@ -80,6 +57,7 @@ function closeRunningGameProcess() {
   const killablePids = lutrisWrapperPids.length
     ? lutrisWrapperPids
     : [runningGameProcess.pid];
+
   if (lutrisWrapperPids.length) {
     logInfo("Using lutris wrapper pid for closing running game");
   } else {
@@ -202,6 +180,53 @@ async function getGames() {
   return games;
 }
 
+function toggleGamePause() {
+  const runningGameProcess = getRunningGameProcess();
+  if (!runningGameProcess) return;
+
+  let isGamePaused;
+
+  try {
+    isGamePaused = isProcessPaused(runningGameProcess.pid);
+  } catch (e) {
+    logError("Unable to determine if process is paused", e);
+    isGamePaused = true;
+  }
+
+  let allProcesses;
+
+  try {
+    allProcesses = getProcessDescendants(runningGameProcess.pid, new Set());
+  } catch (e) {
+    logError("Unable to find game subprocesses", e);
+    return;
+  }
+
+  allProcesses.push(runningGameProcess.pid);
+
+  let signal;
+
+  if (isGamePaused) {
+    signal = 18; // sigcont
+  } else {
+    signal = 19; // sigstop
+  }
+
+  allProcesses.forEach((pid) => {
+    try {
+      logInfo("sending", signal, "to pid", pid);
+      process.kill(pid, signal);
+    } catch (e) {
+      logError("Unable to send signal", signal, "to pid", pid, e);
+    }
+  });
+
+  const mainWindow = getMainWindow();
+  if (mainWindow) {
+    mainWindow.webContents.send("game-pause-state-changed", !isGamePaused);
+  }
+}
+
 function launchGame(gameId) {
   if (getRunningGameProcess()) {
     throw new Error("A game is already running.");
@@ -264,4 +289,9 @@ function launchGame(gameId) {
   }
 }
 
-module.exports = { getGames, launchGame, closeRunningGameProcess };
+module.exports = {
+  getGames,
+  launchGame,
+  closeRunningGameProcess,
+  toggleGamePause,
+};

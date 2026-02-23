@@ -2,6 +2,7 @@ export const getGames = () => window.electronAPI.getGames();
 export const launchGame = (game) => window.electronAPI.launchGame(game.id);
 export const closeGame = (game) => window.electronAPI.closeGame(game.id);
 export const openLutris = () => window.electronAPI.openLutris();
+export const toggleGamePause = () => window.electronAPI.toggleGamePause();
 
 export const rebootPC = () => window.electronAPI.rebootPC();
 export const powerOffPC = () => window.electronAPI.powerOffPC();
@@ -47,9 +48,12 @@ const createSubscriber = (channel) => (cb) => {
 
 export const onGameStarted = createSubscriber("game-started");
 export const onGameClosed = createSubscriber("game-closed");
+export const onGamePauseStateChanged = createSubscriber(
+  "game-pause-state-changed",
+);
 export const onAudioInfoChanged = createSubscriber("audio-info-changed");
 export const onBluetoothStateChanged = createSubscriber(
-  "bluetooth-state-changed"
+  "bluetooth-state-changed",
 );
 export const onThemeUpdated = createSubscriber("user-theme-updated");
 export const onShowToast = createSubscriber("show-toast");

@@ -15,6 +15,7 @@ export const LutrisProvider = ({ children }) => {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [runningGame, setRunningGame] = useState(null);
+  const [isGamePaused, setIsGamePaused] = useState(false);
   const isMounted = useIsMounted();
 
   const fetchGames = useCallback(async () => {
@@ -55,21 +56,31 @@ export const LutrisProvider = ({ children }) => {
       const game = games.find((g) => g.id === gameId);
       if (game) {
         setRunningGame(game);
+        setIsGamePaused(false);
       }
     };
 
     const handleGameClosed = () => {
       ipc.logInfo("[IPC] Received game-closed");
       setRunningGame(null);
+      setIsGamePaused(false);
       fetchGames();
+    };
+
+    const handleGamePauseStateChanged = (paused) => {
+      setIsGamePaused(paused);
     };
 
     const unsubscribeOnGameStarted = ipc.onGameStarted(handleGameStarted);
     const unsubscribeOnGameClosed = ipc.onGameClosed(handleGameClosed);
+    const unsubscribeOnGamePauseStateChanged = ipc.onGamePauseStateChanged(
+      handleGamePauseStateChanged,
+    );
 
     return () => {
       unsubscribeOnGameStarted();
       unsubscribeOnGameClosed();
+      unsubscribeOnGamePauseStateChanged();
     };
   }, [games, fetchGames]);
 
@@ -78,7 +89,7 @@ export const LutrisProvider = ({ children }) => {
       if (runningGame) return;
       ipc.launchGame(game);
     },
-    [runningGame]
+    [runningGame],
   );
 
   const closeRunningGame = useCallback(() => {
@@ -90,6 +101,7 @@ export const LutrisProvider = ({ children }) => {
     games,
     loading,
     runningGame,
+    isGamePaused,
     fetchGames,
     launchGame,
     closeRunningGame,

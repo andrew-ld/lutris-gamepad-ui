@@ -3,6 +3,7 @@ const { contextBridge, ipcRenderer } = require("electron");
 const ALLOWED_RECEIVE_CHANNELS = [
   "game-started",
   "game-closed",
+  "game-pause-state-changed",
   "audio-info-changed",
   "bluetooth-state-changed",
   "user-theme-updated",
@@ -28,6 +29,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getGames: () => ipcRenderer.invoke("get-games"),
   launchGame: (gameId) => ipcRenderer.send("launch-game", gameId),
   closeGame: (gameId) => ipcRenderer.send("close-game", gameId),
+  toggleGamePause: () => ipcRenderer.send("toggle-game-pause"),
 
   // Audio
   getAudioInfo: () => ipcRenderer.invoke("get-audio-info"),

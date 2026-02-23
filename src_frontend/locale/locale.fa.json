@@ -34,9 +34,11 @@
   },
   "components/ControlsOverlay.jsx": {
     "Clear Search": "پاک‌کردن جستجو",
-    "Force close {{gameTitle}}": "بستن اجباری {{gameTitle}}",
+    "Force close": "بستن اجباری",
     "Launch Game": "راه‌اندازی بازی",
+    "Pause Game": "Pause Game",
     "Power": "نیرو",
+    "Resume Game": "Resume Game",
     "Search": "جستجو",
     "Toggle Overlay": "تغییر نمای رویی",
     "game": "بازی"
@@ -91,6 +93,7 @@
   },
   "components/RunningGame.jsx": {
     "Now Playing": "در حال بازی",
+    "Paused": "Paused",
     "Playtime: {{playtime}}": "زمان بازی: {{playtime}}"
   },
   "components/SettingsMenu.jsx": {

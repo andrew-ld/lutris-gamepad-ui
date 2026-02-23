@@ -34,12 +34,13 @@
   },
   "components/ControlsOverlay.jsx": {
     "Clear Search": "Clear Search",
-    "Force close {{gameTitle}}": "Force close {{gameTitle}}",
+    "Force close": "Force close",
     "Launch Game": "Launch Game",
+    "Pause Game": "Pause Game",
     "Power": "Power",
+    "Resume Game": "Resume Game",
     "Search": "Search",
-    "Toggle Overlay": "Toggle Overlay",
-    "game": "game"
+    "Toggle Overlay": "Toggle Overlay"
   },
   "components/CrashDialog.jsx": {
     "Close Application": "Close Application",
@@ -91,6 +92,7 @@
   },
   "components/RunningGame.jsx": {
     "Now Playing": "Now Playing",
+    "Paused": "Paused",
     "Playtime: {{playtime}}": "Playtime: {{playtime}}"
   },
   "components/SettingsMenu.jsx": {

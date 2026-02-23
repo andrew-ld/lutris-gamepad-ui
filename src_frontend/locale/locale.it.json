@@ -34,9 +34,11 @@
   },
   "components/ControlsOverlay.jsx": {
     "Clear Search": "Annulla ricerca",
-    "Force close {{gameTitle}}": "Forza chiusura di {{gameTitle}}",
+    "Force close": "Forza chiusura di",
     "Launch Game": "Avvia gioco",
+    "Pause Game": "Pause Game",
     "Power": "Menu di sistema",
+    "Resume Game": "Resume Game",
     "Search": "Cerca",
     "Toggle Overlay": "Visualizza overlay",
     "game": "gioco"
@@ -93,6 +95,7 @@
   },
   "components/RunningGame.jsx": {
     "Now Playing": "In gioco",
+    "Paused": "Paused",
     "Playtime: {{playtime}}": "Ore di gioco: {{playtime}}"
   },
   "components/SettingsMenu.jsx": {
