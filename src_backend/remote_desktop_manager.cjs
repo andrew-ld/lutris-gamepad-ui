@@ -19,7 +19,7 @@ const REMOTE_DESKTOP_IFACE = "org.freedesktop.portal.RemoteDesktop";
 const REQUEST_IFACE = "org.freedesktop.portal.Request";
 const SESSION_IFACE = "org.freedesktop.portal.Session";
 
-const KEYSYMS = { Alt_L: 0xffe9, Tab: 0xff09 };
+const KEYCODES = { Alt_L: 56, Tab: 15 };
 const DEVICE_TYPE = { KEYBOARD: 1, POINTER: 2 };
 const KEY_STATE = { RELEASE: 0, PRESS: 1 };
 const PERSIST_MODE = { UNTIL_REVOKED: 2 };
@@ -115,7 +115,7 @@ async function _portalRequest(bus, parameters) {
   });
 }
 
-async function _sendKey(keysym, state) {
+async function _sendKey(keycode, state) {
   const sessionHandle = getRemoteDesktopSessionHandle();
   if (!sessionHandle) {
     throw new Error("Cannot send key: No active remote desktop session.");
@@ -127,18 +127,18 @@ async function _sendKey(keysym, state) {
     destination: PORTAL_DESTINATION,
     path: PORTAL_PATH,
     interface: REMOTE_DESKTOP_IFACE,
-    member: "NotifyKeyboardKeysym",
+    member: "NotifyKeyboardKeycode",
     signature: "oa{sv}iu",
-    body: [sessionHandle, [], keysym, state],
+    body: [sessionHandle, [], keycode, state],
   });
 }
 
-async function _pressKey(keysym) {
-  return _sendKey(keysym, KEY_STATE.PRESS);
+async function _pressKey(keycode) {
+  return _sendKey(keycode, KEY_STATE.PRESS);
 }
 
-async function _releaseKey(keysym) {
-  return _sendKey(keysym, KEY_STATE.RELEASE);
+async function _releaseKey(keycode) {
+  return _sendKey(keycode, KEY_STATE.RELEASE);
 }
 
 async function _startRemoteDesktopSession(restoreToken) {
@@ -300,7 +300,7 @@ async function stopRemoteDesktopSession() {
 }
 
 const releaseAltDebounced = debounce(() => {
-  _releaseKey(KEYSYMS.Alt_L).catch((e) => {
+  _releaseKey(KEYCODES.Alt_L).catch((e) => {
     logError("Unable to release Alt key:", e);
   });
 }, ALT_TAB_TIMEOUT_MS);
@@ -312,10 +312,10 @@ async function sendAltTab() {
 
   logInfo("Sending alt+tab using remote desktop session");
 
-  await _pressKey(KEYSYMS.Alt_L);
+  await _pressKey(KEYCODES.Alt_L);
   releaseAltDebounced();
-  await _pressKey(KEYSYMS.Tab);
-  await _releaseKey(KEYSYMS.Tab);
+  await _pressKey(KEYCODES.Tab);
+  await _releaseKey(KEYCODES.Tab);
 }
 
 module.exports = {
