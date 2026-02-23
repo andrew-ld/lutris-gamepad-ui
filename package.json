@@ -14,9 +14,9 @@
   "scripts": {
     "dev": "vite",
     "start": "IS_DEV=1 concurrently \"npm run dev\" \"npm run electron:dev\"",
-    "start:prod": "npm run build:vite && electron37 electron.cjs",
-    "start:prod-wayland": "npm run build:vite && electron37 electron.cjs --ozone-platform=wayland",
-    "start:prod-steamdeck": "npm run build:vite && gamescope -W 1280 -w 1280 -H 800 -h 800 -- electron37 electron.cjs",
+    "start:prod": "npm run build:vite && electron39 electron.cjs",
+    "start:prod-wayland": "npm run build:vite && electron39 electron.cjs --ozone-platform=wayland",
+    "start:prod-steamdeck": "npm run build:vite && gamescope -W 1280 -w 1280 -H 800 -h 800 -- electron39 electron.cjs",
     "build": "vite build && npm run electron:build",
     "build:vite": "vite build",
     "preview": "vite preview",
@@ -26,24 +26,24 @@
   "dependencies": {
     "@futpib/paclient": "github:andrew-ld/paclient#450fc5046e2bb6b3ce7920211ec89bc3748d0463",
     "@homebridge/dbus-native": "github:andrew-ld/dbus-native#b1e7adc7daf54a3c1d23912cb020832085322109",
-    "modern-tar": "^0.7.2"
+    "modern-tar": "^0.7.5"
   },
   "devDependencies": {
-    "@babel/parser": "^7.28.5",
-    "@babel/plugin-syntax-jsx": "^7.27.1",
-    "@babel/traverse": "^7.28.5",
-    "@types/react": "^19.2.6",
+    "@babel/parser": "^7.29.0",
+    "@babel/plugin-syntax-jsx": "^7.28.6",
+    "@babel/traverse": "^7.29.0",
+    "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^5.1.1",
+    "@vitejs/plugin-react": "^5.1.4",
     "concurrently": "^9.2.1",
-    "electron": "^37.3.0",
-    "electron-builder": "^26.0.12",
+    "electron": "^39.6.1",
+    "electron-builder": "^26.8.1",
     "postcss": "^8.5.6",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "react-scan": "^0.4.3",
-    "vite": "^7.2.4",
-    "wait-on": "^9.0.3"
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-scan": "^0.5.3",
+    "vite": "^7.3.1",
+    "wait-on": "^9.0.4"
   },
   "build": {
     "appId": "com.electron.${name}",
