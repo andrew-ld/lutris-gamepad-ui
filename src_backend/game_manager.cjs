@@ -47,31 +47,53 @@ function closeRunningGameProcess() {
   const runningGameProcess = getRunningGameProcess();
   if (!runningGameProcess) return;
 
-  let lutrisWrapperPids = [];
+  let isPaused;
+
   try {
-    lutrisWrapperPids = findLutrisWrapperChildren(runningGameProcess.pid);
+    isPaused = isProcessPaused(runningGameProcess.pid);
   } catch (e) {
-    logError("Unable to find lutris wrapper child", e);
+    logError("Unable to determine if pid", pid, "is paused, assume paused", e);
+    isPaused = true;
   }
 
-  const killablePids = lutrisWrapperPids.length
-    ? lutrisWrapperPids
-    : [runningGameProcess.pid];
+  let pidsToStop;
 
-  if (lutrisWrapperPids.length) {
-    logInfo("Using lutris wrapper pid for closing running game");
+  const getAllPids = () => {
+    const result = getProcessDescendants(runningGameProcess.pid, new Set());
+    result.push(runningGameProcess.pid);
+    return result;
+  };
+
+  if (isPaused) {
+    pidsToStop = getAllPids();
   } else {
-    logWarn("Using lutris main process pid for closing running game");
-  }
-
-  for (const killablePid of killablePids) {
-    logInfo("Sending SIGTERM to pid", killablePid);
     try {
-      process.kill(killablePid, "SIGTERM");
+      pidsToStop = findLutrisWrapperChildren(runningGameProcess.pid);
     } catch (e) {
-      logError("Unable to kill pid", killablePid, e);
+      logError("Unable to find lutris wrapper child", e);
+    }
+    if (!pidsToStop?.length) {
+      logError("Unable to locate lutris wrapper child");
+      pidsToStop = getAllPids();
     }
   }
+
+  let signal;
+
+  if (isPaused) {
+    signal = "SIGKILL";
+  } else {
+    signal = "SIGTERM";
+  }
+
+  pidsToStop.forEach((pid) => {
+    logInfo("Sending", signal, "to pid", pid);
+    try {
+      process.kill(pid, signal);
+    } catch (e) {
+      logError("Unable to kill pid", pid, e);
+    }
+  });
 
   runningGameProcess.stdin.end();
 }
@@ -207,9 +229,9 @@ function toggleGamePause() {
   let signal;
 
   if (isGamePaused) {
-    signal = 18; // sigcont
+    signal = "SIGCONT";
   } else {
-    signal = 19; // sigstop
+    signal = "SIGSTOP";
   }
 
   allProcesses.forEach((pid) => {
