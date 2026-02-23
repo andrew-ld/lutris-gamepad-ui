@@ -1,9 +1,10 @@
 import React from "react";
 import "../styles/ControlsOverlay.css";
-import ButtonIcon from "./ButtonIcon";
+import LegendaContainer from "./LegendaContainer";
 import { useTranslation } from "../contexts/TranslationContext";
 
 const ControlsOverlay = ({
+  children,
   onCloseRunningGame,
   onLaunchGame,
   onClearSearch,
@@ -13,63 +14,61 @@ const ControlsOverlay = ({
   isGamePaused,
 }) => {
   const { t } = useTranslation();
+  const legendItems = [];
+
+  if (onCloseRunningGame) {
+    legendItems.push({ button: "Super", label: t("Toggle Overlay") });
+
+    if (onToggleGamePause) {
+      legendItems.push({
+        button: "X",
+        label: isGamePaused ? t("Resume Game") : t("Pause Game"),
+        onClick: onToggleGamePause,
+      });
+    }
+
+    legendItems.push({
+      button: "B",
+      label: t("Force close"),
+      onClick: onCloseRunningGame,
+    });
+  }
+
+  if (onLaunchGame) {
+    legendItems.push({
+      button: "A",
+      label: t("Launch Game"),
+      onClick: onLaunchGame,
+    });
+  }
+
+  if (onClearSearch) {
+    legendItems.push({
+      button: "B",
+      label: t("Clear Search"),
+      onClick: onClearSearch,
+    });
+  }
+
+  if (onShowSearchModal) {
+    legendItems.push({
+      button: "X",
+      label: t("Search"),
+      onClick: onShowSearchModal,
+    });
+  }
+
+  if (onOpenSystemMenu) {
+    legendItems.push({
+      button: "Y",
+      label: t("Power"),
+      onClick: onOpenSystemMenu,
+    });
+  }
+
   return (
-    <div className="controls-overlay">
-      <div className="hints-list">
-        {onCloseRunningGame && (
-          <>
-            <ButtonIcon button="Super" label={t("Toggle Overlay")} />
-
-            {onToggleGamePause && (
-              <ButtonIcon
-                button="X"
-                label={isGamePaused ? t("Resume Game") : t("Pause Game")}
-                onClick={onToggleGamePause}
-              />
-            )}
-
-            {onCloseRunningGame && (
-              <ButtonIcon
-                button="B"
-                onClick={onCloseRunningGame}
-                label={t("Force close")}
-              />
-            )}
-          </>
-        )}
-
-        {onLaunchGame && (
-          <ButtonIcon
-            button="A"
-            label={t("Launch Game")}
-            onClick={onLaunchGame}
-          />
-        )}
-
-        {onClearSearch && (
-          <ButtonIcon
-            button="B"
-            label={t("Clear Search")}
-            onClick={onClearSearch}
-          />
-        )}
-
-        {onShowSearchModal && (
-          <ButtonIcon
-            button="X"
-            label={t("Search")}
-            onClick={onShowSearchModal}
-          />
-        )}
-
-        {onOpenSystemMenu && (
-          <ButtonIcon
-            onClick={onOpenSystemMenu}
-            button="Y"
-            label={t("Power")}
-          />
-        )}
-      </div>
+    <div className="controls-overlay-wrapper">
+      <LegendaContainer legendItems={legendItems}>{children}</LegendaContainer>
     </div>
   );
 };

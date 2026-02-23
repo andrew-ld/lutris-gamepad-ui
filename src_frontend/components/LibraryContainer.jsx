@@ -248,7 +248,9 @@ const LibraryContainer = () => {
     const currentRow = numColumns > 0 ? Math.floor(card / numColumns) : 0;
     if (shelf === 0 && currentRow === 0) {
       if (libraryContainerRefNeedScrollTop.current) {
-        libraryContainerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+        const scrollParent =
+          libraryContainerRef.current?.closest(".legenda-content");
+        scrollParent?.scrollTo({ top: 0, behavior: "smooth" });
         libraryContainerRefNeedScrollTop.current = false;
       }
     } else {
@@ -597,15 +599,14 @@ const LibraryContainer = () => {
 
   if (runningGame) {
     return (
-      <>
+      <ControlsOverlay {...controlsOverlayProps}>
         <RunningGame game={runningGame} isPaused={isGamePaused} />
-        <ControlsOverlay {...controlsOverlayProps} />
-      </>
+      </ControlsOverlay>
     );
   }
 
   return (
-    <>
+    <ControlsOverlay {...controlsOverlayProps}>
       <GameLibrary
         shelves={shelves}
         onCardFocus={handleCardFocus}
@@ -616,8 +617,7 @@ const LibraryContainer = () => {
         libraryContainerRef={libraryContainerRef}
         searchQuery={searchQuery}
       />
-      <ControlsOverlay {...controlsOverlayProps} />
-    </>
+    </ControlsOverlay>
   );
 };
 
