@@ -16,15 +16,13 @@ renderSvgToDataURL(icon, 1024, 1024)
   .catch((e) => logError("unable to render icon", e));
 
 playActionSound();
-
 applyUserTheme();
-
 onThemeUpdated(() => applyUserTheme());
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+  </React.StrictMode>,
 );
 
 if (process.env.NODE_ENV === "development") {

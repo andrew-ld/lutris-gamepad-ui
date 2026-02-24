@@ -5,10 +5,7 @@ const {
   closeRunningGameProcess,
   toggleGamePause,
 } = require("./src_backend/game_manager.cjs");
-const {
-  getMainWindow,
-  getRunningGameProcess,
-} = require("./src_backend/state.cjs");
+const { getMainWindow } = require("./src_backend/state.cjs");
 const { logInfo, logError } = require("./src_backend/utils.cjs");
 const { getAppConfig } = require("./src_backend/config_manager.cjs");
 
@@ -42,6 +39,7 @@ app.on("window-all-closed", () => {
 });
 
 app.commandLine.appendSwitch("enable-features", "GlobalShortcutsPortal");
+app.commandLine.appendSwitch("disable-background-timer-throttling");
 
 app.whenReady().then(() => {
   app.setName("lutris-gamepad-ui");

@@ -78,16 +78,19 @@ function toggleWindowShow() {
     sendAltTabDebounced();
   } else {
     logInfo("toggleWindowShow: using hide/show fallback");
-    if (mainWindow.isFocused() || mainWindow.isVisible()) {
-      mainWindow.hide();
+    if (!mainWindow.isMinimized()) {
+      mainWindow.minimize();
     } else {
-      mainWindow.show();
+      mainWindow.maximize();
+      mainWindow.hide();
+      mainWindow.restore();
     }
   }
 }
 
 function createWindow(onWindowClosedCallback) {
   powerSaveBlocker.start("prevent-display-sleep");
+  powerSaveBlocker.start("prevent-app-suspension");
 
   session.defaultSession.setDevicePermissionHandler((details) => {
     return details.deviceType === "hid";
@@ -164,6 +167,7 @@ function createWindow(onWindowClosedCallback) {
       backgroundThrottling: false,
       sandbox: true,
       preload: getElectronPreloadPath(),
+      autoplayPolicy: "no-user-gesture-required",
     },
     frame: !fullscreen,
     title: "Lutris Gamepad UI",
