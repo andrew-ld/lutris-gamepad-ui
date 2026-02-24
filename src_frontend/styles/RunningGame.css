@@ -28,13 +28,11 @@
   background-position: center;
   filter: blur(20px) brightness(0.6);
   transform: scale(1.2);
-  z-index: 1;
   pointer-events: none;
 }
 
 .running-game-content {
   position: relative;
-  z-index: 2;
   display: flex;
   align-items: center;
   gap: 40px;
