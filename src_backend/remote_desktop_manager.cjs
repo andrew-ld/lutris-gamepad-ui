@@ -75,13 +75,29 @@ async function _portalRequest(bus, parameters) {
 
   const signalMatchRule = `type='signal',interface='${REQUEST_IFACE}',path='${requestHandle}'`;
 
+  let onResponse = null;
+
+  const cleanup = () => {
+    if (onResponse) {
+      bus.connection.removeListener("message", onResponse);
+    }
+    bus.removeMatch(signalMatchRule, (err) => {
+      if (err) {
+        logWarn(
+          `Failed to remove DBus signal match rule: ${signalMatchRule}`,
+          err,
+        );
+      }
+    });
+  };
+
   return new Promise((resolve, reject) => {
-    const onResponse = (msg) => {
+    onResponse = (msg) => {
       if (msg.path === requestHandle && msg.member === "Response") {
-        bus.connection.removeListener("message", onResponse);
-        bus.removeMatch(signalMatchRule, () => {});
+        cleanup();
 
         const [responseCode, results] = msg.body;
+
         logInfo(
           "Received portal response signal for:",
           parameters.member,
@@ -90,17 +106,9 @@ async function _portalRequest(bus, parameters) {
         );
 
         if (responseCode !== 0) {
-          logError(
-            "Portal request failed with non-zero response code:",
-            responseCode,
-            "for member:",
-            parameters.member,
-          );
-          return reject(
-            new Error(
-              `${parameters.member} request failed with code ${responseCode}.`,
-            ),
-          );
+          const errorMessage = `${parameters.member} request failed with code ${responseCode}.`;
+          logError(errorMessage);
+          return reject(new Error(errorMessage));
         }
         resolve(results);
       }
@@ -108,6 +116,7 @@ async function _portalRequest(bus, parameters) {
 
     bus.addMatch(signalMatchRule, (err) => {
       if (err) {
+        cleanup();
         return reject(
           new Error(`Failed to add signal match for ${requestHandle}: ${err}`),
         );
