@@ -40,29 +40,27 @@ const GAMEPAD_BUTTON_INDEX_TO_ACTION_MAP = {
 
 const GAMEPAD_ANALOG_THRESHOLD = 0.5;
 
-const GAMEPAD_ACTION_TO_BUTTON_INDEX_MAP = Object.fromEntries(
-  Object.entries(GAMEPAD_BUTTON_INDEX_TO_ACTION_MAP).map(([key, value]) => [
-    value,
-    key,
-  ]),
-);
-
-const mapGamepadAnalogToDPad = (axes, buttons, threshold) => {
+const mapGamepadAnalogToDPad = (axes, activeActionsSet, threshold) => {
   const [axisX, axisY] = axes;
+  let hasInput = false;
 
   if (Math.abs(axisY) > threshold && Math.abs(axisY) >= Math.abs(axisX)) {
     if (axisY < 0) {
-      buttons[GAMEPAD_ACTION_TO_BUTTON_INDEX_MAP.UP] = true;
+      activeActionsSet.add("UP");
     } else {
-      buttons[GAMEPAD_ACTION_TO_BUTTON_INDEX_MAP.DOWN] = true;
+      activeActionsSet.add("DOWN");
     }
+    hasInput = true;
   } else if (Math.abs(axisX) > threshold && Math.abs(axisX) > Math.abs(axisY)) {
     if (axisX < 0) {
-      buttons[GAMEPAD_ACTION_TO_BUTTON_INDEX_MAP.LEFT] = true;
+      activeActionsSet.add("LEFT");
     } else {
-      buttons[GAMEPAD_ACTION_TO_BUTTON_INDEX_MAP.RIGHT] = true;
+      activeActionsSet.add("RIGHT");
     }
+    hasInput = true;
   }
+
+  return hasInput;
 };
 
 const resolveGamepadAxes = (gamepad) => {
@@ -242,39 +240,51 @@ export const InputProvider = ({ children }) => {
   useEffect(() => {
     const executeGamepadPoll = () => {
       const currentTimestamp = performance.now();
-      const pressedButtons = {};
+      const activeActionsSet = new Set();
+      const rawPressedIndices = new Set();
       const gamepads = navigator.getGamepads();
 
       let activeGamepad = null;
 
       for (const gp of gamepads) {
-        if (!gp) {
-          continue;
-        }
+        if (!gp) continue;
+        if (gp.mapping !== "standard") continue;
+
+        let hasInput = false;
 
         for (let i = 0; i < gp.buttons.length; i++) {
-          if (!activeGamepad && gp.buttons[i].pressed) {
-            activeGamepad = gp;
+          if (gp.buttons[i].pressed) {
+            hasInput = true;
+            rawPressedIndices.add(i);
+            const actionName = GAMEPAD_BUTTON_INDEX_TO_ACTION_MAP[i];
+            if (actionName) {
+              activeActionsSet.add(actionName);
+            }
           }
-          pressedButtons[i] = pressedButtons[i] || gp.buttons[i].pressed;
         }
 
-        if (!activeGamepad && gp.axes) {
-          const hasStickMovement = gp.axes.some(
-            (axis) => Math.abs(axis) > GAMEPAD_ANALOG_THRESHOLD,
+        if (gp.axes) {
+          const analogInputAdded = mapGamepadAnalogToDPad(
+            resolveGamepadAxes(gp),
+            activeActionsSet,
+            GAMEPAD_ANALOG_THRESHOLD,
           );
-          if (hasStickMovement) {
-            activeGamepad = gp;
+          if (analogInputAdded) {
+            hasInput = true;
           }
+        }
+
+        if (!activeGamepad && hasInput) {
+          activeGamepad = gp;
         }
       }
 
-      if (activeGamepad) {
-        mapGamepadAnalogToDPad(
-          resolveGamepadAxes(activeGamepad),
-          pressedButtons,
-          GAMEPAD_ANALOG_THRESHOLD,
-        );
+      const isSuperPressed = GAMEPAD_SUPER_BUTTON_INDICES.every((i) =>
+        rawPressedIndices.has(i),
+      );
+
+      if (isSuperPressed) {
+        activeActionsSet.add("Super");
       }
 
       const createGamepadEvent = (actionName) => {
@@ -295,25 +305,6 @@ export const InputProvider = ({ children }) => {
         } else {
           gamepadType = "xbox";
         }
-      }
-
-      const activeActionsSet = new Set();
-
-      for (const [buttonIndex, pressed] of Object.entries(pressedButtons)) {
-        if (pressed) {
-          const actionName = GAMEPAD_BUTTON_INDEX_TO_ACTION_MAP[buttonIndex];
-          if (actionName) {
-            activeActionsSet.add(actionName);
-          }
-        }
-      }
-
-      const isSuperPressed = GAMEPAD_SUPER_BUTTON_INDICES.every(
-        (i) => pressedButtons[i],
-      );
-
-      if (isSuperPressed) {
-        activeActionsSet.add("Super");
       }
 
       for (const actionName of Object.keys(gamepadAutorepeatState.current)) {
