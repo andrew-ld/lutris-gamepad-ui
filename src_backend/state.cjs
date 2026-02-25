@@ -1,12 +1,17 @@
 /** @type {import('electron').BrowserWindow | null} */
 let mainWindow = null;
+
 /** @type {import('child_process').ChildProcess | null} */
 let runningGameProcess = null;
+
 /** @type {import('paclient') | null} */
 let pulseAudioClient = null;
+
 let remoteDesktopSessionHandle = null;
 
 const whitelistedAppProtocolFiles = new Set();
+
+const knowGameIds = new Set();
 
 module.exports = {
   getMainWindow: () => mainWindow,
@@ -26,5 +31,11 @@ module.exports = {
   getRemoteDesktopSessionHandle: () => remoteDesktopSessionHandle,
   setRemoteDesktopSessionHandle: (handle) => {
     remoteDesktopSessionHandle = handle;
+  },
+  addKnowGameID: (gameId) => {
+    knowGameIds.add(gameId);
+  },
+  isKnowGameID: (gameId) => {
+    return knowGameIds.has(gameId);
   },
 };

@@ -9,6 +9,8 @@ const {
   getRunningGameProcess,
   setRunningGameProcess,
   addWhitelistedFile,
+  isKnowGameID,
+  addKnowGameID,
 } = require("./state.cjs");
 const {
   getLutrisWrapperPath,
@@ -199,6 +201,10 @@ async function getGames() {
     logError("Could not process game cover art:", e);
   }
 
+  games.forEach((g) => {
+    addKnowGameID(g.id);
+  });
+
   return games;
 }
 
@@ -264,6 +270,11 @@ function toggleGamePause(opts) {
 function launchGame(gameId) {
   if (getRunningGameProcess()) {
     throw new Error("A game is already running.");
+  }
+
+  if (!isKnowGameID(gameId)) {
+    logError("unknown game id", gameId);
+    return;
   }
 
   const gameStartTime = Date.now();
