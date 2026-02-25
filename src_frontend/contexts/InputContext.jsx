@@ -8,6 +8,7 @@ import {
 } from "react";
 import { logInfo } from "../utils/ipc";
 import { useSettingsState } from "./SettingsContext";
+import { getMappedInput } from "../utils/gamepad_mapping";
 
 const KEYBOARD_ACTION_MAP = {
   ArrowUp: "UP",
@@ -63,21 +64,17 @@ const mapGamepadAnalogToDPad = (axes, activeActionsSet, threshold) => {
   return hasInput;
 };
 
-const resolveGamepadAxes = (gamepad) => {
-  if (!gamepad || !gamepad.axes) {
-    return [0, 0];
-  }
-
+const resolveGamepadAxes = (axes) => {
   let dominantX = 0;
   let dominantY = 0;
 
-  const leftStickX = gamepad.axes[0] || 0;
-  const leftStickY = gamepad.axes[1] || 0;
+  const leftStickX = axes[0] || 0;
+  const leftStickY = axes[1] || 0;
   if (Math.abs(leftStickX) > Math.abs(dominantX)) dominantX = leftStickX;
   if (Math.abs(leftStickY) > Math.abs(dominantY)) dominantY = leftStickY;
 
-  const rightStickX = gamepad.axes[2] || 0;
-  const rightStickY = gamepad.axes[3] || 0;
+  const rightStickX = axes[2] || 0;
+  const rightStickY = axes[3] || 0;
   if (Math.abs(rightStickX) > Math.abs(dominantX)) dominantX = rightStickX;
   if (Math.abs(rightStickY) > Math.abs(dominantY)) dominantY = rightStickY;
 
@@ -247,13 +244,31 @@ export const InputProvider = ({ children }) => {
       let activeGamepad = null;
 
       for (const gp of gamepads) {
-        if (!gp) continue;
-        if (gp.mapping !== "standard") continue;
+        if (!gp) {
+          continue;
+        }
+
+        let buttons;
+        let axes;
+
+        if (gp.mapping === "standard") {
+          buttons = gp.buttons;
+          axes = gp.axes;
+        } else if (gp.mapping === "") {
+          const mappedInput = getMappedInput(gp);
+          if (!mappedInput) {
+            continue;
+          }
+          buttons = mappedInput.buttons;
+          axes = mappedInput.axes;
+        } else {
+          continue;
+        }
 
         let hasInput = false;
 
-        for (let i = 0; i < gp.buttons.length; i++) {
-          if (gp.buttons[i].pressed) {
+        for (let i = 0; i < buttons.length; i++) {
+          if (buttons[i].pressed) {
             hasInput = true;
             rawPressedIndices.add(i);
             const actionName = GAMEPAD_BUTTON_INDEX_TO_ACTION_MAP[i];
@@ -263,9 +278,9 @@ export const InputProvider = ({ children }) => {
           }
         }
 
-        if (gp.axes) {
+        if (axes) {
           const analogInputAdded = mapGamepadAnalogToDPad(
-            resolveGamepadAxes(gp),
+            resolveGamepadAxes(axes),
             activeActionsSet,
             GAMEPAD_ANALOG_THRESHOLD,
           );
