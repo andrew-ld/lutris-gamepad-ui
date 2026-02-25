@@ -328,8 +328,23 @@ async function subscribeToBluetoothChanges() {
     objManager.on("InterfacesRemoved", () => _triggerStateUpdate());
 
     const matchRule = `type='signal',interface='${PROPERTIES_INTERFACE}',member='PropertiesChanged',path_namespace='/org/bluez'`;
-    bus.addMatch(matchRule, () => {
-      _triggerStateUpdate();
+
+    bus.addMatch(matchRule, (err) => {
+      if (err) {
+        logError(
+          "Failed to add DBus match rule for Bluetooth properties:",
+          err,
+        );
+      }
+    });
+
+    bus.connection.on("message", (msg) => {
+      if (
+        msg.interface === PROPERTIES_INTERFACE &&
+        msg.member === "PropertiesChanged"
+      ) {
+        _triggerStateUpdate();
+      }
     });
 
     _sendFullStateUpdate();
