@@ -10,11 +10,13 @@ const {
 } = require("./state.cjs");
 const { logError, logInfo, debounce, toastError } = require("./utils.cjs");
 
+let initializationPromise = null;
+
 /** @param {PAClient} pulseAudioClient */
 async function getSinkInfoFromPA(pulseAudioClient) {
   const defaultSinkInfo = await new Promise((resolve, reject) => {
     pulseAudioClient.getSink("@DEFAULT_SINK@", (e, r) =>
-      e ? reject(e) : resolve(r)
+      e ? reject(e) : resolve(r),
     );
   });
 
@@ -48,52 +50,66 @@ async function sendCurrentAudioInfo(pulseClient) {
 const sendCurrentAudioInfoDebounced = debounce(sendCurrentAudioInfo, 100);
 
 /** @returns {Promise<PAClient | null>} */
-async function initializePulseAudioClient() {
-  if (getPulseAudioClient()) {
-    return getPulseAudioClient();
+function initializePulseAudioClient() {
+  const existingClient = getPulseAudioClient();
+  if (existingClient) {
+    return Promise.resolve(existingClient);
   }
 
-  const pulseAudioCookiePath = path.join(homedir(), ".config/pulse/cookie");
-  let pulseAudioCookieBuffer;
-  if (existsSync(pulseAudioCookiePath)) {
-    pulseAudioCookieBuffer = await readFile(pulseAudioCookiePath);
-  } else {
-    logError("PulseAudio cookie file does not exist:", pulseAudioCookiePath);
+  if (initializationPromise) {
+    return initializationPromise;
   }
 
-  const pa = new PAClient({ cookie: pulseAudioCookieBuffer });
-
-  pa.on("close", () => {
-    if (getPulseAudioClient() === pa) {
-      setPulseAudioClient(null);
+  initializationPromise = (async () => {
+    const pulseAudioCookiePath = path.join(homedir(), ".config/pulse/cookie");
+    let pulseAudioCookieBuffer;
+    if (existsSync(pulseAudioCookiePath)) {
+      pulseAudioCookieBuffer = await readFile(pulseAudioCookiePath);
+    } else {
+      logError("PulseAudio cookie file does not exist:", pulseAudioCookiePath);
     }
-  });
 
-  try {
-    await new Promise((resolve, reject) => {
-      pa.once("ready", () => {
-        logInfo("Audio manager connected to PulseAudio successfully.");
-        resolve();
-      });
-      pa.once("error", (e) => {
-        reject(e);
-      });
-      pa.connect();
+    const pa = new PAClient({ cookie: pulseAudioCookieBuffer });
+
+    pa.on("close", () => {
+      if (getPulseAudioClient() === pa) {
+        setPulseAudioClient(null);
+      }
     });
 
-    setPulseAudioClient(pa);
+    try {
+      await new Promise((resolve, reject) => {
+        pa.once("ready", () => {
+          logInfo("Audio manager connected to PulseAudio successfully.");
+          resolve();
+        });
+        pa.once("error", (e) => {
+          reject(e);
+        });
+        pa.connect();
+      });
 
-    pa.on("change", () => sendCurrentAudioInfoDebounced(pa));
-    pa.on("new", () => sendCurrentAudioInfoDebounced(pa));
-    pa.on("remove", () => sendCurrentAudioInfoDebounced(pa));
-    pa.subscribe("all");
+      setPulseAudioClient(pa);
 
-    return pa;
-  } catch (e) {
-    toastError("Audio Manager", e);
-    logError("Unable to get PulseAudio client:", e);
-    return null;
-  }
+      pa.on("change", () => sendCurrentAudioInfoDebounced(pa));
+      pa.on("new", () => sendCurrentAudioInfoDebounced(pa));
+      pa.on("remove", () => sendCurrentAudioInfoDebounced(pa));
+      pa.subscribe("all");
+
+      return pa;
+    } catch (e) {
+      toastError("Audio Manager", e);
+      logError("Unable to get PulseAudio client:", e);
+      initializationPromise = null;
+      return null;
+    } finally {
+      if (getPulseAudioClient() === pa) {
+        initializationPromise = null;
+      }
+    }
+  })();
+
+  return initializationPromise;
 }
 
 async function getAudioInfo() {

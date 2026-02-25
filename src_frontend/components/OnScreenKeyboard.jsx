@@ -12,14 +12,9 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
   const [inputValue, setInputValue] = useState(initialValue || "");
   const [focusCoords, setFocusCoords] = useState({ x: 0, y: 0 });
 
-  const inputValueRef = useRef(inputValue);
   const focusCoordsRef = useRef(focusCoords);
   const onConfirmRef = useRef(onConfirm);
   const onCloseRef = useRef(onClose);
-
-  useEffect(() => {
-    inputValueRef.current = inputValue;
-  }, [inputValue]);
 
   useEffect(() => {
     focusCoordsRef.current = focusCoords;
@@ -54,30 +49,33 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
         { id: "Enter", label: t("Enter") },
       ],
     ],
-    [t]
+    [t],
   );
 
-  const handleKeyPress = useCallback((keyId) => {
-    if (typeof keyId !== "string") return;
+  const handleKeyPress = useCallback(
+    (keyId) => {
+      if (typeof keyId !== "string") return;
 
-    switch (keyId) {
-      case "Backspace":
-        setInputValue((prev) => prev.slice(0, -1));
-        break;
-      case "Space":
-        setInputValue((prev) => prev + " ");
-        break;
-      case "Enter":
-        onConfirmRef.current(inputValueRef.current);
-        break;
-      case "Close":
-        onCloseRef.current();
-        break;
-      default:
-        setInputValue((prev) => prev + keyId);
-        break;
-    }
-  }, []);
+      switch (keyId) {
+        case "Backspace":
+          setInputValue((prev) => prev.slice(0, -1));
+          break;
+        case "Space":
+          setInputValue((prev) => prev + " ");
+          break;
+        case "Enter":
+          onConfirmRef.current(inputValue);
+          break;
+        case "Close":
+          onCloseRef.current();
+          break;
+        default:
+          setInputValue((prev) => prev + keyId);
+          break;
+      }
+    },
+    [inputValue],
+  );
 
   const inputHandler = useCallback(
     (input) => {
@@ -118,7 +116,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
           break;
         case "X":
           playActionSound();
-          onConfirmRef.current(inputValueRef.current);
+          onConfirmRef.current(inputValue);
           break;
         case "B":
           playActionSound();
@@ -126,7 +124,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
           break;
       }
     },
-    [handleKeyPress, keyLayout]
+    [handleKeyPress, keyLayout, inputValue],
   );
 
   useScopedInput(inputHandler, OnScreenKeyboardFocusID);
@@ -139,8 +137,8 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
   }, [handleKeyPress, keyLayout]);
 
   const onConfirmCallback = useCallback(() => {
-    onConfirmRef.current(inputValueRef.current);
-  }, []);
+    onConfirmRef.current(inputValue);
+  }, [inputValue]);
 
   const onCloseCallback = useCallback(() => {
     onCloseRef.current();
@@ -160,7 +158,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
       },
       { button: "B", label: t("Close"), onClick: onCloseCallback },
     ],
-    [onSelectCallback, onConfirmCallback, onCloseCallback, t]
+    [onSelectCallback, onConfirmCallback, onCloseCallback, t],
   );
 
   return (

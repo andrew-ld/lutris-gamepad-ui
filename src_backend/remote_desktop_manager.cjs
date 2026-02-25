@@ -27,6 +27,8 @@ const ALT_TAB_TIMEOUT_MS = 1000;
 
 const KV_STORAGE_TOKEN_KEY = "remote_desktop_manager.token";
 
+let sessionInitializationPromise = null;
+
 function getRemoteDesktopRestoreToken() {
   const token = getKvStoreValue(KV_STORAGE_TOKEN_KEY);
   logInfo("Retrieved remote desktop restore token from storage:", token);
@@ -240,7 +242,7 @@ async function _startRemoteDesktopSession(restoreToken) {
       error,
     );
     toastError("Remote Desktop Manager", error);
-    await stopRemoteDesktopSession();
+    setRemoteDesktopSessionHandle(null);
     throw error;
   }
 }
@@ -251,34 +253,53 @@ async function startRemoteDesktopSession() {
     return;
   }
 
+  if (sessionInitializationPromise) {
+    logInfo("Joining existing remote desktop initialization request.");
+    return await sessionInitializationPromise;
+  }
+
   if (!getAppConfig().useRemoteDesktopPortal) {
     logWarn("Remote desktop portal is disabled. Aborting start.");
     return;
   }
 
-  const restoreToken = getRemoteDesktopRestoreToken();
-
-  if (restoreToken) {
+  sessionInitializationPromise = (async () => {
     try {
-      logInfo("Attempting to restore session with token:", restoreToken);
-      return await _startRemoteDesktopSession(restoreToken);
-    } catch (e) {
-      logError(
-        "Failed to restore remote desktop session with existing token:",
-        e,
-      );
-    }
-  }
+      const restoreToken = getRemoteDesktopRestoreToken();
+      if (restoreToken) {
+        try {
+          logInfo("Attempting to restore session with token:", restoreToken);
+          await _startRemoteDesktopSession(restoreToken);
+          return;
+        } catch (e) {
+          logError(
+            "Failed to restore remote desktop session with existing token:",
+            e,
+          );
+        }
+      }
 
-  try {
-    logInfo("Starting fresh remote desktop session (no valid token found).");
-    return await _startRemoteDesktopSession();
-  } catch (e) {
-    logError("Failed to start remote desktop session:", e);
-  }
+      logInfo("Starting fresh remote desktop session.");
+      await _startRemoteDesktopSession();
+    } catch (e) {
+      logError("Failed to start remote desktop session:", e);
+    } finally {
+      sessionInitializationPromise = null;
+    }
+  })();
+
+  return await sessionInitializationPromise;
 }
 
 async function stopRemoteDesktopSession() {
+  if (sessionInitializationPromise) {
+    try {
+      await sessionInitializationPromise;
+    } catch (e) {
+      logError("sessionInitializationPromise fail", e);
+    }
+  }
+
   const sessionHandle = getRemoteDesktopSessionHandle();
   if (!sessionHandle) return;
 

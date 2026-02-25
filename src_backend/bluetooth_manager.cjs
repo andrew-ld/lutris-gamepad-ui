@@ -1,4 +1,3 @@
-const dbus = require("@homebridge/dbus-native");
 const { getMainWindow } = require("./state.cjs");
 const {
   logInfo,
@@ -34,7 +33,7 @@ async function _getObjectManager() {
     service.getInterface(
       BLUEZ_OBJECT_PATH,
       OBJECT_MANAGER_INTERFACE,
-      (err, iface) => (err ? reject(err) : resolve(iface))
+      (err, iface) => (err ? reject(err) : resolve(iface)),
     );
   }).then((iface) => {
     objectManager = iface;
@@ -50,8 +49,8 @@ async function _getInterface(path, interfaceName) {
       if (err)
         return reject(
           new Error(
-            `Could not get interface ${interfaceName} at ${path}: ${err.message}`
-          )
+            `Could not get interface ${interfaceName} at ${path}: ${err.message}`,
+          ),
         );
       resolve(iface);
     });
@@ -66,7 +65,7 @@ const _findInterfaceProps = (interfaces, name) =>
 function _parseDeviceProperties(propertiesArray) {
   if (!Array.isArray(propertiesArray)) return null;
   const props = Object.fromEntries(
-    propertiesArray.map(([key, variant]) => [key, _getVariantValue(variant)])
+    propertiesArray.map(([key, variant]) => [key, _getVariantValue(variant)]),
   );
   return {
     address: props.Address,
@@ -80,7 +79,7 @@ function _parseDeviceProperties(propertiesArray) {
 function _parseAdapterProperties(propertiesArray) {
   if (!Array.isArray(propertiesArray)) return null;
   const props = Object.fromEntries(
-    propertiesArray.map(([key, variant]) => [key, _getVariantValue(variant)])
+    propertiesArray.map(([key, variant]) => [key, _getVariantValue(variant)]),
   );
   return {
     address: props.Address,
@@ -99,7 +98,7 @@ async function _getAllAdapterPaths() {
         if (err) return reject(err);
         const adapterPaths = managedObjects
           .filter(([, interfacesArray]) =>
-            _findInterfaceProps(interfacesArray, ADAPTER_INTERFACE)
+            _findInterfaceProps(interfacesArray, ADAPTER_INTERFACE),
           )
           .map(([path]) => path);
         resolve(adapterPaths);
@@ -121,7 +120,7 @@ async function getAdapters() {
           .map(([path, interfacesArray]) => {
             const props = _findInterfaceProps(
               interfacesArray,
-              ADAPTER_INTERFACE
+              ADAPTER_INTERFACE,
             );
             if (!props) return null;
             const adapter = _parseAdapterProperties(props);
@@ -148,7 +147,7 @@ async function setAdapterBooleanProperty(adapterPath, propName, value) {
           logError(
             errorMessage,
             "D-Bus error object:",
-            JSON.stringify(err, null, 2)
+            JSON.stringify(err, null, 2),
           );
           reject(new Error(err.message || "Failed to set property"));
         } else {
@@ -181,10 +180,10 @@ async function powerOnAdapter(adapterPath) {
         initialDelay: 300,
         onRetry: (error, attempt) => {
           logWarn(
-            `Retrying power on for adapter ${adapterPath} (attempt ${attempt}). Error: ${error.message}`
+            `Retrying power on for adapter ${adapterPath} (attempt ${attempt}). Error: ${error.message}`,
           );
         },
-      }
+      },
     );
   } catch (e) {
     logError(`Unable to power on adapter ${adapterPath}. Error:`, e);
@@ -201,7 +200,7 @@ async function listDevices() {
           .map(([path, interfacesArray]) => {
             const props = _findInterfaceProps(
               interfacesArray,
-              DEVICE_INTERFACE
+              DEVICE_INTERFACE,
             );
             if (!props) return null;
             const device = _parseDeviceProperties(props);
@@ -226,6 +225,8 @@ async function getBluetoothState() {
     return { adapters, devices };
   } catch (e) {
     logError("Error getting full bluetooth state", e);
+    objectManager = null;
+    isSubscribed = false;
     return { adapters: [], devices: [] };
   }
 }
@@ -258,7 +259,7 @@ async function startDiscovery() {
         path,
         ADAPTER_INTERFACE,
         "StartDiscovery",
-        `start discovery on ${path}`
+        `start discovery on ${path}`,
       );
     } catch (e) {
       logError("Could not start discovery on adapter:", path, e);
@@ -275,7 +276,7 @@ async function stopDiscovery() {
         path,
         ADAPTER_INTERFACE,
         "StopDiscovery",
-        `stop discovery on ${path}`
+        `stop discovery on ${path}`,
       );
     } catch (e) {
       logError("Could not stop discovery on adapter:", path, e);
@@ -291,7 +292,7 @@ const disconnectFromDevice = (path) =>
     path,
     DEVICE_INTERFACE,
     "Disconnect",
-    `disconnect from ${path}`
+    `disconnect from ${path}`,
   );
 
 async function _sendFullStateUpdate() {
@@ -317,6 +318,12 @@ async function subscribeToBluetoothChanges() {
     const objManager = await _getObjectManager();
     isSubscribed = true;
 
+    bus.connection.on("end", () => {
+      logWarn("Bluetooth DBus connection ended. Resetting subscription state.");
+      isSubscribed = false;
+      objectManager = null;
+    });
+
     objManager.on("InterfacesAdded", () => _triggerStateUpdate());
     objManager.on("InterfacesRemoved", () => _triggerStateUpdate());
 
@@ -329,6 +336,7 @@ async function subscribeToBluetoothChanges() {
     logInfo("Subscribed to BlueZ D-Bus signals and sent initial state.");
   } catch (e) {
     isSubscribed = false;
+    objectManager = null;
     logError("Could not subscribe to Bluetooth changes.", e.message);
     toastError("Bluetooth Manager", e);
   }
