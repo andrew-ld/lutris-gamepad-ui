@@ -314,9 +314,10 @@ async function subscribeToBluetoothChanges() {
   if (isSubscribed) return;
 
   try {
+    isSubscribed = true;
+
     const bus = await _getBus();
     const objManager = await _getObjectManager();
-    isSubscribed = true;
 
     bus.connection.on("end", () => {
       logWarn("Bluetooth DBus connection ended. Resetting subscription state.");
