@@ -63,7 +63,7 @@
       "electron_preload.cjs"
     ],
     "directories": {
-      "buildResources": "assets"
+      "output": "release"
     },
     "linux": {
       "target": "AppImage",

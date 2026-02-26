@@ -8,7 +8,7 @@ RUN npm i
 
 RUN npm run build
 
-RUN bash -c "cp /build/dist/*.AppImage /release.AppImage"
+RUN bash -c "cp /build/release/*.AppImage /release.AppImage"
 
 FROM scratch AS export
 
