@@ -17,11 +17,10 @@
     "start:prod": "npm run build:vite && electron39 electron.cjs",
     "start:prod-wayland": "npm run build:vite && electron39 electron.cjs --ozone-platform=wayland",
     "start:prod-steamdeck": "npm run build:vite && gamescope -W 1280 -w 1280 -H 800 -h 800 -- electron39 electron.cjs",
-    "build": "vite build && npm run electron:build",
     "build:vite": "vite build",
-    "preview": "vite preview",
-    "electron:dev": "wait-on http://localhost:5173 && electron .",
-    "electron:build": "electron-builder"
+    "electron:build": "electron-builder --config electron-builder.config.cjs",
+    "build": "npm run build:vite && npm run electron:build",
+    "electron:dev": "wait-on http://localhost:5173 && electron ."
   },
   "dependencies": {
     "@futpib/paclient": "github:andrew-ld/paclient#450fc5046e2bb6b3ce7920211ec89bc3748d0463",
@@ -44,31 +43,5 @@
     "react-scan": "^0.5.3",
     "vite": "^7.3.1",
     "wait-on": "^9.0.4"
-  },
-  "build": {
-    "appId": "com.electron.${name}",
-    "productName": "lutris gamepad ui",
-    "files": [
-      "dist/**/*",
-      "electron.cjs",
-      "electron_preload.cjs",
-      "package.json",
-      "lutris_wrapper.sh",
-      "lutris_wrapper.py",
-      "src_backend/**/*"
-    ],
-    "asarUnpack": [
-      "lutris_wrapper.sh",
-      "lutris_wrapper.py",
-      "electron_preload.cjs"
-    ],
-    "directories": {
-      "output": "release"
-    },
-    "linux": {
-      "target": "AppImage",
-      "category": "game",
-      "icon": "src_frontend/resources/icon.svg"
-    }
   }
 }
