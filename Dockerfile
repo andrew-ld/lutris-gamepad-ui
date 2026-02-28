@@ -1,4 +1,6 @@
-FROM node:22 AS builder
+FROM node:24-trixie AS builder
+
+RUN apt-get update && apt-get install -y squashfs-tools
 
 COPY . /build
 
