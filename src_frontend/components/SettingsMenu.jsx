@@ -90,6 +90,13 @@ const SettingsMenu = ({ onClose }) => {
     updateSetting("keepGamesRunningOnQuit", !settings.keepGamesRunningOnQuit);
   }, [settings, updateSetting]);
 
+  const toggleEnableUiActionSoundFeedbacks = useCallback(() => {
+    updateSetting(
+      "enableUiActionSoundFeedbacks",
+      !settings.enableUiActionSoundFeedbacks,
+    );
+  }, [settings, updateSetting]);
+
   const menuItems = useMemo(() => {
     const result = [];
     if (settings.zoomFactor !== undefined) {
@@ -137,6 +144,12 @@ const SettingsMenu = ({ onClose }) => {
         label: t("Keep Games Running On Quit"),
       });
     }
+    if (settings.enableUiActionSoundFeedbacks !== undefined) {
+      result.push({
+        type: "ENABLE_UI_ACTION_SOUND_FEEDBACKS",
+        label: t("UI Action Sound Feedbacks"),
+      });
+    }
     return result;
   }, [t, settings]);
 
@@ -150,6 +163,9 @@ const SettingsMenu = ({ onClose }) => {
       }
 
       switch (item.type) {
+        case "ENABLE_UI_ACTION_SOUND_FEEDBACKS":
+          if (actionName === "A") toggleEnableUiActionSoundFeedbacks();
+          break;
         case "KEEP_GAMES_RUNNING":
           if (actionName === "A") toggleKeepGamesRunningOnQuit();
           break;
@@ -190,6 +206,7 @@ const SettingsMenu = ({ onClose }) => {
       toggleDoubleConfirmPowerManagement,
       toggleUseRemoteDesktopPortal,
       toggleKeepGamesRunningOnQuit,
+      toggleEnableUiActionSoundFeedbacks,
     ],
   );
 
@@ -352,6 +369,23 @@ const SettingsMenu = ({ onClose }) => {
               />
             </FocusableRow>
           );
+        case "ENABLE_UI_ACTION_SOUND_FEEDBACKS":
+          return (
+            <FocusableRow
+              key={item.type}
+              isFocused={isFocused}
+              onMouseEnter={onMouseEnter}
+              onClick={toggleEnableUiActionSoundFeedbacks}
+            >
+              <span className="settings-menu-label">{item.label}</span>
+              <ToggleButton
+                isToggledOn={settings.enableUiActionSoundFeedbacks}
+                labelOn={t("Disable")}
+                labelOff={t("Enable")}
+                onClick={toggleEnableUiActionSoundFeedbacks}
+              />
+            </FocusableRow>
+          );
         default:
           return null;
       }
@@ -365,6 +399,7 @@ const SettingsMenu = ({ onClose }) => {
       toggleDoubleConfirmPowerManagement,
       toggleUseRemoteDesktopPortal,
       toggleKeepGamesRunningOnQuit,
+      toggleEnableUiActionSoundFeedbacks,
     ],
   );
 
@@ -431,6 +466,14 @@ const SettingsMenu = ({ onClose }) => {
         label: settings.keepGamesRunningOnQuit ? t("Disable") : t("Enable"),
         onClick: toggleKeepGamesRunningOnQuit,
       });
+    } else if (focusedItem?.type === "ENABLE_UI_ACTION_SOUND_FEEDBACKS") {
+      buttons.push({
+        button: "A",
+        label: settings.enableUiActionSoundFeedbacks
+          ? t("Disable")
+          : t("Enable"),
+        onClick: toggleEnableUiActionSoundFeedbacks,
+      });
     }
 
     buttons.push({ button: "B", label: t("Close"), onClick: onClose });
@@ -449,6 +492,7 @@ const SettingsMenu = ({ onClose }) => {
     toggleDoubleConfirmPowerManagement,
     toggleUseRemoteDesktopPortal,
     toggleKeepGamesRunningOnQuit,
+    toggleEnableUiActionSoundFeedbacks,
     onClose,
     t,
   ]);

@@ -3,7 +3,7 @@ import { useTranslation } from "../contexts/TranslationContext";
 import { useScopedInput } from "../hooks/useScopedInput";
 import "../styles/RowBasedMenu.css";
 import { findScrollableParent } from "../utils/dom";
-import { playActionSound } from "../utils/sound";
+import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 
 const defaultKeyExtractor = (item, index) => item.id ?? item.label ?? index;
 
@@ -19,6 +19,8 @@ const RowBasedMenu = ({
   emptyMessage,
 }) => {
   const { t } = useTranslation();
+  const playActionSound = usePlayButtonActionSound();
+
   const [selectedIndex, setSelectedIndex] = useState(0);
   const selectedIndexRef = useRef(selectedIndex);
   const onActionRef = useRef(onAction);
@@ -61,7 +63,7 @@ const RowBasedMenu = ({
     }
     if (selectedItemKeyRef.current !== null) {
       const newIndex = items.findIndex(
-        (item, index) => itemKey(item, index) === selectedItemKeyRef.current
+        (item, index) => itemKey(item, index) === selectedItemKeyRef.current,
       );
       if (newIndex !== -1) {
         setSelectedIndex(newIndex);
@@ -144,7 +146,7 @@ const RowBasedMenu = ({
           break;
       }
     },
-    [items]
+    [items, playActionSound],
   );
 
   useScopedInput(inputHandler, focusId, isActive);
@@ -163,7 +165,9 @@ const RowBasedMenu = ({
   return (
     <div ref={containerRef}>
       {items.map((item, index) =>
-        renderItem(item, index === selectedIndex, () => setSelectedIndex(index))
+        renderItem(item, index === selectedIndex, () =>
+          setSelectedIndex(index),
+        ),
       )}
     </div>
   );

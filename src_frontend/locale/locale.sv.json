@@ -111,6 +111,7 @@
     "Settings": "Inställningar",
     "Show Hidden Games": "Visa dolda spel",
     "Show Runner Icon": "Show Runner Icon",
+    "UI Action Sound Feedbacks": "UI Action Sound Feedbacks",
     "Use Remote Desktop Portal": "Use Remote Desktop Portal",
     "Zoom Level": "Zoomnivå"
   },
@@ -152,6 +153,8 @@
     "Close": "Stäng",
     "Current Output:": "Nuvarande utgång:",
     "Decrease": "Minska",
+    "Disable": "Disable",
+    "Enable": "Enable",
     "Increase": "Öka",
     "Loading Audio Settings...": "Laddar ljudinställningar...",
     "Mute": "Tysta",
@@ -160,6 +163,7 @@
     "Prev": "Föreg.",
     "Select Output": "Välj utgång",
     "Set Device": "Ställ in enhet",
+    "UI Action Sound Feedbacks": "UI Action Sound Feedbacks",
     "Unmute": "Slå på ljud",
     "Volume": "Volym"
   }

@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { useScopedInput } from "../hooks/useScopedInput";
 import "../styles/ConfirmationDialog.css";
-import { playActionSound } from "../utils/sound";
+import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import LegendaContainer from "./LegendaContainer";
 import { useTranslation } from "../contexts/TranslationContext";
 
@@ -10,6 +10,7 @@ export const ConfirmationDialogFocusId = "ConfirmationDialog";
 const ConfirmationDialog = ({ message, description, onConfirm, onDeny }) => {
   const { t } = useTranslation();
   const [confirmSelection, setConfirmSelection] = useState(0);
+  const playActionSound = usePlayButtonActionSound();
 
   const confirmSelectionRef = useRef(confirmSelection);
 
@@ -50,7 +51,7 @@ const ConfirmationDialog = ({ message, description, onConfirm, onDeny }) => {
           break;
       }
     },
-    [handleDeny, handleSubmit]
+    [handleDeny, handleSubmit, playActionSound],
   );
 
   useScopedInput(inputHandler, ConfirmationDialogFocusId);
@@ -60,7 +61,7 @@ const ConfirmationDialog = ({ message, description, onConfirm, onDeny }) => {
       { button: "A", label: t("Select"), onClick: handleSubmit },
       { button: "B", label: t("Cancel"), onClick: handleDeny },
     ],
-    [handleSubmit, handleDeny, t]
+    [handleSubmit, handleDeny, t],
   );
 
   return (

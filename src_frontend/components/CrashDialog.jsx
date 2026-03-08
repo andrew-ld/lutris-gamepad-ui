@@ -2,9 +2,9 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "../contexts/TranslationContext";
 import { useScopedInput } from "../hooks/useScopedInput";
 import "../styles/CrashDialog.css";
-import { playActionSound } from "../utils/sound";
 import { applyReplacements } from "../utils/string";
 import LegendaContainer from "./LegendaContainer";
+import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 
 const SCROLL_AMOUNT = 50;
 
@@ -13,6 +13,7 @@ const CrashDialog = ({ error, errorInfo }) => {
   const [focusedButtonIndex, setFocusedButtonIndex] = useState(0);
   const containerRef = useRef(null);
   const translationContext = useTranslation();
+  const playActionSound = usePlayButtonActionSound();
 
   const t = useCallback(
     (key, replacements, filename) => {
@@ -21,7 +22,7 @@ const CrashDialog = ({ error, errorInfo }) => {
       }
       return applyReplacements(key, replacements);
     },
-    [translationContext]
+    [translationContext],
   );
 
   const handleReload = useCallback(() => {
@@ -47,7 +48,7 @@ const CrashDialog = ({ error, errorInfo }) => {
         action: toggleDetails,
       },
     ],
-    [detailsVisible, handleReload, handleClose, toggleDetails, t]
+    [detailsVisible, handleReload, handleClose, toggleDetails, t],
   );
 
   const selectedButtonAction = useCallback(() => {
@@ -78,7 +79,7 @@ const CrashDialog = ({ error, errorInfo }) => {
           break;
         case "RIGHT":
           setFocusedButtonIndex((prev) =>
-            Math.min(buttons.length - 1, prev + 1)
+            Math.min(buttons.length - 1, prev + 1),
           );
           break;
         case "A":
@@ -86,7 +87,13 @@ const CrashDialog = ({ error, errorInfo }) => {
           break;
       }
     },
-    [buttons.length, selectedButtonAction, detailsVisible, handleScroll]
+    [
+      buttons.length,
+      selectedButtonAction,
+      detailsVisible,
+      handleScroll,
+      playActionSound,
+    ],
   );
 
   useScopedInput(inputHandler, "CrashDialogFocus");
@@ -108,7 +115,7 @@ const CrashDialog = ({ error, errorInfo }) => {
     items.push(
       { button: "LEFT", label: t("Navigate") },
       { button: "RIGHT", label: t("Navigate") },
-      { button: "A", label: t("Select"), onClick: selectedButtonAction }
+      { button: "A", label: t("Select"), onClick: selectedButtonAction },
     );
     return items;
   }, [selectedButtonAction, detailsVisible, handleScroll, t]);

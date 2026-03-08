@@ -113,6 +113,7 @@
     "Settings": "Impostazioni",
     "Show Hidden Games": "Mostra giochi nascosti",
     "Show Runner Icon": "Mostra l'icona del runner",
+    "UI Action Sound Feedbacks": "UI Action Sound Feedbacks",
     "Use Remote Desktop Portal": "Usa il Desktop Remote Portal",
     "Zoom Level": "Livello Zoom"
   },
@@ -155,6 +156,8 @@
     "Close": "Chiudi",
     "Current Output:": "Uscita corrente:",
     "Decrease": "Abbassa",
+    "Disable": "Disable",
+    "Enable": "Enable",
     "Increase": "Alza",
     "Loading Audio Settings...": "Caricamento impostazioni audio...",
     "Mute": "Silenzia",
@@ -163,6 +166,7 @@
     "Prev": "Precedente",
     "Select Output": "Seleziona uscita",
     "Set Device": "Imposta come predefinito",
+    "UI Action Sound Feedbacks": "UI Action Sound Feedbacks",
     "Unmute": "Riattiva audio",
     "Volume": "Volume"
   }

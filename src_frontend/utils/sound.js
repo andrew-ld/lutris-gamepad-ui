@@ -3,18 +3,22 @@ import { logError } from "./ipc";
 
 const ACTION_SOUND_THROTTLE_MS = 50;
 
-const actionSound = new Audio(buttonActionSound);
-let lastActionSoundPlayTime = 0;
+const buttonActionSoundInstance = new Audio(buttonActionSound);
+const lastButtonActionSoundPlaytime = { current: 0 };
 
-const playSoundInstance = (audioInstance) => {
-  audioInstance.currentTime = 0;
-  audioInstance.play().catch((e) => logError("Could not play sound", e));
-};
+export function playButtonActionSound(currentTime) {
+  lastButtonActionSoundPlaytime.current = currentTime || new Date();
 
-export function playActionSound() {
+  buttonActionSoundInstance.currentTime = 0;
+
+  buttonActionSoundInstance
+    .play()
+    .catch((e) => logError("Could not play sound", e));
+}
+
+export function playButtonActionSoundThrottled() {
   const now = Date.now();
-  if (now - lastActionSoundPlayTime > ACTION_SOUND_THROTTLE_MS) {
-    playSoundInstance(actionSound);
-    lastActionSoundPlayTime = now;
+  if (now - lastButtonActionSoundPlaytime.current > ACTION_SOUND_THROTTLE_MS) {
+    playButtonActionSound(now);
   }
 }

@@ -6,13 +6,13 @@ import LoadingIndicator from "./LoadingIndicator";
 import RunningGame from "./RunningGame";
 import ControlsOverlay from "./ControlsOverlay";
 import OnScreenKeyboard from "./OnScreenKeyboard";
-import { playActionSound } from "../utils/sound";
 import { toggleGamePause, toggleWindowShow } from "../utils/ipc";
 import ConfirmationDialog from "./ConfirmationDialog";
 import { useScopedInput } from "../hooks/useScopedInput";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
 import { useTranslation } from "../contexts/TranslationContext";
 import { useSettingsState } from "../contexts/SettingsContext";
+import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 
 export const LibraryContainerFocusID = "LibraryContainer";
 
@@ -33,6 +33,7 @@ const LibraryContainer = () => {
   const [numColumns, setNumColumns] = useState(0);
   const { showModal } = useModalActions();
   const { isModalOpen } = useModalState();
+  const playActionSound = usePlayButtonActionSound();
 
   const libraryContainerRef = useRef(null);
   const libraryContainerRefNeedScrollTop = useRef(false);
@@ -457,7 +458,7 @@ const LibraryContainer = () => {
         return current;
       });
     },
-    [shelves, numColumns],
+    [shelves, numColumns, playActionSound],
   );
 
   const handlePrevCategory = useCallback(() => {
@@ -523,6 +524,7 @@ const LibraryContainer = () => {
       handlePrevCategory,
       handleNextCategory,
       handleNavigation,
+      playActionSound,
     ],
   );
 
@@ -543,7 +545,7 @@ const LibraryContainer = () => {
         toggleGamePauseCb();
       }
     },
-    [closeRunningGameDialogCb, toggleGamePauseCb],
+    [closeRunningGameDialogCb, toggleGamePauseCb, playActionSound],
   );
 
   useScopedInput(
@@ -555,11 +557,11 @@ const LibraryContainer = () => {
   useGlobalShortcut([
     {
       key: "Super",
-      action: () => {
+      active: true,
+      action: useCallback(() => {
         playActionSound();
         toggleWindowShow();
-      },
-      active: true,
+      }, [playActionSound]),
     },
   ]);
 

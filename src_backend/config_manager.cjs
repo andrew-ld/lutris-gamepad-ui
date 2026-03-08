@@ -12,6 +12,7 @@ const defaultConfig = {
   useRemoteDesktopPortal: true,
   showRunnerIcon: true,
   keepGamesRunningOnQuit: false,
+  enableUiActionSoundFeedbacks: true,
 };
 
 const SUBSCRIPTIONS = {};

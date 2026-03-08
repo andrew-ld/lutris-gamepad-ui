@@ -111,6 +111,7 @@
     "Settings": "تنظیمات",
     "Show Hidden Games": "نمایش بازی‌های پنهان",
     "Show Runner Icon": "Show Runner Icon",
+    "UI Action Sound Feedbacks": "UI Action Sound Feedbacks",
     "Use Remote Desktop Portal": "Use Remote Desktop Portal",
     "Zoom Level": "میزان بزرگ‌نمایی"
   },
@@ -152,6 +153,8 @@
     "Close": "بستن",
     "Current Output:": "خروجی کنونی",
     "Decrease": "کاهش",
+    "Disable": "Disable",
+    "Enable": "Enable",
     "Increase": "افزایش",
     "Loading Audio Settings...": "در حال بارگذاری تنظیمات صدا...",
     "Mute": "بی‌صدا کردن",
@@ -160,6 +163,7 @@
     "Prev": "قبلی",
     "Select Output": "انتخاب خروجی",
     "Set Device": "تنظیم دستگاه",
+    "UI Action Sound Feedbacks": "UI Action Sound Feedbacks",
     "Unmute": "فعال کردن صدا",
     "Volume": "میزان صدا"
   }

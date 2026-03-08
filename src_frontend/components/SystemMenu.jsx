@@ -6,7 +6,6 @@ import { useTranslation } from "../contexts/TranslationContext";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
 import "../styles/SystemMenu.css";
 import * as api from "../utils/ipc";
-import { playActionSound } from "../utils/sound";
 import About from "./About";
 import BluetoothMenu from "./BluetoothMenu";
 import ConfirmationDialog from "./ConfirmationDialog";
@@ -15,6 +14,7 @@ import RowBasedMenu from "./RowBasedMenu";
 import SettingsMenu from "./SettingsMenu";
 import VolumeControl from "./VolumeControl";
 import { useSettingsState } from "../contexts/SettingsContext";
+import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 
 const PowerIcon = () => (
   <svg
@@ -43,6 +43,7 @@ const SystemMenu = () => {
   const { showToast } = useToastActions();
   const { isModalOpen } = useModalState();
   const { settings } = useSettingsState();
+  const playActionSound = usePlayButtonActionSound();
 
   const menuRef = useRef(null);
   const menuPowerButtonRef = useRef(null);
@@ -115,7 +116,7 @@ const SystemMenu = () => {
         label: t("Generate Bug Report"),
         action: () => api.createBugReportFile(),
         firstConfirm: t(
-          "Are you sure you want to generate the bug report file?"
+          "Are you sure you want to generate the bug report file?",
         ),
       },
       {
@@ -136,7 +137,7 @@ const SystemMenu = () => {
       openAudioSettingsModal,
       t,
       settings.doubleConfirmPowerManagement,
-    ]
+    ],
   );
 
   const openConfirmation = useCallback(
@@ -155,7 +156,7 @@ const SystemMenu = () => {
         />
       ));
     },
-    [showModal]
+    [showModal],
   );
 
   const handleAction = useCallback(
@@ -169,14 +170,14 @@ const SystemMenu = () => {
               title: item.secondConfirm,
               description: t("This action is final and cannot be undone."),
             },
-            item.action
+            item.action,
           );
         };
 
         openConfirmation(
           { title: item.firstConfirm },
           secondConfirmAction,
-          false
+          false,
         );
       } else if (item.firstConfirm) {
         openConfirmation({ title: item.firstConfirm }, item.action);
@@ -184,7 +185,7 @@ const SystemMenu = () => {
         item.action();
       }
     },
-    [openConfirmation, t]
+    [openConfirmation, t],
   );
 
   useEffect(() => {
@@ -210,16 +211,16 @@ const SystemMenu = () => {
         setIsOpen(false);
       }
     },
-    [handleAction]
+    [handleAction],
   );
 
   useGlobalShortcut([
     {
       key: "Y",
-      action: () => {
+      action: useCallback(() => {
         playActionSound();
         toggleMenu();
-      },
+      }, [playActionSound]),
       active: !isModalOpen,
     },
   ]);
@@ -255,7 +256,7 @@ const SystemMenu = () => {
       { button: "A", label: t("Select"), onClick: handleSelect },
       { button: "B", label: t("Back"), onClick: closeMenuCallback },
     ],
-    [handleSelect, closeMenuCallback, t]
+    [handleSelect, closeMenuCallback, t],
   );
 
   const renderMenuItem = useCallback(
@@ -269,7 +270,7 @@ const SystemMenu = () => {
         {item.label}
       </div>
     ),
-    [handleAction]
+    [handleAction],
   );
 
   return (

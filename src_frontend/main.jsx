@@ -6,8 +6,10 @@ import "./styles/main.css";
 import icon from "./resources/icon.svg";
 import { logError, onThemeUpdated, setIcon } from "./utils/ipc.js";
 import { renderSvgToDataURL } from "./utils/svg.js";
-import { playActionSound } from "./utils/sound.js";
 import { applyUserTheme } from "./utils/theme.js";
+import { playButtonActionSound } from "./utils/sound.js";
+
+applyUserTheme();
 
 renderSvgToDataURL(icon, 1024, 1024)
   .then((dataURL) => {
@@ -15,9 +17,9 @@ renderSvgToDataURL(icon, 1024, 1024)
   })
   .catch((e) => logError("unable to render icon", e));
 
-playActionSound();
-applyUserTheme();
 onThemeUpdated(() => applyUserTheme());
+
+playButtonActionSound();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

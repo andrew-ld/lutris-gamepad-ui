@@ -1,9 +1,9 @@
 import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import { useScopedInput } from "../hooks/useScopedInput";
 import "../styles/OnScreenKeyboard.css";
-import { playActionSound } from "../utils/sound";
 import LegendaContainer from "./LegendaContainer";
 import { useTranslation } from "../contexts/TranslationContext";
+import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 
 export const OnScreenKeyboardFocusID = "OnScreenKeyboard";
 
@@ -11,6 +11,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
   const { t } = useTranslation();
   const [inputValue, setInputValue] = useState(initialValue || "");
   const [focusCoords, setFocusCoords] = useState({ x: 0, y: 0 });
+  const playActionSound = usePlayButtonActionSound();
 
   const focusCoordsRef = useRef(focusCoords);
   const onConfirmRef = useRef(onConfirm);
@@ -124,7 +125,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
           break;
       }
     },
-    [handleKeyPress, keyLayout, inputValue],
+    [handleKeyPress, keyLayout, inputValue, playActionSound],
   );
 
   useScopedInput(inputHandler, OnScreenKeyboardFocusID);

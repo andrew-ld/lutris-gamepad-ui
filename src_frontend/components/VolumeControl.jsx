@@ -1,5 +1,9 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useAudio } from "../contexts/AudioContext";
+import {
+  useSettingsActions,
+  useSettingsState,
+} from "../contexts/SettingsContext";
 import "../styles/VolumeControl.css";
 import LegendaContainer from "./LegendaContainer";
 import RowBasedMenu from "./RowBasedMenu";
@@ -13,10 +17,14 @@ const CONTROL_TYPES = {
   MUTE: "MUTE",
   VOLUME: "VOLUME",
   OUTPUT_DEVICE: "OUTPUT_DEVICE",
+  UI_SOUNDS: "UI_SOUNDS",
 };
 
 const VolumeControl = ({ onClose }) => {
   const { t } = useTranslation();
+  const { settings } = useSettingsState();
+  const { updateSetting } = useSettingsActions();
+
   const {
     volume,
     isMuted,
@@ -38,21 +46,36 @@ const VolumeControl = ({ onClose }) => {
         ? availableSinks.findIndex((sink) => sink.name === defaultSinkName)
         : -1;
       setHighlightedSinkIndex(
-        currentDefaultIndex !== -1 ? currentDefaultIndex : 0
+        currentDefaultIndex !== -1 ? currentDefaultIndex : 0,
       );
     } else {
       setHighlightedSinkIndex(0);
     }
   }, [availableSinks, defaultSinkName]);
 
-  const menuItems = useMemo(
-    () => [
+  const toggleEnableUiActionSoundFeedbacks = useCallback(() => {
+    updateSetting(
+      "enableUiActionSoundFeedbacks",
+      !settings.enableUiActionSoundFeedbacks,
+    );
+  }, [settings, updateSetting]);
+
+  const menuItems = useMemo(() => {
+    const items = [
       { type: CONTROL_TYPES.MUTE, label: t("Mute") },
       { type: CONTROL_TYPES.VOLUME, label: t("Volume") },
       { type: CONTROL_TYPES.OUTPUT_DEVICE, label: t("Select Output") },
-    ],
-    [t]
-  );
+    ];
+
+    if (settings.enableUiActionSoundFeedbacks !== undefined) {
+      items.push({
+        type: CONTROL_TYPES.UI_SOUNDS,
+        label: t("UI Action Sound Feedbacks"),
+      });
+    }
+
+    return items;
+  }, [t, settings]);
 
   const handleAction = useCallback(
     (actionName, item) => {
@@ -75,13 +98,16 @@ const VolumeControl = ({ onClose }) => {
               setHighlightedSinkIndex((prev) => Math.max(0, prev - 1));
             } else if (actionName === "RIGHT") {
               setHighlightedSinkIndex((prev) =>
-                Math.min(availableSinks.length - 1, prev + 1)
+                Math.min(availableSinks.length - 1, prev + 1),
               );
             } else if (actionName === "A") {
               const selectedSink = availableSinks[highlightedSinkIndex];
               if (selectedSink) setDefaultSink(selectedSink.name);
             }
           }
+          break;
+        case CONTROL_TYPES.UI_SOUNDS:
+          if (actionName === "A") toggleEnableUiActionSoundFeedbacks();
           break;
       }
     },
@@ -92,8 +118,9 @@ const VolumeControl = ({ onClose }) => {
       availableSinks,
       highlightedSinkIndex,
       setDefaultSink,
+      toggleEnableUiActionSoundFeedbacks,
       onClose,
-    ]
+    ],
   );
 
   const handleFocusChange = useCallback((item) => {
@@ -102,12 +129,20 @@ const VolumeControl = ({ onClose }) => {
 
   const renderItem = useCallback(
     (item, isFocused, onMouseEnter) => {
+      let handleRowClick;
+
+      if (item.type === CONTROL_TYPES.MUTE) {
+        handleRowClick = toggleMute;
+      } else if (item.type === CONTROL_TYPES.UI_SOUNDS) {
+        handleRowClick = toggleEnableUiActionSoundFeedbacks;
+      }
+
       return (
         <FocusableRow
           key={item.type}
           isFocused={isFocused}
           onMouseEnter={onMouseEnter}
-          onClick={item.type === CONTROL_TYPES.MUTE ? toggleMute : undefined}
+          onClick={handleRowClick}
         >
           <span className="volume-control-label">{item.label}</span>
           {item.type === CONTROL_TYPES.MUTE && (
@@ -150,10 +185,27 @@ const VolumeControl = ({ onClose }) => {
               )}
             </div>
           )}
+          {item.type === CONTROL_TYPES.UI_SOUNDS && (
+            <ToggleButton
+              isToggledOn={settings.enableUiActionSoundFeedbacks}
+              labelOn={t("Disable")}
+              labelOff={t("Enable")}
+              onClick={toggleEnableUiActionSoundFeedbacks}
+            />
+          )}
         </FocusableRow>
       );
     },
-    [volume, isMuted, toggleMute, availableSinks, highlightedSinkIndex, t]
+    [
+      volume,
+      isMuted,
+      toggleMute,
+      availableSinks,
+      highlightedSinkIndex,
+      settings.enableUiActionSoundFeedbacks,
+      toggleEnableUiActionSoundFeedbacks,
+      t,
+    ],
   );
 
   const legendItems = useMemo(() => {
@@ -190,6 +242,15 @@ const VolumeControl = ({ onClose }) => {
           items.push({ button: "A", label: t("Set Device") });
         }
         break;
+      case CONTROL_TYPES.UI_SOUNDS:
+        items.push({
+          button: "A",
+          label: settings.enableUiActionSoundFeedbacks
+            ? t("Disable")
+            : t("Enable"),
+          onClick: toggleEnableUiActionSoundFeedbacks,
+        });
+        break;
     }
     items.push({ button: "B", label: t("Close"), onClick: onClose });
     return items;
@@ -200,6 +261,8 @@ const VolumeControl = ({ onClose }) => {
     decreaseVolume,
     increaseVolume,
     availableSinks,
+    settings.enableUiActionSoundFeedbacks,
+    toggleEnableUiActionSoundFeedbacks,
     onClose,
     t,
   ]);

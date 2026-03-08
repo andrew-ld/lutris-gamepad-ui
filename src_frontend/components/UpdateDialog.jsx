@@ -4,12 +4,13 @@ import { openExternalLink } from "../utils/ipc";
 import { useTranslation } from "../contexts/TranslationContext";
 import { useScopedInput } from "../hooks/useScopedInput";
 import "../styles/UpdateDialog.css";
-import { playActionSound } from "../utils/sound";
+import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 
 export const UpdateDialogFocusId = "UpdateDialog";
 
 const UpdateDialog = ({ newVersion, releaseUrl, onClose }) => {
   const { t } = useTranslation();
+  const playActionSound = usePlayButtonActionSound();
 
   const handleOpenLink = useCallback(() => {
     openExternalLink(releaseUrl);
@@ -33,7 +34,7 @@ const UpdateDialog = ({ newVersion, releaseUrl, onClose }) => {
           break;
       }
     },
-    [handleOpenLink, handleClose]
+    [handleOpenLink, handleClose, playActionSound],
   );
 
   useScopedInput(inputHandler, UpdateDialogFocusId);
@@ -43,7 +44,7 @@ const UpdateDialog = ({ newVersion, releaseUrl, onClose }) => {
       { button: "A", label: t("Go to Downloads"), onClick: handleOpenLink },
       { button: "B", label: t("Later"), onClick: handleClose },
     ],
-    [handleOpenLink, handleClose, t]
+    [handleOpenLink, handleClose, t],
   );
 
   return (
