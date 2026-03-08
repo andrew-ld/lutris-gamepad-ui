@@ -44,6 +44,8 @@ const GameCard = React.forwardRef(({ game, onFocus, onClick }, ref) => {
           src={`app://${game.runtimeIconPath}`}
           alt="Runner Icon"
           className="game-card-runner-icon"
+          decoding="async"
+          loading="lazy"
         />
       )}
 

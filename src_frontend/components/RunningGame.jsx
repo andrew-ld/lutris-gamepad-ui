@@ -23,6 +23,8 @@ const RunningGamePage = ({ game, isPaused }) => {
             src={`app://${game.coverPath}`}
             alt={game.title}
             className="running-game-cover"
+            decoding="async"
+            loading="lazy"
           />
         ) : (
           <GameCover game={game} className="running-game-cover" />
