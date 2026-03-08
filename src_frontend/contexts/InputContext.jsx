@@ -208,12 +208,12 @@ export const InputProvider = ({ children }) => {
 
   useEffect(() => {
     const handleKeyboardKeyDown = (event) => {
-      if (event.repeat) {
-        return;
-      }
       event.preventDefault();
       event.stopPropagation();
       event.stopImmediatePropagation();
+      if (event.repeat) {
+        return;
+      }
       const actionName =
         KEYBOARD_ACTION_MAP[event.key] ||
         KEYBOARD_ACTION_MAP[event.key.toLowerCase()];
