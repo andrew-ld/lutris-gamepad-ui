@@ -26,7 +26,7 @@
   height: 100vh;
   background-size: cover;
   background-position: center;
-  filter: blur(20px) brightness(0.6);
+  opacity: 0.6;
   transform: scale(1.2);
   pointer-events: none;
 }
@@ -37,8 +37,7 @@
   align-items: center;
   gap: 40px;
   padding: 40px;
-  background-color: rgba(20, 20, 20, 0.5);
-  backdrop-filter: blur(10px);
+  background-color: rgba(20, 20, 20, 0.85);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }

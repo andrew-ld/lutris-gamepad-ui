@@ -4,35 +4,49 @@ import GameCover from "./GameCover";
 import { formatDate, formatPlaytime } from "../utils/datetime";
 import { useTranslation } from "../contexts/TranslationContext";
 import { useSettingsState } from "../contexts/SettingsContext";
+import { useVisibilityObserver } from "../hooks/useVisibilityObserver";
 
 const GameCard = React.forwardRef(({ game, onFocus, onClick }, ref) => {
   const { t } = useTranslation();
   const { settings } = useSettingsState();
 
+  const { isVisible, setRef } = useVisibilityObserver({
+    externalRef: ref,
+    rootMargin: "800px",
+  });
+
   return (
     <div
-      ref={ref}
+      ref={setRef}
       className="game-card"
       tabIndex="-1"
       onClick={onClick}
       onMouseEnter={onFocus}
     >
-      {game.coverPath ? (
-        <img
-          src={`app://${game.coverPath}`}
-          alt={game.title}
-          className="game-card-cover"
-        />
+      {isVisible ? (
+        game.coverPath ? (
+          <img
+            src={`app://${game.coverPath}`}
+            alt={game.title}
+            className="game-card-cover"
+            decoding="async"
+            loading="lazy"
+          />
+        ) : (
+          <GameCover game={game} className="game-card-cover" />
+        )
       ) : (
-        <GameCover game={game} className="game-card-cover" />
+        <div className="game-card-cover placeholder" />
       )}
-      {settings.showRunnerIcon && game.runtimeIconPath && (
+
+      {isVisible && settings.showRunnerIcon && game.runtimeIconPath && (
         <img
           src={`app://${game.runtimeIconPath}`}
           alt="Runner Icon"
           className="game-card-runner-icon"
         />
       )}
+
       <div className="game-card-overlay">
         <div className="game-card-info">
           <h3 className="game-card-title">{game.title}</h3>

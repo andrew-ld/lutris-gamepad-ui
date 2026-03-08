@@ -39,4 +39,14 @@ module.exports = {
     category: "game",
     icon: "src_frontend/resources/icon.svg",
   },
+  electronFuses: {
+    runAsNode: false,
+    enableCookieEncryption: false,
+    enableNodeOptionsEnvironmentVariable: false,
+    enableNodeCliInspectArguments: false,
+    enableEmbeddedAsarIntegrityValidation: true,
+    onlyLoadAppFromAsar: true,
+    loadBrowserProcessSpecificV8Snapshot: false,
+    grantFileProtocolExtraPrivileges: false,
+  },
 };

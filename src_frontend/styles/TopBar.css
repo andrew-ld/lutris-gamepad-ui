@@ -4,8 +4,7 @@
   left: 0;
   width: 100%;
   height: var(--top-bar-height);
-  background-color: rgba(20, 20, 20, 0.85);
-  backdrop-filter: blur(8px);
+  background-color: rgba(20, 20, 20, 0.95);
   color: var(--text-secondary);
   display: flex;
   align-items: center;
