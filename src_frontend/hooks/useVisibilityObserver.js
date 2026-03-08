@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 const observers = new Map();
 const visibilityCallbacks = new WeakMap();
@@ -32,25 +32,26 @@ export const useVisibilityObserver = ({
   externalRef = null,
 } = {}) => {
   const [isVisible, setIsVisible] = useState(false);
-  const localRef = useRef(null);
+  const [node, setNode] = useState(null);
 
   const setRef = useCallback(
-    (node) => {
-      localRef.current = node;
+    (element) => {
+      setNode(element);
+
       if (typeof externalRef === "function") {
-        externalRef(node);
+        externalRef(element);
       } else if (externalRef) {
-        externalRef.current = node;
+        externalRef.current = element;
       }
     },
     [externalRef],
   );
 
   useEffect(() => {
-    const node = localRef.current;
     if (!node) return;
 
     const observer = getObserver(rootMargin);
+    if (!observer) return;
 
     visibilityCallbacks.set(node, setIsVisible);
     observer.observe(node);
@@ -59,7 +60,7 @@ export const useVisibilityObserver = ({
       visibilityCallbacks.delete(node);
       observer.unobserve(node);
     };
-  }, [rootMargin]);
+  }, [node, rootMargin]);
 
   return { isVisible, setRef };
 };
