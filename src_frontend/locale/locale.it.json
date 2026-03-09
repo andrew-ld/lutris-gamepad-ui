@@ -36,9 +36,9 @@
     "Clear Search": "Annulla ricerca",
     "Force close": "Forza chiusura di",
     "Launch Game": "Avvia gioco",
-    "Pause Game": "Pause Game",
+    "Pause Game": "Pausa gioco",
     "Power": "Menu di sistema",
-    "Resume Game": "Resume Game",
+    "Resume Game": "Riprendi gioco",
     "Search": "Cerca",
     "Toggle Overlay": "Visualizza overlay",
     "game": "gioco"
@@ -79,7 +79,7 @@
     "Results for \"{{searchQuery}}\"": "Risultati per \"{{searchQuery}}\"",
     "Search Library": "Cerca nella libreria",
     "This action will force-quit the game. Any unsaved progress may be lost.": "Questa operazione forzerà la chiusura del gioco. Eventuali progressi non salvati andranno persi.",
-    "This feature is experimental. Pausing the game may cause issues.": "This feature is experimental. Pausing the game may cause issues."
+    "This feature is experimental. Pausing the game may cause issues.": "Questa funzionalità è sperimentale. Mettere in pausa il gioco potrebbe causare problemi."
   },
   "components/LoadingIndicator.jsx": {
     "Loading...": "Caricamento..."
@@ -97,7 +97,7 @@
   },
   "components/RunningGame.jsx": {
     "Now Playing": "In gioco",
-    "Paused": "Paused",
+    "Paused": "In pausa",
     "Playtime: {{playtime}}": "Ore di gioco: {{playtime}}"
   },
   "components/SettingsMenu.jsx": {
@@ -161,8 +161,8 @@
     "Close": "Chiudi",
     "Current Output:": "Uscita corrente:",
     "Decrease": "Abbassa",
-    "Disable": "Disable",
-    "Enable": "Enable",
+    "Disable": "Disattiva",
+    "Enable": "Attiva",
     "Increase": "Alza",
     "Loading Audio Settings...": "Caricamento impostazioni audio...",
     "Mute": "Silenzia",
@@ -171,7 +171,7 @@
     "Prev": "Precedente",
     "Select Output": "Seleziona uscita",
     "Set Device": "Imposta come predefinito",
-    "UI Action Sound Feedbacks": "UI Action Sound Feedbacks",
+    "UI Action Sound Feedbacks": "Feedback sonoro UI",
     "Unmute": "Riattiva audio",
     "Volume": "Volume"
   }
