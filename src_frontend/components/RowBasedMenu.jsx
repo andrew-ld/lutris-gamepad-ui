@@ -8,7 +8,8 @@ import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 const defaultKeyExtractor = (item, index) => item.id ?? item.label ?? index;
 
 const RowBasedMenu = ({
-  items,
+  items: baseItems,
+  sections,
   renderItem,
   onAction,
   focusId,
@@ -21,17 +22,29 @@ const RowBasedMenu = ({
   const { t } = useTranslation();
   const playActionSound = usePlayButtonActionSound();
 
+  const [activeSectionIndex, setActiveSectionIndex] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const items = sections
+    ? sections[activeSectionIndex]?.items || []
+    : baseItems || [];
+
   const selectedIndexRef = useRef(selectedIndex);
   const onActionRef = useRef(onAction);
   const onFocusChangeRef = useRef(onFocusChange);
 
   const containerRef = useRef(null);
+  const listRef = useRef(null);
   const selectedItemKeyRef = useRef(null);
+  const activeSectionIndexRef = useRef(activeSectionIndex);
 
   useEffect(() => {
     selectedIndexRef.current = selectedIndex;
   }, [selectedIndex]);
+
+  useEffect(() => {
+    activeSectionIndexRef.current = activeSectionIndex;
+  }, [activeSectionIndex]);
 
   useEffect(() => {
     onActionRef.current = onAction;
@@ -76,10 +89,10 @@ const RowBasedMenu = ({
   }, [items, itemKey]);
 
   useEffect(() => {
-    if (!containerRef.current || items.length === 0) return;
+    if (!listRef.current || items.length === 0) return;
 
-    const scrollParent = findScrollableParent(containerRef.current);
-    const selectedElement = containerRef.current.children[selectedIndex];
+    const scrollParent = findScrollableParent(listRef.current);
+    const selectedElement = listRef.current.children[selectedIndex];
 
     if (selectedIndex === 0) {
       if (scrollParent) {
@@ -108,6 +121,26 @@ const RowBasedMenu = ({
 
   const inputHandler = useCallback(
     (input) => {
+      if (sections && sections.length > 1) {
+        if (input.name === "L1") {
+          playActionSound();
+          setActiveSectionIndex((prev) =>
+            prev > 0 ? prev - 1 : sections.length - 1,
+          );
+          setSelectedIndex(0);
+          return;
+        }
+
+        if (input.name === "R1") {
+          playActionSound();
+          setActiveSectionIndex((prev) =>
+            prev < sections.length - 1 ? prev + 1 : 0,
+          );
+          setSelectedIndex(0);
+          return;
+        }
+      }
+
       if (items.length === 0) {
         if (onActionRef.current) {
           playActionSound();
@@ -139,6 +172,8 @@ const RowBasedMenu = ({
         case "B":
         case "X":
         case "Y":
+        case "L1":
+        case "R1":
           if (onActionRef.current) {
             playActionSound();
             onActionRef.current(input.name, currentItem);
@@ -146,29 +181,69 @@ const RowBasedMenu = ({
           break;
       }
     },
-    [items, playActionSound],
+    [items, sections, playActionSound],
   );
 
   useScopedInput(inputHandler, focusId, isActive);
 
-  if (items.length === 0) {
-    if (renderEmpty) {
-      return renderEmpty();
+  const handleSectionClick = useCallback((index) => {
+    setActiveSectionIndex(index);
+    setSelectedIndex(0);
+  }, []);
+
+  const handleItemClick = useCallback((index) => {
+    setSelectedIndex(index);
+  }, []);
+
+  const renderSections = () => {
+    if (!sections || sections.length === 0) {
+      return null;
     }
+
     return (
-      <div className="row-based-menu-empty">
-        <p>{emptyMessage || t("No items available.")}</p>
+      <div className="row-based-menu-sections">
+        {sections.map((section, index) => (
+          <div
+            key={section.id || index}
+            className={`row-based-menu-section ${
+              index === activeSectionIndex ? "active" : ""
+            }`}
+            onClick={() => handleSectionClick(index)}
+          >
+            {section.label}
+          </div>
+        ))}
       </div>
     );
-  }
+  };
+
+  const renderContent = () => {
+    if (items.length === 0) {
+      if (renderEmpty) {
+        return renderEmpty();
+      }
+      return (
+        <div className="row-based-menu-empty">
+          <p>{emptyMessage || t("No items available.")}</p>
+        </div>
+      );
+    }
+
+    return (
+      <div ref={listRef} className="row-based-menu-list">
+        {items.map((item, index) =>
+          renderItem(item, index === selectedIndex, () =>
+            handleItemClick(index),
+          ),
+        )}
+      </div>
+    );
+  };
 
   return (
-    <div ref={containerRef}>
-      {items.map((item, index) =>
-        renderItem(item, index === selectedIndex, () =>
-          setSelectedIndex(index),
-        ),
-      )}
+    <div ref={containerRef} className="row-based-menu-container">
+      {renderSections()}
+      {renderContent()}
     </div>
   );
 };

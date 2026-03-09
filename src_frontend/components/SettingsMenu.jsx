@@ -97,60 +97,69 @@ const SettingsMenu = ({ onClose }) => {
     );
   }, [settings, updateSetting]);
 
-  const menuItems = useMemo(() => {
-    const result = [];
+  const menuSections = useMemo(() => {
+    const generalItems = [];
     if (settings.zoomFactor !== undefined) {
-      result.push({ type: "ZOOM", label: t("Zoom Level") });
-    }
-    if (settings.gamepadAutorepeatMs !== undefined) {
-      result.push({
-        type: "GAMEPAD_AUTOREPEAT",
-        label: t("Gamepad Autorepeat Delay"),
-      });
-    }
-    if (settings.showRecentlyPlayed !== undefined) {
-      result.push({
-        type: "RECENTLY_PLAYED",
-        label: t("Recently Played Shelf"),
-      });
-    }
-    if (settings.showHiddenGames !== undefined) {
-      result.push({
-        type: "SHOW_HIDDEN",
-        label: t("Show Hidden Games"),
-      });
-    }
-    if (settings.showRunnerIcon !== undefined) {
-      result.push({
-        type: "SHOW_RUNNER_ICON",
-        label: t("Show Runner Icon"),
-      });
-    }
-    if (settings.doubleConfirmPowerManagement !== undefined) {
-      result.push({
-        type: "DOUBLE_CONFIRM_POWER_MANAGEMENT",
-        label: t("Double Confirm Power Management"),
-      });
+      generalItems.push({ type: "ZOOM", label: t("Zoom Level") });
     }
     if (settings.useRemoteDesktopPortal !== undefined) {
-      result.push({
+      generalItems.push({
         type: "USE_REMOTE_DESKTOP_PORTAL",
         label: t("Use Remote Desktop Portal"),
       });
     }
     if (settings.keepGamesRunningOnQuit !== undefined) {
-      result.push({
+      generalItems.push({
         type: "KEEP_GAMES_RUNNING",
         label: t("Keep Games Running On Quit"),
       });
     }
+
+    const libraryItems = [];
+    if (settings.showRecentlyPlayed !== undefined) {
+      libraryItems.push({
+        type: "RECENTLY_PLAYED",
+        label: t("Recently Played Shelf"),
+      });
+    }
+    if (settings.showHiddenGames !== undefined) {
+      libraryItems.push({
+        type: "SHOW_HIDDEN",
+        label: t("Show Hidden Games"),
+      });
+    }
+    if (settings.showRunnerIcon !== undefined) {
+      libraryItems.push({
+        type: "SHOW_RUNNER_ICON",
+        label: t("Show Runner Icon"),
+      });
+    }
+
+    const inputPowerItems = [];
+    if (settings.gamepadAutorepeatMs !== undefined) {
+      inputPowerItems.push({
+        type: "GAMEPAD_AUTOREPEAT",
+        label: t("Gamepad Autorepeat Delay"),
+      });
+    }
+    if (settings.doubleConfirmPowerManagement !== undefined) {
+      inputPowerItems.push({
+        type: "DOUBLE_CONFIRM_POWER_MANAGEMENT",
+        label: t("Double Confirm Power Management"),
+      });
+    }
     if (settings.enableUiActionSoundFeedbacks !== undefined) {
-      result.push({
+      inputPowerItems.push({
         type: "ENABLE_UI_ACTION_SOUND_FEEDBACKS",
         label: t("UI Action Sound Feedbacks"),
       });
     }
-    return result;
+
+    return [
+      { id: "general", label: t("General"), items: generalItems },
+      { id: "library", label: t("Library"), items: libraryItems },
+      { id: "input_power", label: t("Input & Power"), items: inputPowerItems },
+    ].filter((section) => section.items.length > 0);
   }, [t, settings]);
 
   const handleAction = useCallback(
@@ -406,6 +415,11 @@ const SettingsMenu = ({ onClose }) => {
   const legendItems = useMemo(() => {
     const buttons = [];
 
+    if (menuSections.length > 1) {
+      buttons.push({ button: "L1", label: t("Prev") });
+      buttons.push({ button: "R1", label: t("Next") });
+    }
+
     if (focusedItem?.type === "ZOOM") {
       buttons.push({
         button: "LEFT",
@@ -482,6 +496,7 @@ const SettingsMenu = ({ onClose }) => {
   }, [
     focusedItem,
     settings,
+    menuSections.length,
     decreaseZoom,
     increaseZoom,
     decreaseAutorepeat,
@@ -503,7 +518,7 @@ const SettingsMenu = ({ onClose }) => {
         <div>
           <h2 className="settings-menu-title">{t("Settings")}</h2>
           <RowBasedMenu
-            items={menuItems}
+            sections={menuSections}
             renderItem={renderItem}
             onAction={handleAction}
             onFocusChange={setFocusedItem}
