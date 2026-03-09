@@ -1,6 +1,6 @@
 import { getUserTheme, logError, logInfo } from "./ipc";
 
-export async function applyUserTheme() {
+export async function reloadApplicationTheme() {
   try {
     const theme = await getUserTheme();
 
