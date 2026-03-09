@@ -49,6 +49,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
   bluetoothDisconnect: (devicePath) =>
     ipcRenderer.send("bluetooth-disconnect", devicePath),
 
+  // Display & Brightness
+  getBrightness: () => ipcRenderer.invoke("get-brightness"),
+  setBrightness: (brightness) => ipcRenderer.send("set-brightness", brightness),
+
   // System & App
   rebootPC: () => ipcRenderer.send("reboot-pc"),
   powerOffPC: () => ipcRenderer.send("poweroff-pc"),

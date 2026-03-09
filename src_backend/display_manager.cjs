@@ -19,13 +19,13 @@ const desktop = getDesktopEnvironment();
 let implementation;
 
 if (desktop === DESKTOP_GNOME) {
-  logInfo("Using GNOME implementation for brightness management");
+  logInfo("Using GNOME implementation for display management");
   implementation = require("./display_manager_impl_gnome.cjs");
 } else if (desktop === DESKTOP_KDE) {
-  logInfo("Using KDE implementation for brightness management");
+  logInfo("Using KDE implementation for display management");
   implementation = require("./display_manager_impl_kde.cjs");
 } else {
-  logWarn("brightness management unavailable on this desktop");
+  logWarn("Display management unavailable on this desktop");
   implementation = {
     getBrightness: async () => {
       throw new Error("Brightness reading not supported on this environment");

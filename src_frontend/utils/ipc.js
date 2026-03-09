@@ -30,6 +30,10 @@ export const bluetoothConnect = (path) =>
 export const bluetoothDisconnect = (path) =>
   window.electronAPI.bluetoothDisconnect(path);
 
+export const getBrightness = () => window.electronAPI.getBrightness();
+export const setBrightness = (brightness) =>
+  window.electronAPI.setBrightness(brightness);
+
 export const logInfo = (...args) => window.electronAPI.log("info", args);
 export const logWarn = (...args) => window.electronAPI.log("warn", args);
 export const logError = (...args) => window.electronAPI.log("error", args);

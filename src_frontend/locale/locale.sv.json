@@ -57,6 +57,17 @@
     "Show Error Details": "Visa felinformation",
     "The application has encountered an unexpected error.": "Programmet har stött på ett oväntat fel."
   },
+  "components/DisplaySettings.jsx": {
+    "Brightness": "Brightness",
+    "Close": "Close",
+    "Decrease": "Decrease",
+    "Display Settings": "Display Settings",
+    "Failed to load brightness. Check your desktop environment compatibility.": "Failed to load brightness. Check your desktop environment compatibility.",
+    "Increase": "Increase",
+    "Loading Display Settings...": "Loading Display Settings...",
+    "No display settings available.": "No display settings available.",
+    "Reload": "Reload"
+  },
   "components/GameCard.jsx": {
     "Last played: {{date}}": "Senast spelad: {{date}}",
     "Never": "Aldrig",
@@ -132,6 +143,7 @@
     "Continue with exiting the application?": "Fortsätt med att avsluta programmet?",
     "Continue with system power off?": "Fortsätt med att stänga av systemet?",
     "Continue with system reboot?": "Fortsätt med att starta om systemet?",
+    "Display Settings": "Display Settings",
     "Exit Application": "Avsluta programmet",
     "Generate Bug Report": "Generate Bug Report",
     "Open Lutris": "Öppna Lutris",

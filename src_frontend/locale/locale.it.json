@@ -57,6 +57,17 @@
     "Show Error Details": "Mostra dettagli",
     "The application has encountered an unexpected error.": "L'applicazione ha riscontrato un errore imprevisto."
   },
+  "components/DisplaySettings.jsx": {
+    "Brightness": "Brightness",
+    "Close": "Close",
+    "Decrease": "Decrease",
+    "Display Settings": "Display Settings",
+    "Failed to load brightness. Check your desktop environment compatibility.": "Failed to load brightness. Check your desktop environment compatibility.",
+    "Increase": "Increase",
+    "Loading Display Settings...": "Loading Display Settings...",
+    "No display settings available.": "No display settings available.",
+    "Reload": "Reload"
+  },
   "components/GameCard.jsx": {
     "Last played: {{date}}": "Ultimo avvio: {{date}}",
     "Never": "Mai giocato",
@@ -134,6 +145,7 @@
     "Continue with exiting the application?": "Uscire dall'applicazione?",
     "Continue with system power off?": "Procedere con lo spegnimento del sistema?",
     "Continue with system reboot?": "Procedere con il riavvio del sistema?",
+    "Display Settings": "Display Settings",
     "Exit Application": "Esci",
     "Generate Bug Report": "Genera segnalazione bug",
     "Library reloaded successfully!": "Libreria ricaricata con successo!",

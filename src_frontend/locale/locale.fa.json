@@ -57,6 +57,17 @@
     "Show Error Details": "نمایش جزئیات خطا",
     "The application has encountered an unexpected error.": "برنامه با خطای غیرمنتظره‌ای مواجه شده."
   },
+  "components/DisplaySettings.jsx": {
+    "Brightness": "Brightness",
+    "Close": "Close",
+    "Decrease": "Decrease",
+    "Display Settings": "Display Settings",
+    "Failed to load brightness. Check your desktop environment compatibility.": "Failed to load brightness. Check your desktop environment compatibility.",
+    "Increase": "Increase",
+    "Loading Display Settings...": "Loading Display Settings...",
+    "No display settings available.": "No display settings available.",
+    "Reload": "Reload"
+  },
   "components/GameCard.jsx": {
     "Last played: {{date}}": "آخرین بازی: {{date}}",
     "Never": "هرگز",
@@ -132,6 +143,7 @@
     "Continue with exiting the application?": "ادامه دادن به خروج از برنامه؟",
     "Continue with system power off?": "ادامه دادن به خاموش کردن سامانه؟",
     "Continue with system reboot?": "ادامه دادن به باز راه‌اندازی سامانه؟",
+    "Display Settings": "Display Settings",
     "Exit Application": "خروج از برنامه",
     "Generate Bug Report": "Generate Bug Report",
     "Open Lutris": "باز کردن لوتریس",

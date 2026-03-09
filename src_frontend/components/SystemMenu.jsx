@@ -8,6 +8,7 @@ import "../styles/SystemMenu.css";
 import * as api from "../utils/ipc";
 import About from "./About";
 import BluetoothMenu from "./BluetoothMenu";
+import DisplaySettings from "./DisplaySettings";
 import ConfirmationDialog from "./ConfirmationDialog";
 import LegendaContainer from "./LegendaContainer";
 import RowBasedMenu from "./RowBasedMenu";
@@ -60,6 +61,11 @@ const SystemMenu = () => {
     setIsOpen(false);
   }, [showModal]);
 
+  const openDisplaySettingsModal = useCallback(() => {
+    showModal((hideThisModal) => <DisplaySettings onClose={hideThisModal} />);
+    setIsOpen(false);
+  }, [showModal]);
+
   const openAboutModal = useCallback(() => {
     showModal((hideThisModal) => <About onClose={hideThisModal} />);
     setIsOpen(false);
@@ -92,6 +98,10 @@ const SystemMenu = () => {
       {
         label: t("Audio Settings"),
         action: openAudioSettingsModal,
+      },
+      {
+        label: t("Display Settings"),
+        action: openDisplaySettingsModal,
       },
       {
         label: t("Bluetooth Settings"),
@@ -130,11 +140,10 @@ const SystemMenu = () => {
     [
       reloadLibraryAction,
       openAudioSettingsModal,
+      openDisplaySettingsModal,
       openAboutModal,
       openBluetoothSettingsModal,
       openSettingsModal,
-      reloadLibraryAction,
-      openAudioSettingsModal,
       t,
       settings.doubleConfirmPowerManagement,
     ],

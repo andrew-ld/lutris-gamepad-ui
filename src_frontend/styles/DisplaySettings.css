@@ -1,0 +1,61 @@
+.display-settings-container {
+  display: flex;
+  flex-direction: column;
+  width: 90vw;
+  max-width: 500px;
+  box-sizing: border-box;
+}
+
+.display-settings-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.display-settings-label {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+
+.display-settings-value {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--text-primary);
+}
+
+.brightness-bar-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brightness-bar-container {
+  width: 150px;
+  height: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.brightness-bar-fill {
+  height: 100%;
+  background-color: var(--accent-color);
+  border-radius: 4px;
+  transition: width 0.1s linear;
+}
+
+.display-settings-error-msg {
+  font-size: 0.9rem;
+  color: var(--error-color, #ff4d4d);
+  text-align: center;
+  margin-bottom: 16px;
+  padding: 0 16px;
+}
+
+.focusable-row.focused .display-settings-label {
+  color: var(--text-primary);
+}

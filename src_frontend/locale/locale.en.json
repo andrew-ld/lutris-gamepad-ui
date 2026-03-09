@@ -56,6 +56,17 @@
     "Show Error Details": "Show Error Details",
     "The application has encountered an unexpected error.": "The application has encountered an unexpected error."
   },
+  "components/DisplaySettings.jsx": {
+    "Brightness": "Brightness",
+    "Close": "Close",
+    "Decrease": "Decrease",
+    "Display Settings": "Display Settings",
+    "Failed to load brightness. Check your desktop environment compatibility.": "Failed to load brightness. Check your desktop environment compatibility.",
+    "Increase": "Increase",
+    "Loading Display Settings...": "Loading Display Settings...",
+    "No display settings available.": "No display settings available.",
+    "Reload": "Reload"
+  },
   "components/GameCard.jsx": {
     "Last played: {{date}}": "Last played: {{date}}",
     "Never": "Never",
@@ -131,6 +142,7 @@
     "Continue with exiting the application?": "Continue with exiting the application?",
     "Continue with system power off?": "Continue with system power off?",
     "Continue with system reboot?": "Continue with system reboot?",
+    "Display Settings": "Display Settings",
     "Exit Application": "Exit Application",
     "Generate Bug Report": "Generate Bug Report",
     "Open Lutris": "Open Lutris",
