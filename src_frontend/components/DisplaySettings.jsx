@@ -5,6 +5,7 @@ import RowBasedMenu from "./RowBasedMenu";
 import FocusableRow from "./FocusableRow";
 import { useTranslation } from "../contexts/TranslationContext";
 import { useIsMounted } from "../hooks/useIsMounted";
+import PercentageBar from "./PercentageBar";
 import * as api from "../utils/ipc";
 
 export const DisplaySettingsFocusID = "DisplaySettings";
@@ -95,16 +96,8 @@ const DisplaySettings = ({ onClose }) => {
         >
           <span className="display-settings-label">{item.label}</span>
           {item.type === CONTROL_TYPES.BRIGHTNESS && (
-            <div className="brightness-bar-display">
-              <div className="brightness-bar-container">
-                <div
-                  className="brightness-bar-fill"
-                  style={{ width: `${brightness}%` }}
-                ></div>
-              </div>
-              <span className="display-settings-value">{`${brightness}%`}</span>
-            </div>
-          )}
+            <PercentageBar percent={brightness} containerWidth="150px" />
+          )}{" "}
         </FocusableRow>
       );
     },

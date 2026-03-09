@@ -9,6 +9,7 @@ import FocusableRow from "./FocusableRow";
 import LegendaContainer from "./LegendaContainer";
 import RowBasedMenu from "./RowBasedMenu";
 import ToggleButton from "./ToggleButton";
+import PercentageBar from "./PercentageBar";
 
 export const SettingsMenuFocusId = "SettingsMenu";
 
@@ -230,23 +231,14 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
             >
               <span className="settings-menu-label">{item.label}</span>
-              <div className="zoom-factor-display">
-                <div className="zoom-factor-bar-container">
-                  <div
-                    className="zoom-factor-bar-fill"
-                    style={{
-                      width: `${
-                        ((settings.zoomFactor - MIN_ZOOM) /
-                          (MAX_ZOOM - MIN_ZOOM)) *
-                        100
-                      }%`,
-                    }}
-                  />
-                </div>
-                <span className="settings-menu-value">{`${Math.round(
-                  settings.zoomFactor * 100,
-                )}%`}</span>
-              </div>
+              <PercentageBar
+                percent={
+                  ((settings.zoomFactor - MIN_ZOOM) / (MAX_ZOOM - MIN_ZOOM)) *
+                  100
+                }
+                label={`${Math.round(settings.zoomFactor * 100)}%`}
+                containerWidth="120px"
+              />
             </FocusableRow>
           );
         case "GAMEPAD_AUTOREPEAT":
@@ -257,23 +249,15 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
             >
               <span className="settings-menu-label">{item.label}</span>
-              <div className="zoom-factor-display">
-                <div className="zoom-factor-bar-container">
-                  <div
-                    className="zoom-factor-bar-fill"
-                    style={{
-                      width: `${
-                        ((settings.gamepadAutorepeatMs - MIN_AUTOREPEAT) /
-                          (MAX_AUTOREPEAT - MIN_AUTOREPEAT)) *
-                        100
-                      }%`,
-                    }}
-                  />
-                </div>
-                <span className="settings-menu-value">
-                  {settings.gamepadAutorepeatMs}ms
-                </span>
-              </div>
+              <PercentageBar
+                percent={
+                  ((settings.gamepadAutorepeatMs - MIN_AUTOREPEAT) /
+                    (MAX_AUTOREPEAT - MIN_AUTOREPEAT)) *
+                  100
+                }
+                label={`${settings.gamepadAutorepeatMs}ms`}
+                containerWidth="120px"
+              />
             </FocusableRow>
           );
         case "RECENTLY_PLAYED":

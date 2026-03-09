@@ -10,6 +10,7 @@ import RowBasedMenu from "./RowBasedMenu";
 import FocusableRow from "./FocusableRow";
 import { useTranslation } from "../contexts/TranslationContext";
 import ToggleButton from "./ToggleButton";
+import PercentageBar from "./PercentageBar";
 
 export const VolumeControlFocusID = "VolumeControl";
 
@@ -154,15 +155,10 @@ const VolumeControl = ({ onClose }) => {
             />
           )}
           {item.type === CONTROL_TYPES.VOLUME && (
-            <div className="volume-bar-display">
-              <div className="volume-bar-container">
-                <div
-                  className="volume-bar-fill"
-                  style={{ width: `${isMuted ? 0 : volume}%` }}
-                ></div>
-              </div>
-              <span className="volume-control-value">{`${volume}%`}</span>
-            </div>
+            <PercentageBar
+              percent={isMuted ? 0 : volume}
+              label={`${volume}%`}
+            />
           )}
           {item.type === CONTROL_TYPES.OUTPUT_DEVICE && (
             <div className="output-device-selector">
