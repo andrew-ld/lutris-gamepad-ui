@@ -19,6 +19,7 @@ const {
   connectToDevice: bluetoothConnect,
   disconnectFromDevice: bluetoothDisconnect,
 } = require("./bluetooth_manager.cjs");
+const { getBrightness, setBrightness } = require("./display_manager.cjs");
 const { toggleWindowShow } = require("./window_manager.cjs");
 const {
   logError,
@@ -212,6 +213,15 @@ function registerIpcHandlers() {
       );
     }
     await bluetoothDisconnect(devicePath);
+  });
+
+  // Brightness Management
+  ipcHandleWithError("get-brightness", async () => {
+    return await getBrightness();
+  });
+
+  ipcOnWithError("set-brightness", async (_event, brightness) => {
+    await setBrightness(brightness);
   });
 
   // Logging from Renderer
