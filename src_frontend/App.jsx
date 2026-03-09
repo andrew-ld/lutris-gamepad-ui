@@ -16,11 +16,22 @@ import { TranslationProvider } from "./contexts/TranslationContext";
 import { onThemeUpdated } from "./utils/ipc";
 import { reloadApplicationTheme } from "./utils/theme.js";
 import { playButtonActionSound } from "./utils/sound.js";
+import icon from "./resources/icon.svg";
+import { logError, setIcon } from "./utils/ipc.js";
+import { renderSvgToDataURL } from "./utils/svg.js";
 
 function App() {
   useEffect(() => {
     playButtonActionSound();
+
     reloadApplicationTheme();
+
+    renderSvgToDataURL(icon, 256, 256)
+      .then((dataURL) => {
+        setIcon(dataURL);
+      })
+      .catch((e) => logError("unable to render icon", e));
+
     return onThemeUpdated(() => reloadApplicationTheme());
   }, []);
 
