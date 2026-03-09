@@ -1,5 +1,6 @@
 .game-library {
   padding: 2rem 4%;
+  contain: layout;
 }
 
 .library-header h1 {

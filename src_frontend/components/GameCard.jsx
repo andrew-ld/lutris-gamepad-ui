@@ -12,7 +12,7 @@ const GameCard = React.forwardRef(({ game, onFocus, onClick }, ref) => {
 
   const { isVisible, setRef } = useVisibilityObserver({
     externalRef: ref,
-    rootMargin: "800px",
+    rootMargin: "200px",
   });
 
   return (

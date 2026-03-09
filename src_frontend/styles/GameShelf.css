@@ -1,5 +1,6 @@
 .game-shelf {
   margin-bottom: 2.5rem;
+  contain: layout;
 }
 
 .game-shelf-title {

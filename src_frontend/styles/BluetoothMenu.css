@@ -5,6 +5,7 @@
   max-width: 600px;
   min-height: 400px;
   box-sizing: border-box;
+  contain: layout;
 }
 
 .bt-menu-content {

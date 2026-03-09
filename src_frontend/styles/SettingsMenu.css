@@ -6,6 +6,7 @@
   box-sizing: border-box;
   flex: 1;
   min-height: 0;
+  contain: layout;
 }
 
 .settings-menu-title {

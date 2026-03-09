@@ -1,4 +1,3 @@
-import { scan } from "react-scan";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
@@ -9,9 +8,15 @@ import { renderSvgToDataURL } from "./utils/svg.js";
 import { applyUserTheme } from "./utils/theme.js";
 import { playButtonActionSound } from "./utils/sound.js";
 
+if (import.meta.env.DEV) {
+  import("react-scan").then(({ scan }) => {
+    scan({ enabled: true });
+  });
+}
+
 applyUserTheme();
 
-renderSvgToDataURL(icon, 1024, 1024)
+renderSvgToDataURL(icon, 256, 256)
   .then((dataURL) => {
     setIcon(dataURL);
   })
@@ -26,7 +31,3 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <App />
   </React.StrictMode>,
 );
-
-if (process.env.NODE_ENV === "development") {
-  scan({ enabled: true });
-}

@@ -10,13 +10,14 @@
     transform 0.3s ease,
     box-shadow 0.3s ease;
   background-color: var(--secondary-background);
+  contain: layout style;
 }
 
 .game-card:hover,
 .game-card:focus-within .game-card:focus {
   transform: scale(1.1);
   z-index: 10;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.7);
 }
 
 .game-card-cover {
@@ -84,7 +85,7 @@
 .game-card.focused {
   transform: scale(1.1);
   z-index: 10;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.7);
   outline: 3px solid var(--accent-color);
   outline-offset: 2px;
 }

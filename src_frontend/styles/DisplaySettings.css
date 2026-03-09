@@ -4,6 +4,7 @@
   width: 90vw;
   max-width: 500px;
   box-sizing: border-box;
+  contain: layout;
 }
 
 .display-settings-title {

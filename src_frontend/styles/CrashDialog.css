@@ -16,7 +16,7 @@
   background-color: var(--secondary-background);
   border-radius: 8px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6);
   max-width: 800px;
   width: 100%;
   max-height: 90vh;
