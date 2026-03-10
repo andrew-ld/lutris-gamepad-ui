@@ -1,5 +1,6 @@
 const { spawnDdcutil, getRunExclusive } = require("./utils.cjs");
 
+// ddcutils is not thread-safe
 const runExclusive = getRunExclusive()
 
 async function getBrightnessInternal() {
