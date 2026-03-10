@@ -50,10 +50,12 @@ const DisplaySettings = ({ onClose }) => {
     async (newVal) => {
       if (brightnessError) return;
       const clamped = Math.max(0, Math.min(100, newVal));
-      setBrightness(clamped);
       await api.setBrightness(clamped);
+      if (isMounted()) {
+        await fetchSettings();
+      }
     },
-    [brightnessError],
+    [brightnessError, fetchSettings, isMounted],
   );
 
   const menuItems = useMemo(() => {
