@@ -256,4 +256,5 @@ module.exports = {
   getProcessDescendants,
   isProcessPaused,
   getRunExclusive,
+  execFilePromise,
 };

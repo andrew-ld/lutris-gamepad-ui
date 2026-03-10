@@ -1,4 +1,8 @@
-const { execPromise, logError, getLutrisWrapperPath } = require("./utils.cjs");
+const {
+  execFilePromise,
+  logError,
+  getLutrisWrapperPath,
+} = require("./utils.cjs");
 
 const SUBCOMMAND_OUTPUT_HEADER = "lutris-subcommand-output:";
 
@@ -28,7 +32,7 @@ async function invokeLutrisSubcommand(subcommandName, args = []) {
 }
 
 async function invokeLutris(args = []) {
-  return await execPromise(`bash ${getLutrisWrapperPath()} ${args.join(" ")}`);
+  return await execFilePromise("bash", [getLutrisWrapperPath(), ...args]);
 }
 
 async function getCoverartPath() {
