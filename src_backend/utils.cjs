@@ -40,11 +40,11 @@ const forceWindowed = process.env.FORCE_WINDOWED === "1";
 
 function localeAppFile(name) {
   const DIRECTORIES = [
+    process.resourcesPath,
+    path.join(process.resourcesPath, "app.asar.unpacked"),
     cwd(),
     __dirname,
     path.join(__dirname, ".."),
-    process.resourcesPath,
-    path.join(process.resourcesPath, "app.asar.unpacked"),
   ];
 
   for (const directory of DIRECTORIES) {
