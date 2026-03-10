@@ -69,7 +69,8 @@
     "Loading Display Settings...": "Loading Display Settings...",
     "Night Light": "Night Light",
     "No display settings available.": "No display settings available.",
-    "Reload": "Reload"
+    "Reload": "Reload",
+    "Update": "Update"
   },
   "components/GameCard.jsx": {
     "Last played: {{date}}": "Ultimo avvio: {{date}}",

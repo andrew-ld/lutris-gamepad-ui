@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, act } from "react";
 import "../styles/DisplaySettings.css";
 import LegendaContainer from "./LegendaContainer";
 import RowBasedMenu from "./RowBasedMenu";
@@ -23,18 +23,17 @@ const DisplaySettings = ({ onClose }) => {
   const [brightness, setBrightness] = useState(null);
   const [focusedItem, setFocusedItem] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [brightnessError, setBrightnessError] = useState(false);
-  const [nightLightError, setNightLightError] = useState(false);
+  const [brightnessError, setBrightnessError] = useState(true);
+  const [nightLightError, setNightLightError] = useState(true);
 
   const fetchSettings = useCallback(async () => {
     setIsLoading(true);
-    setBrightnessError(false);
-    setNightLightError(false);
 
     try {
       const b = await api.getBrightness();
       if (isMounted()) {
         setBrightness(b);
+        setBrightnessError(false);
       }
     } catch (_) {
       if (isMounted()) {
@@ -46,6 +45,7 @@ const DisplaySettings = ({ onClose }) => {
       const nl = await api.getNightLight();
       if (isMounted()) {
         setNightLight(nl);
+        setNightLightError(false);
       }
     } catch (_) {
       if (isMounted()) {
@@ -62,24 +62,29 @@ const DisplaySettings = ({ onClose }) => {
     fetchSettings();
   }, [fetchSettings]);
 
-  const updateBrightness = useCallback(
-    async (newVal) => {
-      if (brightnessError) return;
-      const clamped = Math.max(0, Math.min(100, newVal));
+  const updateBrightness = useCallback(async () => {
+    if (brightnessError) return;
+    const clamped = Math.max(0, Math.min(100, brightness));
+    setIsLoading(true);
+    try {
       await api.setBrightness(clamped);
+    } finally {
       if (isMounted()) {
         await fetchSettings();
       }
-    },
-    [brightnessError, fetchSettings, isMounted],
-  );
+    }
+  }, [brightnessError, fetchSettings, isMounted, brightness]);
 
   const toggleNightLight = useCallback(async () => {
     if (nightLightError) return;
     const newVal = !nightLight;
-    await api.setNightLight(newVal);
-    if (isMounted()) {
-      await fetchSettings();
+    setIsLoading(true);
+    try {
+      await api.setNightLight(newVal);
+    } finally {
+      if (isMounted()) {
+        await fetchSettings();
+      }
     }
   }, [nightLight, nightLightError, fetchSettings, isMounted]);
 
@@ -108,15 +113,17 @@ const DisplaySettings = ({ onClose }) => {
 
       switch (item.type) {
         case CONTROL_TYPES.BRIGHTNESS:
-          if (actionName === "LEFT") updateBrightness(brightness - 5);
-          else if (actionName === "RIGHT") updateBrightness(brightness + 5);
+          if (actionName === "LEFT") setBrightness(Math.max(brightness - 5, 0));
+          if (actionName === "RIGHT")
+            setBrightness(Math.min(brightness + 5, 100));
+          if (actionName === "A") updateBrightness();
           break;
         case CONTROL_TYPES.NIGHT_LIGHT:
           if (actionName === "A") toggleNightLight();
           break;
       }
     },
-    [brightness, updateBrightness, toggleNightLight, fetchSettings, onClose],
+    [brightness, updateBrightness, toggleNightLight, fetchSettings, onClose]
   );
 
   const renderItem = useCallback(
@@ -147,7 +154,7 @@ const DisplaySettings = ({ onClose }) => {
         </FocusableRow>
       );
     },
-    [brightness, nightLight, t, toggleNightLight],
+    [brightness, nightLight, t, toggleNightLight]
   );
 
   const legendItems = useMemo(() => {
@@ -163,6 +170,11 @@ const DisplaySettings = ({ onClose }) => {
         button: "RIGHT",
         label: t("Increase"),
         onClick: () => updateBrightness(brightness + 5),
+      });
+      items.push({
+        button: "A",
+        label: t("Update"),
+        onClick: updateBrightness,
       });
     }
 
@@ -189,7 +201,7 @@ const DisplaySettings = ({ onClose }) => {
     t,
   ]);
 
-  if (isLoading && menuItems.length === 0) {
+  if (isLoading) {
     return (
       <div className="display-settings-container">
         <LegendaContainer
@@ -213,7 +225,7 @@ const DisplaySettings = ({ onClose }) => {
           {brightnessError && (
             <p className="display-settings-error-msg">
               {t(
-                "Failed to load brightness. Check your desktop environment compatibility.",
+                "Failed to load brightness. Check your desktop environment compatibility."
               )}
             </p>
           )}

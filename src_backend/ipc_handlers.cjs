@@ -225,7 +225,7 @@ function registerIpcHandlers() {
     return await getBrightness();
   });
 
-  ipcOnWithError("set-brightness", async (_event, brightness) => {
+  ipcHandleWithError("set-brightness", async (_event, brightness) => {
     await setBrightness(brightness);
   });
 
@@ -233,7 +233,7 @@ function registerIpcHandlers() {
     return await getNightLight();
   });
 
-  ipcOnWithError("set-night-light", async (_event, enabled) => {
+  ipcHandleWithError("set-night-light", async (_event, enabled) => {
     if (typeof enabled !== "boolean") {
       throw new Error(`Invalid enabled value: ${enabled}. Must be a boolean.`);
     }

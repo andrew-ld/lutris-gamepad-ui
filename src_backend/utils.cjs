@@ -25,6 +25,16 @@ async function spawnGSettings(args) {
   }
 }
 
+async function spawnDdcutil(args) {
+  try {
+    const { stdout } = await execFilePromise("ddcutil", args);
+    return stdout.trim();
+  } catch (error) {
+    logError("ddcutil error:", error);
+    throw error;
+  }
+}
+
 const isDev = process.env.IS_DEV === "1";
 const forceWindowed = process.env.FORCE_WINDOWED === "1";
 
@@ -214,11 +224,23 @@ function getProcessDescendants(pid, visitedPids) {
   }
 }
 
+function getRunExclusive() {
+  let queue = Promise.resolve();
+
+  const runExclusive = (fn) => {
+    queue = queue.then(fn, fn);
+    return queue;
+  }
+
+  return runExclusive
+}
+
 module.exports = {
   isDev,
   forceWindowed,
   execPromise,
   spawnGSettings,
+  spawnDdcutil,
   getLutrisWrapperPath,
   getElectronPreloadPath,
   retryAsync,
@@ -233,4 +255,5 @@ module.exports = {
   powerOffPc,
   getProcessDescendants,
   isProcessPaused,
+  getRunExclusive
 };
