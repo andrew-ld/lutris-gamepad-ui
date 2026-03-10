@@ -33,10 +33,18 @@ if (desktop === DESKTOP_GNOME) {
     setBrightness: async () => {
       throw new Error("Brightness control not supported on this environment");
     },
+    getNightLight: async () => {
+      throw new Error("Night light reading not supported on this environment");
+    },
+    setNightLight: async () => {
+      throw new Error("Night light control not supported on this environment");
+    },
   };
 }
 
 module.exports = {
   getBrightness: implementation.getBrightness,
   setBrightness: implementation.setBrightness,
+  getNightLight: implementation.getNightLight,
+  setNightLight: implementation.setNightLight,
 };

@@ -6,25 +6,30 @@ import FocusableRow from "./FocusableRow";
 import { useTranslation } from "../contexts/TranslationContext";
 import { useIsMounted } from "../hooks/useIsMounted";
 import PercentageBar from "./PercentageBar";
+import ToggleButton from "./ToggleButton";
 import * as api from "../utils/ipc";
 
 export const DisplaySettingsFocusID = "DisplaySettings";
 
 const CONTROL_TYPES = {
   BRIGHTNESS: "BRIGHTNESS",
+  NIGHT_LIGHT: "NIGHT_LIGHT",
 };
 
 const DisplaySettings = ({ onClose }) => {
   const { t } = useTranslation();
   const isMounted = useIsMounted();
-  const [brightness, setBrightness] = useState(50);
+  const [nightLight, setNightLight] = useState(null);
+  const [brightness, setBrightness] = useState(null);
   const [focusedItem, setFocusedItem] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [brightnessError, setBrightnessError] = useState(false);
+  const [nightLightError, setNightLightError] = useState(false);
 
   const fetchSettings = useCallback(async () => {
     setIsLoading(true);
     setBrightnessError(false);
+    setNightLightError(false);
 
     try {
       const b = await api.getBrightness();
@@ -34,6 +39,17 @@ const DisplaySettings = ({ onClose }) => {
     } catch (_) {
       if (isMounted()) {
         setBrightnessError(true);
+      }
+    }
+
+    try {
+      const nl = await api.getNightLight();
+      if (isMounted()) {
+        setNightLight(nl);
+      }
+    } catch (_) {
+      if (isMounted()) {
+        setNightLightError(true);
       }
     }
 
@@ -58,13 +74,25 @@ const DisplaySettings = ({ onClose }) => {
     [brightnessError, fetchSettings, isMounted],
   );
 
+  const toggleNightLight = useCallback(async () => {
+    if (nightLightError) return;
+    const newVal = !nightLight;
+    await api.setNightLight(newVal);
+    if (isMounted()) {
+      await fetchSettings();
+    }
+  }, [nightLight, nightLightError, fetchSettings, isMounted]);
+
   const menuItems = useMemo(() => {
     const items = [];
     if (!brightnessError) {
       items.push({ type: CONTROL_TYPES.BRIGHTNESS, label: t("Brightness") });
     }
+    if (!nightLightError) {
+      items.push({ type: CONTROL_TYPES.NIGHT_LIGHT, label: t("Night Light") });
+    }
     return items;
-  }, [t, brightnessError]);
+  }, [t, brightnessError, nightLightError]);
 
   const handleAction = useCallback(
     (actionName, item) => {
@@ -83,9 +111,12 @@ const DisplaySettings = ({ onClose }) => {
           if (actionName === "LEFT") updateBrightness(brightness - 5);
           else if (actionName === "RIGHT") updateBrightness(brightness + 5);
           break;
+        case CONTROL_TYPES.NIGHT_LIGHT:
+          if (actionName === "A") toggleNightLight();
+          break;
       }
     },
-    [brightness, updateBrightness, fetchSettings, onClose],
+    [brightness, updateBrightness, toggleNightLight, fetchSettings, onClose],
   );
 
   const renderItem = useCallback(
@@ -95,15 +126,28 @@ const DisplaySettings = ({ onClose }) => {
           key={item.type}
           isFocused={isFocused}
           onMouseEnter={onMouseEnter}
+          onClick={
+            item.type === CONTROL_TYPES.NIGHT_LIGHT
+              ? toggleNightLight
+              : undefined
+          }
         >
           <span className="display-settings-label">{item.label}</span>
           {item.type === CONTROL_TYPES.BRIGHTNESS && (
             <PercentageBar percent={brightness} containerWidth="150px" />
-          )}{" "}
+          )}
+          {item.type === CONTROL_TYPES.NIGHT_LIGHT && (
+            <ToggleButton
+              isToggledOn={nightLight}
+              labelOn={t("Disable")}
+              labelOff={t("Enable")}
+              onClick={toggleNightLight}
+            />
+          )}
         </FocusableRow>
       );
     },
-    [brightness],
+    [brightness, nightLight, t, toggleNightLight],
   );
 
   const legendItems = useMemo(() => {
@@ -122,11 +166,28 @@ const DisplaySettings = ({ onClose }) => {
       });
     }
 
+    if (focusedItem && focusedItem.type === CONTROL_TYPES.NIGHT_LIGHT) {
+      items.push({
+        button: "A",
+        label: nightLight ? t("Disable") : t("Enable"),
+        onClick: toggleNightLight,
+      });
+    }
+
     items.push({ button: "X", label: t("Reload"), onClick: fetchSettings });
     items.push({ button: "B", label: t("Close"), onClick: onClose });
 
     return items;
-  }, [focusedItem, brightness, updateBrightness, fetchSettings, onClose, t]);
+  }, [
+    focusedItem,
+    brightness,
+    nightLight,
+    updateBrightness,
+    toggleNightLight,
+    fetchSettings,
+    onClose,
+    t,
+  ]);
 
   if (isLoading && menuItems.length === 0) {
     return (

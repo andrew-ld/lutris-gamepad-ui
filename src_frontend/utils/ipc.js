@@ -33,6 +33,9 @@ export const bluetoothDisconnect = (path) =>
 export const getBrightness = () => window.electronAPI.getBrightness();
 export const setBrightness = (brightness) =>
   window.electronAPI.setBrightness(brightness);
+export const getNightLight = () => window.electronAPI.getNightLight();
+export const setNightLight = (enabled) =>
+  window.electronAPI.setNightLight(enabled);
 
 export const logInfo = (...args) => window.electronAPI.log("info", args);
 export const logWarn = (...args) => window.electronAPI.log("warn", args);

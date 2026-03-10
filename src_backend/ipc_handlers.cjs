@@ -22,6 +22,8 @@ const {
 const {
   getBrightness,
   setBrightness,
+  getNightLight,
+  setNightLight,
 } = require("./display_manager.cjs");
 const { toggleWindowShow } = require("./window_manager.cjs");
 const {
@@ -225,6 +227,17 @@ function registerIpcHandlers() {
 
   ipcOnWithError("set-brightness", async (_event, brightness) => {
     await setBrightness(brightness);
+  });
+
+  ipcHandleWithError("get-night-light", async () => {
+    return await getNightLight();
+  });
+
+  ipcOnWithError("set-night-light", async (_event, enabled) => {
+    if (typeof enabled !== "boolean") {
+      throw new Error(`Invalid enabled value: ${enabled}. Must be a boolean.`);
+    }
+    await setNightLight(enabled);
   });
 
   // Logging from Renderer

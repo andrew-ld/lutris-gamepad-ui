@@ -1,4 +1,4 @@
-const { exec } = require("child_process");
+const { exec, execFile } = require("child_process");
 const { promisify } = require("util");
 const { existsSync } = require("fs");
 const path = require("node:path");
@@ -13,6 +13,17 @@ const { getMainWindow } = require("./state.cjs");
 const { readFileSync } = require("node:fs");
 
 const execPromise = promisify(exec);
+const execFilePromise = promisify(execFile);
+
+async function spawnGSettings(args) {
+  try {
+    const { stdout } = await execFilePromise("gsettings", args);
+    return stdout.trim();
+  } catch (error) {
+    logError("gsettings error:", error);
+    throw error;
+  }
+}
 
 const isDev = process.env.IS_DEV === "1";
 const forceWindowed = process.env.FORCE_WINDOWED === "1";
@@ -207,6 +218,7 @@ module.exports = {
   isDev,
   forceWindowed,
   execPromise,
+  spawnGSettings,
   getLutrisWrapperPath,
   getElectronPreloadPath,
   retryAsync,

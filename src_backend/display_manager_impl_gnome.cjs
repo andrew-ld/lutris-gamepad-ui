@@ -1,8 +1,12 @@
 const { getSessionBus } = require("./dbus_manager.cjs");
+const { spawnGSettings } = require("./utils.cjs");
 
 const POWER_SERVICE = "org.gnome.SettingsDaemon.Power";
 const POWER_PATH = "/org/gnome/SettingsDaemon/Power";
 const POWER_SCREEN_INTERFACE = "org.gnome.SettingsDaemon.Power.Screen";
+
+const NIGHT_LIGHT_SCHEMA = "org.gnome.settings-daemon.plugins.color";
+const NIGHT_LIGHT_KEY = "night-light-enabled";
 
 async function getInterface(serviceName, path, interfaceName) {
   const bus = await getSessionBus("display_manager_gnome", false);
@@ -46,7 +50,23 @@ async function setBrightness(brightness) {
   });
 }
 
+async function getNightLight() {
+  const result = await spawnGSettings(["get", NIGHT_LIGHT_SCHEMA, NIGHT_LIGHT_KEY]);
+  return result === "true";
+}
+
+async function setNightLight(enabled) {
+  await spawnGSettings([
+    "set",
+    NIGHT_LIGHT_SCHEMA,
+    NIGHT_LIGHT_KEY,
+    enabled ? "true" : "false",
+  ]);
+}
+
 module.exports = {
   getBrightness,
   setBrightness,
+  getNightLight,
+  setNightLight,
 };

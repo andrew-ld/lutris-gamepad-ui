@@ -70,7 +70,44 @@ async function setBrightness(brightness) {
   });
 }
 
+async function getNightLight() {
+  const iface = await getInterface(
+    "org.kde.KWin.NightLight",
+    "/org/kde/KWin/NightLight",
+    "org.kde.KWin.NightLight",
+  );
+
+  return new Promise((resolve, reject) => {
+    iface.running((err, value) => {
+      if (err) return reject(err);
+      resolve(value);
+    });
+  });
+}
+
+async function setNightLight(enabled) {
+  const current = await getNightLight();
+  if (current === enabled) {
+    return;
+  }
+
+  const iface = await getInterface(
+    "org.kde.kglobalaccel",
+    "/component/kwin",
+    "org.kde.kglobalaccel.Component",
+  );
+
+  await new Promise((resolve, reject) => {
+    iface.invokeShortcut("Toggle Night Color", (err) => {
+      if (err) return reject(err);
+      resolve();
+    });
+  });
+}
+
 module.exports = {
   getBrightness,
   setBrightness,
+  getNightLight,
+  setNightLight,
 };
