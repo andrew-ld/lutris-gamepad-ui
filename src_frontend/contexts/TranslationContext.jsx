@@ -23,7 +23,7 @@ async function loadPackagedLocales() {
       const langCode = path.split(".").at(-2);
       const module = await importer();
       return [langCode, module.default];
-    }
+    },
   );
   return new Map(await Promise.all(localePromises));
 }
@@ -96,7 +96,7 @@ export const TranslationProvider = ({ children }) => {
 
       return applyReplacements(result, replacements);
     },
-    [translations]
+    [translations],
   );
 
   return (

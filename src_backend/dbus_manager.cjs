@@ -37,7 +37,7 @@ function getSessionBus(sessionName, isSystemBus) {
 
       bus.connection.on("connect", () => {
         logInfo(
-          `D-Bus session bus connection successful for "${sessionName}".`
+          `D-Bus session bus connection successful for "${sessionName}".`,
         );
         sessionBuses.set(sessionName, bus);
         sessionBusPromises.delete(sessionName);
@@ -47,14 +47,14 @@ function getSessionBus(sessionName, isSystemBus) {
       bus.connection.on("error", (err) => {
         logError(
           `D-Bus session bus connection error for "${sessionName}":`,
-          err
+          err,
         );
         sessionBuses.delete(sessionName);
         sessionBusPromises.delete(sessionName);
         reject(
           new Error(
-            `D-Bus connection error for "${sessionName}": ${err.message}`
-          )
+            `D-Bus connection error for "${sessionName}": ${err.message}`,
+          ),
         );
       });
 
@@ -66,7 +66,7 @@ function getSessionBus(sessionName, isSystemBus) {
     } catch (err) {
       logError(
         `Failed to initiate D-Bus session bus connection for "${sessionName}":`,
-        err
+        err,
       );
       sessionBusPromises.delete(sessionName);
       reject(err);

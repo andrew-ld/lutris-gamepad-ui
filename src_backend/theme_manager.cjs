@@ -44,7 +44,7 @@ function mergeThemes(baseTheme, userOverrides) {
 
     if (!defaultProps) {
       logWarn(
-        `User theme contains a selector not in the default theme: "${selector}". Skipping.`
+        `User theme contains a selector not in the default theme: "${selector}". Skipping.`,
       );
       continue;
     }
@@ -52,7 +52,7 @@ function mergeThemes(baseTheme, userOverrides) {
     for (const [prop, value] of Object.entries(userProps)) {
       if (!Object.hasOwn(defaultProps, prop)) {
         logWarn(
-          `User theme contains a property not in the default theme for selector "${selector}": "${prop}". Skipping.`
+          `User theme contains a property not in the default theme for selector "${selector}": "${prop}". Skipping.`,
         );
         continue;
       }

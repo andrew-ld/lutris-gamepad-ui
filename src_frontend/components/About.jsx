@@ -24,7 +24,7 @@ const About = ({ onClose }) => {
       },
       { label: t("License"), value: packageJson.license },
     ],
-    [t]
+    [t],
   );
 
   const handleAction = useCallback(
@@ -36,7 +36,7 @@ const About = ({ onClose }) => {
         openExternalLink(item.value);
       }
     },
-    [onClose]
+    [onClose],
   );
 
   const handleFocusChange = useCallback((item) => {

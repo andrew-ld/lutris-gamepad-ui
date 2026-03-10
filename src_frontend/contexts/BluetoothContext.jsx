@@ -95,7 +95,7 @@ export const BluetoothProvider = ({ children }) => {
 
   const stateValue = useMemo(
     () => ({ devices, adapters, isLoading, isDiscovering }),
-    [devices, adapters, isLoading, isDiscovering]
+    [devices, adapters, isLoading, isDiscovering],
   );
 
   const actionsValue = useMemo(
@@ -114,7 +114,7 @@ export const BluetoothProvider = ({ children }) => {
       connectDevice,
       disconnectDevice,
       forceRefresh,
-    ]
+    ],
   );
 
   return (

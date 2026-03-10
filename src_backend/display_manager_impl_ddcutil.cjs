@@ -1,17 +1,17 @@
 const { spawnDdcutil, getRunExclusive } = require("./utils.cjs");
 
 // ddcutils is not thread-safe
-const runExclusive = getRunExclusive()
+const runExclusive = getRunExclusive();
 
 async function getBrightnessInternal() {
   // format: VCP <code-hex> <type> <current-value> <max-value>
   const result = await spawnDdcutil(["getvcp", "10", "--brief"]);
-  const parts = result.split("\n")[0].split(" ")
+  const parts = result.split("\n")[0].split(" ");
 
-  const current = parseInt(parts[3])
-  const max = parseInt(parts[4])
+  const current = parseInt(parts[3]);
+  const max = parseInt(parts[4]);
 
-  return { current, max }
+  return { current, max };
 }
 
 async function getBrightness() {

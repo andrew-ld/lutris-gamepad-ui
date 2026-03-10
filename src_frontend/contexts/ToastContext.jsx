@@ -25,7 +25,7 @@ export const ToastProvider = ({ children }) => {
       toastsRef.current = toastsRef.current.filter((toast) => toast.id !== id);
       notify();
     },
-    [notify]
+    [notify],
   );
 
   const showToast = useCallback(
@@ -53,12 +53,12 @@ export const ToastProvider = ({ children }) => {
         hideToast(id);
       }, TOAST_TIMEOUT);
     },
-    [hideToast, notify]
+    [hideToast, notify],
   );
 
   const actionsValue = useMemo(
     () => ({ showToast, hideToast }),
-    [showToast, hideToast]
+    [showToast, hideToast],
   );
 
   const subscribe = useCallback((callback) => {

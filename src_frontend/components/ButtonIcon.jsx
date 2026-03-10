@@ -176,7 +176,7 @@ const ButtonIcon = ({ button, label, size = "large", onClick }) => {
   const { getLatestInputType, subscribeToInputType } = useInput();
 
   const [latestInputType, setLatestInputType] = useState(() =>
-    getLatestInputType()
+    getLatestInputType(),
   );
 
   useEffect(() => {

@@ -35,7 +35,7 @@ async function checkForUpdates() {
     const currentVersion = packageJson.version;
 
     logInfo(
-      `Current version: ${currentVersion}, Latest version: ${latestVersion}`
+      `Current version: ${currentVersion}, Latest version: ${latestVersion}`,
     );
 
     if (currentVersion != latestVersion) {

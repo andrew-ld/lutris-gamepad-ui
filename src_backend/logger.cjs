@@ -22,7 +22,7 @@ function initialize() {
     logStream = null;
     console.error(
       "Failed to initialize file logger. Logging will only be sent to the console.",
-      error
+      error,
     );
   }
 }

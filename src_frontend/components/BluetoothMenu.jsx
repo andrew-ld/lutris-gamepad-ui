@@ -56,7 +56,7 @@ const BluetoothMenu = ({ onClose }) => {
         />
       ));
     },
-    [showModal, connectDevice, disconnectDevice, t]
+    [showModal, connectDevice, disconnectDevice, t],
   );
 
   const handleAction = useCallback(
@@ -82,7 +82,7 @@ const BluetoothMenu = ({ onClose }) => {
           break;
       }
     },
-    [onClose, isDiscovering, startDiscovery, stopDiscovery, forceRefresh]
+    [onClose, isDiscovering, startDiscovery, stopDiscovery, forceRefresh],
   );
 
   const menuItems = useMemo(() => {
@@ -120,8 +120,8 @@ const BluetoothMenu = ({ onClose }) => {
       const actionButtonLabel = item.isAdapter
         ? t("Power On")
         : item.device.isConnected
-        ? t("Disconnect")
-        : t("Connect");
+          ? t("Disconnect")
+          : t("Connect");
 
       return (
         <FocusableRow
@@ -155,7 +155,7 @@ const BluetoothMenu = ({ onClose }) => {
         </FocusableRow>
       );
     },
-    [t]
+    [t],
   );
 
   const legendItems = useMemo(
@@ -175,7 +175,7 @@ const BluetoothMenu = ({ onClose }) => {
       { button: "Y", label: t("Refresh"), onClick: forceRefresh },
       { button: "B", label: t("Close"), onClick: onClose },
     ],
-    [onClose, isDiscovering, startDiscovery, stopDiscovery, forceRefresh, t]
+    [onClose, isDiscovering, startDiscovery, stopDiscovery, forceRefresh, t],
   );
 
   useEffect(() => {
@@ -208,7 +208,7 @@ const BluetoothMenu = ({ onClose }) => {
                 currentMenuItem.current = item;
               }}
               emptyMessage={t(
-                "No devices found. Ensure Bluetooth is powered on and press 'X' to start discovery."
+                "No devices found. Ensure Bluetooth is powered on and press 'X' to start discovery.",
               )}
             />
           )}

@@ -230,9 +230,9 @@ function getRunExclusive() {
   const runExclusive = (fn) => {
     queue = queue.then(fn, fn);
     return queue;
-  }
+  };
 
-  return runExclusive
+  return runExclusive;
 }
 
 module.exports = {
@@ -255,5 +255,5 @@ module.exports = {
   powerOffPc,
   getProcessDescendants,
   isProcessPaused,
-  getRunExclusive
+  getRunExclusive,
 };

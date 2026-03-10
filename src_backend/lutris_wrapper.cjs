@@ -21,7 +21,7 @@ async function invokeLutrisSubcommand(subcommandName, args = []) {
       "failed to execute lutris wrapper subcommand",
       subcommandName,
       args,
-      error
+      error,
     );
     throw error;
   }

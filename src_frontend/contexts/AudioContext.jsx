@@ -76,7 +76,7 @@ export const AudioProvider = ({ children }) => {
         ipc.setAudioMute(false);
       }
     },
-    [isMuted]
+    [isMuted],
   );
 
   const increaseVolume = useCallback(() => {

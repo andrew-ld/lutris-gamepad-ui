@@ -62,7 +62,7 @@ export const ModalProvider = ({ children }) => {
       modalsRef.current = [...modalsRef.current, newModal];
       notify();
     },
-    [notify]
+    [notify],
   );
 
   const hideModal = useCallback(() => {
@@ -78,7 +78,7 @@ export const ModalProvider = ({ children }) => {
       hideModal,
       subscribe,
     }),
-    [showModal, hideModal, subscribe]
+    [showModal, hideModal, subscribe],
   );
 
   return (

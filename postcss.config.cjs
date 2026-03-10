@@ -68,7 +68,7 @@ const defaultThemeGenerator = () => {
     OnceExit() {
       writeFileSync(
         path.join(__dirname, "src_backend/generated/theme.default.json"),
-        JSON.stringify(result, null, 2)
+        JSON.stringify(result, null, 2),
       );
     },
   };

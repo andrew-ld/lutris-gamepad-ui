@@ -123,7 +123,7 @@ const DisplaySettings = ({ onClose }) => {
           break;
       }
     },
-    [brightness, updateBrightness, toggleNightLight, fetchSettings, onClose]
+    [brightness, updateBrightness, toggleNightLight, fetchSettings, onClose],
   );
 
   const renderItem = useCallback(
@@ -154,7 +154,7 @@ const DisplaySettings = ({ onClose }) => {
         </FocusableRow>
       );
     },
-    [brightness, nightLight, t, toggleNightLight]
+    [brightness, nightLight, t, toggleNightLight],
   );
 
   const legendItems = useMemo(() => {
@@ -225,7 +225,7 @@ const DisplaySettings = ({ onClose }) => {
           {brightnessError && (
             <p className="display-settings-error-msg">
               {t(
-                "Failed to load brightness. Check your desktop environment compatibility."
+                "Failed to load brightness. Check your desktop environment compatibility.",
               )}
             </p>
           )}

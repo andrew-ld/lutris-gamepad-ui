@@ -13,7 +13,11 @@ async function setBrightness(brightness) {
 }
 
 async function getNightLight() {
-  const result = await spawnGSettings(["get", NIGHT_LIGHT_SCHEMA, NIGHT_LIGHT_KEY]);
+  const result = await spawnGSettings([
+    "get",
+    NIGHT_LIGHT_SCHEMA,
+    NIGHT_LIGHT_KEY,
+  ]);
   return result === "true";
 }
 

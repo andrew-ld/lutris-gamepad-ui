@@ -29,7 +29,7 @@ export function createLocalePlugins() {
     frontendSrcDir: path.resolve(__dirname, "src_frontend"),
     masterLocaleFile: path.resolve(
       __dirname,
-      "src_frontend/locale/locale.en.json"
+      "src_frontend/locale/locale.en.json",
     ),
     viteServer: null,
   };
@@ -37,7 +37,7 @@ export function createLocalePlugins() {
   function generateMasterLocaleObject() {
     const masterObject = {};
     const sortedFilenames = Array.from(
-      pluginState.translationKeysByFile.keys()
+      pluginState.translationKeysByFile.keys(),
     ).sort();
 
     for (const absoluteFilename of sortedFilenames) {
@@ -46,13 +46,13 @@ export function createLocalePlugins() {
 
       const relativeFilename = path.relative(
         pluginState.frontendSrcDir,
-        absoluteFilename
+        absoluteFilename,
       );
 
       const sortedKeys = Array.from(keysSet).sort();
 
       masterObject[relativeFilename] = Object.fromEntries(
-        sortedKeys.map((key) => [key, key])
+        sortedKeys.map((key) => [key, key]),
       );
     }
 
@@ -62,7 +62,7 @@ export function createLocalePlugins() {
   function writeLocaleFile(localeObject, filename) {
     writeFileSync(
       filename,
-      JSON.stringify(sortLocaleObject(localeObject), null, 2) + "\n"
+      JSON.stringify(sortLocaleObject(localeObject), null, 2) + "\n",
     );
   }
 
@@ -77,7 +77,7 @@ export function createLocalePlugins() {
         (file) =>
           file.startsWith("locale.") &&
           file.endsWith(".json") &&
-          file !== path.basename(pluginState.masterLocaleFile)
+          file !== path.basename(pluginState.masterLocaleFile),
       )
       .map((file) => path.join(localeDir, file));
 
@@ -146,7 +146,7 @@ export function createLocalePlugins() {
 
           const relativeFilename = relative(
             pluginState.frontendSrcDir,
-            filename
+            filename,
           );
 
           if (numArgs === 1) {

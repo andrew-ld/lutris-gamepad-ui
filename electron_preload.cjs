@@ -51,7 +51,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
   // Display & Brightness
   getBrightness: () => ipcRenderer.invoke("get-brightness"),
-  setBrightness: (brightness) => ipcRenderer.invoke("set-brightness", brightness),
+  setBrightness: (brightness) =>
+    ipcRenderer.invoke("set-brightness", brightness),
   getNightLight: () => ipcRenderer.invoke("get-night-light"),
   setNightLight: (enabled) => ipcRenderer.invoke("set-night-light", enabled),
 
