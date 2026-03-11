@@ -1,5 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, act } from "react";
-import "../styles/DisplaySettings.css";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import LegendaContainer from "./LegendaContainer";
 import RowBasedMenu from "./RowBasedMenu";
 import FocusableRow from "./FocusableRow";
@@ -7,7 +6,9 @@ import { useTranslation } from "../contexts/TranslationContext";
 import { useIsMounted } from "../hooks/useIsMounted";
 import PercentageBar from "./PercentageBar";
 import ToggleButton from "./ToggleButton";
+import DialogLayout from "./DialogLayout";
 import * as api from "../utils/ipc";
+import "../styles/DisplaySettings.css";
 
 export const DisplaySettingsFocusID = "DisplaySettings";
 
@@ -123,7 +124,7 @@ const DisplaySettings = ({ onClose }) => {
           break;
       }
     },
-    [brightness, updateBrightness, toggleNightLight, fetchSettings, onClose]
+    [brightness, updateBrightness, toggleNightLight, fetchSettings, onClose],
   );
 
   const renderItem = useCallback(
@@ -154,7 +155,7 @@ const DisplaySettings = ({ onClose }) => {
         </FocusableRow>
       );
     },
-    [brightness, nightLight, t, toggleNightLight]
+    [brightness, nightLight, t, toggleNightLight],
   );
 
   const legendItems = useMemo(() => {
@@ -203,50 +204,48 @@ const DisplaySettings = ({ onClose }) => {
 
   if (isLoading) {
     return (
-      <div className="display-settings-container">
-        <LegendaContainer
-          legendItems={[{ button: "B", label: t("Close"), onClick: onClose }]}
-        >
-          <div style={{ padding: "24px 0" }}>
-            <p className="display-settings-title">
-              {t("Loading Display Settings...")}
-            </p>
-          </div>
-        </LegendaContainer>
-      </div>
+      <DialogLayout
+        legendItems={[{ button: "B", label: t("Close"), onClick: onClose }]}
+        maxWidth="600px"
+      >
+        <div style={{ padding: "24px 0" }}>
+          <p className="display-settings-title">
+            {t("Loading Display Settings...")}
+          </p>
+        </div>
+      </DialogLayout>
     );
   }
 
   return (
-    <div className="display-settings-container">
-      <LegendaContainer legendItems={legendItems}>
-        <div>
-          <h2 className="display-settings-title">{t("Display Settings")}</h2>
-          {brightnessError && (
-            <p className="display-settings-error-msg">
-              {t(
-                "Failed to load brightness. Check your desktop environment compatibility."
-              )}
-            </p>
+    <DialogLayout
+      title={t("Display Settings")}
+      legendItems={legendItems}
+      maxWidth="600px"
+    >
+      {brightnessError && (
+        <p className="display-settings-error-msg">
+          {t(
+            "Failed to load brightness. Check your desktop environment compatibility.",
           )}
-          {nightLightError && (
-            <p className="display-settings-error-msg">
-              {t(
-                "Failed to load night light. Check your desktop environment compatibility."
-              )}
-            </p>
+        </p>
+      )}
+      {nightLightError && (
+        <p className="display-settings-error-msg">
+          {t(
+            "Failed to load night light. Check your desktop environment compatibility.",
           )}
-          <RowBasedMenu
-            items={menuItems}
-            renderItem={renderItem}
-            onAction={handleAction}
-            focusId={DisplaySettingsFocusID}
-            onFocusChange={setFocusedItem}
-            emptyMessage={t("No display settings available.")}
-          />
-        </div>
-      </LegendaContainer>
-    </div>
+        </p>
+      )}
+      <RowBasedMenu
+        items={menuItems}
+        renderItem={renderItem}
+        onAction={handleAction}
+        focusId={DisplaySettingsFocusID}
+        onFocusChange={setFocusedItem}
+        emptyMessage={t("No display settings available.")}
+      />
+    </DialogLayout>
   );
 };
 

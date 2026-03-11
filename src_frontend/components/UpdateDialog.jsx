@@ -1,10 +1,9 @@
 import { useMemo, useCallback } from "react";
-import LegendaContainer from "./LegendaContainer";
 import { openExternalLink } from "../utils/ipc";
 import { useTranslation } from "../contexts/TranslationContext";
 import { useScopedInput } from "../hooks/useScopedInput";
-import "../styles/UpdateDialog.css";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
+import DialogLayout from "./DialogLayout";
 
 export const UpdateDialogFocusId = "UpdateDialog";
 
@@ -48,21 +47,22 @@ const UpdateDialog = ({ newVersion, releaseUrl, onClose }) => {
   );
 
   return (
-    <div className="update-dialog-container">
-      <LegendaContainer legendItems={legendItems}>
-        <div className="update-dialog-content">
-          <h2 className="update-dialog-title">{t("Update Available")}</h2>
-          <p className="update-dialog-description">
-            {t("A new version, {{version}}, is available for download.", {
-              version: newVersion,
-            })}
-          </p>
-          <button className="update-dialog-button" onClick={handleOpenLink}>
-            {t("Go to Downloads")}
-          </button>
-        </div>
-      </LegendaContainer>
-    </div>
+    <DialogLayout
+      title={t("Update Available")}
+      description={t("A new version, {{version}}, is available for download.", {
+        version: newVersion,
+      })}
+      legendItems={legendItems}
+      maxWidth="450px"
+    >
+      <button
+        className="modal-button focused"
+        style={{ width: "100%" }}
+        onClick={handleOpenLink}
+      >
+        {t("Go to Downloads")}
+      </button>
+    </DialogLayout>
   );
 };
 

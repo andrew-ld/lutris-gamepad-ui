@@ -4,13 +4,13 @@ import {
   useSettingsActions,
   useSettingsState,
 } from "../contexts/SettingsContext";
-import "../styles/VolumeControl.css";
-import LegendaContainer from "./LegendaContainer";
 import RowBasedMenu from "./RowBasedMenu";
 import FocusableRow from "./FocusableRow";
 import { useTranslation } from "../contexts/TranslationContext";
 import ToggleButton from "./ToggleButton";
 import PercentageBar from "./PercentageBar";
+import DialogLayout from "./DialogLayout";
+import "../styles/VolumeControl.css";
 
 export const VolumeControlFocusID = "VolumeControl";
 
@@ -268,48 +268,44 @@ const VolumeControl = ({ onClose }) => {
 
   if (isAudioLoading && (!availableSinks || availableSinks.length === 0)) {
     return (
-      <div className="volume-control-container">
-        <LegendaContainer
-          legendItems={[{ button: "B", label: t("Close"), onClick: onClose }]}
-        >
-          <div style={{ padding: "24px 0", margin: 0 }}>
-            <p className="volume-control-title">
-              {t("Loading Audio Settings...")}
-            </p>
-          </div>
-        </LegendaContainer>
-      </div>
+      <DialogLayout
+        legendItems={[{ button: "B", label: t("Close"), onClick: onClose }]}
+        maxWidth="600px"
+      >
+        <div style={{ padding: "24px 0", margin: 0 }}>
+          <p className="volume-control-title">
+            {t("Loading Audio Settings...")}
+          </p>
+        </div>
+      </DialogLayout>
     );
   }
 
   return (
-    <div className="volume-control-container">
-      <LegendaContainer legendItems={legendItems}>
-        <div>
-          <h2 className="volume-control-title">{t("Audio Settings")}</h2>
-          {currentDefaultSinkObject && (
-            <div className="volume-control-current-sink-display">
-              <span className="volume-control-label">
-                {t("Current Output:")}
-              </span>
-              <span
-                className="current-sink-name"
-                title={currentDefaultSinkObject.description}
-              >
-                {currentDefaultSinkObject.description}
-              </span>
-            </div>
-          )}
-          <RowBasedMenu
-            items={menuItems}
-            renderItem={renderItem}
-            onAction={handleAction}
-            focusId={VolumeControlFocusID}
-            onFocusChange={handleFocusChange}
-          />
+    <DialogLayout
+      title={t("Audio Settings")}
+      legendItems={legendItems}
+      maxWidth="600px"
+    >
+      {currentDefaultSinkObject && (
+        <div className="volume-control-current-sink-display">
+          <span className="volume-control-label">{t("Current Output:")}</span>
+          <span
+            className="current-sink-name"
+            title={currentDefaultSinkObject.description}
+          >
+            {currentDefaultSinkObject.description}
+          </span>
         </div>
-      </LegendaContainer>
-    </div>
+      )}
+      <RowBasedMenu
+        items={menuItems}
+        renderItem={renderItem}
+        onAction={handleAction}
+        focusId={VolumeControlFocusID}
+        onFocusChange={handleFocusChange}
+      />
+    </DialogLayout>
   );
 };
 

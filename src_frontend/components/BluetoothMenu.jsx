@@ -4,11 +4,11 @@ import {
   useBluetoothActions,
 } from "../contexts/BluetoothContext";
 import { useModalActions } from "../contexts/ModalContext";
-import LegendaContainer from "./LegendaContainer";
 import RowBasedMenu from "./RowBasedMenu";
 import FocusableRow from "./FocusableRow";
 import LoadingIndicator from "./LoadingIndicator";
 import ConfirmationDialog from "./ConfirmationDialog";
+import DialogLayout from "./DialogLayout";
 import "../styles/BluetoothMenu.css";
 import { useTranslation } from "../contexts/TranslationContext";
 
@@ -191,30 +191,29 @@ const BluetoothMenu = ({ onClose }) => {
   }, [isDiscovering, stopDiscovery]);
 
   return (
-    <div className="bt-menu-container">
-      <LegendaContainer legendItems={legendItems}>
-        <div className="bt-menu-content">
-          <h2 className="bt-menu-title">{t("Bluetooth Settings")}</h2>
-          {isLoading && !isDiscovering ? (
-            <LoadingIndicator />
-          ) : (
-            <RowBasedMenu
-              items={menuItems}
-              renderItem={renderItem}
-              onAction={handleAction}
-              focusId={BluetoothMenuFocusId}
-              itemKey={(item) => item.id}
-              onFocusChange={(item) => {
-                currentMenuItem.current = item;
-              }}
-              emptyMessage={t(
-                "No devices found. Ensure Bluetooth is powered on and press 'X' to start discovery.",
-              )}
-            />
+    <DialogLayout
+      title={t("Bluetooth Settings")}
+      legendItems={legendItems}
+      maxWidth="600px"
+    >
+      {isLoading && !isDiscovering ? (
+        <LoadingIndicator />
+      ) : (
+        <RowBasedMenu
+          items={menuItems}
+          renderItem={renderItem}
+          onAction={handleAction}
+          focusId={BluetoothMenuFocusId}
+          itemKey={(item) => item.id}
+          onFocusChange={(item) => {
+            currentMenuItem.current = item;
+          }}
+          emptyMessage={t(
+            "No devices found. Ensure Bluetooth is powered on and press 'X' to start discovery.",
           )}
-        </div>
-      </LegendaContainer>
-    </div>
+        />
+      )}
+    </DialogLayout>
   );
 };
 

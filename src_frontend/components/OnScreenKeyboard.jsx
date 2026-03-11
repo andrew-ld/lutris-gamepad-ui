@@ -1,9 +1,9 @@
 import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import { useScopedInput } from "../hooks/useScopedInput";
-import "../styles/OnScreenKeyboard.css";
-import LegendaContainer from "./LegendaContainer";
 import { useTranslation } from "../contexts/TranslationContext";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
+import DialogLayout from "./DialogLayout";
+import "../styles/OnScreenKeyboard.css";
 
 export const OnScreenKeyboardFocusID = "OnScreenKeyboard";
 
@@ -50,7 +50,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
         { id: "Enter", label: t("Enter") },
       ],
     ],
-    [t],
+    [t]
   );
 
   const handleKeyPress = useCallback(
@@ -75,7 +75,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
           break;
       }
     },
-    [inputValue],
+    [inputValue]
   );
 
   const inputHandler = useCallback(
@@ -125,7 +125,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
           break;
       }
     },
-    [handleKeyPress, keyLayout, inputValue, playActionSound],
+    [handleKeyPress, keyLayout, inputValue, playActionSound]
   );
 
   useScopedInput(inputHandler, OnScreenKeyboardFocusID);
@@ -159,46 +159,44 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
       },
       { button: "B", label: t("Close"), onClick: onCloseCallback },
     ],
-    [onSelectCallback, onConfirmCallback, onCloseCallback, t],
+    [onSelectCallback, onConfirmCallback, onCloseCallback, t]
   );
 
   return (
-    <div className="osk-container" tabIndex="-1">
-      <LegendaContainer legendItems={legendItems}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          <div className="osk-input-display">
-            <label className="osk-label">{label}</label>
-            <div className="osk-input-wrapper">
-              <span className="osk-input-value">{inputValue}</span>
-              <span className="osk-cursor" />
-            </div>
-          </div>
-          <div className="osk-layout">
-            {keyLayout.map((row, y) => (
-              <div className="osk-row" key={`row-${y}`}>
-                {row.map((keyObject, x) => {
-                  const isFocused = focusCoords.x === x && focusCoords.y === y;
-                  const isSpecial = typeof keyObject !== "string";
-                  const keyLabel = isSpecial ? keyObject.label : keyObject;
-                  const keyId = isSpecial ? keyObject.id : keyObject;
-                  return (
-                    <button
-                      key={keyId}
-                      className={`osk-key ${isSpecial ? "special" : ""} ${
-                        isFocused ? "focused" : ""
-                      }`}
-                      onClick={() => handleKeyPress(keyId)}
-                    >
-                      {keyLabel}
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
+    <DialogLayout legendItems={legendItems} maxWidth="800px">
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div className="osk-input-display">
+          <label className="osk-label">{label}</label>
+          <div className="osk-input-wrapper">
+            <span className="osk-input-value">{inputValue}</span>
+            <span className="osk-cursor" />
           </div>
         </div>
-      </LegendaContainer>
-    </div>
+        <div className="osk-layout">
+          {keyLayout.map((row, y) => (
+            <div className="osk-row" key={`row-${y}`}>
+              {row.map((keyObject, x) => {
+                const isFocused = focusCoords.x === x && focusCoords.y === y;
+                const isSpecial = typeof keyObject !== "string";
+                const keyLabel = isSpecial ? keyObject.label : keyObject;
+                const keyId = isSpecial ? keyObject.id : keyObject;
+                return (
+                  <button
+                    key={keyId}
+                    className={`osk-key ${isSpecial ? "special" : ""} ${
+                      isFocused ? "focused" : ""
+                    }`}
+                    onClick={() => handleKeyPress(keyId)}
+                  >
+                    {keyLabel}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+    </DialogLayout>
   );
 };
 

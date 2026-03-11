@@ -3,8 +3,8 @@ import { useTranslation } from "../contexts/TranslationContext";
 import { useScopedInput } from "../hooks/useScopedInput";
 import "../styles/CrashDialog.css";
 import { applyReplacements } from "../utils/string";
-import LegendaContainer from "./LegendaContainer";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
+import DialogLayout from "./DialogLayout";
 
 const SCROLL_AMOUNT = 50;
 
@@ -131,42 +131,39 @@ const CrashDialog = ({ error, errorInfo }) => {
 
   return (
     <div className="crash-dialog-overlay">
-      <div className="crash-dialog-container" ref={containerRef}>
-        <LegendaContainer legendItems={legendItems}>
-          <div className="crash-dialog-content">
-            <h1 className="crash-dialog-title">
-              {t("Oops! Something went wrong.")}
-            </h1>
-            <p className="crash-dialog-message">
-              {t("The application has encountered an unexpected error.")}
-            </p>
-            <div className="crash-dialog-actions">
-              {buttons.map((button, index) => (
-                <button
-                  key={button.label}
-                  onClick={button.action}
-                  className={`crash-dialog-button ${
-                    index === focusedButtonIndex ? "focused" : ""
-                  }`}
-                  onMouseEnter={() => setFocusedButtonIndex(index)}
-                >
-                  {button.label}
-                </button>
-              ))}
-            </div>
-            {detailsVisible && (
-              <div className="crash-dialog-details">
-                <pre>
-                  <code>
-                    {errorString}
-                    {componentStackString}
-                  </code>
-                </pre>
-              </div>
-            )}
+      <DialogLayout
+        title={t("Oops! Something went wrong.")}
+        description={t("The application has encountered an unexpected error.")}
+        legendItems={legendItems}
+        maxWidth="800px"
+        containerRef={containerRef}
+        className="crash-dialog-container"
+      >
+        <div className="modal-buttons-row">
+          {buttons.map((button, index) => (
+            <button
+              key={button.label}
+              onClick={button.action}
+              className={`modal-button ${
+                index === focusedButtonIndex ? "focused" : ""
+              }`}
+              onMouseEnter={() => setFocusedButtonIndex(index)}
+            >
+              {button.label}
+            </button>
+          ))}
+        </div>
+        {detailsVisible && (
+          <div className="crash-dialog-details">
+            <pre>
+              <code>
+                {errorString}
+                {componentStackString}
+              </code>
+            </pre>
           </div>
-        </LegendaContainer>
-      </div>
+        )}
+      </DialogLayout>
     </div>
   );
 };

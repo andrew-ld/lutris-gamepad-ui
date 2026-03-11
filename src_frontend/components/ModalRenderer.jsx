@@ -7,10 +7,12 @@ const ModalRenderer = () => {
   const { hideModal } = useModalActions();
   const [maxSize, setMaxSize] = useState({ width: 0, height: 0 });
   const contentRef = useRef(null);
+  const [prevModalId, setPrevModalId] = useState(topModal?.id);
 
-  useEffect(() => {
+  if (topModal?.id !== prevModalId) {
+    setPrevModalId(topModal?.id);
     setMaxSize({ width: 0, height: 0 });
-  }, [topModal]);
+  }
 
   useEffect(() => {
     if (!contentRef.current || !isModalOpen) return;
@@ -60,6 +62,7 @@ const ModalRenderer = () => {
         onClick={handleContentClick}
         ref={contentRef}
         style={contentStyle}
+        key={topModal.id}
       >
         {topModal.content}
       </div>

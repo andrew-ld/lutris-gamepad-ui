@@ -1,25 +1,7 @@
-.bt-menu-container {
-  display: flex;
-  flex-direction: column;
-  width: 90vw;
-  max-width: 600px;
-  min-height: 400px;
-  box-sizing: border-box;
-  contain: layout;
-}
-
 .bt-menu-content {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-}
-
-.bt-menu-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: var(--text-primary);
-  margin-bottom: 24px;
-  text-align: center;
 }
 
 .bt-menu-row-content {

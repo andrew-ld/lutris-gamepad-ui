@@ -1,31 +1,3 @@
-.about-container {
-  display: flex;
-  flex-direction: column;
-  width: 90vw;
-  max-width: 600px;
-  box-sizing: border-box;
-  contain: layout;
-}
-
-.about-header {
-  text-align: center;
-  margin-bottom: 24px;
-  color: var(--text-primary);
-}
-
-.about-title {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: var(--accent-color);
-  margin-bottom: 8px;
-}
-
-.about-description {
-  font-size: 1.1rem;
-  line-height: 1.5;
-  color: var(--text-secondary);
-}
-
 .about-row-label {
   font-weight: bold;
   color: var(--text-secondary);

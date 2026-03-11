@@ -6,7 +6,7 @@ import {
 } from "../contexts/SettingsContext";
 import "../styles/SettingsMenu.css";
 import FocusableRow from "./FocusableRow";
-import LegendaContainer from "./LegendaContainer";
+import DialogLayout from "./DialogLayout";
 import RowBasedMenu from "./RowBasedMenu";
 import ToggleButton from "./ToggleButton";
 import PercentageBar from "./PercentageBar";
@@ -497,20 +497,19 @@ const SettingsMenu = ({ onClose }) => {
   ]);
 
   return (
-    <div className="settings-menu-container">
-      <LegendaContainer legendItems={legendItems}>
-        <div>
-          <h2 className="settings-menu-title">{t("Settings")}</h2>
-          <RowBasedMenu
-            sections={menuSections}
-            renderItem={renderItem}
-            onAction={handleAction}
-            onFocusChange={setFocusedItem}
-            focusId={SettingsMenuFocusId}
-          />
-        </div>
-      </LegendaContainer>
-    </div>
+    <DialogLayout
+      title={t("Settings")}
+      legendItems={legendItems}
+      maxWidth="600px"
+    >
+      <RowBasedMenu
+        sections={menuSections}
+        renderItem={renderItem}
+        onAction={handleAction}
+        onFocusChange={setFocusedItem}
+        focusId={SettingsMenuFocusId}
+      />
+    </DialogLayout>
   );
 };
 

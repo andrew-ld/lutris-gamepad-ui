@@ -1,8 +1,7 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { useScopedInput } from "../hooks/useScopedInput";
-import "../styles/ConfirmationDialog.css";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
-import LegendaContainer from "./LegendaContainer";
+import DialogLayout from "./DialogLayout";
 import { useTranslation } from "../contexts/TranslationContext";
 
 export const ConfirmationDialogFocusId = "ConfirmationDialog";
@@ -65,34 +64,27 @@ const ConfirmationDialog = ({ message, description, onConfirm, onDeny }) => {
   );
 
   return (
-    <div className="confirmation-dialog">
-      <LegendaContainer legendItems={legendItems}>
-        <div className="confirmation-content">
-          <h3 className="confirmation-title">{message}</h3>
-          {description && (
-            <p className="confirmation-description">{description}</p>
-          )}
-          <div className="confirmation-buttons">
-            <button
-              className={`confirmation-button ${
-                confirmSelection === 0 ? "focused" : ""
-              }`}
-              onClick={handleConfirm}
-            >
-              {t("Confirm")}
-            </button>
-            <button
-              className={`confirmation-button ${
-                confirmSelection === 1 ? "focused" : ""
-              }`}
-              onClick={handleDeny}
-            >
-              {t("Cancel")}
-            </button>
-          </div>
-        </div>
-      </LegendaContainer>
-    </div>
+    <DialogLayout
+      title={message}
+      description={description}
+      legendItems={legendItems}
+      maxWidth="400px"
+    >
+      <div className="modal-buttons-group">
+        <button
+          className={`modal-button ${confirmSelection === 0 ? "focused" : ""}`}
+          onClick={handleConfirm}
+        >
+          {t("Confirm")}
+        </button>
+        <button
+          className={`modal-button ${confirmSelection === 1 ? "focused" : ""}`}
+          onClick={handleDeny}
+        >
+          {t("Cancel")}
+        </button>
+      </div>
+    </DialogLayout>
   );
 };
 
