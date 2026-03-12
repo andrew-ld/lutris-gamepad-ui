@@ -9,9 +9,9 @@ A simple, TV-friendly, gamepad-navigable frontend for the [Lutris](https://lutri
 - A Linux-based operating system.
 - [Lutris](https://lutris.net/downloads) installed and configured with your games.
 - For full functionality, a standard desktop environment with:
-  - **PulseAudio** or **PipeWire** (for audio control).
-  - **BlueZ** (for Bluetooth management).
-  - **GNOME** or **KDE** (for native display management).
+  - **PulseAudio** or **PipeWire** (optional, for audio control).
+  - **BlueZ** (optional, for Bluetooth management).
+  - **GNOME** or **KDE** (optional, for native display management).
   - **ddcutil** (optional, for external monitor brightness control).
 
 ## Installation
