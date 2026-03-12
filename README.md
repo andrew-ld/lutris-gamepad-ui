@@ -8,7 +8,11 @@ A simple, TV-friendly, gamepad-navigable frontend for the [Lutris](https://lutri
 
 - A Linux-based operating system.
 - [Lutris](https://lutris.net/downloads) installed and configured with your games.
-- For full functionality, a standard desktop environment with **PulseAudio** (for audio control) and **BlueZ** (for Bluetooth management) is recommended.
+- For full functionality, a standard desktop environment with:
+  - **PulseAudio** or **PipeWire** (for audio control).
+  - **BlueZ** (for Bluetooth management).
+  - **GNOME** or **KDE** (for native display management).
+  - **ddcutil** (optional, for external monitor brightness control).
 
 ## Installation
 
@@ -31,11 +35,20 @@ Arch Linux users (and users of Arch-based distributions) can install [`lutris-ga
 
 - **Gamepad-First Interface:** Navigate the entire application without a mouse or keyboard. The UI provides context-aware on-screen button prompts that adapt to your connected controller (Xbox, PlayStation, etc.) and offers audio feedback for interactions.
 
-- **Organized Game Library:** Games are automatically organized into shelves for "Recently Played," "All Games," and by categories defined in Lutris. Game cards display cover art, playtime, and last played date, with dynamically generated gradients as fallbacks for missing art.
+- **Organized Game Library:** Games are automatically organized into shelves for "Recently Played," "All Games," and by categories defined in Lutris. Find games quickly using the universal search with an integrated **on-screen keyboard**. Game cards display cover art, playtime, and last played date, with dynamically generated gradients as fallbacks for missing art.
 
-- **Seamless Gameplay:** Launch games directly from the library. While a game is running, a clean "Now Playing" screen is displayed. A global shortcut (Gamepad Home/Guide button or `Ctrl+X`) allows you to toggle the UI's visibility without closing your game.
+- **Seamless Gameplay:** Launch games directly from the library. While a game is running, a clean "Now Playing" screen is displayed. Features include an **experimental pause function** and the ability to open the main Lutris desktop app directly. A global shortcut (Gamepad Home/Guide button or `Ctrl+X`) allows you to toggle the UI's visibility without closing your game.
 
-- **Integrated System Controls:** Access a comprehensive system menu to manage your device. This includes a universal library search, audio output and volume controls, Bluetooth device management, and system power options (reboot, shutdown).
+- **Integrated System Controls:** Access a comprehensive system menu to manage your device:
+  - **Audio Settings:** Manage volume and switch between output devices.
+  - **Bluetooth Management:** Connect and disconnect devices (controllers, headsets, etc.).
+  - **Display Settings:** Control **Brightness** and toggle **Night Light** (supports GNOME, KDE, and external monitors via `ddcutil`).
+  - **Power Options:** Reboot or shutdown the system directly from the UI.
+
+- **Customization & Localization:**
+  - **Multi-language Support:** Currently available in English, Italian, Persian, and Swedish.
+  - **Advanced Settings:** Fine-tune your experience with settings for gamepad autorepeat delay, UI zoom level, and sound feedback.
+  - **Theming:** Fully customizable appearance via `theme.json` (see the Custom Theming Guide below).
 
 ## Custom Theming Guide
 
