@@ -11,6 +11,7 @@ import BluetoothMenu from "./BluetoothMenu";
 import DisplaySettings from "./DisplaySettings";
 import ConfirmationDialog from "./ConfirmationDialog";
 import LegendaContainer from "./LegendaContainer";
+import LutrisSettings from "./LutrisSettings";
 import RowBasedMenu from "./RowBasedMenu";
 import SettingsMenu from "./SettingsMenu";
 import VolumeControl from "./VolumeControl";
@@ -66,6 +67,11 @@ const SystemMenu = () => {
     setIsOpen(false);
   }, [showModal]);
 
+  const openLutrisSettingsModal = useCallback(() => {
+    showModal((hideThisModal) => <LutrisSettings onClose={hideThisModal} />);
+    setIsOpen(false);
+  }, [showModal]);
+
   const openAboutModal = useCallback(() => {
     showModal((hideThisModal) => <About onClose={hideThisModal} />);
     setIsOpen(false);
@@ -102,6 +108,10 @@ const SystemMenu = () => {
       {
         label: t("Display Settings"),
         action: openDisplaySettingsModal,
+      },
+      {
+        label: t("Lutris Settings"),
+        action: openLutrisSettingsModal,
       },
       {
         label: t("Bluetooth Settings"),
@@ -142,6 +152,7 @@ const SystemMenu = () => {
       openAudioSettingsModal,
       openDisplaySettingsModal,
       openAboutModal,
+      openLutrisSettingsModal,
       openBluetoothSettingsModal,
       openSettingsModal,
       t,

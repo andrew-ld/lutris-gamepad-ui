@@ -98,6 +98,24 @@
   "components/LoadingIndicator.jsx": {
     "Loading...": "Laddar..."
   },
+  "components/LutrisSettings.jsx": {
+    "Close": "Stäng",
+    "D3D Extras": "D3D Extras",
+    "DXVK": "DXVK",
+    "Disable": "Inaktivera",
+    "Enable": "Aktivera",
+    "Esync": "Esync",
+    "Failed to load or update Lutris settings.": "Det gick inte att läsa in eller uppdatera Lutris-inställningarna.",
+    "Fsync": "Fsync",
+    "Loading Lutris Settings...": "Laddar Lutris-inställningar...",
+    "Lutris Settings": "Lutris-inställningar",
+    "Next": "Nästa",
+    "No proton versions available.": "Inga Proton-versioner tillgängliga.",
+    "Prev": "Föreg.",
+    "Proton Version": "Proton-version",
+    "Reload": "Ladda om",
+    "Updating Lutris setting...": "Uppdaterar Lutris-inställning..."
+  },
   "components/OnScreenKeyboard.jsx": {
     "Backspace": "Backsteg",
     "Close": "Stäng",
@@ -151,6 +169,7 @@
     "Display Settings": "Display Settings",
     "Exit Application": "Avsluta programmet",
     "Generate Bug Report": "Generate Bug Report",
+    "Lutris Settings": "Lutris-inställningar",
     "Open Lutris": "Öppna Lutris",
     "Power Off System": "Stäng av systemet",
     "Reboot System": "Starta om systemet",

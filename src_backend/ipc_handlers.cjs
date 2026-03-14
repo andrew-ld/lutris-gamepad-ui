@@ -36,7 +36,12 @@ const {
 } = require("./utils.cjs");
 const { getMainWindow } = require("./state.cjs");
 const { getUserTheme } = require("./theme_manager.cjs");
-const { invokeLutris } = require("./lutris_wrapper.cjs");
+const {
+  invokeLutris,
+  getLutrisConfig,
+  setLutrisBoolSetting,
+  setLutrisProtonVersion,
+} = require("./lutris_wrapper.cjs");
 const { getAppConfig, setAppConfig } = require("./config_manager.cjs");
 const { createBugReportFile } = require("./bugreport.cjs");
 
@@ -97,6 +102,36 @@ function registerIpcHandlers() {
     invokeLutris().catch((e) => {
       logError("unable to open lutris", e);
     });
+  });
+
+  ipcHandleWithError("get-lutris-config", async () => {
+    return await getLutrisConfig();
+  });
+
+  ipcHandleWithError("set-lutris-proton-version", async (_event, version) => {
+    if (typeof version !== "string" || !version.length) {
+      throw new Error(
+        `Invalid Lutris proton version: ${version}. Must be a non-empty string.`,
+      );
+    }
+
+    return await setLutrisProtonVersion(version);
+  });
+
+  ipcHandleWithError("set-lutris-bool-setting", async (_event, key, value) => {
+    if (typeof key !== "string" || !key.length) {
+      throw new Error(
+        `Invalid Lutris setting key: ${key}. Must be a non-empty string.`,
+      );
+    }
+
+    if (typeof value !== "boolean") {
+      throw new Error(
+        `Invalid Lutris boolean setting value: ${value}. Must be a boolean.`,
+      );
+    }
+
+    return await setLutrisBoolSetting(key, value);
   });
 
   ipcOnWithError("toggle-window-show", async () => toggleWindowShow());

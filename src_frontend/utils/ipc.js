@@ -2,6 +2,11 @@ export const getGames = () => window.electronAPI.getGames();
 export const launchGame = (game) => window.electronAPI.launchGame(game.id);
 export const closeGame = (game) => window.electronAPI.closeGame(game.id);
 export const openLutris = () => window.electronAPI.openLutris();
+export const getLutrisConfig = () => window.electronAPI.getLutrisConfig();
+export const setLutrisBoolSetting = (key, value) =>
+  window.electronAPI.setLutrisBoolSetting(key, value);
+export const setLutrisProtonVersion = (version) =>
+  window.electronAPI.setLutrisProtonVersion(version);
 export const toggleGamePause = () => window.electronAPI.toggleGamePause();
 
 export const rebootPC = () => window.electronAPI.rebootPC();

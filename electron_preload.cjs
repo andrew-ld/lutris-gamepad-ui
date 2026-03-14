@@ -60,6 +60,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
   rebootPC: () => ipcRenderer.send("reboot-pc"),
   powerOffPC: () => ipcRenderer.send("poweroff-pc"),
   openLutris: () => ipcRenderer.send("open-lutris"),
+  getLutrisConfig: () => ipcRenderer.invoke("get-lutris-config"),
+  setLutrisBoolSetting: (key, value) =>
+    ipcRenderer.invoke("set-lutris-bool-setting", key, value),
+  setLutrisProtonVersion: (version) =>
+    ipcRenderer.invoke("set-lutris-proton-version", version),
   toggleWindowShow: () => ipcRenderer.send("toggle-window-show"),
   openExternalLink: (url) => ipcRenderer.send("open-external-link", url),
 

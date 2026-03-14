@@ -97,6 +97,24 @@
   "components/LoadingIndicator.jsx": {
     "Loading...": "Loading..."
   },
+  "components/LutrisSettings.jsx": {
+    "Close": "Close",
+    "D3D Extras": "D3D Extras",
+    "DXVK": "DXVK",
+    "Disable": "Disable",
+    "Enable": "Enable",
+    "Esync": "Esync",
+    "Failed to load or update Lutris settings.": "Failed to load or update Lutris settings.",
+    "Fsync": "Fsync",
+    "Loading Lutris Settings...": "Loading Lutris Settings...",
+    "Lutris Settings": "Lutris Settings",
+    "Next": "Next",
+    "No proton versions available.": "No proton versions available.",
+    "Prev": "Prev",
+    "Proton Version": "Proton Version",
+    "Reload": "Reload",
+    "Updating Lutris setting...": "Updating Lutris setting..."
+  },
   "components/OnScreenKeyboard.jsx": {
     "Backspace": "Backspace",
     "Close": "Close",
@@ -150,6 +168,7 @@
     "Display Settings": "Display Settings",
     "Exit Application": "Exit Application",
     "Generate Bug Report": "Generate Bug Report",
+    "Lutris Settings": "Lutris Settings",
     "Open Lutris": "Open Lutris",
     "Power Off System": "Power Off System",
     "Reboot System": "Reboot System",

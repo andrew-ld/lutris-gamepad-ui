@@ -98,6 +98,24 @@
   "components/LoadingIndicator.jsx": {
     "Loading...": "در حال بارگذاری..."
   },
+  "components/LutrisSettings.jsx": {
+    "Close": "بستن",
+    "D3D Extras": "D3D Extras",
+    "DXVK": "DXVK",
+    "Disable": "غیرفعال کردن",
+    "Enable": "فعال کردن",
+    "Esync": "Esync",
+    "Failed to load or update Lutris settings.": "بارگیری یا به‌روزرسانی تنظیمات Lutris ناموفق بود.",
+    "Fsync": "Fsync",
+    "Loading Lutris Settings...": "در حال بارگذاری تنظیمات Lutris...",
+    "Lutris Settings": "تنظیمات Lutris",
+    "Next": "بعدی",
+    "No proton versions available.": "هیچ نسخه Proton در دسترس نیست.",
+    "Prev": "قبلی",
+    "Proton Version": "نسخه Proton",
+    "Reload": "بارگیری دوباره",
+    "Updating Lutris setting...": "در حال به‌روزرسانی تنظیمات Lutris..."
+  },
   "components/OnScreenKeyboard.jsx": {
     "Backspace": "پاک‌کردن",
     "Close": "بستن",
@@ -151,6 +169,7 @@
     "Display Settings": "Display Settings",
     "Exit Application": "خروج از برنامه",
     "Generate Bug Report": "Generate Bug Report",
+    "Lutris Settings": "تنظیمات Lutris",
     "Open Lutris": "باز کردن لوتریس",
     "Power Off System": "خاموش‌کردن سامانه",
     "Reboot System": "باز راه‌اندازی سامانه",

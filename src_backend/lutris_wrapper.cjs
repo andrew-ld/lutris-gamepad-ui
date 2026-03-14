@@ -51,10 +51,28 @@ async function getLutrisGames() {
   return await invokeLutrisSubcommand("list-games");
 }
 
+async function getLutrisConfig() {
+  return await invokeLutrisSubcommand("get-lutris-config");
+}
+
+async function setLutrisProtonVersion(version) {
+  return await invokeLutrisSubcommand("set-lutris-proton-version", [version]);
+}
+
+async function setLutrisBoolSetting(key, value) {
+  return await invokeLutrisSubcommand("set-lutris-bool-setting", [
+    key,
+    JSON.stringify(value),
+  ]);
+}
+
 module.exports = {
   getCoverartPath,
   getRuntimeIconPath,
   getAllGamesCategories,
   getLutrisGames,
+  getLutrisConfig,
+  setLutrisBoolSetting,
+  setLutrisProtonVersion,
   invokeLutris,
 };
