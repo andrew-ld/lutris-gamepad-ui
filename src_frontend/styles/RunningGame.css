@@ -42,12 +42,18 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.running-game-cover {
+.running-game-cover-container {
   width: 240px;
   aspect-ratio: 3/4;
   border-radius: 8px;
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.5);
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.running-game-cover {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 

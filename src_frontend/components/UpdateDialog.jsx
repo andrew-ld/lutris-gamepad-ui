@@ -55,13 +55,15 @@ const UpdateDialog = ({ newVersion, releaseUrl, onClose }) => {
       legendItems={legendItems}
       maxWidth="450px"
     >
-      <button
-        className="modal-button focused"
-        style={{ width: "100%" }}
-        onClick={handleOpenLink}
-      >
-        {t("Go to Downloads")}
-      </button>
+      <div className="modal-buttons-group">
+        <button
+          className="modal-button focused"
+          style={{ width: "100%" }}
+          onClick={handleOpenLink}
+        >
+          {t("Go to Downloads")}
+        </button>
+      </div>
     </DialogLayout>
   );
 };

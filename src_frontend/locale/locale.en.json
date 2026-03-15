@@ -36,9 +36,11 @@
     "Clear Search": "Clear Search",
     "Force close": "Force close",
     "Launch Game": "Launch Game",
+    "Next": "Next",
     "Options": "Options",
     "Pause Game": "Pause Game",
     "Power": "Power",
+    "Prev": "Prev",
     "Resume Game": "Resume Game",
     "Search": "Search",
     "Toggle Overlay": "Toggle Overlay"
@@ -78,22 +80,19 @@
     "Never": "Never",
     "Playtime: {{playtime}}": "Playtime: {{playtime}}"
   },
-  "components/GameLibrary.jsx": {
+  "components/LibraryContainer.jsx": {
     "Add games in Lutris and reload.": "Add games in Lutris and reload.",
+    "Are you sure you want to close\n{{title}}?": "Are you sure you want to close\n{{title}}?",
+    "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
+    "Loading library...": "Loading library...",
     "My Library": "My Library",
     "No games found": "No games found",
     "No results for \"{{searchQuery}}\"": "No results for \"{{searchQuery}}\"",
     "Search": "Search",
-    "Try a different search term or press 'B' to clear.": "Try a different search term or press 'B' to clear."
-  },
-  "components/LibraryContainer.jsx": {
-    "Are you sure you want to close\n{{title}}?": "Are you sure you want to close\n{{title}}?",
-    "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
-    "Loading library...": "Loading library...",
-    "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\"",
     "Search Library": "Search Library",
     "This action will force-quit the game. Any unsaved progress may be lost.": "This action will force-quit the game. Any unsaved progress may be lost.",
-    "This feature is experimental. Pausing the game may cause issues.": "This feature is experimental. Pausing the game may cause issues."
+    "This feature is experimental. Pausing the game may cause issues.": "This feature is experimental. Pausing the game may cause issues.",
+    "Try a different search term or press 'B' to clear.": "Try a different search term or press 'B' to clear."
   },
   "components/LoadingIndicator.jsx": {
     "Loading...": "Loading..."
@@ -205,5 +204,10 @@
     "UI Action Sound Feedbacks": "UI Action Sound Feedbacks",
     "Unmute": "Unmute",
     "Volume": "Volume"
+  },
+  "hooks/useGameShelves.js": {
+    "All Games": "All Games",
+    "Recently Played": "Recently Played",
+    "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\""
   }
 }

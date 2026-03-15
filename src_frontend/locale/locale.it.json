@@ -36,9 +36,11 @@
     "Clear Search": "Annulla ricerca",
     "Force close": "Forza chiusura di",
     "Launch Game": "Avvia gioco",
+    "Next": "Next",
     "Options": "Options",
     "Pause Game": "Pausa gioco",
     "Power": "Menu di sistema",
+    "Prev": "Prev",
     "Resume Game": "Riprendi gioco",
     "Search": "Cerca",
     "Toggle Overlay": "Visualizza overlay",
@@ -88,15 +90,21 @@
     "Try a different search term or press 'B' to clear.": "Prova un'altra ricerca o premi 'B' per annullare."
   },
   "components/LibraryContainer.jsx": {
+    "Add games in Lutris and reload.": "Add games in Lutris and reload.",
     "All Games": "Tutti i giochi",
     "Are you sure you want to close\n{{title}}?": "Forzare la chiusura di\n{{title}}?",
     "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
     "Loading library...": "Caricamento libreria...",
+    "My Library": "My Library",
+    "No games found": "No games found",
+    "No results for \"{{searchQuery}}\"": "No results for \"{{searchQuery}}\"",
     "Recently Played": "Giocati di recente",
     "Results for \"{{searchQuery}}\"": "Risultati per \"{{searchQuery}}\"",
+    "Search": "Search",
     "Search Library": "Cerca nella libreria",
     "This action will force-quit the game. Any unsaved progress may be lost.": "Questa operazione forzerà la chiusura del gioco. Eventuali progressi non salvati andranno persi.",
-    "This feature is experimental. Pausing the game may cause issues.": "Questa funzionalità è sperimentale. Mettere in pausa il gioco potrebbe causare problemi."
+    "This feature is experimental. Pausing the game may cause issues.": "Questa funzionalità è sperimentale. Mettere in pausa il gioco potrebbe causare problemi.",
+    "Try a different search term or press 'B' to clear.": "Try a different search term or press 'B' to clear."
   },
   "components/LoadingIndicator.jsx": {
     "Loading...": "Caricamento..."
@@ -209,5 +217,24 @@
     "UI Action Sound Feedbacks": "Feedback sonoro UI",
     "Unmute": "Riattiva audio",
     "Volume": "Volume"
+  },
+  "hooks/useGameActions.js": {
+    "Are you sure you want to close\n{{title}}?": "Are you sure you want to close\n{{title}}?",
+    "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
+    "Search Library": "Search Library",
+    "This action will force-quit the game. Any unsaved progress may be lost.": "This action will force-quit the game. Any unsaved progress may be lost.",
+    "This feature is experimental. Pausing the game may cause issues.": "This feature is experimental. Pausing the game may cause issues."
+  },
+  "hooks/useGameActions.jsx": {
+    "Are you sure you want to close\n{{title}}?": "Are you sure you want to close\n{{title}}?",
+    "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
+    "Search Library": "Search Library",
+    "This action will force-quit the game. Any unsaved progress may be lost.": "This action will force-quit the game. Any unsaved progress may be lost.",
+    "This feature is experimental. Pausing the game may cause issues.": "This feature is experimental. Pausing the game may cause issues."
+  },
+  "hooks/useGameShelves.js": {
+    "All Games": "All Games",
+    "Recently Played": "Recently Played",
+    "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\""
   }
 }

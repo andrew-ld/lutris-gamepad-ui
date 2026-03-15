@@ -12,10 +12,17 @@ const ControlsOverlay = ({
   onShowGameSettings,
   onOpenSystemMenu,
   onToggleGamePause,
+  onPrevCategory,
+  onNextCategory,
   isGamePaused,
 }) => {
   const { t } = useTranslation();
   const legendItems = [];
+
+  if (onPrevCategory && onNextCategory) {
+    legendItems.push({ button: "L1", label: t("Prev") });
+    legendItems.push({ button: "R1", label: t("Next") });
+  }
 
   if (onCloseRunningGame) {
     legendItems.push({ button: "Super", label: t("Toggle Overlay") });

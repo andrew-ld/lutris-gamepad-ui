@@ -164,7 +164,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
 
   return (
     <DialogLayout legendItems={legendItems} maxWidth="800px">
-      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+      <div className="osk-container">
         <div className="osk-input-display">
           <label className="osk-label">{label}</label>
           <div className="osk-input-wrapper">
