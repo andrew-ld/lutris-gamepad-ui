@@ -1,4 +1,5 @@
 const dbus = require("@homebridge/dbus-native");
+
 const { logInfo, logError } = require("./utils.cjs");
 
 const sessionBuses = new Map();

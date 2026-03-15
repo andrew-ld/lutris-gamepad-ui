@@ -1,10 +1,12 @@
 import React from "react";
+
 import "../styles/GameCard.css";
-import GameCover from "./GameCover";
-import { formatDate, formatPlaytime } from "../utils/datetime";
-import { useTranslation } from "../contexts/TranslationContext";
 import { useSettingsState } from "../contexts/SettingsContext";
+import { useTranslation } from "../contexts/TranslationContext";
 import { useVisibilityObserver } from "../hooks/useVisibilityObserver";
+import { formatDate, formatPlaytime } from "../utils/datetime";
+
+import GameCover from "./GameCover";
 
 const GameCard = React.forwardRef(({ game, onFocus, onClick }, ref) => {
   const { t } = useTranslation();
@@ -67,5 +69,7 @@ const GameCard = React.forwardRef(({ game, onFocus, onClick }, ref) => {
     </div>
   );
 });
+
+GameCard.displayName = "GameCard";
 
 export default React.memo(GameCard);

@@ -1,5 +1,5 @@
-const { setKvStoreValue, getKvStoreValue } = require("./storage_kv.cjs");
 const { getMainWindow } = require("./state.cjs");
+const { setKvStoreValue, getKvStoreValue } = require("./storage_kv.cjs");
 
 const CONFIG_KEY = "app_config";
 

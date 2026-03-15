@@ -1,9 +1,10 @@
 import React, { useCallback, useMemo, useEffect } from "react";
-import { useScopedInput } from "../hooks/useScopedInput";
-import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
-import { useGridLayout } from "../hooks/useGridLayout";
-import { useSpatialNavigation } from "../hooks/useSpatialNavigation";
+
 import { useFocusManager } from "../hooks/useFocusManager";
+import { useGridLayout } from "../hooks/useGridLayout";
+import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
+import { useScopedInput } from "../hooks/useScopedInput";
+import { useSpatialNavigation } from "../hooks/useSpatialNavigation";
 import "../styles/GridMenu.css";
 
 const GridMenu = ({

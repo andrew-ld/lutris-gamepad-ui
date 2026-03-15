@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react";
-import { useInput } from "../contexts/InputContext";
-import { useAudio } from "../contexts/AudioContext";
-import "../styles/TopBar.css";
-import { useTranslation } from "../contexts/TranslationContext";
+
 import packageJson from "../../package.json";
+import { useAudio } from "../contexts/AudioContext";
+import { useInput } from "../contexts/InputContext";
+import { useTranslation } from "../contexts/TranslationContext";
+
+import "../styles/TopBar.css";
 
 const TopBar = () => {
   const { t } = useTranslation();

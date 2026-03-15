@@ -1,10 +1,12 @@
 const fs = require("fs");
+
 const { getKvStorageFilePath } = require("./storage.cjs");
 const { logError } = require("./utils.cjs");
 
 function _readStore() {
+  let storePath;
   try {
-    const storePath = getKvStorageFilePath();
+    storePath = getKvStorageFilePath();
     if (!fs.existsSync(storePath)) {
       return {};
     }
@@ -17,8 +19,9 @@ function _readStore() {
 }
 
 function _writeStore(data) {
+  let storePath;
   try {
-    const storePath = getKvStorageFilePath();
+    storePath = getKvStorageFilePath();
     const tempPath = `${storePath}.tmp`;
     const content = JSON.stringify(data, null, 2);
     fs.writeFileSync(tempPath, content, "utf-8");

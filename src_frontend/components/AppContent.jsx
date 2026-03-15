@@ -1,11 +1,13 @@
 import { useEffect } from "react";
-import TopBar from "./TopBar";
-import SystemMenu from "./SystemMenu";
-import LibraryContainer from "./LibraryContainer";
-import UpdateDialog from "./UpdateDialog";
-import { useToastActions } from "../contexts/ToastContext";
+
 import { useModalActions } from "../contexts/ModalContext";
+import { useToastActions } from "../contexts/ToastContext";
 import { onShowToast, onUpdateAvailable } from "../utils/ipc";
+
+import LibraryContainer from "./LibraryContainer";
+import SystemMenu from "./SystemMenu";
+import TopBar from "./TopBar";
+import UpdateDialog from "./UpdateDialog";
 
 const AppContent = () => {
   const { showToast } = useToastActions();

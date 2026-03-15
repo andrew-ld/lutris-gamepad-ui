@@ -1,6 +1,5 @@
 const { writeFileSync } = require("fs");
 const path = require("path");
-const { Rule } = require("postcss");
 
 const hoverWrapperPlugin = () => {
   return {

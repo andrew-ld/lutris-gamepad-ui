@@ -6,8 +6,9 @@ import {
   useCallback,
   useMemo,
 } from "react";
-import * as ipc from "../utils/ipc";
+
 import { useIsMounted } from "../hooks/useIsMounted";
+import * as ipc from "../utils/ipc";
 
 const BluetoothStateContext = createContext(null);
 const BluetoothActionsContext = createContext(null);
@@ -52,7 +53,7 @@ export const BluetoothProvider = ({ children }) => {
     const unsubscribe = ipc.onBluetoothStateChanged(handleStateChanged);
 
     return () => unsubscribe();
-  }, []);
+  }, [isMounted]);
 
   const powerOnAdapter = useCallback((adapterPath) => {
     ipc.bluetoothPowerOnAdapter(adapterPath);
@@ -91,7 +92,7 @@ export const BluetoothProvider = ({ children }) => {
           setIsLoading(false);
         }
       });
-  }, []);
+  }, [isMounted]);
 
   const stateValue = useMemo(
     () => ({ devices, adapters, isLoading, isDiscovering }),

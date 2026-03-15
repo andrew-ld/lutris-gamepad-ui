@@ -1,7 +1,9 @@
 import React from "react";
+
 import "../styles/ControlsOverlay.css";
-import LegendaContainer from "./LegendaContainer";
 import { useTranslation } from "../contexts/TranslationContext";
+
+import LegendaContainer from "./LegendaContainer";
 
 const ControlsOverlay = ({
   children,

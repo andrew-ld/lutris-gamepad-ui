@@ -1,6 +1,7 @@
+import { useEffect, useRef, useState, useCallback } from "react";
+
 import { useModalState, useModalActions } from "../contexts/ModalContext";
 import { ViewProvider } from "../contexts/ViewContext";
-import { useEffect, useRef, useState, useCallback } from "react";
 import "../styles/Modal.css";
 
 const ModalRenderer = () => {

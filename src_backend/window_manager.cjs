@@ -1,3 +1,6 @@
+const path = require("node:path");
+const url = require("url");
+
 const {
   BrowserWindow,
   session,
@@ -6,14 +9,25 @@ const {
   net,
   app,
 } = require("electron");
-const path = require("node:path");
-const url = require("url");
+
+const { subscribeToBluetoothChanges } = require("./bluetooth_manager.cjs");
+const {
+  getAppConfig,
+  subscribeConfigValueChange,
+} = require("./config_manager.cjs");
+const {
+  startRemoteDesktopSession,
+  sendAltTab,
+  stopRemoteDesktopSession,
+} = require("./remote_desktop_manager.cjs");
 const {
   setMainWindow,
   getMainWindow,
   getWhitelistedFiles,
   getRemoteDesktopSessionHandle,
 } = require("./state.cjs");
+const { initializeThemeManager } = require("./theme_manager.cjs");
+const { checkForUpdates } = require("./update_checker.cjs");
 const {
   isDev,
   forceWindowed,
@@ -24,18 +38,6 @@ const {
   logInfo,
   isRunningInsideGamescope,
 } = require("./utils.cjs");
-const {
-  startRemoteDesktopSession,
-  sendAltTab,
-  stopRemoteDesktopSession,
-} = require("./remote_desktop_manager.cjs");
-const { initializeThemeManager } = require("./theme_manager.cjs");
-const { subscribeToBluetoothChanges } = require("./bluetooth_manager.cjs");
-const {
-  getAppConfig,
-  subscribeConfigValueChange,
-} = require("./config_manager.cjs");
-const { checkForUpdates } = require("./update_checker.cjs");
 
 function getWindowZoomFactor() {
   return getAppConfig().zoomFactor || 1.0;

@@ -5,8 +5,9 @@ import {
   useEffect,
   useState,
 } from "react";
-import * as ipc from "../utils/ipc";
+
 import { useIsMounted } from "../hooks/useIsMounted";
+import * as ipc from "../utils/ipc";
 
 const LutrisContext = createContext(null);
 export const useLutris = () => useContext(LutrisContext);

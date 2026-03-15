@@ -1,19 +1,22 @@
-const { logError, showToastOnUi, execPromise } = require("./utils.cjs");
-const util = require("util");
-const { packTar } = require("modern-tar");
 const { writeFile, readFile } = require("fs/promises");
-const {
-  generateBugReportFilePath,
-  getKvStorageFilePath,
-  getLogFilePath,
-} = require("./storage.cjs");
+const os = require("os");
+const util = require("util");
+
+const { packTar } = require("modern-tar");
+
+const packageJson = require("../package.json");
+
 const {
   invokeLutris,
   getLutrisGames,
   getAllGamesCategories,
 } = require("./lutris_wrapper.cjs");
-const packageJson = require("../package.json");
-const os = require("os");
+const {
+  generateBugReportFilePath,
+  getKvStorageFilePath,
+  getLogFilePath,
+} = require("./storage.cjs");
+const { logError, showToastOnUi, execPromise } = require("./utils.cjs");
 
 async function createBugReportFile() {
   const reporters = [

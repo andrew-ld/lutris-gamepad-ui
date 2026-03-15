@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 import { useTranslation } from "../contexts/TranslationContext";
-import { useScopedInput } from "../hooks/useScopedInput";
-import "../styles/RowBasedMenu.css";
-import { findScrollableParent } from "../utils/dom";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
+import { useScopedInput } from "../hooks/useScopedInput";
+import { findScrollableParent } from "../utils/dom";
+
+import "../styles/RowBasedMenu.css";
 
 const defaultKeyExtractor = (item, index) => item.id ?? item.label ?? index;
 
@@ -20,6 +22,7 @@ const RowBasedMenu = ({
   initialSectionIndex = 0,
   initialSelectedIndex = 0,
   onStateChange,
+  emptyMessage,
 }) => {
   const { t } = useTranslation();
   const playActionSound = usePlayButtonActionSound();
@@ -49,11 +52,13 @@ const RowBasedMenu = ({
         setActiveSectionIndex(newSectionIndex);
       }
     }
-  }, [sections]);
+  }, [sections, activeSectionIndex]);
 
-  const items = sections
-    ? sections[activeSectionIndex]?.items || []
-    : baseItems || [];
+  const items = useMemo(() => {
+    return sections
+      ? sections[activeSectionIndex]?.items || []
+      : baseItems || [];
+  }, [sections, activeSectionIndex, baseItems]);
 
   const selectedIndexRef = useRef(selectedIndex);
   const onActionRef = useRef(onAction);

@@ -1,15 +1,17 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+
 import { useAudio } from "../contexts/AudioContext";
 import {
   useSettingsActions,
   useSettingsState,
 } from "../contexts/SettingsContext";
-import RowBasedMenu from "./RowBasedMenu";
-import FocusableRow from "./FocusableRow";
 import { useTranslation } from "../contexts/TranslationContext";
-import ToggleButton from "./ToggleButton";
-import PercentageBar from "./PercentageBar";
+
 import DialogLayout from "./DialogLayout";
+import FocusableRow from "./FocusableRow";
+import PercentageBar from "./PercentageBar";
+import RowBasedMenu from "./RowBasedMenu";
+import ToggleButton from "./ToggleButton";
 import "../styles/VolumeControl.css";
 
 export const VolumeControlFocusID = "VolumeControl";

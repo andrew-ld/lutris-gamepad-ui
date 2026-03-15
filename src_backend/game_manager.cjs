@@ -2,8 +2,16 @@ const { spawn } = require("child_process");
 const { readFileSync } = require("fs");
 const { readdir } = require("node:fs/promises");
 const path = require("node:path");
+
 const { globalShortcut } = require("electron");
 
+const { getAppConfig } = require("./config_manager.cjs");
+const {
+  getCoverartPath,
+  getRuntimeIconPath,
+  getAllGamesCategories,
+  getLutrisGames,
+} = require("./lutris_wrapper.cjs");
 const {
   getMainWindow,
   getRunningGameProcess,
@@ -22,13 +30,6 @@ const {
   isProcessPaused,
 } = require("./utils.cjs");
 const { toggleWindowShow } = require("./window_manager.cjs");
-const {
-  getCoverartPath,
-  getRuntimeIconPath,
-  getAllGamesCategories,
-  getLutrisGames,
-} = require("./lutris_wrapper.cjs");
-const { getAppConfig } = require("./config_manager.cjs");
 
 const runtimeIconCache = new Map();
 
@@ -54,7 +55,12 @@ function closeRunningGameProcess() {
   try {
     isPaused = isProcessPaused(runningGameProcess.pid);
   } catch (e) {
-    logError("Unable to determine if pid", pid, "is paused, assume paused", e);
+    logError(
+      "Unable to determine if pid",
+      runningGameProcess.pid,
+      "is paused, assume paused",
+      e,
+    );
     isPaused = true;
   }
 

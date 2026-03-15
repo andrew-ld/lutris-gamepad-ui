@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import LegendaContainer from "./LegendaContainer";
-import RowBasedMenu from "./RowBasedMenu";
-import FocusableRow from "./FocusableRow";
+
 import { useTranslation } from "../contexts/TranslationContext";
 import { useIsMounted } from "../hooks/useIsMounted";
-import PercentageBar from "./PercentageBar";
-import ToggleButton from "./ToggleButton";
-import DialogLayout from "./DialogLayout";
 import * as api from "../utils/ipc";
+
+import DialogLayout from "./DialogLayout";
+import FocusableRow from "./FocusableRow";
+import PercentageBar from "./PercentageBar";
+import RowBasedMenu from "./RowBasedMenu";
+import ToggleButton from "./ToggleButton";
 import "../styles/DisplaySettings.css";
 
 export const DisplaySettingsFocusID = "DisplaySettings";
@@ -36,7 +37,7 @@ const DisplaySettings = ({ onClose }) => {
         setBrightness(b);
         setBrightnessError(false);
       }
-    } catch (_) {
+    } catch {
       if (isMounted()) {
         setBrightnessError(true);
       }
@@ -48,7 +49,7 @@ const DisplaySettings = ({ onClose }) => {
         setNightLight(nl);
         setNightLightError(false);
       }
-    } catch (_) {
+    } catch {
       if (isMounted()) {
         setNightLightError(true);
       }

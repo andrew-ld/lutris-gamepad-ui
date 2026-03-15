@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useState, useMemo } from "react";
-import { useTranslation } from "../contexts/TranslationContext";
-import SelectionMenu from "./SelectionMenu";
-import LutrisSettingsMenu from "./LutrisSettingsMenu";
-import LoadingIndicator from "./LoadingIndicator";
-import DialogLayout from "./DialogLayout";
-import * as api from "../utils/ipc";
+
 import { useToastActions } from "../contexts/ToastContext";
+import { useTranslation } from "../contexts/TranslationContext";
 import { useViewActions } from "../contexts/ViewContext";
 import { useIsMounted } from "../hooks/useIsMounted";
+import * as api from "../utils/ipc";
+
+import DialogLayout from "./DialogLayout";
+import LoadingIndicator from "./LoadingIndicator";
+import LutrisSettingsMenu from "./LutrisSettingsMenu";
+import SelectionMenu from "./SelectionMenu";
 
 const LutrisSettingsFlow = ({ onClose, maxWidth = "700px" }) => {
   const { t } = useTranslation();
@@ -26,7 +28,7 @@ const LutrisSettingsFlow = ({ onClose, maxWidth = "700px" }) => {
       if (isMounted()) {
         setRunners(data.runners || []);
       }
-    } catch (error) {
+    } catch {
       if (isMounted()) {
         showToast({
           title: t("Failed to fetch Lutris runners"),

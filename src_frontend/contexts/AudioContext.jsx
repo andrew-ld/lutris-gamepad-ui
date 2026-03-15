@@ -5,8 +5,9 @@ import {
   useEffect,
   useCallback,
 } from "react";
-import * as ipc from "../utils/ipc";
+
 import { useIsMounted } from "../hooks/useIsMounted";
+import * as ipc from "../utils/ipc";
 
 const AudioContext = createContext(null);
 export const useAudio = () => useContext(AudioContext);

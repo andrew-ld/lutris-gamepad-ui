@@ -1,8 +1,9 @@
 const { exec, execFile } = require("child_process");
-const { promisify } = require("util");
 const { existsSync } = require("fs");
+const { readFileSync } = require("node:fs");
 const path = require("node:path");
 const { cwd } = require("node:process");
+const { promisify } = require("util");
 
 const {
   info: logInfo,
@@ -10,7 +11,6 @@ const {
   error: logError,
 } = require("./logger.cjs");
 const { getMainWindow } = require("./state.cjs");
-const { readFileSync } = require("node:fs");
 
 const execPromise = promisify(exec);
 const execFilePromise = promisify(execFile);

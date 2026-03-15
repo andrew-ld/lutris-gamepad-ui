@@ -1,5 +1,7 @@
 import React from "react";
+
 import { logError } from "../utils/ipc";
+
 import CrashDialog from "./CrashDialog";
 
 class ErrorBoundary extends React.Component {

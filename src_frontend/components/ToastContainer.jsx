@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+
 import { useToastState, useToastActions } from "../contexts/ToastContext";
 import "../styles/Toast.css";
 

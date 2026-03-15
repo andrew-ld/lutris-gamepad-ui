@@ -1,4 +1,4 @@
-const { logInfo, logWarn } = require("./utils.cjs");
+const { logInfo } = require("./utils.cjs");
 
 const DESKTOP_GNOME = "gnome";
 const DESKTOP_KDE = "kde";

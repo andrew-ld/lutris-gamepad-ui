@@ -1,21 +1,22 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
+
 import { useLutris } from "../contexts/LutrisContext";
 import { useModalActions, useModalState } from "../contexts/ModalContext";
-import LoadingIndicator from "./LoadingIndicator";
-import RunningGame from "./RunningGame";
+import { useTranslation } from "../contexts/TranslationContext";
+import { useGameShelves } from "../hooks/useGameShelves";
+import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
+import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
+import { useScopedInput } from "../hooks/useScopedInput";
+import { toggleWindowShow, toggleGamePause } from "../utils/ipc";
+
+import ConfirmationDialog from "./ConfirmationDialog";
 import ControlsOverlay from "./ControlsOverlay";
 import GameCard from "./GameCard";
-import ConfirmationDialog from "./ConfirmationDialog";
-import OnScreenKeyboard from "./OnScreenKeyboard";
-import LutrisSettingsMenu from "./LutrisSettingsMenu";
-import { toggleWindowShow, toggleGamePause } from "../utils/ipc";
-import { useScopedInput } from "../hooks/useScopedInput";
-import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
-import { useTranslation } from "../contexts/TranslationContext";
-import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
-
-import { useGameShelves } from "../hooks/useGameShelves";
 import GridMenu from "./GridMenu";
+import LoadingIndicator from "./LoadingIndicator";
+import LutrisSettingsMenu from "./LutrisSettingsMenu";
+import OnScreenKeyboard from "./OnScreenKeyboard";
+import RunningGame from "./RunningGame";
 
 export const LibraryContainerFocusID = "LibraryContainer";
 
@@ -258,7 +259,7 @@ const LibraryContainer = () => {
     controlsOverlayProps.onShowSearchModal = showSearchModalCb;
   }
 
-  const renderItem = (game, { isFocused }, { onFocus, onClick, ref }) => (
+  const renderItem = (game, { _isFocused }, { onFocus, onClick, ref }) => (
     <GameCard
       key={game.id}
       ref={ref}

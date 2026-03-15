@@ -1,8 +1,10 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
-import { useScopedInput } from "../hooks/useScopedInput";
-import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
-import DialogLayout from "./DialogLayout";
+
 import { useTranslation } from "../contexts/TranslationContext";
+import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
+import { useScopedInput } from "../hooks/useScopedInput";
+
+import DialogLayout from "./DialogLayout";
 
 export const ConfirmationDialogFocusId = "ConfirmationDialog";
 

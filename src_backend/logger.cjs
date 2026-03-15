@@ -1,6 +1,7 @@
-const util = require("util");
-const { getLogFilePath } = require("./storage.cjs");
 const fs = require("fs");
+const util = require("util");
+
+const { getLogFilePath } = require("./storage.cjs");
 
 /** @type {fs.WriteStream | null} */
 let logStream = undefined;

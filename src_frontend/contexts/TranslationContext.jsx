@@ -5,9 +5,10 @@ import {
   useEffect,
   useState,
 } from "react";
+
+import { useIsMounted } from "../hooks/useIsMounted";
 import * as ipc from "../utils/ipc";
 import { applyReplacements } from "../utils/string";
-import { useIsMounted } from "../hooks/useIsMounted";
 
 const TranslationContext = createContext({
   t: (key, replacements) => applyReplacements(key, replacements),

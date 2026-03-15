@@ -1,8 +1,9 @@
 import "../styles/RunningGame.css";
-import GameCover from "./GameCover";
+import { useTranslation } from "../contexts/TranslationContext";
 import { getDeterministicGradient } from "../utils/color";
 import { formatPlaytime } from "../utils/datetime";
-import { useTranslation } from "../contexts/TranslationContext";
+
+import GameCover from "./GameCover";
 
 const RunningGamePage = ({ game, isPaused }) => {
   const { t } = useTranslation();

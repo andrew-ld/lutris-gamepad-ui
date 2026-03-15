@@ -1,8 +1,10 @@
 import { useMemo, useCallback } from "react";
-import DialogLayout from "./DialogLayout";
-import RowBasedMenu from "./RowBasedMenu";
-import FocusableRow from "./FocusableRow";
+
 import { useTranslation } from "../contexts/TranslationContext";
+
+import DialogLayout from "./DialogLayout";
+import FocusableRow from "./FocusableRow";
+import RowBasedMenu from "./RowBasedMenu";
 
 const SelectionMenu = ({
   title,

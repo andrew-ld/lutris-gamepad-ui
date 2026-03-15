@@ -1,15 +1,18 @@
 import { useCallback, useMemo, useState } from "react";
-import { useTranslation } from "../contexts/TranslationContext";
+
 import {
   useSettingsActions,
   useSettingsState,
 } from "../contexts/SettingsContext";
-import "../styles/SettingsMenu.css";
-import FocusableRow from "./FocusableRow";
+import { useTranslation } from "../contexts/TranslationContext";
+
 import DialogLayout from "./DialogLayout";
+import FocusableRow from "./FocusableRow";
+import PercentageBar from "./PercentageBar";
 import RowBasedMenu from "./RowBasedMenu";
 import ToggleButton from "./ToggleButton";
-import PercentageBar from "./PercentageBar";
+
+import "../styles/SettingsMenu.css";
 
 export const SettingsMenuFocusId = "SettingsMenu";
 

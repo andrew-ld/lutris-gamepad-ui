@@ -6,9 +6,11 @@ import {
   useRef,
   useCallback,
 } from "react";
-import { logInfo } from "../utils/ipc";
-import { useSettingsState } from "./SettingsContext";
+
 import { getMappedInput } from "../utils/gamepad_mapping";
+import { logInfo } from "../utils/ipc";
+
+import { useSettingsState } from "./SettingsContext";
 
 const KEYBOARD_ACTION_MAP = {
   ArrowUp: "UP",
@@ -159,17 +161,20 @@ export const InputProvider = ({ children }) => {
     [...inputSubscribers.current].forEach((cb) => cb(eventObject));
   }, []);
 
-  const dispatchInputEvent = (inputEvent, inputSource) => {
-    if (inputSource && inputSource !== lastDetectedInputSourceRef.current) {
-      lastDetectedInputSourceRef.current = inputSource;
-      broadcastInputTypeChange();
-    }
-    if (document.hasFocus() || !inputEvent || inputEvent?.name === "Super") {
-      broadcastInputEvent(inputEvent);
-      return true;
-    }
-    return false;
-  };
+  const dispatchInputEvent = useCallback(
+    (inputEvent, inputSource) => {
+      if (inputSource && inputSource !== lastDetectedInputSourceRef.current) {
+        lastDetectedInputSourceRef.current = inputSource;
+        broadcastInputTypeChange();
+      }
+      if (document.hasFocus() || !inputEvent || inputEvent?.name === "Super") {
+        broadcastInputEvent(inputEvent);
+        return true;
+      }
+      return false;
+    },
+    [broadcastInputTypeChange, broadcastInputEvent],
+  );
 
   const releaseInputFocus = useCallback((uniqueId) => {
     setFocusStack((prevStack) => {
@@ -195,7 +200,7 @@ export const InputProvider = ({ children }) => {
           return stack[stack.length - 1].uniqueId === uniqueId;
         },
         release: () => {
-          releaseInputFocus(uniqueId, claimantId);
+          releaseInputFocus(uniqueId);
         },
       };
 
@@ -236,7 +241,7 @@ export const InputProvider = ({ children }) => {
     return () => {
       document.removeEventListener("keydown", handleKeyboardKeyDown);
     };
-  }, []);
+  }, [dispatchInputEvent]);
 
   useEffect(() => {
     const executeGamepadPoll = () => {
@@ -421,7 +426,7 @@ export const InputProvider = ({ children }) => {
       window.removeEventListener("focus", handleWindowFocusChange);
       window.removeEventListener("blur", handleWindowFocusChange);
     };
-  }, [refreshGamepadCount]);
+  }, [refreshGamepadCount, dispatchInputEvent]);
 
   const value = {
     subscribe: subscribeToInputEvents,

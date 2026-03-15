@@ -1,16 +1,19 @@
 import { useMemo, useCallback, useEffect, useRef } from "react";
+
 import {
   useBluetoothState,
   useBluetoothActions,
 } from "../contexts/BluetoothContext";
 import { useModalActions } from "../contexts/ModalContext";
-import RowBasedMenu from "./RowBasedMenu";
-import FocusableRow from "./FocusableRow";
-import LoadingIndicator from "./LoadingIndicator";
+import { useTranslation } from "../contexts/TranslationContext";
+
 import ConfirmationDialog from "./ConfirmationDialog";
 import DialogLayout from "./DialogLayout";
+import FocusableRow from "./FocusableRow";
+import LoadingIndicator from "./LoadingIndicator";
+import RowBasedMenu from "./RowBasedMenu";
+
 import "../styles/BluetoothMenu.css";
-import { useTranslation } from "../contexts/TranslationContext";
 
 export const BluetoothMenuFocusId = "BluetoothMenu";
 

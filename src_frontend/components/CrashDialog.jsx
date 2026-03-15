@@ -1,10 +1,13 @@
 import { useCallback, useMemo, useRef, useState } from "react";
+
 import { useTranslation } from "../contexts/TranslationContext";
-import { useScopedInput } from "../hooks/useScopedInput";
-import "../styles/CrashDialog.css";
-import { applyReplacements } from "../utils/string";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
+import { useScopedInput } from "../hooks/useScopedInput";
+import { applyReplacements } from "../utils/string";
+
 import DialogLayout from "./DialogLayout";
+
+import "../styles/CrashDialog.css";
 
 const SCROLL_AMOUNT = 50;
 

@@ -1,4 +1,5 @@
 import buttonActionSound from "../resources/buttonActionSound.wav";
+
 import { logError } from "./ipc";
 
 const ACTION_SOUND_THROTTLE_MS = 50;

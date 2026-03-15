@@ -4,10 +4,11 @@ const {
   writeFileSync,
   watch,
 } = require("original-fs");
+
 const defaultTheme = require("./generated/theme.default.json");
+const { getMainWindow } = require("./state.cjs");
 const { getDefaultThemeFilePath, getThemeFilePath } = require("./storage.cjs");
 const { logError, logWarn, logInfo, toastError } = require("./utils.cjs");
-const { getMainWindow } = require("./state.cjs");
 
 function ensureUserThemeFileExists() {
   try {

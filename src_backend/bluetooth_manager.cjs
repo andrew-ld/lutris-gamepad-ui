@@ -1,3 +1,4 @@
+const { getSessionBus } = require("./dbus_manager.cjs");
 const { getMainWindow } = require("./state.cjs");
 const {
   logInfo,
@@ -8,7 +9,6 @@ const {
   debounce,
   toastError,
 } = require("./utils.cjs");
-const { getSessionBus } = require("./dbus_manager.cjs");
 
 const BLUEZ_SERVICE_NAME = "org.bluez";
 const BLUEZ_OBJECT_PATH = "/";
@@ -137,9 +137,9 @@ async function getAdapters() {
 }
 
 async function setAdapterBooleanProperty(adapterPath, propName, value) {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const iface = await _getInterface(adapterPath, PROPERTIES_INTERFACE);
+  try {
+    const iface = await _getInterface(adapterPath, PROPERTIES_INTERFACE);
+    return new Promise((resolve, reject) => {
       iface.Set(ADAPTER_INTERFACE, propName, ["b", value], (err) => {
         _triggerStateUpdate();
         if (err) {
@@ -155,12 +155,12 @@ async function setAdapterBooleanProperty(adapterPath, propName, value) {
           resolve();
         }
       });
-    } catch (e) {
-      const errorMessage = `Error setting property ${propName} on ${adapterPath}`;
-      logError(errorMessage, e.message);
-      reject(new Error(errorMessage));
-    }
-  });
+    });
+  } catch (e) {
+    const errorMessage = `Error setting property ${propName} on ${adapterPath}`;
+    logError(errorMessage, e.message);
+    throw new Error(errorMessage);
+  }
 }
 
 async function powerOnAdapter(adapterPath) {

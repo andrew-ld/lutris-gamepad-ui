@@ -1,10 +1,11 @@
 const { app, Menu } = require("electron");
-const { createWindow } = require("./src_backend/window_manager.cjs");
-const { registerIpcHandlers } = require("./src_backend/ipc_handlers.cjs");
+
+const { getAppConfig } = require("./src_backend/config_manager.cjs");
 const {
   closeRunningGameProcess,
   toggleGamePause,
 } = require("./src_backend/game_manager.cjs");
+const { registerIpcHandlers } = require("./src_backend/ipc_handlers.cjs");
 const { getMainWindow } = require("./src_backend/state.cjs");
 const {
   logInfo,
@@ -12,7 +13,7 @@ const {
   isDev,
   forceWindowed,
 } = require("./src_backend/utils.cjs");
-const { getAppConfig } = require("./src_backend/config_manager.cjs");
+const { createWindow } = require("./src_backend/window_manager.cjs");
 
 process.noAsar = true;
 

@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+
 import { useInput } from "../contexts/InputContext";
 
 const AppMouseFocus = () => {

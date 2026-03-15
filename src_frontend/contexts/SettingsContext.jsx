@@ -6,8 +6,9 @@ import {
   useMemo,
   useState,
 } from "react";
-import * as ipc from "../utils/ipc";
+
 import { useIsMounted } from "../hooks/useIsMounted";
+import * as ipc from "../utils/ipc";
 
 const SettingsStateContext = createContext(null);
 const SettingsActionsContext = createContext(null);

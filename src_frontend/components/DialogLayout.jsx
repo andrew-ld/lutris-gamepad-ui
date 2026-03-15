@@ -1,4 +1,3 @@
-import React from "react";
 import LegendaContainer from "./LegendaContainer";
 import "../styles/DialogLayout.css";
 

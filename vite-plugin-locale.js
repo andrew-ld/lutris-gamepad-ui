@@ -1,6 +1,7 @@
-import { readdirSync, readFileSync, writeFileSync, existsSync } from "fs";
+import { readdirSync, readFileSync, writeFileSync } from "fs";
 import path, { relative } from "path";
 import { fileURLToPath } from "url";
+
 import * as babel from "@babel/core";
 
 const __filename = fileURLToPath(import.meta.url);

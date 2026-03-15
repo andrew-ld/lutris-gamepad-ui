@@ -1,22 +1,25 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 import { useLutris } from "../contexts/LutrisContext";
 import { useModalActions, useModalState } from "../contexts/ModalContext";
+import { useSettingsState } from "../contexts/SettingsContext";
 import { useToastActions } from "../contexts/ToastContext";
 import { useTranslation } from "../contexts/TranslationContext";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
-import "../styles/SystemMenu.css";
+import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import * as api from "../utils/ipc";
+
 import About from "./About";
 import BluetoothMenu from "./BluetoothMenu";
-import DisplaySettings from "./DisplaySettings";
-import LutrisSettingsFlow from "./LutrisSettingsFlow";
 import ConfirmationDialog from "./ConfirmationDialog";
+import DisplaySettings from "./DisplaySettings";
 import LegendaContainer from "./LegendaContainer";
+import LutrisSettingsFlow from "./LutrisSettingsFlow";
 import RowBasedMenu from "./RowBasedMenu";
 import SettingsMenu from "./SettingsMenu";
 import VolumeControl from "./VolumeControl";
-import { useSettingsState } from "../contexts/SettingsContext";
-import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
+
+import "../styles/SystemMenu.css";
 
 const PowerIcon = () => (
   <svg
@@ -156,6 +159,7 @@ const SystemMenu = () => {
       openAboutModal,
       openBluetoothSettingsModal,
       openSettingsModal,
+      openLutrisSettingsModal,
       t,
       settings.doubleConfirmPowerManagement,
     ],
@@ -241,7 +245,7 @@ const SystemMenu = () => {
       action: useCallback(() => {
         playActionSound();
         toggleMenu();
-      }, [playActionSound]),
+      }, [playActionSound, toggleMenu]),
       active: !isModalOpen,
     },
   ]);

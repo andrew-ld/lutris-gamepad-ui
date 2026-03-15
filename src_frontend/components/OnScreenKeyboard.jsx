@@ -1,7 +1,9 @@
 import { useState, useCallback, useRef, useMemo, useEffect } from "react";
-import { useScopedInput } from "../hooks/useScopedInput";
+
 import { useTranslation } from "../contexts/TranslationContext";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
+import { useScopedInput } from "../hooks/useScopedInput";
+
 import DialogLayout from "./DialogLayout";
 import "../styles/OnScreenKeyboard.css";
 
@@ -107,7 +109,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
             return { x, y };
           });
           break;
-        case "A":
+        case "A": {
           playActionSound();
           const keyObject =
             keyLayout[focusCoordsRef.current.y][focusCoordsRef.current.x];
@@ -115,6 +117,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
             typeof keyObject === "string" ? keyObject : keyObject.id;
           handleKeyPress(keyId);
           break;
+        }
         case "X":
           playActionSound();
           onConfirmRef.current(inputValue);

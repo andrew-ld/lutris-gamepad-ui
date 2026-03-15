@@ -1,8 +1,10 @@
+const { getAppConfig } = require("./config_manager.cjs");
 const { getSessionBus } = require("./dbus_manager.cjs");
 const {
   getRemoteDesktopSessionHandle,
   setRemoteDesktopSessionHandle,
 } = require("./state.cjs");
+const { getKvStoreValue, setKvStoreValue } = require("./storage_kv.cjs");
 const {
   logInfo,
   logError,
@@ -10,8 +12,6 @@ const {
   debounce,
   toastError,
 } = require("./utils.cjs");
-const { getKvStoreValue, setKvStoreValue } = require("./storage_kv.cjs");
-const { getAppConfig } = require("./config_manager.cjs");
 
 const PORTAL_DESTINATION = "org.freedesktop.portal.Desktop";
 const PORTAL_PATH = "/org/freedesktop/portal/desktop";

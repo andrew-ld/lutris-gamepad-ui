@@ -1,5 +1,6 @@
-import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+
 import { createLocalePlugins } from "./vite-plugin-locale.js";
 
 const { babelPlugin: babelLocalePlugin, vitePlugin: viteLocalePlugin } =

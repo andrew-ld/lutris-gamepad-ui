@@ -1,5 +1,5 @@
-const { spawnGSettings } = require("./utils.cjs");
 const ddcutil = require("./display_manager_impl_ddcutil.cjs");
+const { spawnGSettings } = require("./utils.cjs");
 
 const NIGHT_LIGHT_SCHEMA = "org.gnome.settings-daemon.plugins.color";
 const NIGHT_LIGHT_KEY = "night-light-enabled";

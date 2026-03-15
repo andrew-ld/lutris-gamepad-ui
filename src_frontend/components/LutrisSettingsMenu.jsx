@@ -1,14 +1,17 @@
-import { useCallback, useEffect, useMemo, useState, useRef } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
 import { useTranslation } from "../contexts/TranslationContext";
-import "../styles/SettingsMenu.css";
-import FocusableRow from "./FocusableRow";
-import DialogLayout from "./DialogLayout";
-import RowBasedMenu from "./RowBasedMenu";
-import ToggleButton from "./ToggleButton";
-import LoadingIndicator from "./LoadingIndicator";
-import SelectionMenu from "./SelectionMenu";
-import * as api from "../utils/ipc";
 import { useIsMounted } from "../hooks/useIsMounted";
+import * as api from "../utils/ipc";
+
+import DialogLayout from "./DialogLayout";
+import FocusableRow from "./FocusableRow";
+import LoadingIndicator from "./LoadingIndicator";
+import RowBasedMenu from "./RowBasedMenu";
+import SelectionMenu from "./SelectionMenu";
+import ToggleButton from "./ToggleButton";
+
+import "../styles/SettingsMenu.css";
 
 export const LutrisSettingsMenuFocusId = "LutrisSettingsMenu";
 

@@ -1,8 +1,10 @@
 import { useMemo, useCallback } from "react";
-import { openExternalLink } from "../utils/ipc";
+
 import { useTranslation } from "../contexts/TranslationContext";
-import { useScopedInput } from "../hooks/useScopedInput";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
+import { useScopedInput } from "../hooks/useScopedInput";
+import { openExternalLink } from "../utils/ipc";
+
 import DialogLayout from "./DialogLayout";
 
 export const UpdateDialogFocusId = "UpdateDialog";

@@ -1,8 +1,10 @@
-const PAClient = require("@futpib/paclient");
-const path = require("node:path");
-const { homedir } = require("os");
 const { existsSync } = require("fs");
 const { readFile } = require("fs/promises");
+const path = require("node:path");
+const { homedir } = require("os");
+
+const PAClient = require("@futpib/paclient");
+
 const {
   getMainWindow,
   getPulseAudioClient,

@@ -1,6 +1,7 @@
+const packageJson = require("../package.json");
+
 const { getMainWindow } = require("./state.cjs");
 const { logInfo, logError } = require("./utils.cjs");
-const packageJson = require("../package.json");
 
 const REPO_OWNER = "andrew-ld";
 const REPO_NAME = "lutris-gamepad-ui";
