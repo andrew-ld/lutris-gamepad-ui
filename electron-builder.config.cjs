@@ -39,5 +39,5 @@ module.exports = {
     target: "AppImage",
     category: "game",
     icon: "src_frontend/resources/icon.svg",
-  }
+  },
 };
