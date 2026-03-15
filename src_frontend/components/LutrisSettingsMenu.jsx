@@ -129,8 +129,8 @@ const LutrisSettingsMenu = ({
         control = (
           <ToggleButton
             isToggledOn={!!item.value}
-            labelOn={t("Enabled")}
-            labelOff={t("Disabled")}
+            labelOn={t("Disable")}
+            labelOff={t("Enable")}
           />
         );
       } else if (
@@ -167,9 +167,13 @@ const LutrisSettingsMenu = ({
       buttons.push({ button: "R1", label: t("Next") });
     }
     if (focusedItem && isOptionSupported(focusedItem)) {
+      let label = t("Select");
+      if (focusedItem.type === "bool") {
+        label = focusedItem.value ? t("Disable") : t("Enable");
+      }
       buttons.push({
         button: "A",
-        label: focusedItem.type === "bool" ? t("Toggle") : t("Open Select"),
+        label,
       });
     }
     buttons.push({ button: "B", label: t("Close"), onClick: onClose });

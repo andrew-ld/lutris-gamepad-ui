@@ -43,8 +43,7 @@
     "Prev": "Prev",
     "Resume Game": "Riprendi gioco",
     "Search": "Cerca",
-    "Toggle Overlay": "Visualizza overlay",
-    "game": "gioco"
+    "Toggle Overlay": "Visualizza overlay"
   },
   "components/CrashDialog.jsx": {
     "Close Application": "Chiudi applicazione",
@@ -81,25 +80,14 @@
     "Never": "Mai giocato",
     "Playtime: {{playtime}}": "Ore di gioco: {{playtime}}"
   },
-  "components/GameLibrary.jsx": {
-    "Add games in Lutris and reload.": "Aggiungi giochi da Lutris e aggiorna la libreria.",
-    "My Library": "La mia Libreria",
-    "No games found": "Nessun gioco presente",
-    "No results for \"{{searchQuery}}\"": "Nessun risultato per \"{{searchQuery}}\"",
-    "Search": "Ricerca",
-    "Try a different search term or press 'B' to clear.": "Prova un'altra ricerca o premi 'B' per annullare."
-  },
   "components/LibraryContainer.jsx": {
     "Add games in Lutris and reload.": "Add games in Lutris and reload.",
-    "All Games": "Tutti i giochi",
     "Are you sure you want to close\n{{title}}?": "Forzare la chiusura di\n{{title}}?",
     "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
     "Loading library...": "Caricamento libreria...",
     "My Library": "My Library",
     "No games found": "No games found",
     "No results for \"{{searchQuery}}\"": "No results for \"{{searchQuery}}\"",
-    "Recently Played": "Giocati di recente",
-    "Results for \"{{searchQuery}}\"": "Risultati per \"{{searchQuery}}\"",
     "Search": "Search",
     "Search Library": "Cerca nella libreria",
     "This action will force-quit the game. Any unsaved progress may be lost.": "Questa operazione forzerà la chiusura del gioco. Eventuali progressi non salvati andranno persi.",
@@ -112,14 +100,13 @@
   "components/LutrisSettingsMenu.jsx": {
     "Close": "Close",
     "Default": "Default",
-    "Disabled": "Disabled",
-    "Enabled": "Enabled",
+    "Disable": "Disable",
+    "Enable": "Enable",
     "Lutris Settings": "Lutris Settings",
     "Next": "Next",
-    "Open Select": "Open Select",
     "Prev": "Prev",
-    "Settings: {{name}}": "Settings: {{name}}",
-    "Toggle": "Toggle"
+    "Select": "Select",
+    "Settings: {{name}}": "Settings: {{name}}"
   },
   "components/OnScreenKeyboard.jsx": {
     "Backspace": "Cancella",
@@ -178,7 +165,6 @@
     "Display Settings": "Display Settings",
     "Exit Application": "Esci",
     "Generate Bug Report": "Genera segnalazione bug",
-    "Library reloaded successfully!": "Libreria ricaricata con successo!",
     "Lutris Settings": "Lutris Settings",
     "Open Lutris": "Apri Lutris",
     "Power Off System": "Spegni il sistema",
@@ -217,20 +203,6 @@
     "UI Action Sound Feedbacks": "Feedback sonoro UI",
     "Unmute": "Riattiva audio",
     "Volume": "Volume"
-  },
-  "hooks/useGameActions.js": {
-    "Are you sure you want to close\n{{title}}?": "Are you sure you want to close\n{{title}}?",
-    "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
-    "Search Library": "Search Library",
-    "This action will force-quit the game. Any unsaved progress may be lost.": "This action will force-quit the game. Any unsaved progress may be lost.",
-    "This feature is experimental. Pausing the game may cause issues.": "This feature is experimental. Pausing the game may cause issues."
-  },
-  "hooks/useGameActions.jsx": {
-    "Are you sure you want to close\n{{title}}?": "Are you sure you want to close\n{{title}}?",
-    "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
-    "Search Library": "Search Library",
-    "This action will force-quit the game. Any unsaved progress may be lost.": "This action will force-quit the game. Any unsaved progress may be lost.",
-    "This feature is experimental. Pausing the game may cause issues.": "This feature is experimental. Pausing the game may cause issues."
   },
   "hooks/useGameShelves.js": {
     "All Games": "All Games",

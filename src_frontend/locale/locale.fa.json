@@ -43,8 +43,7 @@
     "Prev": "Prev",
     "Resume Game": "Resume Game",
     "Search": "جستجو",
-    "Toggle Overlay": "تغییر نمای رویی",
-    "game": "بازی"
+    "Toggle Overlay": "تغییر نمای رویی"
   },
   "components/CrashDialog.jsx": {
     "Close Application": "بستن برنامه",
@@ -81,14 +80,6 @@
     "Never": "هرگز",
     "Playtime: {{playtime}}": "زمان بازی: {{playtime}}"
   },
-  "components/GameLibrary.jsx": {
-    "Add games in Lutris and reload.": "بازی‌ها را در لوتریس بیافزایید و دوباره بارگذاری کنید.",
-    "My Library": "کتابخانه من",
-    "No games found": "هیچ بازی‌ای یافت نشد",
-    "No results for \"{{searchQuery}}\"": "هیچ نتیجه‌ای برای \"{{searchQuery}}\" یافت نشد",
-    "Search": "جستجو",
-    "Try a different search term or press 'B' to clear.": "متن دیگری را جستجو کنید یا برای پاک‌کردن 'B' را فشار دهید."
-  },
   "components/LibraryContainer.jsx": {
     "Add games in Lutris and reload.": "Add games in Lutris and reload.",
     "Are you sure you want to close\n{{title}}?": "آیا مطمئنید که می‌خواهید\n{{title}} را ببندید؟",
@@ -97,7 +88,6 @@
     "My Library": "My Library",
     "No games found": "No games found",
     "No results for \"{{searchQuery}}\"": "No results for \"{{searchQuery}}\"",
-    "Results for \"{{searchQuery}}\"": "نتایج برای \"{{searchQuery}}\"",
     "Search": "Search",
     "Search Library": "جستجوی کتابخانه",
     "This action will force-quit the game. Any unsaved progress may be lost.": "این کنش بازی را به‌صورت اجباری می‌بندد. هر پیشرفت ذخیره‌نشده‌ای ممکن است از دست برود.",
@@ -110,14 +100,13 @@
   "components/LutrisSettingsMenu.jsx": {
     "Close": "Close",
     "Default": "Default",
-    "Disabled": "Disabled",
-    "Enabled": "Enabled",
+    "Disable": "Disable",
+    "Enable": "Enable",
     "Lutris Settings": "Lutris Settings",
     "Next": "Next",
-    "Open Select": "Open Select",
     "Prev": "Prev",
-    "Settings: {{name}}": "Settings: {{name}}",
-    "Toggle": "Toggle"
+    "Select": "Select",
+    "Settings: {{name}}": "Settings: {{name}}"
   },
   "components/OnScreenKeyboard.jsx": {
     "Backspace": "پاک‌کردن",
@@ -214,20 +203,6 @@
     "UI Action Sound Feedbacks": "UI Action Sound Feedbacks",
     "Unmute": "فعال کردن صدا",
     "Volume": "میزان صدا"
-  },
-  "hooks/useGameActions.js": {
-    "Are you sure you want to close\n{{title}}?": "Are you sure you want to close\n{{title}}?",
-    "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
-    "Search Library": "Search Library",
-    "This action will force-quit the game. Any unsaved progress may be lost.": "This action will force-quit the game. Any unsaved progress may be lost.",
-    "This feature is experimental. Pausing the game may cause issues.": "This feature is experimental. Pausing the game may cause issues."
-  },
-  "hooks/useGameActions.jsx": {
-    "Are you sure you want to close\n{{title}}?": "Are you sure you want to close\n{{title}}?",
-    "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
-    "Search Library": "Search Library",
-    "This action will force-quit the game. Any unsaved progress may be lost.": "This action will force-quit the game. Any unsaved progress may be lost.",
-    "This feature is experimental. Pausing the game may cause issues.": "This feature is experimental. Pausing the game may cause issues."
   },
   "hooks/useGameShelves.js": {
     "All Games": "All Games",

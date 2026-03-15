@@ -32,6 +32,7 @@ export function createLocalePlugins() {
       "src_frontend/locale/locale.en.json",
     ),
     viteServer: null,
+    isInitialScan: false,
   };
 
   function generateMasterLocaleObject() {
@@ -70,6 +71,8 @@ export function createLocalePlugins() {
     const masterLocaleObject = generateMasterLocaleObject();
     writeLocaleFile(masterLocaleObject, pluginState.masterLocaleFile);
 
+    const shouldCleanup = process.env.LOCALE_CLEANUP === "true";
+
     const localeDir = path.dirname(pluginState.masterLocaleFile);
 
     const allLocaleFilePaths = readdirSync(localeDir)
@@ -85,27 +88,32 @@ export function createLocalePlugins() {
       const currentContent = JSON.parse(readFileSync(localeFilePath, "utf-8"));
 
       const combinedContent = {};
-      const allNamespaces = new Set([
-        ...Object.keys(masterLocaleObject),
-        ...Object.keys(currentContent),
-      ]);
+      const allNamespaces = shouldCleanup
+        ? Object.keys(masterLocaleObject)
+        : new Set([
+            ...Object.keys(masterLocaleObject),
+            ...Object.keys(currentContent),
+          ]);
 
       for (const namespace of allNamespaces) {
         const masterKeys = masterLocaleObject[namespace] || {};
         const currentKeys = currentContent[namespace] || {};
-        const allKeys = new Set([
-          ...Object.keys(masterKeys),
-          ...Object.keys(currentKeys),
-        ]);
+        const allKeys = shouldCleanup
+          ? Object.keys(masterKeys)
+          : new Set([...Object.keys(masterKeys), ...Object.keys(currentKeys)]);
 
-        combinedContent[namespace] = {};
+        const namespaceContent = {};
 
         for (const key of allKeys) {
           if (Object.hasOwn(currentKeys, key)) {
-            combinedContent[namespace][key] = currentKeys[key];
+            namespaceContent[key] = currentKeys[key];
           } else {
-            combinedContent[namespace][key] = key;
+            namespaceContent[key] = key;
           }
+        }
+
+        if (Object.keys(namespaceContent).length > 0) {
+          combinedContent[namespace] = namespaceContent;
         }
       }
 
@@ -169,7 +177,10 @@ export function createLocalePlugins() {
           } else {
             pluginState.translationKeysByFile.delete(filename);
           }
-          updateAllLocaleFiles();
+
+          if (!pluginState.isInitialScan) {
+            updateAllLocaleFiles();
+          }
         }
       },
     };
@@ -181,6 +192,7 @@ export function createLocalePlugins() {
       pluginState.viteServer = server;
     },
     buildStart() {
+      pluginState.isInitialScan = true;
       pluginState.translationKeysByFile.clear();
       try {
         const allFiles = readdirSync(pluginState.frontendSrcDir, {
@@ -203,8 +215,10 @@ export function createLocalePlugins() {
           });
         });
 
+        pluginState.isInitialScan = false;
         updateAllLocaleFiles();
       } catch (error) {
+        pluginState.isInitialScan = false;
         console.error("[locale-plugin] Initial scan failed:", error);
       }
     },

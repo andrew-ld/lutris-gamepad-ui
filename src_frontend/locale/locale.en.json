@@ -100,14 +100,13 @@
   "components/LutrisSettingsMenu.jsx": {
     "Close": "Close",
     "Default": "Default",
-    "Disabled": "Disabled",
-    "Enabled": "Enabled",
+    "Disable": "Disable",
+    "Enable": "Enable",
     "Lutris Settings": "Lutris Settings",
     "Next": "Next",
-    "Open Select": "Open Select",
     "Prev": "Prev",
-    "Settings: {{name}}": "Settings: {{name}}",
-    "Toggle": "Toggle"
+    "Select": "Select",
+    "Settings: {{name}}": "Settings: {{name}}"
   },
   "components/OnScreenKeyboard.jsx": {
     "Backspace": "Backspace",
