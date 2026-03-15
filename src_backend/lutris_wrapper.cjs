@@ -10,18 +10,21 @@ const SUBCOMMAND_OUTPUT_HEADER = "lutris-subcommand-output:";
 
 const settingsRunExclusive = getRunExclusive();
 
-async function invokeLutrisSubcommand(subcommandName, args = []) {
-  logInfo("invokeLutrisSubcommand", subcommandName, JSON.stringify(args));
+async function invokeLutrisSubcommand(subcommandName, arguments_ = []) {
+  logInfo("invokeLutrisSubcommand", subcommandName, JSON.stringify(arguments_));
 
   try {
-    const { stdout } = await invokeLutris(["--" + subcommandName, ...args]);
+    const { stdout } = await invokeLutris([
+      "--" + subcommandName,
+      ...arguments_,
+    ]);
 
     const outputLine = stdout
       .split("\r\n")
       .find((line) => line.startsWith(SUBCOMMAND_OUTPUT_HEADER));
 
     if (outputLine) {
-      const jsonString = outputLine.substring(SUBCOMMAND_OUTPUT_HEADER.length);
+      const jsonString = outputLine.slice(SUBCOMMAND_OUTPUT_HEADER.length);
       return JSON.parse(jsonString);
     } else {
       throw new Error(`Output header not found`);
@@ -30,15 +33,15 @@ async function invokeLutrisSubcommand(subcommandName, args = []) {
     logError(
       "failed to execute lutris wrapper subcommand",
       subcommandName,
-      args,
+      arguments_,
       error,
     );
     throw error;
   }
 }
 
-async function invokeLutris(args = []) {
-  return await execFilePromise("bash", [getLutrisWrapperPath(), ...args]);
+async function invokeLutris(arguments_ = []) {
+  return await execFilePromise("bash", [getLutrisWrapperPath(), ...arguments_]);
 }
 
 async function getCoverartPath() {
@@ -58,11 +61,11 @@ async function getLutrisGames() {
 }
 
 async function getLutrisSettings(gameSlug = null, runnerSlug = null) {
-  const args = [];
-  if (gameSlug) args.push("--game", gameSlug);
-  if (runnerSlug) args.push("--runner", runnerSlug);
+  const arguments_ = [];
+  if (gameSlug) arguments_.push("--game", gameSlug);
+  if (runnerSlug) arguments_.push("--runner", runnerSlug);
   return settingsRunExclusive(async () => {
-    return await invokeLutrisSubcommand("get-settings", args);
+    return await invokeLutrisSubcommand("get-settings", arguments_);
   });
 }
 
@@ -74,12 +77,12 @@ async function updateLutrisSetting(
   gameSlug = null,
   runnerSlug = null,
 ) {
-  const args = [section, key, String(value)];
-  if (type) args.push("--type", type);
-  if (gameSlug) args.push("--game", gameSlug);
-  if (runnerSlug) args.push("--runner", runnerSlug);
+  const arguments_ = [section, key, String(value)];
+  if (type) arguments_.push("--type", type);
+  if (gameSlug) arguments_.push("--game", gameSlug);
+  if (runnerSlug) arguments_.push("--runner", runnerSlug);
   return settingsRunExclusive(async () => {
-    return await invokeLutrisSubcommand("update-setting", args);
+    return await invokeLutrisSubcommand("update-setting", arguments_);
   });
 }
 

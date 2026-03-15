@@ -1,13 +1,14 @@
 export const findScrollableParent = (element) => {
-  let el = element;
-  while (el && el !== document.body) {
-    const style = window.getComputedStyle(el);
-    if (style.overflowY === "auto" || style.overflowY === "scroll") {
-      if (el.scrollHeight > el.clientHeight) {
-        return el;
-      }
+  let element_ = element;
+  while (element_ && element_ !== document.body) {
+    const style = globalThis.getComputedStyle(element_);
+    if (
+      (style.overflowY === "auto" || style.overflowY === "scroll") &&
+      element_.scrollHeight > element_.clientHeight
+    ) {
+      return element_;
     }
-    el = el.parentElement;
+    element_ = element_.parentElement;
   }
   return null;
 };

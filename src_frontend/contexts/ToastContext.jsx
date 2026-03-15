@@ -10,19 +10,21 @@ const TOAST_TIMEOUT = 5000;
 const MAX_TOASTS = 5;
 
 export const ToastProvider = ({ children }) => {
-  const toastsRef = useRef([]);
-  const listenersRef = useRef(new Set());
+  const toastsReference = useRef([]);
+  const listenersReference = useRef(new Set());
   const toastIdCounter = useRef(0);
 
   const notify = useCallback(() => {
-    for (const listener of listenersRef.current) {
-      listener([...toastsRef.current]);
+    for (const listener of listenersReference.current) {
+      listener([...toastsReference.current]);
     }
   }, []);
 
   const hideToast = useCallback(
     (id) => {
-      toastsRef.current = toastsRef.current.filter((toast) => toast.id !== id);
+      toastsReference.current = toastsReference.current.filter(
+        (toast) => toast.id !== id,
+      );
       notify();
     },
     [notify],
@@ -40,12 +42,11 @@ export const ToastProvider = ({ children }) => {
         newToast = { id, title, description, type };
       }
 
-      const currentToasts = toastsRef.current;
-      if (currentToasts.length >= MAX_TOASTS) {
-        toastsRef.current = [...currentToasts.slice(1), newToast];
-      } else {
-        toastsRef.current = [...currentToasts, newToast];
-      }
+      const currentToasts = toastsReference.current;
+      toastsReference.current =
+        currentToasts.length >= MAX_TOASTS
+          ? [...currentToasts.slice(1), newToast]
+          : [...currentToasts, newToast];
 
       notify();
 
@@ -62,10 +63,10 @@ export const ToastProvider = ({ children }) => {
   );
 
   const subscribe = useCallback((callback) => {
-    listenersRef.current.add(callback);
-    callback(toastsRef.current);
+    listenersReference.current.add(callback);
+    callback(toastsReference.current);
     return () => {
-      listenersRef.current.delete(callback);
+      listenersReference.current.delete(callback);
     };
   }, []);
 

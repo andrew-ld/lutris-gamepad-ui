@@ -1,51 +1,55 @@
-export const getGames = () => window.electronAPI.getGames();
-export const launchGame = (game) => window.electronAPI.launchGame(game.id);
-export const closeGame = (game) => window.electronAPI.closeGame(game.id);
-export const openLutris = () => window.electronAPI.openLutris();
-export const toggleGamePause = () => window.electronAPI.toggleGamePause();
+export const getGames = () => globalThis.electronAPI.getGames();
+export const launchGame = (game) => globalThis.electronAPI.launchGame(game.id);
+export const closeGame = (game) => globalThis.electronAPI.closeGame(game.id);
+export const openLutris = () => globalThis.electronAPI.openLutris();
+export const toggleGamePause = () => globalThis.electronAPI.toggleGamePause();
 
-export const rebootPC = () => window.electronAPI.rebootPC();
-export const powerOffPC = () => window.electronAPI.powerOffPC();
-export const toggleWindowShow = () => window.electronAPI.toggleWindowShow();
+export const rebootPC = () => globalThis.electronAPI.rebootPC();
+export const powerOffPC = () => globalThis.electronAPI.powerOffPC();
+export const toggleWindowShow = () => globalThis.electronAPI.toggleWindowShow();
 export const openExternalLink = (url) =>
-  window.electronAPI.openExternalLink(url);
+  globalThis.electronAPI.openExternalLink(url);
 
-export const getAudioInfo = () => window.electronAPI.getAudioInfo();
+export const getAudioInfo = () => globalThis.electronAPI.getAudioInfo();
 export const setAudioVolume = (volume) =>
-  window.electronAPI.setAudioVolume(volume);
+  globalThis.electronAPI.setAudioVolume(volume);
 export const setAudioMute = (isMuted) =>
-  window.electronAPI.setAudioMute(isMuted);
+  globalThis.electronAPI.setAudioMute(isMuted);
 export const setDefaultSink = (sinkName) =>
-  window.electronAPI.setDefaultSink(sinkName);
+  globalThis.electronAPI.setDefaultSink(sinkName);
 
-export const bluetoothGetState = () => window.electronAPI.bluetoothGetState();
+export const bluetoothGetState = () =>
+  globalThis.electronAPI.bluetoothGetState();
 export const bluetoothPowerOnAdapter = (path) =>
-  window.electronAPI.bluetoothPowerOnAdapter(path);
+  globalThis.electronAPI.bluetoothPowerOnAdapter(path);
 export const bluetoothStartDiscovery = () =>
-  window.electronAPI.bluetoothStartDiscovery();
+  globalThis.electronAPI.bluetoothStartDiscovery();
 export const bluetoothStopDiscovery = () =>
-  window.electronAPI.bluetoothStopDiscovery();
+  globalThis.electronAPI.bluetoothStopDiscovery();
 export const bluetoothConnect = (path) =>
-  window.electronAPI.bluetoothConnect(path);
+  globalThis.electronAPI.bluetoothConnect(path);
 export const bluetoothDisconnect = (path) =>
-  window.electronAPI.bluetoothDisconnect(path);
+  globalThis.electronAPI.bluetoothDisconnect(path);
 
-export const getBrightness = () => window.electronAPI.getBrightness();
+export const getBrightness = () => globalThis.electronAPI.getBrightness();
 export const setBrightness = (brightness) =>
-  window.electronAPI.setBrightness(brightness);
-export const getNightLight = () => window.electronAPI.getNightLight();
+  globalThis.electronAPI.setBrightness(brightness);
+export const getNightLight = () => globalThis.electronAPI.getNightLight();
 export const setNightLight = (enabled) =>
-  window.electronAPI.setNightLight(enabled);
+  globalThis.electronAPI.setNightLight(enabled);
 
-export const logInfo = (...args) => window.electronAPI.log("info", args);
-export const logWarn = (...args) => window.electronAPI.log("warn", args);
-export const logError = (...args) => window.electronAPI.log("error", args);
+export const logInfo = (...arguments_) =>
+  globalThis.electronAPI.log("info", arguments_);
+export const logWarn = (...arguments_) =>
+  globalThis.electronAPI.log("warn", arguments_);
+export const logError = (...arguments_) =>
+  globalThis.electronAPI.log("error", arguments_);
 
-export const getUserTheme = () => window.electronAPI.getUserTheme();
+export const getUserTheme = () => globalThis.electronAPI.getUserTheme();
 
 export const getLutrisSettings = (gameSlug, runnerSlug) =>
-  window.electronAPI.getLutrisSettings(gameSlug, runnerSlug);
-export const getLutrisRunners = () => window.electronAPI.getLutrisRunners();
+  globalThis.electronAPI.getLutrisSettings(gameSlug, runnerSlug);
+export const getLutrisRunners = () => globalThis.electronAPI.getLutrisRunners();
 export const updateLutrisSetting = (
   section,
   key,
@@ -54,7 +58,7 @@ export const updateLutrisSetting = (
   gameSlug,
   runnerSlug,
 ) =>
-  window.electronAPI.updateLutrisSetting(
+  globalThis.electronAPI.updateLutrisSetting(
     section,
     key,
     value,
@@ -63,14 +67,14 @@ export const updateLutrisSetting = (
     runnerSlug,
   );
 
-export const setIcon = (dataURL) => window.electronAPI.setIcon(dataURL);
+export const setIcon = (dataURL) => globalThis.electronAPI.setIcon(dataURL);
 
-export const getAppConfig = () => window.electronAPI.getAppConfig();
+export const getAppConfig = () => globalThis.electronAPI.getAppConfig();
 export const setAppConfig = (key, value) =>
-  window.electronAPI.setAppConfig(key, value);
+  globalThis.electronAPI.setAppConfig(key, value);
 
-const createSubscriber = (channel) => (cb) => {
-  return window.electronAPI.createListener(channel, cb);
+const createSubscriber = (channel) => (callback) => {
+  return globalThis.electronAPI.createListener(channel, callback);
 };
 
 export const onGameStarted = createSubscriber("game-started");
@@ -88,4 +92,4 @@ export const onUpdateAvailable = createSubscriber("update-available");
 export const onAppConfigChanged = createSubscriber("app-config-changed");
 
 export const createBugReportFile = () =>
-  window.electronAPI.createBugReportFile();
+  globalThis.electronAPI.createBugReportFile();

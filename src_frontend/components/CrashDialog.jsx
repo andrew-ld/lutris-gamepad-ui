@@ -14,7 +14,7 @@ const SCROLL_AMOUNT = 50;
 const CrashDialog = ({ error, errorInfo }) => {
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [focusedButtonIndex, setFocusedButtonIndex] = useState(0);
-  const containerRef = useRef(null);
+  const containerReference = useRef(null);
   const translationContext = useTranslation();
   const playActionSound = usePlayButtonActionSound();
 
@@ -29,7 +29,7 @@ const CrashDialog = ({ error, errorInfo }) => {
   );
 
   const handleReload = useCallback(() => {
-    window.location.reload();
+    globalThis.location.reload();
   }, []);
 
   const handleClose = useCallback(() => {
@@ -37,7 +37,7 @@ const CrashDialog = ({ error, errorInfo }) => {
   }, []);
 
   const toggleDetails = useCallback(() => {
-    setDetailsVisible((prev) => !prev);
+    setDetailsVisible((previous) => !previous);
   }, []);
 
   const buttons = useMemo(
@@ -61,7 +61,8 @@ const CrashDialog = ({ error, errorInfo }) => {
   }, [buttons, focusedButtonIndex]);
 
   const handleScroll = useCallback((direction) => {
-    const scrollable = containerRef.current?.querySelector(".legenda-content");
+    const scrollable =
+      containerReference.current?.querySelector(".legenda-content");
     if (scrollable) {
       scrollable.scrollTop += SCROLL_AMOUNT * (direction === "down" ? 1 : -1);
     }
@@ -71,23 +72,28 @@ const CrashDialog = ({ error, errorInfo }) => {
     (input) => {
       playActionSound();
       switch (input.name) {
-        case "UP":
+        case "UP": {
           if (detailsVisible) handleScroll("up");
           break;
-        case "DOWN":
+        }
+        case "DOWN": {
           if (detailsVisible) handleScroll("down");
           break;
-        case "LEFT":
-          setFocusedButtonIndex((prev) => Math.max(0, prev - 1));
+        }
+        case "LEFT": {
+          setFocusedButtonIndex((previous) => Math.max(0, previous - 1));
           break;
-        case "RIGHT":
-          setFocusedButtonIndex((prev) =>
-            Math.min(buttons.length - 1, prev + 1),
+        }
+        case "RIGHT": {
+          setFocusedButtonIndex((previous) =>
+            Math.min(buttons.length - 1, previous + 1),
           );
           break;
-        case "A":
+        }
+        case "A": {
           selectedButtonAction();
           break;
+        }
       }
     },
     [
@@ -104,16 +110,18 @@ const CrashDialog = ({ error, errorInfo }) => {
   const legendItems = useMemo(() => {
     const items = [];
     if (detailsVisible) {
-      items.push({
-        button: "UP",
-        label: t("Scroll Up"),
-        onClick: () => handleScroll("up"),
-      });
-      items.push({
-        button: "DOWN",
-        label: t("Scroll Down"),
-        onClick: () => handleScroll("down"),
-      });
+      items.push(
+        {
+          button: "UP",
+          label: t("Scroll Up"),
+          onClick: () => handleScroll("up"),
+        },
+        {
+          button: "DOWN",
+          label: t("Scroll Down"),
+          onClick: () => handleScroll("down"),
+        },
+      );
     }
     items.push(
       { button: "LEFT", label: t("Navigate") },
@@ -139,7 +147,7 @@ const CrashDialog = ({ error, errorInfo }) => {
         description={t("The application has encountered an unexpected error.")}
         legendItems={legendItems}
         maxWidth="800px"
-        containerRef={containerRef}
+        containerRef={containerReference}
         className="crash-dialog-container"
       >
         <div className="modal-buttons-row">

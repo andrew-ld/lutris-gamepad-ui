@@ -1,5 +1,5 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const localeDir = path.join(__dirname, "src_frontend/locale");
 const localeFiles = fs.existsSync(localeDir) ? fs.readdirSync(localeDir) : [];

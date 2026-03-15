@@ -115,13 +115,13 @@ export const useInput = () => useContext(InputContext);
 export const InputProvider = ({ children }) => {
   const inputSubscribers = useRef(new Set());
   const inputTypeSubscribers = useRef(new Set());
-  const lastDetectedInputSourceRef = useRef("keyboard");
+  const lastDetectedInputSourceReference = useRef("keyboard");
 
   const [focusStack, setFocusStack] = useState([]);
   const [connectedGamepadCount, setConnectedGamepadCount] = useState(0);
 
   const focusIdCounter = useRef(0);
-  const focusStackRef = useRef(focusStack);
+  const focusStackReference = useRef(focusStack);
 
   const gamepadPollingRafId = useRef(null);
   const gamepadPollingIntervalId = useRef(null);
@@ -137,7 +137,7 @@ export const InputProvider = ({ children }) => {
   }, [settings]);
 
   useEffect(() => {
-    focusStackRef.current = focusStack;
+    focusStackReference.current = focusStack;
   }, [focusStack]);
 
   const subscribeToInputEvents = useCallback((callback) => {
@@ -152,19 +152,22 @@ export const InputProvider = ({ children }) => {
 
   const broadcastInputTypeChange = useCallback(() => {
     for (const listener of inputTypeSubscribers.current) {
-      listener(lastDetectedInputSourceRef.current);
+      listener(lastDetectedInputSourceReference.current);
     }
   }, []);
 
   const broadcastInputEvent = useCallback((inputEvent) => {
     const eventObject = { ...inputEvent, isConsumed: false };
-    [...inputSubscribers.current].forEach((cb) => cb(eventObject));
+    for (const callback of inputSubscribers.current) callback(eventObject);
   }, []);
 
   const dispatchInputEvent = useCallback(
     (inputEvent, inputSource) => {
-      if (inputSource && inputSource !== lastDetectedInputSourceRef.current) {
-        lastDetectedInputSourceRef.current = inputSource;
+      if (
+        inputSource &&
+        inputSource !== lastDetectedInputSourceReference.current
+      ) {
+        lastDetectedInputSourceReference.current = inputSource;
         broadcastInputTypeChange();
       }
       if (document.hasFocus() || !inputEvent || inputEvent?.name === "Super") {
@@ -177,8 +180,8 @@ export const InputProvider = ({ children }) => {
   );
 
   const releaseInputFocus = useCallback((uniqueId) => {
-    setFocusStack((prevStack) => {
-      const newStack = prevStack.filter((f) => f.uniqueId !== uniqueId);
+    setFocusStack((previousStack) => {
+      const newStack = previousStack.filter((f) => f.uniqueId !== uniqueId);
       return newStack;
     });
   }, []);
@@ -188,16 +191,16 @@ export const InputProvider = ({ children }) => {
       const uniqueId = focusIdCounter.current++;
       const newFocus = { claimantId, uniqueId };
 
-      setFocusStack((prevStack) => {
-        const newStack = [...prevStack, newFocus];
+      setFocusStack((previousStack) => {
+        const newStack = [...previousStack, newFocus];
         return newStack;
       });
 
       const token = {
         isAcquired: () => {
-          const stack = focusStackRef.current;
+          const stack = focusStackReference.current;
           if (stack.length === 0) return false;
-          return stack[stack.length - 1].uniqueId === uniqueId;
+          return stack.at(-1).uniqueId === uniqueId;
         },
         release: () => {
           releaseInputFocus(uniqueId);
@@ -210,7 +213,7 @@ export const InputProvider = ({ children }) => {
   );
 
   const refreshGamepadCount = useCallback(() => {
-    const count = navigator.getGamepads().filter((g) => g).length;
+    const count = navigator.getGamepads().filter(Boolean).length;
     setConnectedGamepadCount(count);
     return count;
   }, []);
@@ -276,11 +279,11 @@ export const InputProvider = ({ children }) => {
 
         let hasInput = false;
 
-        for (let i = 0; i < buttons.length; i++) {
-          if (buttons[i].pressed) {
+        for (const [index, button] of buttons.entries()) {
+          if (button.pressed) {
             hasInput = true;
-            rawPressedIndices.add(i);
-            const actionName = GAMEPAD_BUTTON_INDEX_TO_ACTION_MAP[i];
+            rawPressedIndices.add(index);
+            const actionName = GAMEPAD_BUTTON_INDEX_TO_ACTION_MAP[index];
             if (actionName) {
               activeActionsSet.add(actionName);
             }
@@ -303,8 +306,8 @@ export const InputProvider = ({ children }) => {
         }
       }
 
-      const isSuperPressed = GAMEPAD_SUPER_BUTTON_INDICES.every((i) =>
-        rawPressedIndices.has(i),
+      const isSuperPressed = GAMEPAD_SUPER_BUTTON_INDICES.every((index) =>
+        rawPressedIndices.has(index),
       );
 
       if (isSuperPressed) {
@@ -324,11 +327,10 @@ export const InputProvider = ({ children }) => {
         : null;
 
       if (!gamepadType) {
-        if (lastDetectedInputSourceRef.current !== "keyboard") {
-          gamepadType = lastDetectedInputSourceRef.current;
-        } else {
-          gamepadType = "xbox";
-        }
+        gamepadType =
+          lastDetectedInputSourceReference.current === "keyboard"
+            ? "xbox"
+            : lastDetectedInputSourceReference.current;
       }
 
       for (const actionName of Object.keys(gamepadAutorepeatState.current)) {
@@ -362,7 +364,7 @@ export const InputProvider = ({ children }) => {
     const startGamepadLoop = () => {
       stopGamepadLoop();
 
-      const count = navigator.getGamepads().filter((g) => g).length;
+      const count = navigator.getGamepads().filter(Boolean).length;
       if (count === 0) {
         isGamepadPollingActive.current = false;
         logInfo("InputProvider: No gamepads detected. Polling stopped.");
@@ -407,19 +409,25 @@ export const InputProvider = ({ children }) => {
 
     refreshGamepadCount();
 
-    if (navigator.getGamepads().filter((g) => g).length > 0) {
+    if (navigator.getGamepads().some(Boolean)) {
       startGamepadLoop();
     }
 
-    window.addEventListener("gamepadconnected", handleGamepadConnected);
-    window.addEventListener("gamepaddisconnected", handleGamepadDisconnected);
+    globalThis.addEventListener("gamepadconnected", handleGamepadConnected);
+    globalThis.addEventListener(
+      "gamepaddisconnected",
+      handleGamepadDisconnected,
+    );
     window.addEventListener("focus", handleWindowFocusChange);
     window.addEventListener("blur", handleWindowFocusChange);
 
     return () => {
       stopGamepadLoop();
-      window.removeEventListener("gamepadconnected", handleGamepadConnected);
-      window.removeEventListener(
+      globalThis.removeEventListener(
+        "gamepadconnected",
+        handleGamepadConnected,
+      );
+      globalThis.removeEventListener(
         "gamepaddisconnected",
         handleGamepadDisconnected,
       );
@@ -433,7 +441,7 @@ export const InputProvider = ({ children }) => {
     claimInputFocus,
     gamepadCount: connectedGamepadCount,
     subscribeToInputType,
-    getLatestInputType: () => lastDetectedInputSourceRef.current,
+    getLatestInputType: () => lastDetectedInputSourceReference.current,
   };
 
   return (

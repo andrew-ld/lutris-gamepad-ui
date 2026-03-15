@@ -1,7 +1,11 @@
 const Compose = ({ components, children }) => {
-  return components.reduceRight((acc, Component) => {
-    return <Component>{acc}</Component>;
-  }, children);
+  let accumulator = children;
+
+  for (const Component of components.toReversed()) {
+    accumulator = <Component>{accumulator}</Component>;
+  }
+
+  return accumulator;
 };
 
 export default Compose;

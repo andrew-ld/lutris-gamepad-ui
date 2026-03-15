@@ -1,15 +1,11 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 
-export const useSpatialNavigation = (
-  sections,
-  numColumns,
-  options = { onMove: null },
-) => {
+export const useSpatialNavigation = (sections, numberColumns, options = {}) => {
   const [coords, setCoords] = useState({ sectionIndex: 0, itemIndex: 0 });
-  const onMoveRef = useRef(options.onMove);
+  const onMoveReference = useRef(options.onMove || null);
 
   useEffect(() => {
-    onMoveRef.current = options.onMove;
+    onMoveReference.current = options.onMove;
   }, [options.onMove]);
 
   useEffect(() => {
@@ -23,92 +19,99 @@ export const useSpatialNavigation = (
         const currentSection = sections[sectionIndex];
         const items = currentSection?.items || [];
 
-        if (numColumns === 0 || !items.length) return current;
+        if (numberColumns === 0 || items.length === 0) return current;
 
-        const totalRows = Math.ceil(items.length / numColumns);
-        const currentRow = Math.floor(itemIndex / numColumns);
-        const currentCol = itemIndex % numColumns;
+        const totalRows = Math.ceil(items.length / numberColumns);
+        const currentRow = Math.floor(itemIndex / numberColumns);
+        const currentCol = itemIndex % numberColumns;
 
         let next = { ...current };
 
         switch (direction) {
-          case "UP":
+          case "UP": {
             if (currentRow > 0) {
-              next = { sectionIndex, itemIndex: itemIndex - numColumns };
+              next = { sectionIndex, itemIndex: itemIndex - numberColumns };
             } else {
-              const prevSectionIndex =
+              const previousSectionIndex =
                 (sectionIndex - 1 + sections.length) % sections.length;
-              const prevItems = sections[prevSectionIndex].items;
-              if (!prevItems.length) return current;
+              const previousItems = sections[previousSectionIndex].items;
+              if (previousItems.length === 0) return current;
 
-              const lastItemInPrev = prevItems.length - 1;
-              const lastRowInPrev = Math.floor(lastItemInPrev / numColumns);
+              const lastItemInPrevious = previousItems.length - 1;
+              const lastRowInPrevious = Math.floor(
+                lastItemInPrevious / numberColumns,
+              );
 
               next = {
-                sectionIndex: prevSectionIndex,
+                sectionIndex: previousSectionIndex,
                 itemIndex: Math.min(
-                  lastRowInPrev * numColumns + currentCol,
-                  lastItemInPrev,
+                  lastRowInPrevious * numberColumns + currentCol,
+                  lastItemInPrevious,
                 ),
               };
             }
             break;
-          case "DOWN":
+          }
+          case "DOWN": {
             if (currentRow < totalRows - 1) {
               next = {
                 sectionIndex,
-                itemIndex: Math.min(itemIndex + numColumns, items.length - 1),
+                itemIndex: Math.min(
+                  itemIndex + numberColumns,
+                  items.length - 1,
+                ),
               };
             } else {
               const nextSectionIndex = (sectionIndex + 1) % sections.length;
               const nextItems = sections[nextSectionIndex].items;
-              if (!nextItems.length) return current;
+              if (nextItems.length === 0) return current;
               next = {
                 sectionIndex: nextSectionIndex,
                 itemIndex: Math.min(currentCol, nextItems.length - 1),
               };
             }
             break;
+          }
           case "LEFT":
           case "RIGHT": {
-            const rowStart = currentRow * numColumns;
+            const rowStart = currentRow * numberColumns;
             const rowEnd = Math.min(
-              rowStart + numColumns - 1,
+              rowStart + numberColumns - 1,
               items.length - 1,
             );
             const rowLength = rowEnd - rowStart + 1;
 
             if (rowLength <= 1) return current;
 
-            if (direction === "LEFT") {
-              next = {
-                sectionIndex,
-                itemIndex: itemIndex === rowStart ? rowEnd : itemIndex - 1,
-              };
-            } else {
-              next = {
-                sectionIndex,
-                itemIndex: itemIndex === rowEnd ? rowStart : itemIndex + 1,
-              };
-            }
+            next =
+              direction === "LEFT"
+                ? {
+                    sectionIndex,
+                    itemIndex: itemIndex === rowStart ? rowEnd : itemIndex - 1,
+                  }
+                : {
+                    sectionIndex,
+                    itemIndex: itemIndex === rowEnd ? rowStart : itemIndex + 1,
+                  };
             break;
           }
-          default:
+          default: {
             return current;
+          }
         }
 
         if (
           next.sectionIndex !== current.sectionIndex ||
           next.itemIndex !== current.itemIndex
         ) {
-          onMoveRef.current?.();
+          onMoveReference.current?.();
           return next;
         }
 
         return current;
       });
     },
-    [sections, numColumns],
+    [sections, numberColumns],
   );
 
   const moveSection = useCallback(
@@ -117,7 +120,7 @@ export const useSpatialNavigation = (
         if (sections.length <= 1) return current;
         const nextSectionIndex =
           (current.sectionIndex + delta + sections.length) % sections.length;
-        onMoveRef.current?.();
+        onMoveReference.current?.();
         return { sectionIndex: nextSectionIndex, itemIndex: 0 };
       });
     },

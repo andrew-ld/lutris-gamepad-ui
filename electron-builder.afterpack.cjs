@@ -1,9 +1,9 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const { flipFuses, FuseV1Options, FuseVersion } = require("@electron/fuses");
 
-module.exports = async function (context) {
+module.exports = async function afterPack(context) {
   const executableName = context.packager.executableName;
   const executablePath = path.join(context.appOutDir, executableName);
   const renamedPath = path.join(context.appOutDir, `${executableName}.bin`);

@@ -13,10 +13,10 @@ const ConfirmationDialog = ({ message, description, onConfirm, onDeny }) => {
   const [confirmSelection, setConfirmSelection] = useState(0);
   const playActionSound = usePlayButtonActionSound();
 
-  const confirmSelectionRef = useRef(confirmSelection);
+  const confirmSelectionReference = useRef(confirmSelection);
 
   useEffect(() => {
-    confirmSelectionRef.current = confirmSelection;
+    confirmSelectionReference.current = confirmSelection;
   }, [confirmSelection]);
 
   const handleConfirm = useCallback(() => {
@@ -28,7 +28,7 @@ const ConfirmationDialog = ({ message, description, onConfirm, onDeny }) => {
   }, [onDeny]);
 
   const handleSubmit = useCallback(() => {
-    if (confirmSelectionRef.current === 0) {
+    if (confirmSelectionReference.current === 0) {
       handleConfirm();
     } else {
       handleDeny();
@@ -41,15 +41,18 @@ const ConfirmationDialog = ({ message, description, onConfirm, onDeny }) => {
 
       switch (input.name) {
         case "UP":
-        case "DOWN":
-          setConfirmSelection((prev) => (prev === 0 ? 1 : 0));
+        case "DOWN": {
+          setConfirmSelection((previous) => (previous === 0 ? 1 : 0));
           break;
-        case "A":
+        }
+        case "A": {
           handleSubmit();
           break;
-        case "B":
+        }
+        case "B": {
           handleDeny();
           break;
+        }
       }
     },
     [handleDeny, handleSubmit, playActionSound],

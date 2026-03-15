@@ -10,10 +10,12 @@ async function getInterface(serviceName, path, interfaceName) {
   const bus = await getSessionBus("display_manager_kde", false);
   const service = bus.getService(serviceName);
   return new Promise((resolve, reject) => {
-    service.getInterface(path, interfaceName, (err, iface) => {
-      if (err)
+    service.getInterface(path, interfaceName, (error, iface) => {
+      if (error)
         return reject(
-          new Error(`Failed to get interface ${interfaceName}: ${err.message}`),
+          new Error(
+            `Failed to get interface ${interfaceName}: ${error.message}`,
+          ),
         );
       resolve(iface);
     });
@@ -28,15 +30,15 @@ async function getBrightness() {
   );
 
   const max = await new Promise((resolve, reject) => {
-    iface.brightnessMax((err, value) => {
-      if (err) return reject(err);
+    iface.brightnessMax((error, value) => {
+      if (error) return reject(error);
       resolve(value);
     });
   });
 
   const current = await new Promise((resolve, reject) => {
-    iface.brightness((err, value) => {
-      if (err) return reject(err);
+    iface.brightness((error, value) => {
+      if (error) return reject(error);
       resolve(value);
     });
   });
@@ -51,20 +53,20 @@ async function setBrightness(brightness) {
     BRIGHTNESS_PATH,
     BRIGHTNESS_INTERFACE,
   );
-  const val = parseInt(brightness, 10);
+  const value = Number.parseInt(brightness, 10);
 
   const max = await new Promise((resolve, reject) => {
-    iface.brightnessMax((err, value) => {
-      if (err) return reject(err);
+    iface.brightnessMax((error, value) => {
+      if (error) return reject(error);
       resolve(value);
     });
   });
 
-  const target = Math.round((val / 100) * max);
+  const target = Math.round((value / 100) * max);
 
   await new Promise((resolve, reject) => {
-    iface.setBrightness(target, (err) => {
-      if (err) return reject(err);
+    iface.setBrightness(target, (error) => {
+      if (error) return reject(error);
       resolve();
     });
   });
@@ -78,8 +80,8 @@ async function getNightLight() {
   );
 
   return new Promise((resolve, reject) => {
-    iface.running((err, value) => {
-      if (err) return reject(err);
+    iface.running((error, value) => {
+      if (error) return reject(error);
       resolve(value);
     });
   });
@@ -98,8 +100,8 @@ async function setNightLight(enabled) {
   );
 
   await new Promise((resolve, reject) => {
-    iface.invokeShortcut("Toggle Night Color", (err) => {
-      if (err) return reject(err);
+    iface.invokeShortcut("Toggle Night Color", (error) => {
+      if (error) return reject(error);
       resolve();
     });
   });

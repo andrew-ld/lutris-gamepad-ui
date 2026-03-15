@@ -8,12 +8,12 @@ import { formatDate, formatPlaytime } from "../utils/datetime";
 
 import GameCover from "./GameCover";
 
-const GameCard = React.forwardRef(({ game, onFocus, onClick }, ref) => {
+const GameCard = React.forwardRef(({ game, onFocus, onClick }, reference) => {
   const { t } = useTranslation();
   const { settings } = useSettingsState();
 
   const { isVisible, setRef } = useVisibilityObserver({
-    externalRef: ref,
+    externalRef: reference,
     rootMargin: "200px",
   });
 

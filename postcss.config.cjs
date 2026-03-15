@@ -1,5 +1,5 @@
-const { writeFileSync } = require("fs");
-const path = require("path");
+const { writeFileSync } = require("node:fs");
+const path = require("node:path");
 
 const hoverWrapperPlugin = () => {
   return {
@@ -21,7 +21,7 @@ const hoverWrapperPlugin = () => {
 hoverWrapperPlugin.postcss = true;
 
 const defaultThemeGenerator = () => {
-  const themeProps = [
+  const themeProperties = new Set([
     "--accent-color",
     "--secondary-background",
     "--text-primary",
@@ -42,7 +42,7 @@ const defaultThemeGenerator = () => {
     "border-top",
     "font-family",
     "--font-family",
-  ];
+  ]);
 
   const result = {};
 
@@ -53,11 +53,11 @@ const defaultThemeGenerator = () => {
         /** @param {Rule} rule */
         Rule(rule) {
           rule.walkDecls((decl) => {
-            if (themeProps.includes(decl.prop)) {
+            if (themeProperties.has(decl.prop)) {
               for (const selector of decl.parent.selectors) {
-                const selectorProps = result[selector] || {};
-                result[selector] = selectorProps;
-                selectorProps[decl.prop] = decl.value;
+                const selectorProperties = result[selector] || {};
+                result[selector] = selectorProperties;
+                selectorProperties[decl.prop] = decl.value;
               }
             }
           });

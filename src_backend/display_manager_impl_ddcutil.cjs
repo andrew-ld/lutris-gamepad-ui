@@ -8,8 +8,8 @@ async function getBrightnessInternal() {
   const result = await spawnDdcutil(["getvcp", "10", "--brief"]);
   const parts = result.split("\n")[0].split(" ");
 
-  const current = parseInt(parts[3]);
-  const max = parseInt(parts[4]);
+  const current = Number.parseInt(parts[3]);
+  const max = Number.parseInt(parts[4]);
 
   return { current, max };
 }
@@ -24,8 +24,8 @@ async function getBrightness() {
 async function setBrightness(brightness) {
   return runExclusive(async () => {
     const current = await getBrightnessInternal();
-    const newVal = Math.floor((brightness / 100) * current.max);
-    await spawnDdcutil(["setvcp", "10", newVal.toString()]);
+    const newValue = Math.floor((brightness / 100) * current.max);
+    await spawnDdcutil(["setvcp", "10", newValue.toString()]);
   });
 }
 

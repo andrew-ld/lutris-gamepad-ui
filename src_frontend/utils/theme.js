@@ -27,7 +27,7 @@ export async function reloadApplicationTheme() {
     }
 
     logInfo("Sucessfully loaded user theme");
-  } catch (e) {
-    logError("unable to apply user theme:", e);
+  } catch (error) {
+    logError("unable to apply user theme:", error);
   }
 }

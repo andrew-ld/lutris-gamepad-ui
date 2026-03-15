@@ -1,5 +1,5 @@
-const { spawn } = require("child_process");
-const { readFileSync } = require("fs");
+const { spawn } = require("node:child_process");
+const { readFileSync } = require("node:fs");
 const { readdir } = require("node:fs/promises");
 const path = require("node:path");
 
@@ -39,8 +39,8 @@ function findLutrisWrapperChildren(pid) {
     try {
       const cmdline = readFileSync(`/proc/${childPid}/cmdline`, "utf8");
       return cmdline.startsWith("lutris-wrapper");
-    } catch (e) {
-      logError("Unable to read cmdline of pid", childPid, e);
+    } catch (error) {
+      logError("Unable to read cmdline of pid", childPid, error);
       return false;
     }
   });
@@ -54,12 +54,12 @@ function closeRunningGameProcess() {
 
   try {
     isPaused = isProcessPaused(runningGameProcess.pid);
-  } catch (e) {
+  } catch (error) {
     logError(
       "Unable to determine if pid",
       runningGameProcess.pid,
       "is paused, assume paused",
-      e,
+      error,
     );
     isPaused = true;
   }
@@ -77,8 +77,8 @@ function closeRunningGameProcess() {
   } else {
     try {
       pidsToStop = findLutrisWrapperChildren(runningGameProcess.pid);
-    } catch (e) {
-      logError("Unable to find lutris wrapper child", e);
+    } catch (error) {
+      logError("Unable to find lutris wrapper child", error);
     }
     if (!pidsToStop?.length) {
       logError("Unable to locate lutris wrapper child");
@@ -88,20 +88,16 @@ function closeRunningGameProcess() {
 
   let signal;
 
-  if (isPaused) {
-    signal = "SIGKILL";
-  } else {
-    signal = "SIGTERM";
-  }
+  signal = isPaused ? "SIGKILL" : "SIGTERM";
 
-  pidsToStop.forEach((pid) => {
+  for (const pid of pidsToStop) {
     logInfo("Sending", signal, "to pid", pid);
     try {
       process.kill(pid, signal);
-    } catch (e) {
-      logError("Unable to kill pid", pid, e);
+    } catch (error) {
+      logError("Unable to kill pid", pid, error);
     }
-  });
+  }
 
   runningGameProcess.stdin.end();
 }
@@ -112,7 +108,7 @@ async function getGames() {
     getAllGamesCategories(),
   ]);
 
-  if (!games.length) return games;
+  if (games.length === 0) return games;
 
   try {
     const {
@@ -141,8 +137,8 @@ async function getGames() {
 
       game.categories = categories;
     }
-  } catch (e) {
-    logError("Could not process game categories:", e);
+  } catch (error) {
+    logError("Could not process game categories:", error);
   }
 
   try {
@@ -179,8 +175,8 @@ async function getGames() {
         }
       }
     }
-  } catch (e) {
-    logError("Could not process runtime icons:", e);
+  } catch (error) {
+    logError("Could not process runtime icons:", error);
   }
 
   try {
@@ -203,18 +199,18 @@ async function getGames() {
         }
       }
     }
-  } catch (e) {
-    logError("Could not process game cover art:", e);
+  } catch (error) {
+    logError("Could not process game cover art:", error);
   }
 
-  games.forEach((g) => {
+  for (const g of games) {
     addKnowGameID(g.id);
-  });
+  }
 
   return games;
 }
 
-function toggleGamePause(opts) {
+function toggleGamePause(options) {
   const runningGameProcess = getRunningGameProcess();
   if (!runningGameProcess) return;
 
@@ -222,12 +218,12 @@ function toggleGamePause(opts) {
 
   try {
     isGamePaused = isProcessPaused(runningGameProcess.pid);
-  } catch (e) {
-    logError("Unable to determine if process is paused", e);
+  } catch (error) {
+    logError("Unable to determine if process is paused", error);
     isGamePaused = true;
   }
 
-  switch (opts?.forceStatus) {
+  switch (options?.forceStatus) {
     case "running": {
       if (!isGamePaused) return;
       break;
@@ -243,8 +239,8 @@ function toggleGamePause(opts) {
 
   try {
     allProcesses = getProcessDescendants(runningGameProcess.pid, new Set());
-  } catch (e) {
-    logError("Unable to find game subprocesses", e);
+  } catch (error) {
+    logError("Unable to find game subprocesses", error);
     return;
   }
 
@@ -252,20 +248,16 @@ function toggleGamePause(opts) {
 
   let signal;
 
-  if (isGamePaused) {
-    signal = "SIGCONT";
-  } else {
-    signal = "SIGSTOP";
-  }
+  signal = isGamePaused ? "SIGCONT" : "SIGSTOP";
 
-  allProcesses.forEach((pid) => {
+  for (const pid of allProcesses) {
     try {
       logInfo("sending", signal, "to pid", pid);
       process.kill(pid, signal);
-    } catch (e) {
-      logError("Unable to send signal", signal, "to pid", pid, e);
+    } catch (error) {
+      logError("Unable to send signal", signal, "to pid", pid, error);
     }
-  });
+  }
 
   const mainWindow = getMainWindow();
   if (mainWindow) {

@@ -17,7 +17,7 @@ import "../styles/SettingsMenu.css";
 export const SettingsMenuFocusId = "SettingsMenu";
 
 const MIN_ZOOM = 0.5; // 50%
-const MAX_ZOOM = 2.0; // 200%
+const MAX_ZOOM = 2; // 200%
 const ZOOM_STEP = 0.05; // 5%
 
 const MIN_AUTOREPEAT = 100; // 100ms
@@ -49,12 +49,12 @@ const SettingsMenu = ({ onClose }) => {
   }, [settings, handleZoomChange]);
 
   const handleAutorepeatChange = useCallback(
-    (newVal) => {
-      const clampedVal = Math.max(
+    (newValue) => {
+      const clampedValue = Math.max(
         MIN_AUTOREPEAT,
-        Math.min(MAX_AUTOREPEAT, newVal),
+        Math.min(MAX_AUTOREPEAT, newValue),
       );
-      updateSetting("gamepadAutorepeatMs", clampedVal);
+      updateSetting("gamepadAutorepeatMs", clampedValue);
     },
     [updateSetting],
   );
@@ -176,35 +176,44 @@ const SettingsMenu = ({ onClose }) => {
       }
 
       switch (item.type) {
-        case "ENABLE_UI_ACTION_SOUND_FEEDBACKS":
+        case "ENABLE_UI_ACTION_SOUND_FEEDBACKS": {
           if (actionName === "A") toggleEnableUiActionSoundFeedbacks();
           break;
-        case "KEEP_GAMES_RUNNING":
+        }
+        case "KEEP_GAMES_RUNNING": {
           if (actionName === "A") toggleKeepGamesRunningOnQuit();
           break;
-        case "USE_REMOTE_DESKTOP_PORTAL":
+        }
+        case "USE_REMOTE_DESKTOP_PORTAL": {
           if (actionName === "A") toggleUseRemoteDesktopPortal();
           break;
-        case "DOUBLE_CONFIRM_POWER_MANAGEMENT":
+        }
+        case "DOUBLE_CONFIRM_POWER_MANAGEMENT": {
           if (actionName === "A") toggleDoubleConfirmPowerManagement();
           break;
-        case "RECENTLY_PLAYED":
+        }
+        case "RECENTLY_PLAYED": {
           if (actionName === "A") toggleShowRecentlyPlayed();
           break;
-        case "SHOW_HIDDEN":
+        }
+        case "SHOW_HIDDEN": {
           if (actionName === "A") toggleShowHiddenGames();
           break;
-        case "SHOW_RUNNER_ICON":
+        }
+        case "SHOW_RUNNER_ICON": {
           if (actionName === "A") toggleShowRunnerIcon();
           break;
-        case "ZOOM":
+        }
+        case "ZOOM": {
           if (actionName === "LEFT") decreaseZoom();
           else if (actionName === "RIGHT") increaseZoom();
           break;
-        case "GAMEPAD_AUTOREPEAT":
+        }
+        case "GAMEPAD_AUTOREPEAT": {
           if (actionName === "LEFT") decreaseAutorepeat();
           else if (actionName === "RIGHT") increaseAutorepeat();
           break;
+        }
       }
     },
     [
@@ -226,7 +235,7 @@ const SettingsMenu = ({ onClose }) => {
   const renderItem = useCallback(
     (item, isFocused, onMouseEnter) => {
       switch (item.type) {
-        case "ZOOM":
+        case "ZOOM": {
           return (
             <FocusableRow
               key={item.type}
@@ -244,7 +253,8 @@ const SettingsMenu = ({ onClose }) => {
               />
             </FocusableRow>
           );
-        case "GAMEPAD_AUTOREPEAT":
+        }
+        case "GAMEPAD_AUTOREPEAT": {
           return (
             <FocusableRow
               key={item.type}
@@ -263,7 +273,8 @@ const SettingsMenu = ({ onClose }) => {
               />
             </FocusableRow>
           );
-        case "RECENTLY_PLAYED":
+        }
+        case "RECENTLY_PLAYED": {
           return (
             <FocusableRow
               key={item.type}
@@ -280,7 +291,8 @@ const SettingsMenu = ({ onClose }) => {
               />
             </FocusableRow>
           );
-        case "DOUBLE_CONFIRM_POWER_MANAGEMENT":
+        }
+        case "DOUBLE_CONFIRM_POWER_MANAGEMENT": {
           return (
             <FocusableRow
               key={item.type}
@@ -297,7 +309,8 @@ const SettingsMenu = ({ onClose }) => {
               />
             </FocusableRow>
           );
-        case "SHOW_HIDDEN":
+        }
+        case "SHOW_HIDDEN": {
           return (
             <FocusableRow
               key={item.type}
@@ -314,7 +327,8 @@ const SettingsMenu = ({ onClose }) => {
               />
             </FocusableRow>
           );
-        case "SHOW_RUNNER_ICON":
+        }
+        case "SHOW_RUNNER_ICON": {
           return (
             <FocusableRow
               key={item.type}
@@ -331,7 +345,8 @@ const SettingsMenu = ({ onClose }) => {
               />
             </FocusableRow>
           );
-        case "USE_REMOTE_DESKTOP_PORTAL":
+        }
+        case "USE_REMOTE_DESKTOP_PORTAL": {
           return (
             <FocusableRow
               key={item.type}
@@ -348,7 +363,8 @@ const SettingsMenu = ({ onClose }) => {
               />
             </FocusableRow>
           );
-        case "KEEP_GAMES_RUNNING":
+        }
+        case "KEEP_GAMES_RUNNING": {
           return (
             <FocusableRow
               key={item.type}
@@ -365,7 +381,8 @@ const SettingsMenu = ({ onClose }) => {
               />
             </FocusableRow>
           );
-        case "ENABLE_UI_ACTION_SOUND_FEEDBACKS":
+        }
+        case "ENABLE_UI_ACTION_SOUND_FEEDBACKS": {
           return (
             <FocusableRow
               key={item.type}
@@ -382,8 +399,10 @@ const SettingsMenu = ({ onClose }) => {
               />
             </FocusableRow>
           );
-        default:
+        }
+        default: {
           return null;
+        }
       }
     },
     [
@@ -403,78 +422,113 @@ const SettingsMenu = ({ onClose }) => {
     const buttons = [];
 
     if (menuSections.length > 1) {
-      buttons.push({ button: "L1", label: t("Prev") });
-      buttons.push({ button: "R1", label: t("Next") });
+      buttons.push(
+        { button: "L1", label: t("Prev") },
+        { button: "R1", label: t("Next") },
+      );
     }
 
-    if (focusedItem?.type === "ZOOM") {
-      buttons.push({
-        button: "LEFT",
-        label: t("Decrease"),
-        onClick: decreaseZoom,
-      });
-      buttons.push({
-        button: "RIGHT",
-        label: t("Increase"),
-        onClick: increaseZoom,
-      });
-    } else if (focusedItem?.type === "GAMEPAD_AUTOREPEAT") {
-      buttons.push({
-        button: "LEFT",
-        label: t("Decrease"),
-        onClick: decreaseAutorepeat,
-      });
-      buttons.push({
-        button: "RIGHT",
-        label: t("Increase"),
-        onClick: increaseAutorepeat,
-      });
-    } else if (focusedItem?.type === "RECENTLY_PLAYED") {
-      buttons.push({
-        button: "A",
-        label: settings.showRecentlyPlayed ? t("Disable") : t("Enable"),
-        onClick: toggleShowRecentlyPlayed,
-      });
-    } else if (focusedItem?.type === "SHOW_HIDDEN") {
-      buttons.push({
-        button: "A",
-        label: settings.showHiddenGames ? t("Disable") : t("Enable"),
-        onClick: toggleShowHiddenGames,
-      });
-    } else if (focusedItem?.type === "SHOW_RUNNER_ICON") {
-      buttons.push({
-        button: "A",
-        label: settings.showRunnerIcon ? t("Disable") : t("Enable"),
-        onClick: toggleShowRunnerIcon,
-      });
-    } else if (focusedItem?.type === "DOUBLE_CONFIRM_POWER_MANAGEMENT") {
-      buttons.push({
-        button: "A",
-        label: settings.doubleConfirmPowerManagement
-          ? t("Disable")
-          : t("Enable"),
-        onClick: toggleDoubleConfirmPowerManagement,
-      });
-    } else if (focusedItem?.type === "USE_REMOTE_DESKTOP_PORTAL") {
-      buttons.push({
-        button: "A",
-        label: settings.useRemoteDesktopPortal ? t("Disable") : t("Enable"),
-        onClick: toggleUseRemoteDesktopPortal,
-      });
-    } else if (focusedItem?.type === "KEEP_GAMES_RUNNING") {
-      buttons.push({
-        button: "A",
-        label: settings.keepGamesRunningOnQuit ? t("Disable") : t("Enable"),
-        onClick: toggleKeepGamesRunningOnQuit,
-      });
-    } else if (focusedItem?.type === "ENABLE_UI_ACTION_SOUND_FEEDBACKS") {
-      buttons.push({
-        button: "A",
-        label: settings.enableUiActionSoundFeedbacks
-          ? t("Disable")
-          : t("Enable"),
-        onClick: toggleEnableUiActionSoundFeedbacks,
-      });
+    switch (focusedItem?.type) {
+      case "ZOOM": {
+        buttons.push(
+          {
+            button: "LEFT",
+            label: t("Decrease"),
+            onClick: decreaseZoom,
+          },
+          {
+            button: "RIGHT",
+            label: t("Increase"),
+            onClick: increaseZoom,
+          },
+        );
+
+        break;
+      }
+      case "GAMEPAD_AUTOREPEAT": {
+        buttons.push(
+          {
+            button: "LEFT",
+            label: t("Decrease"),
+            onClick: decreaseAutorepeat,
+          },
+          {
+            button: "RIGHT",
+            label: t("Increase"),
+            onClick: increaseAutorepeat,
+          },
+        );
+
+        break;
+      }
+      case "RECENTLY_PLAYED": {
+        buttons.push({
+          button: "A",
+          label: settings.showRecentlyPlayed ? t("Disable") : t("Enable"),
+          onClick: toggleShowRecentlyPlayed,
+        });
+
+        break;
+      }
+      case "SHOW_HIDDEN": {
+        buttons.push({
+          button: "A",
+          label: settings.showHiddenGames ? t("Disable") : t("Enable"),
+          onClick: toggleShowHiddenGames,
+        });
+
+        break;
+      }
+      case "SHOW_RUNNER_ICON": {
+        buttons.push({
+          button: "A",
+          label: settings.showRunnerIcon ? t("Disable") : t("Enable"),
+          onClick: toggleShowRunnerIcon,
+        });
+
+        break;
+      }
+      case "DOUBLE_CONFIRM_POWER_MANAGEMENT": {
+        buttons.push({
+          button: "A",
+          label: settings.doubleConfirmPowerManagement
+            ? t("Disable")
+            : t("Enable"),
+          onClick: toggleDoubleConfirmPowerManagement,
+        });
+
+        break;
+      }
+      case "USE_REMOTE_DESKTOP_PORTAL": {
+        buttons.push({
+          button: "A",
+          label: settings.useRemoteDesktopPortal ? t("Disable") : t("Enable"),
+          onClick: toggleUseRemoteDesktopPortal,
+        });
+
+        break;
+      }
+      case "KEEP_GAMES_RUNNING": {
+        buttons.push({
+          button: "A",
+          label: settings.keepGamesRunningOnQuit ? t("Disable") : t("Enable"),
+          onClick: toggleKeepGamesRunningOnQuit,
+        });
+
+        break;
+      }
+      case "ENABLE_UI_ACTION_SOUND_FEEDBACKS": {
+        buttons.push({
+          button: "A",
+          label: settings.enableUiActionSoundFeedbacks
+            ? t("Disable")
+            : t("Enable"),
+          onClick: toggleEnableUiActionSoundFeedbacks,
+        });
+
+        break;
+      }
+      // No default
     }
 
     buttons.push({ button: "B", label: t("Close"), onClick: onClose });

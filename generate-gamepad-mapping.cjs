@@ -1,4 +1,4 @@
-const fs = require("fs");
+const fs = require("node:fs");
 
 const DB_URL =
   "https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/refs/heads/master/gamecontrollerdb.txt";
@@ -45,16 +45,16 @@ const STD_AXIS = {
   "+righty": [3, "pos"],
 };
 
-function parseInput(val) {
-  if (!val) return null;
-  if (val.startsWith("b")) return [0, parseInt(val.slice(1), 10)];
-  if (val.startsWith("a")) return [1, parseInt(val.slice(1), 10)];
-  if (val.startsWith("+a")) return [2, parseInt(val.slice(2), 10)];
-  if (val.startsWith("-a")) return [3, parseInt(val.slice(2), 10)];
-  if (val.startsWith("~a")) return [5, parseInt(val.slice(2), 10)];
-  if (val.startsWith("h")) {
-    const parts = val.slice(1).split(".");
-    return [4, parseInt(parts[0], 10), parseInt(parts[1], 10)];
+function parseInput(value) {
+  if (!value) return null;
+  if (value.startsWith("b")) return [0, Number.parseInt(value.slice(1), 10)];
+  if (value.startsWith("a")) return [1, Number.parseInt(value.slice(1), 10)];
+  if (value.startsWith("+a")) return [2, Number.parseInt(value.slice(2), 10)];
+  if (value.startsWith("-a")) return [3, Number.parseInt(value.slice(2), 10)];
+  if (value.startsWith("~a")) return [5, Number.parseInt(value.slice(2), 10)];
+  if (value.startsWith("h")) {
+    const parts = value.slice(1).split(".");
+    return [4, Number.parseInt(parts[0], 10), Number.parseInt(parts[1], 10)];
   }
   return null;
 }
@@ -67,7 +67,7 @@ async function fetchAndBuildJson() {
 
   const textData = await response.text();
   const lines = textData.split("\n");
-  const db = {};
+  const database = {};
 
   for (let line of lines) {
     line = line.trim();
@@ -83,8 +83,8 @@ async function fetchAndBuildJson() {
     const name = parts[1];
 
     // Decode VID/PID from SDL GUID (Little Endian)
-    const vid = guid.substring(10, 12) + guid.substring(8, 10);
-    const pid = guid.substring(18, 20) + guid.substring(16, 18);
+    const vid = guid.slice(10, 12) + guid.slice(8, 10);
+    const pid = guid.slice(18, 20) + guid.slice(16, 18);
 
     if (!vid || !pid || vid === "0000") continue;
 
@@ -92,14 +92,14 @@ async function fetchAndBuildJson() {
 
     const map = {
       n: name,
-      b: new Array(24).fill(null),
-      a: new Array(4).fill(null),
+      b: Array.from({ length: 24 }).fill(null),
+      a: Array.from({ length: 4 }).fill(null),
     };
 
     const splitAxes = [{}, {}, {}, {}];
 
-    for (let i = 2; i < parts.length; i++) {
-      const pair = parts[i].split(":");
+    for (let index = 2; index < parts.length; index++) {
+      const pair = parts[index].split(":");
       const key = pair[0];
       const value = pair[1];
 
@@ -112,30 +112,32 @@ async function fetchAndBuildJson() {
       if (STD_BTN[key] !== undefined) {
         map.b[STD_BTN[key]] = instruction;
       } else if (STD_AXIS[key] !== undefined) {
-        const [axisIdx, polarity] = STD_AXIS[key];
+        const [axisIndex, polarity] = STD_AXIS[key];
         if (polarity === "full") {
-          map.a[axisIdx] = instruction;
+          map.a[axisIndex] = instruction;
         } else {
-          splitAxes[axisIdx][polarity] = instruction;
+          splitAxes[axisIndex][polarity] = instruction;
         }
       }
     }
 
-    for (let i = 0; i < 4; i++) {
-      if (!map.a[i] && (splitAxes[i].pos || splitAxes[i].neg)) {
-        map.a[i] = splitAxes[i];
+    for (let index = 0; index < 4; index++) {
+      if (!map.a[index] && (splitAxes[index].pos || splitAxes[index].neg)) {
+        map.a[index] = splitAxes[index];
       }
     }
 
-    db[vidPidKey] = map;
+    database[vidPidKey] = map;
   }
 
   fs.writeFileSync(
     "./src_frontend/resources/gamepad_mapping_db.json",
-    JSON.stringify(db),
+    JSON.stringify(database),
   );
 
-  console.log(`Generated mappings for ${Object.keys(db).length} controllers.`);
+  console.log(
+    `Generated mappings for ${Object.keys(database).length} controllers.`,
+  );
 }
 
 fetchAndBuildJson();

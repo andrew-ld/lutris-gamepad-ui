@@ -30,7 +30,7 @@ async function checkForUpdates() {
     const releaseInfo = await response.json();
 
     const latestVersion = releaseInfo.tag_name.startsWith("v")
-      ? releaseInfo.tag_name.substring(1)
+      ? releaseInfo.tag_name.slice(1)
       : releaseInfo.tag_name;
 
     const currentVersion = packageJson.version;

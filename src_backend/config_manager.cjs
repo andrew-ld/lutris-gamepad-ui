@@ -4,7 +4,7 @@ const { setKvStoreValue, getKvStoreValue } = require("./storage_kv.cjs");
 const CONFIG_KEY = "app_config";
 
 const defaultConfig = {
-  zoomFactor: 1.0,
+  zoomFactor: 1,
   showRecentlyPlayed: true,
   showHiddenGames: false,
   doubleConfirmPowerManagement: true,
@@ -19,12 +19,12 @@ const SUBSCRIPTIONS = {};
 
 function getAppConfig() {
   const storedConfig = getKvStoreValue(CONFIG_KEY);
-  return { ...defaultConfig, ...(storedConfig || {}) };
+  return { ...defaultConfig, ...storedConfig };
 }
 
-function subscribeConfigValueChange(key, cb) {
+function subscribeConfigValueChange(key, callback) {
   const subscribers = (SUBSCRIPTIONS[key] = SUBSCRIPTIONS[key] || []);
-  subscribers.push(cb);
+  subscribers.push(callback);
 }
 
 function setAppConfig(key, value) {
@@ -39,7 +39,7 @@ function setAppConfig(key, value) {
 
   const subscribers = SUBSCRIPTIONS[key];
   if (subscribers) {
-    subscribers.forEach((cb) => cb(value));
+    for (const callback of subscribers) callback(value);
   }
 
   return newConfig;

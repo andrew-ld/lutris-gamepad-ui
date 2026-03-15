@@ -4,6 +4,7 @@ import promise from "eslint-plugin-promise";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
+import unicorn from "eslint-plugin-unicorn";
 import globals from "globals";
 
 /** @type {import('eslint').Linter.Config[]} */
@@ -34,6 +35,7 @@ export default [
       "react-refresh": reactRefresh,
       import: importX,
       promise,
+      unicorn,
     },
     rules: {
       ...js.configs.recommended.rules,
@@ -41,6 +43,11 @@ export default [
       ...react.configs["jsx-runtime"].rules,
       ...reactHooks.configs.recommended.rules,
       ...promise.configs["flat/recommended"].rules,
+      ...unicorn.configs["recommended"].rules,
+      "unicorn/prevent-abbreviations": "off",
+      "unicorn/no-null": "off",
+      "unicorn/filename-case": "off",
+      "unicorn/no-array-reduce": "error",
       "promise/always-return": "off",
       "react-refresh/only-export-components": [
         "warn",
@@ -101,6 +108,9 @@ export default [
     files: ["**/*.cjs"],
     languageOptions: {
       sourceType: "commonjs",
+    },
+    rules: {
+      "unicorn/prefer-module": "off",
     },
   },
   {

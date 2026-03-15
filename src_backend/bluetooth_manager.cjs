@@ -33,7 +33,7 @@ async function _getObjectManager() {
     service.getInterface(
       BLUEZ_OBJECT_PATH,
       OBJECT_MANAGER_INTERFACE,
-      (err, iface) => (err ? reject(err) : resolve(iface)),
+      (error, iface) => (error ? reject(error) : resolve(iface)),
     );
   }).then((iface) => {
     objectManager = iface;
@@ -45,11 +45,11 @@ async function _getInterface(path, interfaceName) {
   const bus = await _getBus();
   const service = bus.getService(BLUEZ_SERVICE_NAME);
   return new Promise((resolve, reject) => {
-    service.getInterface(path, interfaceName, (err, iface) => {
-      if (err)
+    service.getInterface(path, interfaceName, (error, iface) => {
+      if (error)
         return reject(
           new Error(
-            `Could not get interface ${interfaceName} at ${path}: ${err.message}`,
+            `Could not get interface ${interfaceName} at ${path}: ${error.message}`,
           ),
         );
       resolve(iface);
@@ -59,106 +59,106 @@ async function _getInterface(path, interfaceName) {
 
 const _getVariantValue = (variant) => variant?.[1]?.[0];
 
-const _findInterfaceProps = (interfaces, name) =>
+const _findInterfaceProperties = (interfaces, name) =>
   interfaces.find(([ifaceName]) => ifaceName === name)?.[1];
 
 function _parseDeviceProperties(propertiesArray) {
   if (!Array.isArray(propertiesArray)) return null;
-  const props = Object.fromEntries(
+  const properties = Object.fromEntries(
     propertiesArray.map(([key, variant]) => [key, _getVariantValue(variant)]),
   );
   return {
-    address: props.Address,
-    name: props.Alias || props.Name,
-    isPaired: props.Paired || false,
-    isConnected: props.Connected || false,
-    icon: props.Icon,
+    address: properties.Address,
+    name: properties.Alias || properties.Name,
+    isPaired: properties.Paired || false,
+    isConnected: properties.Connected || false,
+    icon: properties.Icon,
   };
 }
 
 function _parseAdapterProperties(propertiesArray) {
   if (!Array.isArray(propertiesArray)) return null;
-  const props = Object.fromEntries(
+  const properties = Object.fromEntries(
     propertiesArray.map(([key, variant]) => [key, _getVariantValue(variant)]),
   );
   return {
-    address: props.Address,
-    name: props.Alias || props.Name,
-    powered: props.Powered || false,
-    discoverable: props.Discoverable || false,
-    discovering: props.Discovering || false,
+    address: properties.Address,
+    name: properties.Alias || properties.Name,
+    powered: properties.Powered || false,
+    discoverable: properties.Discoverable || false,
+    discovering: properties.Discovering || false,
   };
 }
 
 async function _getAllAdapterPaths() {
   try {
-    const objManager = await _getObjectManager();
+    const objectManager_ = await _getObjectManager();
     return new Promise((resolve, reject) => {
-      objManager.GetManagedObjects((err, managedObjects) => {
-        if (err) return reject(err);
+      objectManager_.GetManagedObjects((error, managedObjects) => {
+        if (error) return reject(error);
         const adapterPaths = managedObjects
           .filter(([, interfacesArray]) =>
-            _findInterfaceProps(interfacesArray, ADAPTER_INTERFACE),
+            _findInterfaceProperties(interfacesArray, ADAPTER_INTERFACE),
           )
           .map(([path]) => path);
         resolve(adapterPaths);
       });
     });
-  } catch (e) {
-    logError("Error getting adapter paths.", e.message);
+  } catch (error) {
+    logError("Error getting adapter paths.", error.message);
     return [];
   }
 }
 
 async function getAdapters() {
   try {
-    const objManager = await _getObjectManager();
+    const objectManager_ = await _getObjectManager();
     return new Promise((resolve, reject) => {
-      objManager.GetManagedObjects((err, managedObjects) => {
-        if (err) return reject(err);
+      objectManager_.GetManagedObjects((error, managedObjects) => {
+        if (error) return reject(error);
         const adapters = managedObjects
           .map(([path, interfacesArray]) => {
-            const props = _findInterfaceProps(
+            const properties = _findInterfaceProperties(
               interfacesArray,
               ADAPTER_INTERFACE,
             );
-            if (!props) return null;
-            const adapter = _parseAdapterProperties(props);
+            if (!properties) return null;
+            const adapter = _parseAdapterProperties(properties);
             return adapter ? { ...adapter, path } : null;
           })
           .filter(Boolean);
         resolve(adapters);
       });
     });
-  } catch (e) {
-    logError("Could not list Bluetooth adapters.", e.message);
+  } catch (error) {
+    logError("Could not list Bluetooth adapters.", error.message);
     return [];
   }
 }
 
-async function setAdapterBooleanProperty(adapterPath, propName, value) {
+async function setAdapterBooleanProperty(adapterPath, propertyName, value) {
   try {
     const iface = await _getInterface(adapterPath, PROPERTIES_INTERFACE);
     return new Promise((resolve, reject) => {
-      iface.Set(ADAPTER_INTERFACE, propName, ["b", value], (err) => {
+      iface.Set(ADAPTER_INTERFACE, propertyName, ["b", value], (error) => {
         _triggerStateUpdate();
-        if (err) {
-          const errorMessage = `Failed to set property '${propName}' on ${adapterPath}. This may be a system permissions issue (polkit) or a hardware-level block.`;
+        if (error) {
+          const errorMessage = `Failed to set property '${propertyName}' on ${adapterPath}. This may be a system permissions issue (polkit) or a hardware-level block.`;
           logError(
             errorMessage,
             "D-Bus error object:",
-            JSON.stringify(err, null, 2),
+            JSON.stringify(error, null, 2),
           );
-          reject(new Error(err.message || "Failed to set property"));
+          reject(new Error(error.message || "Failed to set property"));
         } else {
-          logInfo(`Property ${propName} set to ${value} on ${adapterPath}`);
+          logInfo(`Property ${propertyName} set to ${value} on ${adapterPath}`);
           resolve();
         }
       });
     });
-  } catch (e) {
-    const errorMessage = `Error setting property ${propName} on ${adapterPath}`;
-    logError(errorMessage, e.message);
+  } catch (error) {
+    const errorMessage = `Error setting property ${propertyName} on ${adapterPath}`;
+    logError(errorMessage, error.message);
     throw new Error(errorMessage);
   }
 }
@@ -168,8 +168,8 @@ async function powerOnAdapter(adapterPath) {
     logInfo("Attempting to unblock bluetooth via rfkill.");
     await execPromise("rfkill unblock bluetooth");
     logInfo("rfkill unblock command executed successfully.");
-  } catch (e) {
-    logWarn("Could not execute rfkill: ", e.message);
+  } catch (error) {
+    logWarn("Could not execute rfkill: ", error.message);
   }
 
   try {
@@ -185,33 +185,33 @@ async function powerOnAdapter(adapterPath) {
         },
       },
     );
-  } catch (e) {
-    logError(`Unable to power on adapter ${adapterPath}. Error:`, e);
+  } catch (error) {
+    logError(`Unable to power on adapter ${adapterPath}. Error:`, error);
   }
 }
 
 async function listDevices() {
   try {
-    const objManager = await _getObjectManager();
+    const objectManager_ = await _getObjectManager();
     return new Promise((resolve, reject) => {
-      objManager.GetManagedObjects((err, managedObjects) => {
-        if (err) return reject(err);
+      objectManager_.GetManagedObjects((error, managedObjects) => {
+        if (error) return reject(error);
         const devices = managedObjects
           .map(([path, interfacesArray]) => {
-            const props = _findInterfaceProps(
+            const properties = _findInterfaceProperties(
               interfacesArray,
               DEVICE_INTERFACE,
             );
-            if (!props) return null;
-            const device = _parseDeviceProperties(props);
+            if (!properties) return null;
+            const device = _parseDeviceProperties(properties);
             return device ? { ...device, path } : null;
           })
           .filter(Boolean);
         resolve(devices);
       });
     });
-  } catch (e) {
-    logError("Could not list Bluetooth devices.", e.message);
+  } catch (error) {
+    logError("Could not list Bluetooth devices.", error.message);
     return [];
   }
 }
@@ -223,8 +223,8 @@ async function getBluetoothState() {
       listDevices(),
     ]);
     return { adapters, devices };
-  } catch (e) {
-    logError("Error getting full bluetooth state", e);
+  } catch (error) {
+    logError("Error getting full bluetooth state", error);
     objectManager = null;
     isSubscribed = false;
     return { adapters: [], devices: [] };
@@ -234,16 +234,16 @@ async function getBluetoothState() {
 async function _callOnInterface(path, ifaceName, method, actionDescription) {
   try {
     const iface = await _getInterface(path, ifaceName);
-    iface[method]((err) => {
-      if (err) {
-        logError(`Failed to ${actionDescription}.`, err.message);
+    iface[method]((error) => {
+      if (error) {
+        logError(`Failed to ${actionDescription}.`, error.message);
       } else {
         logInfo(`Action '${actionDescription}' acknowledged by BlueZ.`);
       }
       _triggerStateUpdate();
     });
-  } catch (e) {
-    logError(`Error initiating action '${actionDescription}'.`, e.message);
+  } catch (error) {
+    logError(`Error initiating action '${actionDescription}'.`, error.message);
   }
 }
 
@@ -261,8 +261,8 @@ async function startDiscovery() {
         "StartDiscovery",
         `start discovery on ${path}`,
       );
-    } catch (e) {
-      logError("Could not start discovery on adapter:", path, e);
+    } catch (error) {
+      logError("Could not start discovery on adapter:", path, error);
     }
   }
 }
@@ -278,8 +278,8 @@ async function stopDiscovery() {
         "StopDiscovery",
         `stop discovery on ${path}`,
       );
-    } catch (e) {
-      logError("Could not stop discovery on adapter:", path, e);
+    } catch (error) {
+      logError("Could not stop discovery on adapter:", path, error);
     }
   }
 }
@@ -303,8 +303,8 @@ async function _sendFullStateUpdate() {
   try {
     const state = await getBluetoothState();
     mainWindow.webContents.send("bluetooth-state-changed", state);
-  } catch (e) {
-    logError("Failed to send full Bluetooth state update.", e);
+  } catch (error) {
+    logError("Failed to send full Bluetooth state update.", error);
   }
 }
 
@@ -317,7 +317,7 @@ async function subscribeToBluetoothChanges() {
     isSubscribed = true;
 
     const bus = await _getBus();
-    const objManager = await _getObjectManager();
+    const objectManager_ = await _getObjectManager();
 
     bus.connection.on("end", () => {
       logWarn("Bluetooth DBus connection ended. Resetting subscription state.");
@@ -325,24 +325,24 @@ async function subscribeToBluetoothChanges() {
       objectManager = null;
     });
 
-    objManager.on("InterfacesAdded", () => _triggerStateUpdate());
-    objManager.on("InterfacesRemoved", () => _triggerStateUpdate());
+    objectManager_.on("InterfacesAdded", () => _triggerStateUpdate());
+    objectManager_.on("InterfacesRemoved", () => _triggerStateUpdate());
 
     const matchRule = `type='signal',interface='${PROPERTIES_INTERFACE}',member='PropertiesChanged',path_namespace='/org/bluez'`;
 
-    bus.addMatch(matchRule, (err) => {
-      if (err) {
+    bus.addMatch(matchRule, (error) => {
+      if (error) {
         logError(
           "Failed to add DBus match rule for Bluetooth properties:",
-          err,
+          error,
         );
       }
     });
 
-    bus.connection.on("message", (msg) => {
+    bus.connection.on("message", (message) => {
       if (
-        msg.interface === PROPERTIES_INTERFACE &&
-        msg.member === "PropertiesChanged"
+        message.interface === PROPERTIES_INTERFACE &&
+        message.member === "PropertiesChanged"
       ) {
         _triggerStateUpdate();
       }
@@ -350,11 +350,11 @@ async function subscribeToBluetoothChanges() {
 
     _sendFullStateUpdate();
     logInfo("Subscribed to BlueZ D-Bus signals and sent initial state.");
-  } catch (e) {
+  } catch (error) {
     isSubscribed = false;
     objectManager = null;
-    logError("Could not subscribe to Bluetooth changes.", e.message);
-    toastError("Bluetooth Manager", e);
+    logError("Could not subscribe to Bluetooth changes.", error.message);
+    toastError("Bluetooth Manager", error);
   }
 }
 

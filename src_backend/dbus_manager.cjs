@@ -9,11 +9,7 @@ const sessionBusPromises = new Map();
  * @returns {Promise<import('@homebridge/dbus-native').MessageBus>}
  */
 function getSessionBus(sessionName, isSystemBus) {
-  if (isSystemBus) {
-    sessionName += "_system_bus";
-  } else {
-    sessionName += "_session_bus";
-  }
+  sessionName += isSystemBus ? "_system_bus" : "_session_bus";
 
   if (sessionBuses.has(sessionName)) {
     return Promise.resolve(sessionBuses.get(sessionName));
@@ -26,11 +22,7 @@ function getSessionBus(sessionName, isSystemBus) {
   const busPromise = new Promise((resolve, reject) => {
     try {
       let bus;
-      if (isSystemBus) {
-        bus = dbus.systemBus();
-      } else {
-        bus = dbus.sessionBus();
-      }
+      bus = isSystemBus ? dbus.systemBus() : dbus.sessionBus();
       if (!bus) {
         sessionBusPromises.delete(sessionName);
         return reject(new Error("Could not create D-Bus session bus client."));
@@ -45,16 +37,16 @@ function getSessionBus(sessionName, isSystemBus) {
         resolve(bus);
       });
 
-      bus.connection.on("error", (err) => {
+      bus.connection.on("error", (error) => {
         logError(
           `D-Bus session bus connection error for "${sessionName}":`,
-          err,
+          error,
         );
         sessionBuses.delete(sessionName);
         sessionBusPromises.delete(sessionName);
         reject(
           new Error(
-            `D-Bus connection error for "${sessionName}": ${err.message}`,
+            `D-Bus connection error for "${sessionName}": ${error.message}`,
           ),
         );
       });
@@ -64,13 +56,13 @@ function getSessionBus(sessionName, isSystemBus) {
         sessionBuses.delete(sessionName);
         sessionBusPromises.delete(sessionName);
       });
-    } catch (err) {
+    } catch (error) {
       logError(
         `Failed to initiate D-Bus session bus connection for "${sessionName}":`,
-        err,
+        error,
       );
       sessionBusPromises.delete(sessionName);
-      reject(err);
+      reject(error);
     }
   });
 

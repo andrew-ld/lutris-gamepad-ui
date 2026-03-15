@@ -22,8 +22,10 @@ const ControlsOverlay = ({
   const legendItems = [];
 
   if (onPrevCategory && onNextCategory) {
-    legendItems.push({ button: "L1", label: t("Prev") });
-    legendItems.push({ button: "R1", label: t("Next") });
+    legendItems.push(
+      { button: "L1", label: t("Prev") },
+      { button: "R1", label: t("Next") },
+    );
   }
 
   if (onCloseRunningGame) {

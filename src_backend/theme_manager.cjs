@@ -28,7 +28,7 @@ function readUserThemeFile() {
     if (!existsSync(themePath)) {
       return {};
     }
-    const fileContent = readFileSync(themePath, "utf-8");
+    const fileContent = readFileSync(themePath, "utf8");
     return JSON.parse(fileContent || "{}");
   } catch (error) {
     logError("Failed to read or parse user theme file. Using defaults.", error);
@@ -38,9 +38,9 @@ function readUserThemeFile() {
 }
 
 function mergeThemes(baseTheme, userOverrides) {
-  const computedTheme = JSON.parse(JSON.stringify(baseTheme));
+  const computedTheme = structuredClone(baseTheme);
 
-  for (const [selector, userProps] of Object.entries(userOverrides)) {
+  for (const [selector, userProperties] of Object.entries(userOverrides)) {
     const defaultProps = baseTheme[selector];
 
     if (!defaultProps) {
@@ -50,14 +50,14 @@ function mergeThemes(baseTheme, userOverrides) {
       continue;
     }
 
-    for (const [prop, value] of Object.entries(userProps)) {
-      if (!Object.hasOwn(defaultProps, prop)) {
+    for (const [property, value] of Object.entries(userProperties)) {
+      if (!Object.hasOwn(defaultProps, property)) {
         logWarn(
-          `User theme contains a property not in the default theme for selector "${selector}": "${prop}". Skipping.`,
+          `User theme contains a property not in the default theme for selector "${selector}": "${property}". Skipping.`,
         );
         continue;
       }
-      computedTheme[selector][prop] = value;
+      computedTheme[selector][property] = value;
     }
   }
 

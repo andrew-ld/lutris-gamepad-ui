@@ -1,9 +1,9 @@
-const { exec, execFile } = require("child_process");
-const { existsSync } = require("fs");
+const { exec, execFile } = require("node:child_process");
+const { existsSync } = require("node:fs");
 const { readFileSync } = require("node:fs");
 const path = require("node:path");
 const { cwd } = require("node:process");
-const { promisify } = require("util");
+const { promisify } = require("node:util");
 
 const {
   info: logInfo,
@@ -15,9 +15,9 @@ const { getMainWindow } = require("./state.cjs");
 const execPromise = promisify(exec);
 const execFilePromise = promisify(execFile);
 
-async function spawnGSettings(args) {
+async function spawnGSettings(arguments_) {
   try {
-    const { stdout } = await execFilePromise("gsettings", args);
+    const { stdout } = await execFilePromise("gsettings", arguments_);
     return stdout.trim();
   } catch (error) {
     logError("gsettings error:", error);
@@ -25,9 +25,9 @@ async function spawnGSettings(args) {
   }
 }
 
-async function spawnDdcutil(args) {
+async function spawnDdcutil(arguments_) {
   try {
-    const { stdout } = await execFilePromise("ddcutil", args);
+    const { stdout } = await execFilePromise("ddcutil", arguments_);
     return stdout.trim();
   } catch (error) {
     logError("ddcutil error:", error);
@@ -35,7 +35,7 @@ async function spawnDdcutil(args) {
   }
 }
 
-const isDev = process.env.IS_DEV === "1";
+const isDevelopment = process.env.IS_DEV === "1";
 const forceWindowed = process.env.FORCE_WINDOWED === "1";
 
 function localeAppFile(name) {
@@ -67,7 +67,7 @@ function getElectronPreloadPath() {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function retryAsync(fn, options = {}) {
+async function retryAsync(function_, options = {}) {
   const {
     maxTries = 3,
     initialDelay = 200,
@@ -77,7 +77,7 @@ async function retryAsync(fn, options = {}) {
 
   for (let attempt = 1; attempt <= maxTries; attempt++) {
     try {
-      return await fn();
+      return await function_();
     } catch (error) {
       if (attempt === maxTries) {
         throw error;
@@ -91,13 +91,13 @@ async function retryAsync(fn, options = {}) {
   }
 }
 
-const debounce = (func, wait) => {
+const debounce = (function_, wait) => {
   let timeout;
 
-  return function executedFunction(...args) {
+  return function executedFunction(...arguments_) {
     const later = () => {
       clearTimeout(timeout);
-      func(...args);
+      function_(...arguments_);
     };
 
     clearTimeout(timeout);
@@ -124,7 +124,7 @@ function errorToDescription(error) {
   } else if (typeof error === "string") {
     description = error;
   } else if (Array.isArray(error)) {
-    description = error.map(errorToDescription).join("\n");
+    description = error.map((error_) => errorToDescription(error_)).join("\n");
   }
 
   return description;
@@ -148,9 +148,9 @@ async function rebootPc() {
     try {
       await execPromise(command);
       return;
-    } catch (e) {
-      logError("unable to reboot pc using", command, e);
-      errors.push(e);
+    } catch (error) {
+      logError("unable to reboot pc using", command, error);
+      errors.push(error);
     }
   }
 
@@ -165,9 +165,9 @@ async function powerOffPc() {
     try {
       await execPromise(command);
       return;
-    } catch (e) {
-      logError("unable to poweroff pc using", command, e);
-      errors.push(e);
+    } catch (error) {
+      logError("unable to poweroff pc using", command, error);
+      errors.push(error);
     }
   }
 
@@ -217,9 +217,9 @@ function getProcessDescendants(pid, visitedPids) {
       getProcessDescendants(childPid, visitedPids),
     );
 
-    return childPids.concat(descendants);
-  } catch (e) {
-    logError("Unable to read children of pid", pid, e);
+    return [...childPids, ...descendants];
+  } catch (error) {
+    logError("Unable to read children of pid", pid, error);
     return [];
   }
 }
@@ -227,8 +227,8 @@ function getProcessDescendants(pid, visitedPids) {
 function getRunExclusive() {
   let queue = Promise.resolve();
 
-  const runExclusive = (fn) => {
-    queue = queue.then(fn, fn);
+  const runExclusive = (function_) => {
+    queue = queue.then(function_, function_);
     return queue;
   };
 
@@ -236,7 +236,7 @@ function getRunExclusive() {
 }
 
 module.exports = {
-  isDev,
+  isDev: isDevelopment,
   forceWindowed,
   execPromise,
   spawnGSettings,

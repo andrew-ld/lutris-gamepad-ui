@@ -75,10 +75,10 @@ const SelectionMenu = ({
   );
 
   const initialIndex = useMemo(() => {
-    const idx = items.findIndex(
-      (i) => String(i.value) === String(currentValue),
+    const index = items.findIndex(
+      (index_) => String(index_.value) === String(currentValue),
     );
-    return idx >= 0 ? idx : 0;
+    return Math.max(index, 0);
   }, [items, currentValue]);
 
   return (

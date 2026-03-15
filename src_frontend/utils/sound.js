@@ -14,7 +14,7 @@ export function playButtonActionSound(currentTime) {
 
   buttonActionSoundInstance
     .play()
-    .catch((e) => logError("Could not play sound", e));
+    .catch((error) => logError("Could not play sound", error));
 }
 
 export function playButtonActionSoundThrottled() {

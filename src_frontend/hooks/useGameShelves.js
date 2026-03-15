@@ -29,13 +29,15 @@ export const useGameShelves = (games, searchQuery) => {
       return [
         {
           title: t('Results for "{{searchQuery}}"', { searchQuery }),
-          games: currentGames.sort((a, b) => a.title.localeCompare(b.title)),
+          games: currentGames.toSorted((a, b) =>
+            a.title.localeCompare(b.title),
+          ),
         },
       ];
     }
 
     const sortByLastPlayed = (gameList) =>
-      [...gameList].sort(
+      [...gameList].toSorted(
         (a, b) =>
           (b.lastPlayed?.getTime() || 0) - (a.lastPlayed?.getTime() || 0),
       );
@@ -52,32 +54,32 @@ export const useGameShelves = (games, searchQuery) => {
       }
     }
 
-    const allGamesSorted = [...currentGames].sort((a, b) =>
+    const allGamesSorted = [...currentGames].toSorted((a, b) =>
       a.title.localeCompare(b.title),
     );
     newShelves.push({ title: t("All Games"), games: allGamesSorted });
 
     const categoriesMap = new Map();
-    currentGames.forEach((game) => {
-      game.categories.forEach((categoryName) => {
+    for (const game of currentGames) {
+      for (const categoryName of game.categories) {
         if (!categoriesMap.has(categoryName)) {
           categoriesMap.set(categoryName, []);
         }
         categoriesMap.get(categoryName).push(game);
-      });
-    });
+      }
+    }
 
-    const sortedCategoryNames = [...categoriesMap.keys()].sort((a, b) =>
+    const sortedCategoryNames = [...categoriesMap.keys()].toSorted((a, b) =>
       a.localeCompare(b),
     );
 
-    sortedCategoryNames.forEach((categoryName) => {
+    for (const categoryName of sortedCategoryNames) {
       const categoryGames = categoriesMap.get(categoryName);
       newShelves.push({
         title: categoryName.charAt(0).toUpperCase() + categoryName.slice(1),
         games: sortByLastPlayed(categoryGames),
       });
-    });
+    }
 
     return newShelves;
   }, [currentGames, searchQuery, t, settings.showRecentlyPlayed]);

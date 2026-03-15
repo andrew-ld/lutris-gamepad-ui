@@ -57,9 +57,9 @@ const isValidDBusPath = (path, prefix) => {
 };
 
 const ipcHandleWithError = (channel, listener) => {
-  ipcMain.handle(channel, async (event, ...args) => {
+  ipcMain.handle(channel, async (event, ...arguments_) => {
     try {
-      return await listener(event, ...args);
+      return await listener(event, ...arguments_);
     } catch (error) {
       logError("ipcHandleWithError", channel, error);
       toastError(channel, error);
@@ -69,9 +69,9 @@ const ipcHandleWithError = (channel, listener) => {
 };
 
 const ipcOnWithError = (channel, listener) => {
-  ipcMain.on(channel, async (event, ...args) => {
+  ipcMain.on(channel, async (event, ...arguments_) => {
     try {
-      await listener(event, ...args);
+      await listener(event, ...arguments_);
     } catch (error) {
       logError("ipcOnWithError", channel, error);
       toastError(channel, error);
@@ -100,8 +100,8 @@ function registerIpcHandlers() {
   ipcOnWithError("close-game", async () => closeRunningGameProcess());
 
   ipcOnWithError("open-lutris", async () => {
-    invokeLutris().catch((e) => {
-      logError("unable to open lutris", e);
+    invokeLutris().catch((error) => {
+      logError("unable to open lutris", error);
     });
   });
 
@@ -122,7 +122,7 @@ function registerIpcHandlers() {
 
   ipcOnWithError("open-external-link", async (_event, url) => {
     if (typeof url !== "string") {
-      throw new Error("Invalid URL received: not a string.");
+      throw new TypeError("Invalid URL received: not a string.");
     }
     try {
       const parsedUrl = new URL(url);
@@ -130,8 +130,8 @@ function registerIpcHandlers() {
         throw new Error("Attempted to open a non-HTTPS URL.");
       }
       await shell.openExternal(url);
-    } catch (e) {
-      logError("Invalid URL for open-external-link:", url, e);
+    } catch (error) {
+      logError("Invalid URL for open-external-link:", url, error);
       throw new Error(`Could not open invalid URL: ${url}`);
     }
   });
@@ -169,7 +169,7 @@ function registerIpcHandlers() {
   });
 
   ipcOnWithError("set-default-sink", async (_event, sinkName) => {
-    if (typeof sinkName !== "string" || !sinkName.length) {
+    if (typeof sinkName !== "string" || sinkName.length === 0) {
       throw new Error(
         `Invalid sinkName: ${sinkName}. Must be a non-empty string.`,
       );
@@ -179,7 +179,7 @@ function registerIpcHandlers() {
 
   ipcOnWithError("set-audio-mute", async (_event, mute) => {
     if (typeof mute !== "boolean") {
-      throw new Error(`Invalid mute value: ${mute}. Must be a boolean.`);
+      throw new TypeError(`Invalid mute value: ${mute}. Must be a boolean.`);
     }
     await setAudioMute(mute);
   });
@@ -241,7 +241,9 @@ function registerIpcHandlers() {
 
   ipcHandleWithError("set-night-light", async (_event, enabled) => {
     if (typeof enabled !== "boolean") {
-      throw new Error(`Invalid enabled value: ${enabled}. Must be a boolean.`);
+      throw new TypeError(
+        `Invalid enabled value: ${enabled}. Must be a boolean.`,
+      );
     }
     await setNightLight(enabled);
   });

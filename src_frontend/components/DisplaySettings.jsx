@@ -79,10 +79,10 @@ const DisplaySettings = ({ onClose }) => {
 
   const toggleNightLight = useCallback(async () => {
     if (nightLightError) return;
-    const newVal = !nightLight;
+    const newValue = !nightLight;
     setIsLoading(true);
     try {
-      await api.setNightLight(newVal);
+      await api.setNightLight(newValue);
     } finally {
       if (isMounted()) {
         await fetchSettings();
@@ -114,15 +114,17 @@ const DisplaySettings = ({ onClose }) => {
       }
 
       switch (item.type) {
-        case CONTROL_TYPES.BRIGHTNESS:
+        case CONTROL_TYPES.BRIGHTNESS: {
           if (actionName === "LEFT") setBrightness(Math.max(brightness - 5, 0));
           if (actionName === "RIGHT")
             setBrightness(Math.min(brightness + 5, 100));
           if (actionName === "A") updateBrightness();
           break;
-        case CONTROL_TYPES.NIGHT_LIGHT:
+        }
+        case CONTROL_TYPES.NIGHT_LIGHT: {
           if (actionName === "A") toggleNightLight();
           break;
+        }
       }
     },
     [brightness, updateBrightness, toggleNightLight, fetchSettings, onClose],
@@ -163,21 +165,23 @@ const DisplaySettings = ({ onClose }) => {
     const items = [];
 
     if (focusedItem && focusedItem.type === CONTROL_TYPES.BRIGHTNESS) {
-      items.push({
-        button: "LEFT",
-        label: t("Decrease"),
-        onClick: () => updateBrightness(brightness - 5),
-      });
-      items.push({
-        button: "RIGHT",
-        label: t("Increase"),
-        onClick: () => updateBrightness(brightness + 5),
-      });
-      items.push({
-        button: "A",
-        label: t("Update"),
-        onClick: updateBrightness,
-      });
+      items.push(
+        {
+          button: "LEFT",
+          label: t("Decrease"),
+          onClick: () => updateBrightness(brightness - 5),
+        },
+        {
+          button: "RIGHT",
+          label: t("Increase"),
+          onClick: () => updateBrightness(brightness + 5),
+        },
+        {
+          button: "A",
+          label: t("Update"),
+          onClick: updateBrightness,
+        },
+      );
     }
 
     if (focusedItem && focusedItem.type === CONTROL_TYPES.NIGHT_LIGHT) {
@@ -188,8 +192,10 @@ const DisplaySettings = ({ onClose }) => {
       });
     }
 
-    items.push({ button: "X", label: t("Reload"), onClick: fetchSettings });
-    items.push({ button: "B", label: t("Close"), onClick: onClose });
+    items.push(
+      { button: "X", label: t("Reload"), onClick: fetchSettings },
+      { button: "B", label: t("Close"), onClick: onClose },
+    );
 
     return items;
   }, [

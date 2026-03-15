@@ -8,17 +8,25 @@ function readInstruction(gamepad, instruction) {
   if (!instruction) return 0;
 
   const type = instruction[0];
-  const idx = instruction[1];
+  const index = instruction[1];
 
   switch (type) {
-    case 0: // Button
-      return gamepad.buttons[idx] ? gamepad.buttons[idx].value : 0;
-    case 1: // Axis
-      return gamepad.axes[idx] || 0;
-    case 2: // +Half Axis
-      return Math.max(0, gamepad.axes[idx] || 0);
-    case 3: // -Half Axis
-      return Math.max(0, -(gamepad.axes[idx] || 0));
+    case 0: {
+      // Button
+      return gamepad.buttons[index] ? gamepad.buttons[index].value : 0;
+    }
+    case 1: {
+      // Axis
+      return gamepad.axes[index] || 0;
+    }
+    case 2: {
+      // +Half Axis
+      return Math.max(0, gamepad.axes[index] || 0);
+    }
+    case 3: {
+      // -Half Axis
+      return Math.max(0, -(gamepad.axes[index] || 0));
+    }
     case 4: {
       // Hat (D-Pad)
       // Linux/Chrome Standard: D-Pad is split into the last two axes.
@@ -36,10 +44,13 @@ function readInstruction(gamepad, instruction) {
       if (dir === 2 && axisX > 0.5) return 1; // Right
       return 0;
     }
-    case 5: // Inverted Axis
-      return -(gamepad.axes[idx] || 0);
-    default:
+    case 5: {
+      // Inverted Axis
+      return -(gamepad.axes[index] || 0);
+    }
+    default: {
       return 0;
+    }
   }
 }
 
@@ -73,32 +84,32 @@ export function getMappedInput(gamepad) {
     return;
   }
 
-  const buttons = new Array(24);
-  const axes = new Array(4);
+  const buttons = Array.from({ length: 24 });
+  const axes = Array.from({ length: 4 });
 
-  for (let i = 0; i < 24; i++) {
-    const val = readInstruction(gamepad, map.b[i]);
-    buttons[i] = {
-      pressed: val > 0.5,
-      touched: val > 0,
-      value: val,
+  for (let index = 0; index < 24; index++) {
+    const value = readInstruction(gamepad, map.b[index]);
+    buttons[index] = {
+      pressed: value > 0.5,
+      touched: value > 0,
+      value: value,
     };
   }
 
-  for (let i = 0; i < 4; i++) {
-    const axisConfig = map.a[i];
+  for (let index = 0; index < 4; index++) {
+    const axisConfig = map.a[index];
 
     if (!axisConfig) {
-      axes[i] = 0;
+      axes[index] = 0;
     } else if (Array.isArray(axisConfig)) {
-      axes[i] = readInstruction(gamepad, axisConfig);
+      axes[index] = readInstruction(gamepad, axisConfig);
     } else {
-      let val = 0;
+      let value = 0;
       if (axisConfig.neg)
-        val -= Math.abs(readInstruction(gamepad, axisConfig.neg));
+        value -= Math.abs(readInstruction(gamepad, axisConfig.neg));
       if (axisConfig.pos)
-        val += Math.abs(readInstruction(gamepad, axisConfig.pos));
-      axes[i] = val;
+        value += Math.abs(readInstruction(gamepad, axisConfig.pos));
+      axes[index] = value;
     }
   }
 

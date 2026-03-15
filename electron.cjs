@@ -97,12 +97,12 @@ app
           closeRunningGameProcess();
         }
       });
-    } catch (e) {
-      logError("Failed to initialize the application:", e);
+    } catch (error) {
+      logError("Failed to initialize the application:", error);
       app.quit();
     }
   })
-  .catch((err) => {
-    console.error("Critical error during app launch:", err);
+  .catch((error) => {
+    console.error("Critical error during app launch:", error);
     app.quit();
   });

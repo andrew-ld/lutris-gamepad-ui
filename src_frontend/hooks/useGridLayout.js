@@ -1,20 +1,20 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
 export const useGridLayout = (shelfCount) => {
-  const [numColumns, setNumColumns] = useState(0);
-  const gridRefs = useRef([]);
+  const [numberColumns, setNumberColumns] = useState(0);
+  const gridReferences = useRef([]);
 
-  const setGridRef = useCallback((el, shelfIndex) => {
-    gridRefs.current[shelfIndex] = el;
+  const setGridReference = useCallback((element, shelfIndex) => {
+    gridReferences.current[shelfIndex] = element;
   }, []);
 
   useEffect(() => {
     const calculateAndUpdateColumns = () => {
       let maxColumns = 0;
 
-      gridRefs.current.forEach((gridEl) => {
-        if (gridEl) {
-          const style = window.getComputedStyle(gridEl);
+      for (const gridElement of gridReferences.current) {
+        if (gridElement) {
+          const style = globalThis.getComputedStyle(gridElement);
           const columns = style
             .getPropertyValue("grid-template-columns")
             .split(" ").length;
@@ -22,30 +22,34 @@ export const useGridLayout = (shelfCount) => {
             maxColumns = columns;
           }
         }
-      });
+      }
 
-      setNumColumns((currentNumColumns) => {
-        if (maxColumns !== currentNumColumns) {
+      setNumberColumns((currentNumberColumns) => {
+        if (maxColumns !== currentNumberColumns) {
           return maxColumns;
         }
-        return currentNumColumns;
+        return currentNumberColumns;
       });
     };
 
     calculateAndUpdateColumns();
 
     const observers = [];
-    gridRefs.current.forEach((gridEl) => {
-      if (!gridEl) return;
+    for (const gridElement of gridReferences.current) {
+      if (!gridElement) continue;
       const observer = new ResizeObserver(calculateAndUpdateColumns);
-      observer.observe(gridEl);
+      observer.observe(gridElement);
       observers.push(observer);
-    });
+    }
 
     return () => {
-      observers.forEach((observer) => observer.disconnect());
+      for (const observer of observers) observer.disconnect();
     };
   }, [shelfCount]);
 
-  return { numColumns, setGridRef, gridRefs };
+  return {
+    numColumns: numberColumns,
+    setGridRef: setGridReference,
+    gridRefs: gridReferences,
+  };
 };

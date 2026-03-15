@@ -50,20 +50,24 @@ const GridMenu = ({
         case "UP":
         case "DOWN":
         case "LEFT":
-        case "RIGHT":
+        case "RIGHT": {
           move(input.name);
           break;
-        case "L1":
+        }
+        case "L1": {
           moveSection(-1);
           break;
-        case "R1":
+        }
+        case "R1": {
           moveSection(1);
           break;
-        default:
+        }
+        default: {
           if (onAction) {
             onAction(input.name, currentItem);
           }
           break;
+        }
       }
     },
     [sections, coords, move, moveSection, onAction],
@@ -93,14 +97,14 @@ const GridMenu = ({
       {sections.map((section, sectionIndex) => (
         <section
           key={section.id || section.title || sectionIndex}
-          ref={(el) => setSectionRef(el, sectionIndex)}
+          ref={(element) => setSectionRef(element, sectionIndex)}
           className="grid-menu-section"
         >
           {section.title && (
             <h2 className="grid-menu-section-title">{section.title}</h2>
           )}
           <div
-            ref={(el) => setGridRef(el, sectionIndex)}
+            ref={(element) => setGridRef(element, sectionIndex)}
             className="grid-menu-grid"
           >
             {section.items.map((item, itemIndex) =>
@@ -116,7 +120,8 @@ const GridMenu = ({
                 {
                   onFocus: () => handleItemFocus(sectionIndex, itemIndex),
                   onClick: () => onAction("A", item),
-                  ref: (el) => setItemRef(el, sectionIndex, itemIndex),
+                  ref: (element) =>
+                    setItemRef(element, sectionIndex, itemIndex),
                 },
               ),
             )}

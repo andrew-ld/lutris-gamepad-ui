@@ -35,18 +35,18 @@ const RowBasedMenu = ({
     onStateChange?.({ activeSectionIndex, selectedIndex });
   }, [activeSectionIndex, selectedIndex, onStateChange]);
 
-  const activeSectionIdRef = useRef(null);
+  const activeSectionIdReference = useRef(null);
 
   useEffect(() => {
     if (sections && sections[activeSectionIndex]) {
-      activeSectionIdRef.current = sections[activeSectionIndex].id;
+      activeSectionIdReference.current = sections[activeSectionIndex].id;
     }
   }, [activeSectionIndex, sections]);
 
   useEffect(() => {
-    if (sections && activeSectionIdRef.current !== null) {
+    if (sections && activeSectionIdReference.current !== null) {
       const newSectionIndex = sections.findIndex(
-        (s) => s.id === activeSectionIdRef.current,
+        (s) => s.id === activeSectionIdReference.current,
       );
       if (newSectionIndex !== -1 && newSectionIndex !== activeSectionIndex) {
         setActiveSectionIndex(newSectionIndex);
@@ -60,70 +60,70 @@ const RowBasedMenu = ({
       : baseItems || [];
   }, [sections, activeSectionIndex, baseItems]);
 
-  const selectedIndexRef = useRef(selectedIndex);
-  const onActionRef = useRef(onAction);
-  const onFocusChangeRef = useRef(onFocusChange);
+  const selectedIndexReference = useRef(selectedIndex);
+  const onActionReference = useRef(onAction);
+  const onFocusChangeReference = useRef(onFocusChange);
 
-  const containerRef = useRef(null);
-  const listRef = useRef(null);
-  const selectedItemKeyRef = useRef(null);
-  const activeSectionIndexRef = useRef(activeSectionIndex);
+  const containerReference = useRef(null);
+  const listReference = useRef(null);
+  const selectedItemKeyReference = useRef(null);
+  const activeSectionIndexReference = useRef(activeSectionIndex);
 
   useEffect(() => {
-    selectedIndexRef.current = selectedIndex;
+    selectedIndexReference.current = selectedIndex;
   }, [selectedIndex]);
 
   useEffect(() => {
-    activeSectionIndexRef.current = activeSectionIndex;
+    activeSectionIndexReference.current = activeSectionIndex;
   }, [activeSectionIndex]);
 
   useEffect(() => {
-    onActionRef.current = onAction;
+    onActionReference.current = onAction;
   }, [onAction]);
 
   useEffect(() => {
-    onFocusChangeRef.current = onFocusChange;
+    onFocusChangeReference.current = onFocusChange;
   }, [onFocusChange]);
 
   useEffect(() => {
-    if (onFocusChangeRef.current) {
-      onFocusChangeRef.current(items[selectedIndex] ?? null);
+    if (onFocusChangeReference.current) {
+      onFocusChangeReference.current(items[selectedIndex] ?? null);
     }
   }, [selectedIndex, items]);
 
   useEffect(() => {
-    if (items.length > 0 && items[selectedIndex]) {
-      selectedItemKeyRef.current = itemKey(items[selectedIndex], selectedIndex);
-    } else {
-      selectedItemKeyRef.current = null;
-    }
+    selectedItemKeyReference.current =
+      items.length > 0 && items[selectedIndex]
+        ? itemKey(items[selectedIndex], selectedIndex)
+        : null;
   }, [selectedIndex, items, itemKey]);
 
   useEffect(() => {
     if (items.length === 0) {
       setSelectedIndex(0);
-      onFocusChangeRef.current?.(null);
+      onFocusChangeReference.current?.(null);
       return;
     }
-    if (selectedItemKeyRef.current !== null) {
-      const newIndex = items.findIndex(
-        (item, index) => itemKey(item, index) === selectedItemKeyRef.current,
-      );
-      if (newIndex !== -1) {
-        setSelectedIndex(newIndex);
-      } else {
-        setSelectedIndex(0);
-      }
-    } else {
+    if (selectedItemKeyReference.current === null) {
       setSelectedIndex(0);
+    } else {
+      const newIndex = items.findIndex(
+        (item, index) =>
+          itemKey(item, index) === selectedItemKeyReference.current,
+      );
+      if (newIndex === -1) {
+        setSelectedIndex(0);
+      } else {
+        setSelectedIndex(newIndex);
+      }
     }
   }, [items, itemKey]);
 
   useEffect(() => {
-    if (!listRef.current || items.length === 0) return;
+    if (!listReference.current || items.length === 0) return;
 
-    const scrollParent = findScrollableParent(listRef.current);
-    const selectedElement = listRef.current.children[selectedIndex];
+    const scrollParent = findScrollableParent(listReference.current);
+    const selectedElement = listReference.current.children[selectedIndex];
 
     if (selectedIndex === 0) {
       if (scrollParent) {
@@ -155,8 +155,8 @@ const RowBasedMenu = ({
       if (sections && sections.length > 1) {
         if (input.name === "L1") {
           playActionSound();
-          setActiveSectionIndex((prev) =>
-            prev > 0 ? prev - 1 : sections.length - 1,
+          setActiveSectionIndex((previous) =>
+            previous > 0 ? previous - 1 : sections.length - 1,
           );
           setSelectedIndex(0);
           return;
@@ -164,8 +164,8 @@ const RowBasedMenu = ({
 
         if (input.name === "R1") {
           playActionSound();
-          setActiveSectionIndex((prev) =>
-            prev < sections.length - 1 ? prev + 1 : 0,
+          setActiveSectionIndex((previous) =>
+            previous < sections.length - 1 ? previous + 1 : 0,
           );
           setSelectedIndex(0);
           return;
@@ -173,30 +173,32 @@ const RowBasedMenu = ({
       }
 
       if (items.length === 0) {
-        if (onActionRef.current) {
+        if (onActionReference.current) {
           playActionSound();
-          onActionRef.current(input.name, null);
+          onActionReference.current(input.name, null);
         }
         return;
       }
 
-      const currentItem = items[selectedIndexRef.current];
+      const currentItem = items[selectedIndexReference.current];
 
       switch (input.name) {
-        case "UP":
-          setSelectedIndex((prev) => {
-            const next = prev - 1;
+        case "UP": {
+          setSelectedIndex((previous) => {
+            const next = previous - 1;
             playActionSound();
             return next < 0 ? items.length - 1 : next;
           });
           break;
-        case "DOWN":
-          setSelectedIndex((prev) => {
-            const next = prev + 1;
+        }
+        case "DOWN": {
+          setSelectedIndex((previous) => {
+            const next = previous + 1;
             playActionSound();
             return next > items.length - 1 ? 0 : next;
           });
           break;
+        }
         case "LEFT":
         case "RIGHT":
         case "A":
@@ -204,12 +206,13 @@ const RowBasedMenu = ({
         case "X":
         case "Y":
         case "L1":
-        case "R1":
-          if (onActionRef.current) {
+        case "R1": {
+          if (onActionReference.current) {
             playActionSound();
-            onActionRef.current(input.name, currentItem);
+            onActionReference.current(input.name, currentItem);
           }
           break;
+        }
       }
     },
     [items, sections, playActionSound],
@@ -261,7 +264,7 @@ const RowBasedMenu = ({
     }
 
     return (
-      <div ref={listRef} className="row-based-menu-list">
+      <div ref={listReference} className="row-based-menu-list">
         {items.map((item, index) =>
           renderItem(item, index === selectedIndex, () =>
             handleItemClick(index),
@@ -272,7 +275,7 @@ const RowBasedMenu = ({
   };
 
   return (
-    <div ref={containerRef} className="row-based-menu-container">
+    <div ref={containerReference} className="row-based-menu-container">
       {renderSections()}
       {renderContent()}
     </div>

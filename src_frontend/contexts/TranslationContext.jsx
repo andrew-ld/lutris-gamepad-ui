@@ -46,7 +46,7 @@ function mergeLocales(base, target) {
   const result = {};
 
   for (const [ns, strings] of Object.entries(base)) {
-    result[ns] = { ...strings, ...(target[ns] || {}) };
+    result[ns] = { ...strings, ...target[ns] };
   }
 
   return result;
@@ -80,8 +80,8 @@ export const TranslationProvider = ({ children }) => {
       }
     };
 
-    loadTranslations().catch((e) => {
-      ipc.logError("unable to load translations", e);
+    loadTranslations().catch((error) => {
+      ipc.logError("unable to load translations", error);
     });
   }, [isMounted]);
 
@@ -89,11 +89,10 @@ export const TranslationProvider = ({ children }) => {
     (key, replacements, filename) => {
       let result;
 
-      if (filename && translations && translations[filename]) {
-        result = translations[filename][key] || key;
-      } else {
-        result = key;
-      }
+      result =
+        filename && translations && translations[filename]
+          ? translations[filename][key] || key
+          : key;
 
       return applyReplacements(result, replacements);
     },

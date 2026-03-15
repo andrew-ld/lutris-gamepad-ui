@@ -4,7 +4,7 @@ import { useInput } from "../contexts/InputContext";
 
 export const useScopedInput = (handler, focusId, isActive = true) => {
   const { subscribe, claimInputFocus } = useInput();
-  const inputTokenRef = useRef(null);
+  const inputTokenReference = useRef(null);
   const latestHandler = useRef(handler);
 
   useEffect(() => {
@@ -13,10 +13,10 @@ export const useScopedInput = (handler, focusId, isActive = true) => {
 
   useEffect(() => {
     if (isActive) {
-      inputTokenRef.current = claimInputFocus(focusId);
+      inputTokenReference.current = claimInputFocus(focusId);
       return () => {
-        inputTokenRef.current?.release();
-        inputTokenRef.current = null;
+        inputTokenReference.current?.release();
+        inputTokenReference.current = null;
       };
     }
   }, [claimInputFocus, focusId, isActive]);
@@ -26,7 +26,7 @@ export const useScopedInput = (handler, focusId, isActive = true) => {
       if (
         input.isConsumed ||
         !isActive ||
-        !inputTokenRef.current?.isAcquired()
+        !inputTokenReference.current?.isAcquired()
       ) {
         return;
       }

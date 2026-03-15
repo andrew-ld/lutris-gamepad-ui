@@ -30,7 +30,7 @@ function App() {
       .then((dataURL) => {
         setIcon(dataURL);
       })
-      .catch((e) => logError("unable to render icon", e));
+      .catch((error) => logError("unable to render icon", error));
 
     return onThemeUpdated(() => reloadApplicationTheme());
   }, []);

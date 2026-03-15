@@ -15,20 +15,20 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
   const [focusCoords, setFocusCoords] = useState({ x: 0, y: 0 });
   const playActionSound = usePlayButtonActionSound();
 
-  const focusCoordsRef = useRef(focusCoords);
-  const onConfirmRef = useRef(onConfirm);
-  const onCloseRef = useRef(onClose);
+  const focusCoordsReference = useRef(focusCoords);
+  const onConfirmReference = useRef(onConfirm);
+  const onCloseReference = useRef(onClose);
 
   useEffect(() => {
-    focusCoordsRef.current = focusCoords;
+    focusCoordsReference.current = focusCoords;
   }, [focusCoords]);
 
   useEffect(() => {
-    onConfirmRef.current = onConfirm;
+    onConfirmReference.current = onConfirm;
   }, [onConfirm]);
 
   useEffect(() => {
-    onCloseRef.current = onClose;
+    onCloseReference.current = onClose;
   }, [onClose]);
 
   const keyLayout = useMemo(
@@ -60,21 +60,26 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
       if (typeof keyId !== "string") return;
 
       switch (keyId) {
-        case "Backspace":
-          setInputValue((prev) => prev.slice(0, -1));
+        case "Backspace": {
+          setInputValue((previous) => previous.slice(0, -1));
           break;
-        case "Space":
-          setInputValue((prev) => prev + " ");
+        }
+        case "Space": {
+          setInputValue((previous) => previous + " ");
           break;
-        case "Enter":
-          onConfirmRef.current(inputValue);
+        }
+        case "Enter": {
+          onConfirmReference.current(inputValue);
           break;
-        case "Close":
-          onCloseRef.current();
+        }
+        case "Close": {
+          onCloseReference.current();
           break;
-        default:
-          setInputValue((prev) => prev + keyId);
+        }
+        default: {
+          setInputValue((previous) => previous + keyId);
           break;
+        }
       }
     },
     [inputValue],
@@ -86,10 +91,10 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
         case "UP":
         case "DOWN":
         case "LEFT":
-        case "RIGHT":
-          setFocusCoords((prev) => {
-            const originalCoords = { ...prev };
-            let { x, y } = prev;
+        case "RIGHT": {
+          setFocusCoords((previous) => {
+            const originalCoords = { ...previous };
+            let { x, y } = previous;
 
             if (input.name === "UP") y = Math.max(0, y - 1);
             if (input.name === "DOWN")
@@ -109,23 +114,28 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
             return { x, y };
           });
           break;
+        }
         case "A": {
           playActionSound();
           const keyObject =
-            keyLayout[focusCoordsRef.current.y][focusCoordsRef.current.x];
+            keyLayout[focusCoordsReference.current.y][
+              focusCoordsReference.current.x
+            ];
           const keyId =
             typeof keyObject === "string" ? keyObject : keyObject.id;
           handleKeyPress(keyId);
           break;
         }
-        case "X":
+        case "X": {
           playActionSound();
-          onConfirmRef.current(inputValue);
+          onConfirmReference.current(inputValue);
           break;
-        case "B":
+        }
+        case "B": {
           playActionSound();
-          onCloseRef.current();
+          onCloseReference.current();
           break;
+        }
       }
     },
     [handleKeyPress, keyLayout, inputValue, playActionSound],
@@ -135,17 +145,17 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
 
   const onSelectCallback = useCallback(() => {
     const keyObject =
-      keyLayout[focusCoordsRef.current.y][focusCoordsRef.current.x];
+      keyLayout[focusCoordsReference.current.y][focusCoordsReference.current.x];
     const keyId = typeof keyObject === "string" ? keyObject : keyObject.id;
     handleKeyPress(keyId);
   }, [handleKeyPress, keyLayout]);
 
   const onConfirmCallback = useCallback(() => {
-    onConfirmRef.current(inputValue);
+    onConfirmReference.current(inputValue);
   }, [inputValue]);
 
   const onCloseCallback = useCallback(() => {
-    onCloseRef.current();
+    onCloseReference.current();
   }, []);
 
   const legendItems = useMemo(

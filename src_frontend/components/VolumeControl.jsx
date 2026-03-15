@@ -49,7 +49,7 @@ const VolumeControl = ({ onClose }) => {
         ? availableSinks.findIndex((sink) => sink.name === defaultSinkName)
         : -1;
       setHighlightedSinkIndex(
-        currentDefaultIndex !== -1 ? currentDefaultIndex : 0,
+        currentDefaultIndex === -1 ? 0 : currentDefaultIndex,
       );
     } else {
       setHighlightedSinkIndex(0);
@@ -88,30 +88,47 @@ const VolumeControl = ({ onClose }) => {
       }
 
       switch (item.type) {
-        case CONTROL_TYPES.MUTE:
+        case CONTROL_TYPES.MUTE: {
           if (actionName === "A") toggleMute();
           break;
-        case CONTROL_TYPES.VOLUME:
+        }
+        case CONTROL_TYPES.VOLUME: {
           if (actionName === "LEFT") decreaseVolume();
           else if (actionName === "RIGHT") increaseVolume();
           break;
-        case CONTROL_TYPES.OUTPUT_DEVICE:
+        }
+        case CONTROL_TYPES.OUTPUT_DEVICE: {
           if (availableSinks && availableSinks.length > 0) {
-            if (actionName === "LEFT") {
-              setHighlightedSinkIndex((prev) => Math.max(0, prev - 1));
-            } else if (actionName === "RIGHT") {
-              setHighlightedSinkIndex((prev) =>
-                Math.min(availableSinks.length - 1, prev + 1),
-              );
-            } else if (actionName === "A") {
-              const selectedSink = availableSinks[highlightedSinkIndex];
-              if (selectedSink) setDefaultSink(selectedSink.name);
+            switch (actionName) {
+              case "LEFT": {
+                setHighlightedSinkIndex((previous) =>
+                  Math.max(0, previous - 1),
+                );
+
+                break;
+              }
+              case "RIGHT": {
+                setHighlightedSinkIndex((previous) =>
+                  Math.min(availableSinks.length - 1, previous + 1),
+                );
+
+                break;
+              }
+              case "A": {
+                const selectedSink = availableSinks[highlightedSinkIndex];
+                if (selectedSink) setDefaultSink(selectedSink.name);
+
+                break;
+              }
+              // No default
             }
           }
           break;
-        case CONTROL_TYPES.UI_SOUNDS:
+        }
+        case CONTROL_TYPES.UI_SOUNDS: {
           if (actionName === "A") toggleEnableUiActionSoundFeedbacks();
           break;
+        }
       }
     },
     [
@@ -212,35 +229,42 @@ const VolumeControl = ({ onClose }) => {
       return [{ button: "B", label: t("Close"), onClick: onClose }];
 
     switch (focusedItem.type) {
-      case CONTROL_TYPES.MUTE:
+      case CONTROL_TYPES.MUTE: {
         items.push({
           button: "A",
           label: isMuted ? t("Unmute") : t("Mute"),
           onClick: toggleMute,
         });
         break;
-      case CONTROL_TYPES.VOLUME:
-        items.push({
-          button: "LEFT",
-          label: t("Decrease"),
-          onClick: decreaseVolume,
-        });
-        items.push({
-          button: "RIGHT",
-          label: t("Increase"),
-          onClick: increaseVolume,
-        });
+      }
+      case CONTROL_TYPES.VOLUME: {
+        items.push(
+          {
+            button: "LEFT",
+            label: t("Decrease"),
+            onClick: decreaseVolume,
+          },
+          {
+            button: "RIGHT",
+            label: t("Increase"),
+            onClick: increaseVolume,
+          },
+        );
         break;
-      case CONTROL_TYPES.OUTPUT_DEVICE:
+      }
+      case CONTROL_TYPES.OUTPUT_DEVICE: {
         if (availableSinks?.length > 1) {
-          items.push({ button: "LEFT", label: t("Prev") });
-          items.push({ button: "RIGHT", label: t("Next") });
+          items.push(
+            { button: "LEFT", label: t("Prev") },
+            { button: "RIGHT", label: t("Next") },
+          );
         }
         if (availableSinks?.length > 0) {
           items.push({ button: "A", label: t("Set Device") });
         }
         break;
-      case CONTROL_TYPES.UI_SOUNDS:
+      }
+      case CONTROL_TYPES.UI_SOUNDS: {
         items.push({
           button: "A",
           label: settings.enableUiActionSoundFeedbacks
@@ -249,6 +273,7 @@ const VolumeControl = ({ onClose }) => {
           onClick: toggleEnableUiActionSoundFeedbacks,
         });
         break;
+      }
     }
     items.push({ button: "B", label: t("Close"), onClick: onClose });
     return items;

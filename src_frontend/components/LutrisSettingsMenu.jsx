@@ -15,6 +15,15 @@ import "../styles/SettingsMenu.css";
 
 export const LutrisSettingsMenuFocusId = "LutrisSettingsMenu";
 
+const isOptionSupported = (item) => {
+  return (
+    item.type === "bool" ||
+    ((item.type === "choice" || item.type === "choice_with_entry") &&
+      item.choices &&
+      item.choices.length > 0)
+  );
+};
+
 const LutrisSettingsMenu = ({
   gameSlug = null,
   runnerSlug = null,
@@ -54,15 +63,6 @@ const LutrisSettingsMenu = ({
     fetchSettings();
   }, [fetchSettings]);
 
-  const isOptionSupported = (item) => {
-    return (
-      item.type === "bool" ||
-      ((item.type === "choice" || item.type === "choice_with_entry") &&
-        item.choices &&
-        item.choices.length > 0)
-    );
-  };
-
   const updateSetting = useCallback(
     async (section, key, value, type) => {
       setLoading(true);
@@ -95,7 +95,7 @@ const LutrisSettingsMenu = ({
       .map((section) => {
         const items = settings[section]
           .map((opt) => ({ ...opt, section }))
-          .filter(isOptionSupported);
+          .filter((opt) => isOptionSupported(opt));
         return {
           id: section,
           label: t(section.charAt(0).toUpperCase() + section.slice(1)),
@@ -167,8 +167,10 @@ const LutrisSettingsMenu = ({
   const legendItems = useMemo(() => {
     const buttons = [];
     if (menuSections.length > 1) {
-      buttons.push({ button: "L1", label: t("Prev") });
-      buttons.push({ button: "R1", label: t("Next") });
+      buttons.push(
+        { button: "L1", label: t("Prev") },
+        { button: "R1", label: t("Next") },
+      );
     }
     if (focusedItem && isOptionSupported(focusedItem)) {
       let label = t("Select");

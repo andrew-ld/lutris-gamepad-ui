@@ -1,6 +1,6 @@
 const { contextBridge, ipcRenderer } = require("electron");
 
-const ALLOWED_RECEIVE_CHANNELS = [
+const ALLOWED_RECEIVE_CHANNELS = new Set([
   "game-started",
   "game-closed",
   "game-pause-state-changed",
@@ -10,18 +10,18 @@ const ALLOWED_RECEIVE_CHANNELS = [
   "show-toast",
   "update-available",
   "app-config-changed",
-];
+]);
 
 contextBridge.exposeInMainWorld("electronAPI", {
   // Listeners
-  createListener: (channel, cb) => {
-    if (!ALLOWED_RECEIVE_CHANNELS.includes(channel)) {
+  createListener: (channel, callback) => {
+    if (!ALLOWED_RECEIVE_CHANNELS.has(channel)) {
       return;
     }
-    const safeCb = (_event, ...args) => cb(...args);
-    ipcRenderer.on(channel, safeCb);
+    const safeCallback = (_event, ...arguments_) => callback(...arguments_);
+    ipcRenderer.on(channel, safeCallback);
     return () => {
-      ipcRenderer.removeListener(channel, safeCb);
+      ipcRenderer.removeListener(channel, safeCallback);
     };
   },
 
@@ -89,7 +89,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ),
 
   // Generic
-  log: (level, args) => ipcRenderer.send("log", level, args),
+  log: (level, arguments_) => ipcRenderer.send("log", level, arguments_),
 
   // Bug Report
   createBugReportFile: () => ipcRenderer.send("create-bug-report"),

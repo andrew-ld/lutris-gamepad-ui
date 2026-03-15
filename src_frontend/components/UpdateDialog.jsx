@@ -25,14 +25,16 @@ const UpdateDialog = ({ newVersion, releaseUrl, onClose }) => {
   const inputHandler = useCallback(
     (input) => {
       switch (input.name) {
-        case "A":
+        case "A": {
           playActionSound();
           handleOpenLink();
           break;
-        case "B":
+        }
+        case "B": {
           playActionSound();
           handleClose();
           break;
+        }
       }
     },
     [handleOpenLink, handleClose, playActionSound],

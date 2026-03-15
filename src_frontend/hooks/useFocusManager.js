@@ -1,20 +1,20 @@
 import { useEffect, useRef, useCallback } from "react";
 
-export const useFocusManager = (activeCoords, numColumns, isActive) => {
-  const containerRef = useRef(null);
-  const itemRefs = useRef([]);
-  const sectionRefs = useRef([]);
-  const prevCoords = useRef(null);
+export const useFocusManager = (activeCoords, numberColumns, isActive) => {
+  const containerReference = useRef(null);
+  const itemReferences = useRef([]);
+  const sectionReferences = useRef([]);
+  const previousCoords = useRef(null);
 
-  const setSectionRef = useCallback((el, index) => {
-    sectionRefs.current[index] = el;
+  const setSectionReference = useCallback((element, index) => {
+    sectionReferences.current[index] = element;
   }, []);
 
-  const setItemRef = useCallback((el, sectionIndex, itemIndex) => {
-    if (!itemRefs.current[sectionIndex]) {
-      itemRefs.current[sectionIndex] = [];
+  const setItemReference = useCallback((element, sectionIndex, itemIndex) => {
+    if (!itemReferences.current[sectionIndex]) {
+      itemReferences.current[sectionIndex] = [];
     }
-    itemRefs.current[sectionIndex][itemIndex] = el;
+    itemReferences.current[sectionIndex][itemIndex] = element;
   }, []);
 
   useEffect(() => {
@@ -23,11 +23,12 @@ export const useFocusManager = (activeCoords, numColumns, isActive) => {
     const { sectionIndex, itemIndex, preventScroll } = activeCoords;
 
     // Clear previous focus
-    itemRefs.current.forEach((section) => {
-      section?.forEach((item) => item?.classList.remove("focused"));
-    });
+    for (const section of itemReferences.current) {
+      if (section)
+        for (const item of section) item?.classList.remove("focused");
+    }
 
-    const target = itemRefs.current[sectionIndex]?.[itemIndex];
+    const target = itemReferences.current[sectionIndex]?.[itemIndex];
     if (target) {
       target.classList.add("focused");
       if (preventScroll) {
@@ -43,8 +44,8 @@ export const useFocusManager = (activeCoords, numColumns, isActive) => {
     }
 
     // Scroll section into view if changed
-    if (prevCoords.current?.sectionIndex !== sectionIndex) {
-      const targetSection = sectionRefs.current[sectionIndex];
+    if (previousCoords.current?.sectionIndex !== sectionIndex) {
+      const targetSection = sectionReferences.current[sectionIndex];
       targetSection?.scrollIntoView({
         behavior: "smooth",
         block: "nearest",
@@ -52,22 +53,24 @@ export const useFocusManager = (activeCoords, numColumns, isActive) => {
     }
 
     // Handle top-level scrolling for the first row of the first section
-    const currentRow = numColumns > 0 ? Math.floor(itemIndex / numColumns) : 0;
+    const currentRow =
+      numberColumns > 0 ? Math.floor(itemIndex / numberColumns) : 0;
     if (sectionIndex === 0 && currentRow === 0) {
-      const scrollParent = containerRef.current?.closest(".legenda-content");
+      const scrollParent =
+        containerReference.current?.closest(".legenda-content");
       if (scrollParent && scrollParent.scrollTop > 0) {
         scrollParent.scrollTo({ top: 0, behavior: "smooth" });
       }
     }
 
-    prevCoords.current = activeCoords;
-  }, [activeCoords, numColumns, isActive]);
+    previousCoords.current = activeCoords;
+  }, [activeCoords, numberColumns, isActive]);
 
   return {
-    containerRef,
-    setSectionRef,
-    setItemRef,
-    itemRefs,
-    sectionRefs,
+    containerRef: containerReference,
+    setSectionRef: setSectionReference,
+    setItemRef: setItemReference,
+    itemRefs: itemReferences,
+    sectionRefs: sectionReferences,
   };
 };

@@ -7,12 +7,12 @@ const getObserver = (rootMargin) => {
   if (!observers.has(rootMargin)) {
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
+        for (const entry of entries) {
           const callback = visibilityCallbacks.get(entry.target);
           if (callback) {
             callback(entry.isIntersecting);
           }
-        });
+        }
       },
       { rootMargin },
     );
@@ -29,22 +29,22 @@ const getObserver = (rootMargin) => {
  */
 export const useVisibilityObserver = ({
   rootMargin = "800px",
-  externalRef = null,
+  externalRef: externalReference = null,
 } = {}) => {
   const [isVisible, setIsVisible] = useState(false);
   const [node, setNode] = useState(null);
 
-  const setRef = useCallback(
+  const setReference = useCallback(
     (element) => {
       setNode(element);
 
-      if (typeof externalRef === "function") {
-        externalRef(element);
-      } else if (externalRef) {
-        externalRef.current = element;
+      if (typeof externalReference === "function") {
+        externalReference(element);
+      } else if (externalReference) {
+        externalReference.current = element;
       }
     },
-    [externalRef],
+    [externalReference],
   );
 
   useEffect(() => {
@@ -62,5 +62,5 @@ export const useVisibilityObserver = ({
     };
   }, [node, rootMargin]);
 
-  return { isVisible, setRef };
+  return { isVisible, setRef: setReference };
 };

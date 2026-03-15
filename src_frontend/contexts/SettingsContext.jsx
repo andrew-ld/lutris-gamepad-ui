@@ -28,8 +28,8 @@ export const SettingsProvider = ({ children }) => {
           setSettings(config || {});
         }
       })
-      .catch((err) => {
-        ipc.logError("Failed to get initial app config:", err);
+      .catch((error) => {
+        ipc.logError("Failed to get initial app config:", error);
         if (isMounted()) {
           setSettings({});
         }

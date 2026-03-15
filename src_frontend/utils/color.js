@@ -9,20 +9,20 @@ const PALETTE = [
   { start: "#2A3A4A", end: "#1A242E" }, // Deep Slate Blue
 ];
 
-const stringToHash = (str) => {
+const stringToHash = (string_) => {
   let hash = 0;
-  if (str.length === 0) return hash;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
+  if (string_.length === 0) return hash;
+  for (let index = 0; index < string_.length; index++) {
+    const char = string_.codePointAt(index);
     hash = (hash << 5) - hash + char;
-    hash |= 0;
+    hash = Math.trunc(hash);
   }
   return hash;
 };
 
-export const getDeterministicGradient = (str) => {
-  if (!str) return PALETTE[0];
-  const hash = stringToHash(str);
+export const getDeterministicGradient = (string_) => {
+  if (!string_) return PALETTE[0];
+  const hash = stringToHash(string_);
   const index = Math.abs(hash) % PALETTE.length;
   return PALETTE[index];
 };

@@ -4,24 +4,28 @@ import { useModalState, useModalActions } from "../contexts/ModalContext";
 import { ViewProvider } from "../contexts/ViewContext";
 import "../styles/Modal.css";
 
+const handleContentClick = (e) => {
+  e.stopPropagation();
+};
+
 const ModalRenderer = () => {
   const { topModal, isModalOpen } = useModalState();
   const { hideModal } = useModalActions();
   const [maxSize, setMaxSize] = useState({ width: 0, height: 0 });
-  const contentRef = useRef(null);
-  const [prevModalId, setPrevModalId] = useState(topModal?.id);
+  const contentReference = useRef(null);
+  const [previousModalId, setPreviousModalId] = useState(topModal?.id);
 
   const resetSize = useCallback(() => {
     setMaxSize({ width: 0, height: 0 });
   }, []);
 
-  if (topModal?.id !== prevModalId) {
-    setPrevModalId(topModal?.id);
+  if (topModal?.id !== previousModalId) {
+    setPreviousModalId(topModal?.id);
     resetSize();
   }
 
   useEffect(() => {
-    if (!contentRef.current || !isModalOpen) return;
+    if (!contentReference.current || !isModalOpen) return;
 
     const observer = new ResizeObserver((entries) => {
       let maxWidth = 0;
@@ -33,14 +37,14 @@ const ModalRenderer = () => {
       }
 
       if (maxWidth > 0 || maxHeight > 0) {
-        setMaxSize((prev) => ({
-          width: Math.max(prev.width, maxWidth),
-          height: Math.max(prev.height, maxHeight),
+        setMaxSize((previous) => ({
+          width: Math.max(previous.width, maxWidth),
+          height: Math.max(previous.height, maxHeight),
         }));
       }
     });
 
-    observer.observe(contentRef.current);
+    observer.observe(contentReference.current);
     return () => observer.disconnect();
   }, [isModalOpen, topModal]);
 
@@ -50,10 +54,6 @@ const ModalRenderer = () => {
 
   const handleOverlayClick = () => {
     hideModal();
-  };
-
-  const handleContentClick = (e) => {
-    e.stopPropagation();
   };
 
   const contentStyle = {
@@ -66,7 +66,7 @@ const ModalRenderer = () => {
       <div
         className="modal-content"
         onClick={handleContentClick}
-        ref={contentRef}
+        ref={contentReference}
         style={contentStyle}
         key={topModal.id}
       >

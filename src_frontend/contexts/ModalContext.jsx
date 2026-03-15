@@ -24,26 +24,26 @@ export const useModalState = () => {
   return {
     modals,
     isModalOpen: modals.length > 0,
-    topModal: modals.length > 0 ? modals[modals.length - 1] : null,
+    topModal: modals.length > 0 ? modals.at(-1) : null,
   };
 };
 
 export const ModalProvider = ({ children }) => {
-  const modalsRef = useRef([]);
-  const listenersRef = useRef(new Set());
+  const modalsReference = useRef([]);
+  const listenersReference = useRef(new Set());
   const modalIdCounter = useRef(0);
 
   const subscribe = useCallback((callback) => {
-    listenersRef.current.add(callback);
-    callback(modalsRef.current);
+    listenersReference.current.add(callback);
+    callback(modalsReference.current);
     return () => {
-      listenersRef.current.delete(callback);
+      listenersReference.current.delete(callback);
     };
   }, []);
 
   const notify = useCallback(() => {
-    for (const listener of listenersRef.current) {
-      listener([...modalsRef.current]);
+    for (const listener of listenersReference.current) {
+      listener([...modalsReference.current]);
     }
   }, []);
 
@@ -52,22 +52,24 @@ export const ModalProvider = ({ children }) => {
       const modalId = modalIdCounter.current++;
 
       const hideThisModal = () => {
-        modalsRef.current = modalsRef.current.filter((m) => m.id !== modalId);
+        modalsReference.current = modalsReference.current.filter(
+          (m) => m.id !== modalId,
+        );
         notify();
       };
 
       const content = renderContent(hideThisModal);
       const newModal = { id: modalId, content };
 
-      modalsRef.current = [...modalsRef.current, newModal];
+      modalsReference.current = [...modalsReference.current, newModal];
       notify();
     },
     [notify],
   );
 
   const hideModal = useCallback(() => {
-    if (modalsRef.current.length > 0) {
-      modalsRef.current = modalsRef.current.slice(0, -1);
+    if (modalsReference.current.length > 0) {
+      modalsReference.current = modalsReference.current.slice(0, -1);
       notify();
     }
   }, [notify]);

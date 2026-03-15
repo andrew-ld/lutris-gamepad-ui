@@ -31,7 +31,7 @@ export const AudioProvider = ({ children }) => {
     setIsMuted(info.isMuted);
     setDefaultSinkName(info.name);
 
-    const sortedSinks = (info.availableSinks || []).slice().sort((a, b) => {
+    const sortedSinks = [...(info.availableSinks || [])].toSorted((a, b) => {
       const descA = a.description;
       const descB = b.description;
       return descA.localeCompare(descB);
@@ -47,8 +47,8 @@ export const AudioProvider = ({ children }) => {
       if (isMounted()) {
         processAudioInfo(info);
       }
-    } catch (err) {
-      ipc.logError("Failed to fetch initial audio info:", err);
+    } catch (error) {
+      ipc.logError("Failed to fetch initial audio info:", error);
       if (isMounted()) {
         setIsLoading(false);
       }

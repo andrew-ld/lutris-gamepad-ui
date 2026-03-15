@@ -33,7 +33,7 @@ export const BluetoothProvider = ({ children }) => {
           setAdapters(adapters);
         }
       })
-      .catch((err) => ipc.logError("Failed to get initial BT state:", err))
+      .catch((error) => ipc.logError("Failed to get initial BT state:", error))
       .finally(() => {
         if (isMounted()) {
           setIsLoading(false);
@@ -86,7 +86,9 @@ export const BluetoothProvider = ({ children }) => {
           setAdapters(adapters);
         }
       })
-      .catch((err) => ipc.logError("Failed to force refresh BT devices:", err))
+      .catch((error) =>
+        ipc.logError("Failed to force refresh BT devices:", error),
+      )
       .finally(() => {
         if (isMounted()) {
           setIsLoading(false);

@@ -1,6 +1,6 @@
-const { writeFile, readFile } = require("fs/promises");
-const os = require("os");
-const util = require("util");
+const { writeFile, readFile } = require("node:fs/promises");
+const os = require("node:os");
+const { inspect } = require("node:util");
 
 const { packTar } = require("modern-tar");
 
@@ -23,7 +23,7 @@ async function createBugReportFile() {
     { filename: "system-info", generator: generateSystemInfo },
     { filename: "app-config", generator: generateAppConfig },
     { filename: "app-logs", generator: generateAppLogs },
-    { filename: "env", generator: generateEnv },
+    { filename: "env", generator: generateEnvironment },
     { filename: "lsb-release", generator: generateLsbRelease },
     { filename: "package", generator: generatePackageJson },
     {
@@ -92,9 +92,9 @@ async function createBugReportFile() {
 
     try {
       content = await generator();
-    } catch (e) {
-      logError("unable to generate bug report file", filename, e);
-      content = util.inspect(e);
+    } catch (error) {
+      logError("unable to generate bug report file", filename, error);
+      content = inspect(error);
     }
 
     let contentString;
@@ -143,7 +143,7 @@ async function generateWhereIsBugReport(filename) {
   return await execPromise(`bash -c "whereis ${filename}"`);
 }
 
-async function generateEnv() {
+async function generateEnvironment() {
   return process.env;
 }
 

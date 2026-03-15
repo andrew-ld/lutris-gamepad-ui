@@ -6,16 +6,15 @@ import App from "./App.jsx";
 import "./styles/main.css";
 
 if (import.meta.env.DEV) {
-  import("react-scan")
-    .then(({ scan }) => {
-      scan({ enabled: true });
-    })
-    .catch((err) => {
-      console.error("Failed to load react-scan:", err);
-    });
+  try {
+    const { scan } = await import("react-scan");
+    scan({ enabled: true });
+  } catch (error) {
+    console.error("Failed to load react-scan:", error);
+  }
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+ReactDOM.createRoot(document.querySelector("#root")).render(
   <React.StrictMode>
     <App />
   </React.StrictMode>,
