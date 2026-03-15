@@ -72,7 +72,10 @@ export const useSpatialNavigation = (
           case "LEFT":
           case "RIGHT": {
             const rowStart = currentRow * numColumns;
-            const rowEnd = Math.min(rowStart + numColumns - 1, items.length - 1);
+            const rowEnd = Math.min(
+              rowStart + numColumns - 1,
+              items.length - 1,
+            );
             const rowLength = rowEnd - rowStart + 1;
 
             if (rowLength <= 1) return current;

@@ -34,7 +34,8 @@ const GridMenu = ({
 
   useEffect(() => {
     if (onFocusChange) {
-      const currentItem = sections[coords.sectionIndex]?.items[coords.itemIndex];
+      const currentItem =
+        sections[coords.sectionIndex]?.items[coords.itemIndex];
       onFocusChange(currentItem || null);
     }
   }, [coords, sections, onFocusChange]);
