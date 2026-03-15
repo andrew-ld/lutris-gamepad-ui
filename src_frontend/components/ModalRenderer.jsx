@@ -1,5 +1,6 @@
 import { useModalState, useModalActions } from "../contexts/ModalContext";
-import { useEffect, useRef, useState } from "react";
+import { ViewProvider } from "../contexts/ViewContext";
+import { useEffect, useRef, useState, useCallback } from "react";
 import "../styles/Modal.css";
 
 const ModalRenderer = () => {
@@ -9,9 +10,13 @@ const ModalRenderer = () => {
   const contentRef = useRef(null);
   const [prevModalId, setPrevModalId] = useState(topModal?.id);
 
+  const resetSize = useCallback(() => {
+    setMaxSize({ width: 0, height: 0 });
+  }, []);
+
   if (topModal?.id !== prevModalId) {
     setPrevModalId(topModal?.id);
-    setMaxSize({ width: 0, height: 0 });
+    resetSize();
   }
 
   useEffect(() => {
@@ -64,7 +69,7 @@ const ModalRenderer = () => {
         style={contentStyle}
         key={topModal.id}
       >
-        {topModal.content}
+        <ViewProvider onResetSize={resetSize}>{topModal.content}</ViewProvider>
       </div>
     </div>
   );

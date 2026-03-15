@@ -83,6 +83,10 @@ async function updateLutrisSetting(
   });
 }
 
+async function getLutrisRunners() {
+  return await invokeLutrisSubcommand("list-runners");
+}
+
 module.exports = {
   getCoverartPath,
   getRuntimeIconPath,
@@ -90,5 +94,6 @@ module.exports = {
   getLutrisGames,
   getLutrisSettings,
   updateLutrisSetting,
+  getLutrisRunners,
   invokeLutris,
 };

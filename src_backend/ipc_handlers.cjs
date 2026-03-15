@@ -40,6 +40,7 @@ const {
   invokeLutris,
   getLutrisSettings,
   updateLutrisSetting,
+  getLutrisRunners,
 } = require("./lutris_wrapper.cjs");
 const { getAppConfig, setAppConfig } = require("./config_manager.cjs");
 const { createBugReportFile } = require("./bugreport.cjs");
@@ -270,6 +271,10 @@ function registerIpcHandlers() {
       return await getLutrisSettings(gameSlug, runnerSlug);
     },
   );
+
+  ipcHandleWithError("get-lutris-runners", async () => {
+    return await getLutrisRunners();
+  });
 
   ipcHandleWithError(
     "update-lutris-setting",

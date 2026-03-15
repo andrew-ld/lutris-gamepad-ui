@@ -16,6 +16,7 @@ const LutrisSettingsMenu = ({
   gameSlug = null,
   runnerSlug = null,
   onClose,
+  maxWidth = "700px",
 }) => {
   const { t } = useTranslation();
   const isMounted = useIsMounted();
@@ -193,7 +194,7 @@ const LutrisSettingsMenu = ({
         title={selectingItem.label}
         options={selectingItem.choices}
         currentValue={selectingItem.value}
-        maxWidth="700px"
+        maxWidth={maxWidth}
         onSelect={async (newValue) => {
           await updateSetting(
             selectingItem.section,
@@ -212,7 +213,7 @@ const LutrisSettingsMenu = ({
     <DialogLayout
       title={currentTitle}
       legendItems={legendItems}
-      maxWidth="700px"
+      maxWidth={maxWidth}
     >
       {loading ? (
         <div

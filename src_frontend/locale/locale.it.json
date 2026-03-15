@@ -97,6 +97,12 @@
   "components/LoadingIndicator.jsx": {
     "Loading...": "Caricamento..."
   },
+  "components/LutrisSettingsFlow.jsx": {
+    "Failed to fetch Lutris runners": "Failed to fetch Lutris runners",
+    "Global": "Global",
+    "Lutris Settings": "Lutris Settings",
+    "Select Runner": "Select Runner"
+  },
   "components/LutrisSettingsMenu.jsx": {
     "Close": "Close",
     "Default": "Default",

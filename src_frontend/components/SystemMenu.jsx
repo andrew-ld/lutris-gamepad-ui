@@ -9,7 +9,7 @@ import * as api from "../utils/ipc";
 import About from "./About";
 import BluetoothMenu from "./BluetoothMenu";
 import DisplaySettings from "./DisplaySettings";
-import LutrisSettingsMenu from "./LutrisSettingsMenu";
+import LutrisSettingsFlow from "./LutrisSettingsFlow";
 import ConfirmationDialog from "./ConfirmationDialog";
 import LegendaContainer from "./LegendaContainer";
 import RowBasedMenu from "./RowBasedMenu";
@@ -87,7 +87,7 @@ const SystemMenu = () => {
 
   const openLutrisSettingsModal = useCallback(() => {
     showModal((hideThisModal) => (
-      <LutrisSettingsMenu onClose={hideThisModal} />
+      <LutrisSettingsFlow onClose={hideThisModal} />
     ));
     setIsOpen(false);
   }, [showModal]);

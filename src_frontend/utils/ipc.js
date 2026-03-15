@@ -45,6 +45,7 @@ export const getUserTheme = () => window.electronAPI.getUserTheme();
 
 export const getLutrisSettings = (gameSlug, runnerSlug) =>
   window.electronAPI.getLutrisSettings(gameSlug, runnerSlug);
+export const getLutrisRunners = () => window.electronAPI.getLutrisRunners();
 export const updateLutrisSetting = (
   section,
   key,

@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import { useMemo, useCallback } from "react";
 import DialogLayout from "./DialogLayout";
 import RowBasedMenu from "./RowBasedMenu";
 import FocusableRow from "./FocusableRow";
@@ -6,11 +6,13 @@ import { useTranslation } from "../contexts/TranslationContext";
 
 const SelectionMenu = ({
   title,
+  description,
   options,
   currentValue,
   onSelect,
   onClose,
   maxWidth = "600px",
+  showCheckmark = true,
 }) => {
   const { t } = useTranslation();
 
@@ -42,7 +44,7 @@ const SelectionMenu = ({
           }}
         >
           <span className="settings-menu-label">{item.label}</span>
-          {String(item.value) === String(currentValue) && (
+          {showCheckmark && String(item.value) === String(currentValue) && (
             <span style={{ color: "var(--accent-color)", fontWeight: "bold" }}>
               ✓
             </span>
@@ -50,7 +52,7 @@ const SelectionMenu = ({
         </div>
       </FocusableRow>
     ),
-    [currentValue, onSelect],
+    [currentValue, onSelect, showCheckmark],
   );
 
   const items = useMemo(
@@ -78,7 +80,12 @@ const SelectionMenu = ({
   }, [items, currentValue]);
 
   return (
-    <DialogLayout title={title} legendItems={legendItems} maxWidth={maxWidth}>
+    <DialogLayout
+      title={title}
+      description={description}
+      legendItems={legendItems}
+      maxWidth={maxWidth}
+    >
       <RowBasedMenu
         items={items}
         renderItem={renderItem}

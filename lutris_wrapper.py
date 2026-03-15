@@ -22,6 +22,7 @@ from lutris.runners import import_runner, InvalidRunnerError
 from lutris.startup import init_lutris
 from lutris.util.graphics.drivers import get_gpu_cards
 from lutris.util.graphics.gpu import GPU, GPUS
+from lutris.runners import get_installed as get_installed_runners
 
 SUBCOMMAND_OUTPUT_HEADER = "lutris-subcommand-output:"
 
@@ -209,6 +210,12 @@ def update_setting_main(
     _print_subcommand_output({"status": "success"})
 
 
+def list_runners_main():
+    installed_runners = get_installed_runners()
+    result = [{"name": r.name, "human_name": r.human_name} for r in installed_runners]
+    _print_subcommand_output({"runners": result})
+
+
 def patch_gtk_dbus_singleton():
     """
     Prevents the Gtk.Application from registering a unique application ID
@@ -276,6 +283,9 @@ def main():
             game_slug=game_slug,
             runner_slug=runner_slug,
         )
+
+    elif "--list-runners" in sys.argv:
+        list_runners_main()
 
     else:
         lutris_main()
