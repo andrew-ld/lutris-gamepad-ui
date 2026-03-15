@@ -18,11 +18,14 @@ from lutris.config import LutrisConfig
 from lutris.database import categories, games
 from lutris.database.games import get_game_by_field
 from lutris.gui.widgets.utils import get_runtime_icon_path
-from lutris.runners import import_runner, InvalidRunnerError
+from lutris.runners import import_runner
 from lutris.startup import init_lutris
-from lutris.util.graphics.drivers import get_gpu_cards
-from lutris.util.graphics.gpu import GPU, GPUS
 from lutris.runners import get_installed as get_installed_runners
+
+try:
+    from lutris.runners import InvalidRunnerError
+except ImportError:
+    from lutris.runners import InvalidRunner as InvalidRunnerError
 
 SUBCOMMAND_OUTPUT_HEADER = "lutris-subcommand-output:"
 
@@ -61,12 +64,6 @@ def get_all_games_categories_main():
 
 def list_games_main():
     _print_subcommand_output(games.get_games(filters={"installed": 1}))
-
-
-def init_settings():
-    init_lutris()
-    for card in get_gpu_cards():
-        GPUS[card] = GPU(card)
 
 
 def get_config(game_slug=None, runner_slug=None):
@@ -135,7 +132,7 @@ def format_option(opt, values):
 
 
 def get_settings_main(game_slug=None, runner_slug=None):
-    init_settings()
+    init_lutris()
     game_name = None
     if game_slug:
         game = get_game_by_field(game_slug, "slug") or get_game_by_field(
@@ -186,7 +183,7 @@ def get_settings_main(game_slug=None, runner_slug=None):
 def update_setting_main(
     section, key, value, value_type=None, game_slug=None, runner_slug=None
 ):
-    init_settings()
+    init_lutris()
     config, _ = get_config(game_slug, runner_slug)
     if not config:
         sys.exit(1)

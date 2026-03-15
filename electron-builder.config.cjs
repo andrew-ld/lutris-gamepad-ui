@@ -15,6 +15,7 @@ module.exports = {
   productName: "lutris gamepad ui",
   electronLanguages: electronLanguages,
   beforeBuild: path.join(__dirname, "electron-builder.beforebuild.cjs"),
+  afterPack: path.join(__dirname, "electron-builder.afterpack.cjs"),
   toolsets: {
     appimage: "1.0.2",
   },
@@ -38,15 +39,5 @@ module.exports = {
     target: "AppImage",
     category: "game",
     icon: "src_frontend/resources/icon.svg",
-  },
-  electronFuses: {
-    runAsNode: false,
-    enableCookieEncryption: false,
-    enableNodeOptionsEnvironmentVariable: false,
-    enableNodeCliInspectArguments: false,
-    enableEmbeddedAsarIntegrityValidation: true,
-    onlyLoadAppFromAsar: true,
-    loadBrowserProcessSpecificV8Snapshot: false,
-    grantFileProtocolExtraPrivileges: false,
-  },
+  }
 };
