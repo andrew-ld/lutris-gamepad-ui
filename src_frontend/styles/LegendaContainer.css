@@ -12,6 +12,7 @@
   display: flex;
   flex-direction: column;
   padding: var(--legenda-content-padding, 24px 0);
+  overflow-y: auto;
 }
 
 .legenda-footer {
