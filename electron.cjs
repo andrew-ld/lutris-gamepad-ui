@@ -84,19 +84,25 @@ if (!forceWindowed && !isDev) {
   Menu.setApplicationMenu(null);
 }
 
-app.whenReady().then(() => {
-  app.setName("lutris-gamepad-ui");
+app
+  .whenReady()
+  .then(() => {
+    app.setName("lutris-gamepad-ui");
 
-  try {
-    registerIpcHandlers();
-    createWindow(() => {
-      logInfo("Main window closed!");
-      if (!getAppConfig().keepGamesRunningOnQuit) {
-        closeRunningGameProcess();
-      }
-    });
-  } catch (e) {
-    logError("Failed to initialize the application:", e);
+    try {
+      registerIpcHandlers();
+      createWindow(() => {
+        logInfo("Main window closed!");
+        if (!getAppConfig().keepGamesRunningOnQuit) {
+          closeRunningGameProcess();
+        }
+      });
+    } catch (e) {
+      logError("Failed to initialize the application:", e);
+      app.quit();
+    }
+  })
+  .catch((err) => {
+    console.error("Critical error during app launch:", err);
     app.quit();
-  }
-});
+  });

@@ -1,5 +1,6 @@
 import js from "@eslint/js";
 import importX from "eslint-plugin-import-x";
+import promise from "eslint-plugin-promise";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
@@ -32,12 +33,15 @@ export default [
       "react-hooks": reactHooks,
       "react-refresh": reactRefresh,
       import: importX,
+      promise,
     },
     rules: {
       ...js.configs.recommended.rules,
       ...react.configs.recommended.rules,
       ...react.configs["jsx-runtime"].rules,
       ...reactHooks.configs.recommended.rules,
+      ...promise.configs["flat/recommended"].rules,
+      "promise/always-return": "off",
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },

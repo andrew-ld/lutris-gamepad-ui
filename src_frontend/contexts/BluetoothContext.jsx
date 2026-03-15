@@ -25,7 +25,7 @@ export const BluetoothProvider = ({ children }) => {
 
   useEffect(() => {
     setIsLoading(true);
-    ipc
+    void ipc
       .bluetoothGetState()
       .then(({ devices, adapters }) => {
         if (isMounted()) {
@@ -78,7 +78,7 @@ export const BluetoothProvider = ({ children }) => {
   }, []);
 
   const forceRefresh = useCallback(() => {
-    ipc
+    void ipc
       .bluetoothGetState()
       .then(({ devices, adapters }) => {
         if (isMounted()) {
