@@ -70,8 +70,11 @@
   font-size: 1.2rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.15s ease-out, color 0.15s ease-out,
-    transform 0.15s ease-out, box-shadow 0.15s ease-out;
+  transition:
+    background-color 0.15s ease-out,
+    color 0.15s ease-out,
+    transform 0.15s ease-out,
+    box-shadow 0.15s ease-out;
   flex-grow: 1;
   display: flex;
   justify-content: center;

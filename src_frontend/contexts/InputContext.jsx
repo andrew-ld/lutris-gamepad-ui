@@ -21,6 +21,8 @@ const KEYBOARD_ACTION_MAP = {
   y: "Y",
   1: "L1",
   2: "R1",
+  3: "Select",
+  4: "Start",
 };
 
 const GAMEPAD_SUPER_BUTTON_INDICES = [8, 9];
@@ -32,6 +34,8 @@ const GAMEPAD_BUTTON_INDEX_TO_ACTION_MAP = {
   3: "Y",
   4: "L1",
   5: "R1",
+  8: "Select",
+  9: "Start",
   12: "UP",
   13: "DOWN",
   14: "LEFT",

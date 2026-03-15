@@ -36,6 +36,7 @@
     "Clear Search": "Rensa sökning",
     "Force close": "Tvinga stängning av",
     "Launch Game": "Starta spel",
+    "Options": "Options",
     "Pause Game": "Pause Game",
     "Power": "Ström",
     "Resume Game": "Resume Game",
@@ -98,6 +99,18 @@
   "components/LoadingIndicator.jsx": {
     "Loading...": "Laddar..."
   },
+  "components/LutrisSettingsMenu.jsx": {
+    "Close": "Close",
+    "Default": "Default",
+    "Disabled": "Disabled",
+    "Enabled": "Enabled",
+    "Lutris Settings": "Lutris Settings",
+    "Next": "Next",
+    "Open Select": "Open Select",
+    "Prev": "Prev",
+    "Settings: {{name}}": "Settings: {{name}}",
+    "Toggle": "Toggle"
+  },
   "components/OnScreenKeyboard.jsx": {
     "Backspace": "Backsteg",
     "Close": "Stäng",
@@ -113,6 +126,10 @@
     "Now Playing": "Spelas nu",
     "Paused": "Paused",
     "Playtime: {{playtime}}": "Speltid: {{playtime}}"
+  },
+  "components/SelectionMenu.jsx": {
+    "Back": "Back",
+    "Select": "Select"
   },
   "components/SettingsMenu.jsx": {
     "Close": "Stäng",
@@ -151,6 +168,7 @@
     "Display Settings": "Display Settings",
     "Exit Application": "Avsluta programmet",
     "Generate Bug Report": "Generate Bug Report",
+    "Lutris Settings": "Lutris Settings",
     "Open Lutris": "Öppna Lutris",
     "Power Off System": "Stäng av systemet",
     "Reboot System": "Starta om systemet",

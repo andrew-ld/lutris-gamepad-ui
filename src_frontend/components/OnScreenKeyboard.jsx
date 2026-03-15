@@ -50,7 +50,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
         { id: "Enter", label: t("Enter") },
       ],
     ],
-    [t]
+    [t],
   );
 
   const handleKeyPress = useCallback(
@@ -75,7 +75,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
           break;
       }
     },
-    [inputValue]
+    [inputValue],
   );
 
   const inputHandler = useCallback(
@@ -125,7 +125,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
           break;
       }
     },
-    [handleKeyPress, keyLayout, inputValue, playActionSound]
+    [handleKeyPress, keyLayout, inputValue, playActionSound],
   );
 
   useScopedInput(inputHandler, OnScreenKeyboardFocusID);
@@ -159,7 +159,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
       },
       { button: "B", label: t("Close"), onClick: onCloseCallback },
     ],
-    [onSelectCallback, onConfirmCallback, onCloseCallback, t]
+    [onSelectCallback, onConfirmCallback, onCloseCallback, t],
   );
 
   return (

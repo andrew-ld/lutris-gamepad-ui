@@ -73,6 +73,20 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // Theme
   getUserTheme: () => ipcRenderer.invoke("get-user-theme"),
 
+  // Lutris Settings
+  getLutrisSettings: (gameSlug, runnerSlug) =>
+    ipcRenderer.invoke("get-lutris-settings", gameSlug, runnerSlug),
+  updateLutrisSetting: (section, key, value, type, gameSlug, runnerSlug) =>
+    ipcRenderer.invoke(
+      "update-lutris-setting",
+      section,
+      key,
+      value,
+      type,
+      gameSlug,
+      runnerSlug,
+    ),
+
   // Generic
   log: (level, args) => ipcRenderer.send("log", level, args),
 

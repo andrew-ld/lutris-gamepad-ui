@@ -62,6 +62,30 @@ const DownArrowIcon = () => (
   </svg>
 );
 
+const OptionsIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    width="1em"
+    height="1em"
+  >
+    <path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
+  </svg>
+);
+
+const MenuIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    width="1em"
+    height="1em"
+  >
+    <path d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z" />
+  </svg>
+);
+
 const PlayStationCrossIcon = () => (
   <svg
     viewBox="0 0 24 24"
@@ -144,10 +168,14 @@ const BUTTON_CONTENT_MAP = {
     super: <CtrlXIcon />,
     l1: "1",
     r1: "2",
+    select: "3",
+    start: "4",
   },
   xbox: {
     l1: "LB",
     r1: "RB",
+    select: <MenuIcon />,
+    start: <OptionsIcon />,
   },
   playstation: {
     a: <PlayStationCrossIcon />,
@@ -156,6 +184,8 @@ const BUTTON_CONTENT_MAP = {
     y: <PlayStationTriangleIcon />,
     l1: "L1",
     r1: "R1",
+    select: <MenuIcon />,
+    start: <OptionsIcon />,
   },
   generic: {
     a: "A",
@@ -164,6 +194,8 @@ const BUTTON_CONTENT_MAP = {
     y: "Y",
     l1: "1",
     r1: "2",
+    start: <OptionsIcon />,
+    select: <MenuIcon />,
     super: <SuperIcon />,
     left: <LeftArrowIcon />,
     right: <RightArrowIcon />,

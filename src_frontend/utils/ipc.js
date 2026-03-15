@@ -43,6 +43,25 @@ export const logError = (...args) => window.electronAPI.log("error", args);
 
 export const getUserTheme = () => window.electronAPI.getUserTheme();
 
+export const getLutrisSettings = (gameSlug, runnerSlug) =>
+  window.electronAPI.getLutrisSettings(gameSlug, runnerSlug);
+export const updateLutrisSetting = (
+  section,
+  key,
+  value,
+  type,
+  gameSlug,
+  runnerSlug,
+) =>
+  window.electronAPI.updateLutrisSetting(
+    section,
+    key,
+    value,
+    type,
+    gameSlug,
+    runnerSlug,
+  );
+
 export const setIcon = (dataURL) => window.electronAPI.setIcon(dataURL);
 
 export const getAppConfig = () => window.electronAPI.getAppConfig();

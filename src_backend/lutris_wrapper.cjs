@@ -2,11 +2,17 @@ const {
   execFilePromise,
   logError,
   getLutrisWrapperPath,
+  logInfo,
+  getRunExclusive,
 } = require("./utils.cjs");
 
 const SUBCOMMAND_OUTPUT_HEADER = "lutris-subcommand-output:";
 
+const settingsRunExclusive = getRunExclusive();
+
 async function invokeLutrisSubcommand(subcommandName, args = []) {
+  logInfo("invokeLutrisSubcommand", subcommandName, JSON.stringify(args));
+
   try {
     const { stdout } = await invokeLutris(["--" + subcommandName, ...args]);
 
@@ -51,10 +57,38 @@ async function getLutrisGames() {
   return await invokeLutrisSubcommand("list-games");
 }
 
+async function getLutrisSettings(gameSlug = null, runnerSlug = null) {
+  const args = [];
+  if (gameSlug) args.push("--game", gameSlug);
+  if (runnerSlug) args.push("--runner", runnerSlug);
+  return settingsRunExclusive(async () => {
+    return await invokeLutrisSubcommand("get-settings", args);
+  });
+}
+
+async function updateLutrisSetting(
+  section,
+  key,
+  value,
+  type = null,
+  gameSlug = null,
+  runnerSlug = null,
+) {
+  const args = [section, key, String(value)];
+  if (type) args.push("--type", type);
+  if (gameSlug) args.push("--game", gameSlug);
+  if (runnerSlug) args.push("--runner", runnerSlug);
+  return settingsRunExclusive(async () => {
+    return await invokeLutrisSubcommand("update-setting", args);
+  });
+}
+
 module.exports = {
   getCoverartPath,
   getRuntimeIconPath,
   getAllGamesCategories,
   getLutrisGames,
+  getLutrisSettings,
+  updateLutrisSetting,
   invokeLutris,
 };

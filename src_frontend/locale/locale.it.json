@@ -36,6 +36,7 @@
     "Clear Search": "Annulla ricerca",
     "Force close": "Forza chiusura di",
     "Launch Game": "Avvia gioco",
+    "Options": "Options",
     "Pause Game": "Pausa gioco",
     "Power": "Menu di sistema",
     "Resume Game": "Riprendi gioco",
@@ -100,6 +101,18 @@
   "components/LoadingIndicator.jsx": {
     "Loading...": "Caricamento..."
   },
+  "components/LutrisSettingsMenu.jsx": {
+    "Close": "Close",
+    "Default": "Default",
+    "Disabled": "Disabled",
+    "Enabled": "Enabled",
+    "Lutris Settings": "Lutris Settings",
+    "Next": "Next",
+    "Open Select": "Open Select",
+    "Prev": "Prev",
+    "Settings: {{name}}": "Settings: {{name}}",
+    "Toggle": "Toggle"
+  },
   "components/OnScreenKeyboard.jsx": {
     "Backspace": "Cancella",
     "Close": "Chiudi",
@@ -115,6 +128,10 @@
     "Now Playing": "In gioco",
     "Paused": "In pausa",
     "Playtime: {{playtime}}": "Ore di gioco: {{playtime}}"
+  },
+  "components/SelectionMenu.jsx": {
+    "Back": "Back",
+    "Select": "Select"
   },
   "components/SettingsMenu.jsx": {
     "Close": "Chiudi",
@@ -154,6 +171,7 @@
     "Exit Application": "Esci",
     "Generate Bug Report": "Genera segnalazione bug",
     "Library reloaded successfully!": "Libreria ricaricata con successo!",
+    "Lutris Settings": "Lutris Settings",
     "Open Lutris": "Apri Lutris",
     "Power Off System": "Spegni il sistema",
     "Reboot System": "Riavvia il sistema",

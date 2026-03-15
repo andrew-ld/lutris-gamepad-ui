@@ -17,13 +17,39 @@ const RowBasedMenu = ({
   onFocusChange,
   itemKey = defaultKeyExtractor,
   renderEmpty,
-  emptyMessage,
+  initialSectionIndex = 0,
+  initialSelectedIndex = 0,
+  onStateChange,
 }) => {
   const { t } = useTranslation();
   const playActionSound = usePlayButtonActionSound();
 
-  const [activeSectionIndex, setActiveSectionIndex] = useState(0);
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [activeSectionIndex, setActiveSectionIndex] =
+    useState(initialSectionIndex);
+  const [selectedIndex, setSelectedIndex] = useState(initialSelectedIndex);
+
+  useEffect(() => {
+    onStateChange?.({ activeSectionIndex, selectedIndex });
+  }, [activeSectionIndex, selectedIndex, onStateChange]);
+
+  const activeSectionIdRef = useRef(null);
+
+  useEffect(() => {
+    if (sections && sections[activeSectionIndex]) {
+      activeSectionIdRef.current = sections[activeSectionIndex].id;
+    }
+  }, [activeSectionIndex, sections]);
+
+  useEffect(() => {
+    if (sections && activeSectionIdRef.current !== null) {
+      const newSectionIndex = sections.findIndex(
+        (s) => s.id === activeSectionIdRef.current,
+      );
+      if (newSectionIndex !== -1 && newSectionIndex !== activeSectionIndex) {
+        setActiveSectionIndex(newSectionIndex);
+      }
+    }
+  }, [sections]);
 
   const items = sections
     ? sections[activeSectionIndex]?.items || []

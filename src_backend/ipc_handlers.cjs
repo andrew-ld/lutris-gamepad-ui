@@ -36,7 +36,11 @@ const {
 } = require("./utils.cjs");
 const { getMainWindow } = require("./state.cjs");
 const { getUserTheme } = require("./theme_manager.cjs");
-const { invokeLutris } = require("./lutris_wrapper.cjs");
+const {
+  invokeLutris,
+  getLutrisSettings,
+  updateLutrisSetting,
+} = require("./lutris_wrapper.cjs");
 const { getAppConfig, setAppConfig } = require("./config_manager.cjs");
 const { createBugReportFile } = require("./bugreport.cjs");
 
@@ -258,6 +262,28 @@ function registerIpcHandlers() {
   ipcHandleWithError("get-user-theme", async () => {
     return getUserTheme();
   });
+
+  // Lutris Settings
+  ipcHandleWithError(
+    "get-lutris-settings",
+    async (_event, gameSlug, runnerSlug) => {
+      return await getLutrisSettings(gameSlug, runnerSlug);
+    },
+  );
+
+  ipcHandleWithError(
+    "update-lutris-setting",
+    async (_event, section, key, value, type, gameSlug, runnerSlug) => {
+      return await updateLutrisSetting(
+        section,
+        key,
+        value,
+        type,
+        gameSlug,
+        runnerSlug,
+      );
+    },
+  );
 
   // Bug Reporter
   ipcOnWithError("create-bug-report", async () => {

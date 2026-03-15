@@ -36,6 +36,7 @@
     "Clear Search": "پاک‌کردن جستجو",
     "Force close": "بستن اجباری",
     "Launch Game": "راه‌اندازی بازی",
+    "Options": "Options",
     "Pause Game": "Pause Game",
     "Power": "نیرو",
     "Resume Game": "Resume Game",
@@ -98,6 +99,18 @@
   "components/LoadingIndicator.jsx": {
     "Loading...": "در حال بارگذاری..."
   },
+  "components/LutrisSettingsMenu.jsx": {
+    "Close": "Close",
+    "Default": "Default",
+    "Disabled": "Disabled",
+    "Enabled": "Enabled",
+    "Lutris Settings": "Lutris Settings",
+    "Next": "Next",
+    "Open Select": "Open Select",
+    "Prev": "Prev",
+    "Settings: {{name}}": "Settings: {{name}}",
+    "Toggle": "Toggle"
+  },
   "components/OnScreenKeyboard.jsx": {
     "Backspace": "پاک‌کردن",
     "Close": "بستن",
@@ -113,6 +126,10 @@
     "Now Playing": "در حال بازی",
     "Paused": "Paused",
     "Playtime: {{playtime}}": "زمان بازی: {{playtime}}"
+  },
+  "components/SelectionMenu.jsx": {
+    "Back": "Back",
+    "Select": "Select"
   },
   "components/SettingsMenu.jsx": {
     "Close": "بستن",
@@ -151,6 +168,7 @@
     "Display Settings": "Display Settings",
     "Exit Application": "خروج از برنامه",
     "Generate Bug Report": "Generate Bug Report",
+    "Lutris Settings": "Lutris Settings",
     "Open Lutris": "باز کردن لوتریس",
     "Power Off System": "خاموش‌کردن سامانه",
     "Reboot System": "باز راه‌اندازی سامانه",

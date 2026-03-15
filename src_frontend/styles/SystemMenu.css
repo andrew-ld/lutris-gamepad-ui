@@ -58,6 +58,7 @@
 
 .system-menu-overlay .legenda-content {
   --legenda-content-padding: 0;
+  --row-based-menu-list-padding: 0;
 }
 
 @keyframes fadeInMenu {

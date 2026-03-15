@@ -14,3 +14,13 @@
   font-weight: bold;
   color: var(--text-primary);
 }
+
+.settings-menu-value.generic {
+  font-weight: normal;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.unsupported-option {
+  opacity: 0.5;
+}

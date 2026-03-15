@@ -9,6 +9,7 @@ const ControlsOverlay = ({
   onLaunchGame,
   onClearSearch,
   onShowSearchModal,
+  onShowGameSettings,
   onOpenSystemMenu,
   onToggleGamePause,
   isGamePaused,
@@ -39,6 +40,14 @@ const ControlsOverlay = ({
       button: "A",
       label: t("Launch Game"),
       onClick: onLaunchGame,
+    });
+  }
+
+  if (onShowGameSettings) {
+    legendItems.push({
+      button: "Start",
+      label: t("Options"),
+      onClick: onShowGameSettings,
     });
   }
 

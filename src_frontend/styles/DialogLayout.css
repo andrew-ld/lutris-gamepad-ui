@@ -8,21 +8,30 @@
 
 .dialog-layout-content {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 0;
 }
 
 .dialog-layout-title {
   margin: 0 0 16px 0;
+  padding: 0 24px;
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--accent-color);
+  flex-shrink: 0;
 }
 
 .dialog-layout-description {
   margin: 0 0 24px 0;
+  padding: 0 24px;
   font-size: 1.1rem;
   line-height: 1.5;
   color: var(--text-secondary);
   white-space: pre-wrap;
+  flex-shrink: 0;
 }
 
 .modal-button {
@@ -34,8 +43,12 @@
   cursor: pointer;
   font-size: 1rem;
   font-weight: bold;
-  transition: background-color 0.2s ease, color 0.2s ease,
-    border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
   outline: none;
 }
 
@@ -58,6 +71,10 @@
   flex-direction: column;
   align-items: stretch;
   gap: 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  padding: 10px 24px;
 }
 
 .modal-buttons-row {
@@ -66,4 +83,5 @@
   gap: 16px;
   margin-bottom: 24px;
   flex-wrap: wrap;
+  padding: 0 24px;
 }

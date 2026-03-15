@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useLutris } from "../contexts/LutrisContext";
 import { useModalActions, useModalState } from "../contexts/ModalContext";
 import GameLibrary from "./GameLibrary";
+import LutrisSettingsMenu from "./LutrisSettingsMenu";
 import LoadingIndicator from "./LoadingIndicator";
 import RunningGame from "./RunningGame";
 import ControlsOverlay from "./ControlsOverlay";
@@ -283,6 +284,22 @@ const LibraryContainer = () => {
     ));
   }, [setSearchQuery, showModal, searchQuery, t]);
 
+  const showGameSettingsModalCb = useCallback(() => {
+    const game =
+      shelvesRef.current[focusCoordsRef.current.shelf]?.games[
+        focusCoordsRef.current.card
+      ];
+    if (game) {
+      showModal((hideThisModal) => (
+        <LutrisSettingsMenu
+          gameSlug={game.slug}
+          runnerSlug={game.runner}
+          onClose={hideThisModal}
+        />
+      ));
+    }
+  }, [showModal]);
+
   const clearSearchCb = useCallback(() => {
     setSearchQuery("");
   }, [setSearchQuery]);
@@ -512,6 +529,10 @@ const LibraryContainer = () => {
           playActionSound();
           showSearchModalCb();
           break;
+        case "Start":
+          playActionSound();
+          showGameSettingsModalCb();
+          break;
       }
     },
     [
@@ -521,6 +542,7 @@ const LibraryContainer = () => {
       handleLaunchGame,
       clearSearchCb,
       showSearchModalCb,
+      showGameSettingsModalCb,
       handlePrevCategory,
       handleNextCategory,
       handleNavigation,
@@ -592,6 +614,7 @@ const LibraryContainer = () => {
   } else if (!isModalOpen) {
     if (focusedGame) {
       controlsOverlayProps.onLaunchGame = stableOnLaunchGame;
+      controlsOverlayProps.onShowGameSettings = showGameSettingsModalCb;
     }
     if (searchQuery) {
       controlsOverlayProps.onClearSearch = clearSearchCb;

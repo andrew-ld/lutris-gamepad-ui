@@ -9,6 +9,7 @@ import * as api from "../utils/ipc";
 import About from "./About";
 import BluetoothMenu from "./BluetoothMenu";
 import DisplaySettings from "./DisplaySettings";
+import LutrisSettingsMenu from "./LutrisSettingsMenu";
 import ConfirmationDialog from "./ConfirmationDialog";
 import LegendaContainer from "./LegendaContainer";
 import RowBasedMenu from "./RowBasedMenu";
@@ -84,6 +85,13 @@ const SystemMenu = () => {
     setIsOpen(false);
   }, [showModal]);
 
+  const openLutrisSettingsModal = useCallback(() => {
+    showModal((hideThisModal) => (
+      <LutrisSettingsMenu onClose={hideThisModal} />
+    ));
+    setIsOpen(false);
+  }, [showModal]);
+
   const menuItems = useMemo(
     () => [
       { label: t("Reload Library"), action: reloadLibraryAction },
@@ -94,6 +102,10 @@ const SystemMenu = () => {
       {
         label: t("Settings"),
         action: openSettingsModal,
+      },
+      {
+        label: t("Lutris Settings"),
+        action: openLutrisSettingsModal,
       },
       {
         label: t("Audio Settings"),
