@@ -59,7 +59,7 @@ const BluetoothMenu = ({ onClose }) => {
         />
       ));
     },
-    [showModal, connectDevice, disconnectDevice, t]
+    [showModal, connectDevice, disconnectDevice, t],
   );
 
   const handleAction = useCallback(
@@ -89,7 +89,7 @@ const BluetoothMenu = ({ onClose }) => {
         }
       }
     },
-    [onClose, isDiscovering, startDiscovery, stopDiscovery, forceRefresh]
+    [onClose, isDiscovering, startDiscovery, stopDiscovery, forceRefresh],
   );
 
   const menuItems = useMemo(() => {
@@ -165,7 +165,7 @@ const BluetoothMenu = ({ onClose }) => {
         </FocusableRow>
       );
     },
-    [t]
+    [t],
   );
 
   const legendItems = useMemo(
@@ -185,7 +185,7 @@ const BluetoothMenu = ({ onClose }) => {
       { button: "Y", label: t("Refresh"), onClick: forceRefresh },
       { button: "B", label: t("Close"), onClick: onClose },
     ],
-    [onClose, isDiscovering, startDiscovery, stopDiscovery, forceRefresh, t]
+    [onClose, isDiscovering, startDiscovery, stopDiscovery, forceRefresh, t],
   );
 
   useEffect(() => {
@@ -229,7 +229,7 @@ const BluetoothMenu = ({ onClose }) => {
             currentMenuItem.current = item;
           }}
           emptyMessage={t(
-            "No devices found. Ensure Bluetooth is powered on and press 'X' to start discovery."
+            "No devices found. Ensure Bluetooth is powered on and press 'X' to start discovery.",
           )}
         />
       )}

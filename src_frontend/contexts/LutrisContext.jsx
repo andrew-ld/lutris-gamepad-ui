@@ -3,14 +3,18 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
 import { useIsMounted } from "../hooks/useIsMounted";
 import * as ipc from "../utils/ipc";
 
-const LutrisContext = createContext(null);
-export const useLutris = () => useContext(LutrisContext);
+const LutrisStateContext = createContext(null);
+const LutrisActionsContext = createContext(null);
+
+export const useLutris = () => useContext(LutrisStateContext);
+export const useLutrisActions = () => useContext(LutrisActionsContext);
 
 export const LutrisProvider = ({ children }) => {
   const [games, setGames] = useState([]);
@@ -100,17 +104,30 @@ export const LutrisProvider = ({ children }) => {
     ipc.closeGame(runningGame);
   }, [runningGame]);
 
-  const value = {
-    games,
-    loading,
-    runningGame,
-    isGamePaused,
-    fetchGames,
-    launchGame,
-    closeRunningGame,
-  };
+  const stateValue = useMemo(
+    () => ({
+      games,
+      loading,
+      runningGame,
+      isGamePaused,
+    }),
+    [games, loading, runningGame, isGamePaused],
+  );
+
+  const actionsValue = useMemo(
+    () => ({
+      fetchGames,
+      launchGame,
+      closeRunningGame,
+    }),
+    [fetchGames, launchGame, closeRunningGame],
+  );
 
   return (
-    <LutrisContext.Provider value={value}>{children}</LutrisContext.Provider>
+    <LutrisStateContext.Provider value={stateValue}>
+      <LutrisActionsContext.Provider value={actionsValue}>
+        {children}
+      </LutrisActionsContext.Provider>
+    </LutrisStateContext.Provider>
   );
 };

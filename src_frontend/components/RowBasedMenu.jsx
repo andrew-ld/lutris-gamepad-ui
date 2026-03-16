@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { useTranslation } from "../contexts/TranslationContext";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
@@ -282,4 +288,4 @@ const RowBasedMenu = ({
   );
 };
 
-export default RowBasedMenu;
+export default React.memo(RowBasedMenu);

@@ -1,3 +1,4 @@
+import React from "react";
 import "../styles/FocusableRow.css";
 
 const FocusableRow = ({ children, isFocused, onClick, onMouseEnter }) => {
@@ -12,4 +13,4 @@ const FocusableRow = ({ children, isFocused, onClick, onMouseEnter }) => {
   );
 };
 
-export default FocusableRow;
+export default React.memo(FocusableRow);

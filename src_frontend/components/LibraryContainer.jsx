@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 
-import { useLutris } from "../contexts/LutrisContext";
+import { useLutris, useLutrisActions } from "../contexts/LutrisContext";
 import { useModalActions, useModalState } from "../contexts/ModalContext";
 import { useTranslation } from "../contexts/TranslationContext";
 import { useGameShelves } from "../hooks/useGameShelves";
@@ -22,14 +22,8 @@ export const LibraryContainerFocusID = "LibraryContainer";
 
 const LibraryContainer = () => {
   const { t } = useTranslation();
-  const {
-    games,
-    loading,
-    runningGame,
-    isGamePaused,
-    launchGame,
-    closeRunningGame,
-  } = useLutris();
+  const { games, loading, runningGame, isGamePaused } = useLutris();
+  const { launchGame, closeRunningGame } = useLutrisActions();
   const { showModal } = useModalActions();
   const { isModalOpen } = useModalState();
   const playActionSound = usePlayButtonActionSound();

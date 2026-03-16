@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { useLutris } from "../contexts/LutrisContext";
+import { useLutrisActions } from "../contexts/LutrisContext";
 import { useModalActions, useModalState } from "../contexts/ModalContext";
 import { useSettingsState } from "../contexts/SettingsContext";
 import { useToastActions } from "../contexts/ToastContext";
@@ -53,7 +53,7 @@ const SystemMenu = () => {
   const menuReference = useRef(null);
   const menuPowerButtonReference = useRef(null);
 
-  const { fetchGames } = useLutris();
+  const { fetchGames } = useLutrisActions();
 
   const openAudioSettingsModal = useCallback(() => {
     showModal((hideThisModal) => <VolumeControl onClose={hideThisModal} />);
