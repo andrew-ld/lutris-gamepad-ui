@@ -54,7 +54,6 @@ app.commandLine.appendSwitch(
   "--optimize_for_size --max_old_space_size=128",
 );
 app.commandLine.appendSwitch("renderer-process-limit", "1");
-app.commandLine.appendSwitch("in-process-gpu");
 
 // unused features flags
 app.commandLine.appendSwitch("disable-site-isolation-trials");
