@@ -90,6 +90,33 @@ function toggleWindowShow() {
   }
 }
 
+function getHomePageUrl() {
+  const queryParams = new URLSearchParams();
+  const disableFeatureEnvPrefix = "LUTRIS_GEMAPAD_UI_DISABLE_";
+
+  for (const [k, v] of Object.entries(process.env)) {
+    if (k.startsWith(disableFeatureEnvPrefix) && v === "1") {
+      const flag = k.slice(disableFeatureEnvPrefix.length);
+      queryParams.append(`DISABLE_${flag}`, "1");
+    }
+  }
+
+  const queryString = queryParams.toString();
+  const suffix = queryString ? `?${queryString}` : "";
+
+  if (isDev) {
+    return "http://localhost:5173" + suffix;
+  }
+
+  const mainAppDir = path.join(__dirname, "..");
+
+  const htmlPath = mainAppDir.endsWith("/dist")
+    ? path.join(mainAppDir, "index.html")
+    : path.join(mainAppDir, "dist/index.html");
+
+  return "app://" + htmlPath + suffix;
+}
+
 function createWindow(onWindowClosedCallback) {
   powerSaveBlocker.start("prevent-display-sleep");
   powerSaveBlocker.start("prevent-app-suspension");
@@ -127,19 +154,7 @@ function createWindow(onWindowClosedCallback) {
     return net.fetch(url.pathToFileURL(requestedPath).toString());
   });
 
-  let homePageUrl;
-
-  if (isDev) {
-    homePageUrl = "http://localhost:5173";
-  } else {
-    const mainAppDir = path.join(__dirname, "..");
-
-    homePageUrl = mainAppDir.endsWith("/dist")
-      ? path.join(mainAppDir, "index.html")
-      : path.join(mainAppDir, "dist/index.html");
-
-    homePageUrl = "app://" + homePageUrl;
-  }
+  const homePageUrl = getHomePageUrl();
 
   app.on("web-contents-created", (_event, contents) => {
     contents.setWindowOpenHandler((details) => {
@@ -150,7 +165,7 @@ function createWindow(onWindowClosedCallback) {
     contents.on("will-navigate", (event, navigationUrl) => {
       const parsedUrl = new URL(navigationUrl);
 
-      if (parsedUrl.origin !== homePageUrl) {
+      if (parsedUrl.origin !== new URL(homePageUrl).origin) {
         logWarn("Tried to navigate to another page", parsedUrl);
         event.preventDefault();
       }

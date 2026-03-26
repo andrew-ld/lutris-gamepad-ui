@@ -96,62 +96,74 @@ const SystemMenu = () => {
   }, [showModal]);
 
   const menuItems = useMemo(
-    () => [
-      { label: t("Reload Library"), action: reloadLibraryAction },
-      {
-        label: t("About"),
-        action: openAboutModal,
-      },
-      {
-        label: t("Settings"),
-        action: openSettingsModal,
-      },
-      {
-        label: t("Lutris Settings"),
-        action: openLutrisSettingsModal,
-      },
-      {
-        label: t("Audio Settings"),
-        action: openAudioSettingsModal,
-      },
-      {
-        label: t("Display Settings"),
-        action: openDisplaySettingsModal,
-      },
-      {
-        label: t("Bluetooth Settings"),
-        action: openBluetoothSettingsModal,
-      },
-      { label: t("Open Lutris"), action: () => api.openLutris() },
-      {
-        label: t("Reboot System"),
-        action: () => api.rebootPC(),
-        doubleConfirm: settings.doubleConfirmPowerManagement,
-        firstConfirm: t("Are you sure you want to reboot the system?"),
-        secondConfirm: t("Continue with system reboot?"),
-      },
-      {
-        label: t("Power Off System"),
-        action: () => api.powerOffPC(),
-        doubleConfirm: settings.doubleConfirmPowerManagement,
-        firstConfirm: t("Are you sure you want to power off the system?"),
-        secondConfirm: t("Continue with system power off?"),
-      },
-      {
-        label: t("Generate Bug Report"),
-        action: () => api.createBugReportFile(),
-        firstConfirm: t(
-          "Are you sure you want to generate the bug report file?",
-        ),
-      },
-      {
-        label: t("Exit Application"),
-        action: () => window.close(),
-        doubleConfirm: true,
-        firstConfirm: t("Are you sure you want to exit the application?"),
-        secondConfirm: t("Continue with exiting the application?"),
-      },
-    ],
+    () =>
+      [
+        { label: t("Reload Library"), action: reloadLibraryAction },
+        {
+          label: t("About"),
+          action: openAboutModal,
+        },
+        {
+          label: t("Settings"),
+          action: openSettingsModal,
+        },
+        {
+          label: t("Lutris Settings"),
+          action: openLutrisSettingsModal,
+          disabled: settings.DISABLE_LUTRIS_SETTINGS,
+        },
+        {
+          label: t("Audio Settings"),
+          action: openAudioSettingsModal,
+          disabled: settings.DISABLE_AUDIO_SETTINGS,
+        },
+        {
+          label: t("Display Settings"),
+          action: openDisplaySettingsModal,
+          disabled: settings.DISABLE_DISPLAY_SETTINGS,
+        },
+        {
+          label: t("Bluetooth Settings"),
+          action: openBluetoothSettingsModal,
+          disabled: settings.DISABLE_BLUETOOTH_SETTINGS,
+        },
+        {
+          label: t("Open Lutris"),
+          action: () => api.openLutris(),
+          disabled: settings.DISABLE_OPEN_LUTRIS,
+        },
+        {
+          label: t("Reboot System"),
+          action: () => api.rebootPC(),
+          doubleConfirm: settings.doubleConfirmPowerManagement,
+          firstConfirm: t("Are you sure you want to reboot the system?"),
+          secondConfirm: t("Continue with system reboot?"),
+          disabled: settings.DISABLE_REBOOT_SYSTEM,
+        },
+        {
+          label: t("Power Off System"),
+          action: () => api.powerOffPC(),
+          doubleConfirm: settings.doubleConfirmPowerManagement,
+          firstConfirm: t("Are you sure you want to power off the system?"),
+          secondConfirm: t("Continue with system power off?"),
+          disabled: settings.DISABLE_POWER_OFF_SYSTEM,
+        },
+        {
+          label: t("Generate Bug Report"),
+          action: () => api.createBugReportFile(),
+          firstConfirm: t(
+            "Are you sure you want to generate the bug report file?",
+          ),
+          disabled: settings.DISABLE_BUG_REPORT,
+        },
+        {
+          label: t("Exit Application"),
+          action: () => window.close(),
+          doubleConfirm: true,
+          firstConfirm: t("Are you sure you want to exit the application?"),
+          secondConfirm: t("Continue with exiting the application?"),
+        },
+      ].filter((item) => !item.disabled),
     [
       reloadLibraryAction,
       openAudioSettingsModal,
@@ -162,6 +174,14 @@ const SystemMenu = () => {
       openLutrisSettingsModal,
       t,
       settings.doubleConfirmPowerManagement,
+      settings.DISABLE_LUTRIS_SETTINGS,
+      settings.DISABLE_AUDIO_SETTINGS,
+      settings.DISABLE_DISPLAY_SETTINGS,
+      settings.DISABLE_BLUETOOTH_SETTINGS,
+      settings.DISABLE_OPEN_LUTRIS,
+      settings.DISABLE_REBOOT_SYSTEM,
+      settings.DISABLE_POWER_OFF_SYSTEM,
+      settings.DISABLE_BUG_REPORT,
     ],
   );
 
