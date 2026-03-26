@@ -23,6 +23,7 @@ const RowBasedMenu = ({
   focusId,
   isActive = true,
   onFocusChange,
+  onFocusLost,
   itemKey = defaultKeyExtractor,
   renderEmpty,
   initialSectionIndex = 0,
@@ -224,7 +225,17 @@ const RowBasedMenu = ({
     [items, sections, playActionSound],
   );
 
-  useScopedInput(inputHandler, focusId, isActive);
+  const { isFocused, wasAcquired } = useScopedInput(
+    inputHandler,
+    focusId,
+    isActive,
+  );
+
+  useEffect(() => {
+    if (isActive && wasAcquired && !isFocused) {
+      onFocusLost?.();
+    }
+  }, [isActive, isFocused, wasAcquired, onFocusLost]);
 
   const handleSectionClick = useCallback((index) => {
     setActiveSectionIndex(index);

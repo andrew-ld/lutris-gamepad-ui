@@ -117,11 +117,11 @@ export const InputProvider = ({ children }) => {
   const inputTypeSubscribers = useRef(new Set());
   const lastDetectedInputSourceReference = useRef("keyboard");
 
-  const [focusStack, setFocusStack] = useState([]);
+  const [, setFocusIteration] = useState(0);
   const [connectedGamepadCount, setConnectedGamepadCount] = useState(0);
 
   const focusIdCounter = useRef(0);
-  const focusStackReference = useRef(focusStack);
+  const focusStackReference = useRef([]);
 
   const gamepadPollingRafId = useRef(null);
   const gamepadPollingIntervalId = useRef(null);
@@ -136,9 +136,23 @@ export const InputProvider = ({ children }) => {
     gamepadAutorepeatMs.current = settings.gamepadAutorepeatMs;
   }, [settings]);
 
-  useEffect(() => {
-    focusStackReference.current = focusStack;
-  }, [focusStack]);
+  const focusSubscribers = useRef(new Set());
+
+  const subscribeToFocusChanges = useCallback((callback) => {
+    focusSubscribers.current.add(callback);
+    return () => focusSubscribers.current.delete(callback);
+  }, []);
+
+  const broadcastFocusChange = useCallback(() => {
+    for (const callback of focusSubscribers.current) {
+      callback();
+    }
+  }, []);
+
+  const triggerFocusUpdate = useCallback(() => {
+    setFocusIteration((i) => i + 1);
+    broadcastFocusChange();
+  }, [broadcastFocusChange]);
 
   const subscribeToInputEvents = useCallback((callback) => {
     inputSubscribers.current.add(callback);
@@ -179,22 +193,23 @@ export const InputProvider = ({ children }) => {
     [broadcastInputTypeChange, broadcastInputEvent],
   );
 
-  const releaseInputFocus = useCallback((uniqueId) => {
-    setFocusStack((previousStack) => {
-      const newStack = previousStack.filter((f) => f.uniqueId !== uniqueId);
-      return newStack;
-    });
-  }, []);
+  const releaseInputFocus = useCallback(
+    (uniqueId) => {
+      focusStackReference.current = focusStackReference.current.filter(
+        (f) => f.uniqueId !== uniqueId,
+      );
+      triggerFocusUpdate();
+    },
+    [triggerFocusUpdate],
+  );
 
   const claimInputFocus = useCallback(
     (claimantId) => {
       const uniqueId = focusIdCounter.current++;
       const newFocus = { claimantId, uniqueId };
 
-      setFocusStack((previousStack) => {
-        const newStack = [...previousStack, newFocus];
-        return newStack;
-      });
+      focusStackReference.current = [...focusStackReference.current, newFocus];
+      triggerFocusUpdate();
 
       const token = {
         isAcquired: () => {
@@ -209,7 +224,7 @@ export const InputProvider = ({ children }) => {
 
       return token;
     },
-    [releaseInputFocus],
+    [releaseInputFocus, triggerFocusUpdate],
   );
 
   const refreshGamepadCount = useCallback(() => {
@@ -442,6 +457,7 @@ export const InputProvider = ({ children }) => {
     gamepadCount: connectedGamepadCount,
     subscribeToInputType,
     getLatestInputType: () => lastDetectedInputSourceReference.current,
+    subscribeToFocusChanges,
   };
 
   return (

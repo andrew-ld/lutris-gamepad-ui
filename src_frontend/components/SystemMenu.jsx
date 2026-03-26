@@ -341,6 +341,7 @@ const SystemMenu = () => {
               renderItem={renderMenuItem}
               onAction={handleMenuAction}
               onFocusChange={setFocusedItem}
+              onFocusLost={closeMenuCallback}
               focusId={SystemMenuFocusId}
               isActive={isOpen}
             />
