@@ -44,18 +44,8 @@ app.on("window-all-closed", () => {
   app.quit();
 });
 
-// detect Wayland environment and set platform-specific flags
-const isWayland =
-  process.env.XDG_SESSION_TYPE === "wayland" ||
-  process.env.GDK_BACKEND === "wayland" ||
-  process.env.OZONE_PLATFORM === "wayland";
-
-// required flags (include ozone feature when on Wayland)
-{
-  let features = "GlobalShortcutsPortal";
-  if (isWayland) features += ",UseOzonePlatform";
-  app.commandLine.appendSwitch("enable-features", features);
-}
+// required flags
+app.commandLine.appendSwitch("enable-features", "GlobalShortcutsPortal");
 
 app.commandLine.appendSwitch("disable-background-timer-throttling");
 
@@ -66,14 +56,15 @@ app.commandLine.appendSwitch(
 );
 app.commandLine.appendSwitch("renderer-process-limit", "1");
 
+const isWayland =
+  process.env.XDG_SESSION_TYPE === "wayland" ||
+  process.env.GDK_BACKEND === "wayland" ||
+  process.env.OZONE_PLATFORM === "wayland";
+
 // Prefer the system GPU process on Wayland; in-process GPU has caused
 // instability on some Wayland setups. Only enable in-process-gpu for X11.
 if (!isWayland) {
   app.commandLine.appendSwitch("in-process-gpu");
-}
-else {
-  // Ensure Electron uses Ozone/Wayland natively when we detect Wayland
-  app.commandLine.appendSwitch("ozone-platform", "wayland");
 }
 
 // unused features flags
@@ -87,11 +78,8 @@ app.commandLine.appendSwitch("disable-spell-checking");
 app.commandLine.appendSwitch("disable-pdf-extension");
 app.commandLine.appendSwitch("disable-print-preview");
 app.commandLine.appendSwitch("disable-shared-workers");
-// Don't disable 3d APIs / WebGL on Wayland - keep hardware acceleration enabled
-if (!isWayland) {
-  app.commandLine.appendSwitch("disable-3d-apis");
-  app.commandLine.appendSwitch("disable-webgl");
-}
+app.commandLine.appendSwitch("disable-3d-apis");
+app.commandLine.appendSwitch("disable-webgl");
 app.commandLine.appendSwitch("disable-background-networking");
 app.commandLine.appendSwitch("disable-domain-reliability");
 app.commandLine.appendSwitch("disable-component-update");
