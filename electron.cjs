@@ -46,7 +46,6 @@ app.on("window-all-closed", () => {
 
 // required flags
 app.commandLine.appendSwitch("enable-features", "GlobalShortcutsPortal");
-
 app.commandLine.appendSwitch("disable-background-timer-throttling");
 
 // memory usage flags
