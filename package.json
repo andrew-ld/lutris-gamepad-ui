@@ -21,7 +21,8 @@
     "electron:build": "electron-builder --config electron-builder.config.cjs",
     "build": "npm run build:vite && npm run electron:build",
     "electron:dev": "wait-on http://localhost:5173 && electron .",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "prettier": "prettier -w ."
   },
   "dependencies": {
     "@futpib/paclient": "github:andrew-ld/paclient#450fc5046e2bb6b3ce7920211ec89bc3748d0463",
@@ -49,6 +50,7 @@
     "eslint-plugin-unicorn": "^63.0.0",
     "globals": "^15.15.0",
     "postcss": "^8.5.6",
+    "prettier": "^3.8.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-scan": "^0.5.3",
