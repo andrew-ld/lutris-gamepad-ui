@@ -74,7 +74,7 @@ export function createLocalePlugins() {
     writeLocaleFile(masterLocaleObject, pluginState.masterLocaleFile);
 
     const shouldCleanup =
-      process.env.LUTRIS_GEMAPAD_UI_LOCALE_CLEANUP === "true";
+      process.env.LUTRIS_GAMEPAD_UI_LOCALE_CLEANUP === "true";
 
     const localeDir = path.dirname(pluginState.masterLocaleFile);
 

@@ -35,8 +35,8 @@ async function spawnDdcutil(arguments_) {
   }
 }
 
-const isDevelopment = process.env.LUTRIS_GEMAPAD_UI_IS_DEV === "1";
-const forceWindowed = process.env.LUTRIS_GEMAPAD_UI_FORCE_WINDOWED === "1";
+const isDevelopment = process.env.LUTRIS_GAMEPAD_UI_IS_DEV === "1";
+const forceWindowed = process.env.LUTRIS_GAMEPAD_UI_FORCE_WINDOWED === "1";
 
 function localeAppFile(name) {
   const DIRECTORIES = [

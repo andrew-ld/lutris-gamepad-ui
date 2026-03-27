@@ -13,7 +13,7 @@
   "homepage": "https://github.com/andrew-ld/lutris-gamepad-ui/",
   "scripts": {
     "dev": "vite",
-    "start": "LUTRIS_GEMAPAD_UI_IS_DEV=1 concurrently \"npm run dev\" \"npm run electron:dev\"",
+    "start": "LUTRIS_GAMEPAD_UI_IS_DEV=1 concurrently \"npm run dev\" \"npm run electron:dev\"",
     "start:prod": "npm run build:vite && electron39 electron.cjs",
     "start:prod-wayland": "npm run build:vite && electron39 electron.cjs --ozone-platform=wayland",
     "start:prod-steamdeck": "npm run build:vite && gamescope -W 1280 -w 1280 -H 800 -h 800 -- electron39 electron.cjs",

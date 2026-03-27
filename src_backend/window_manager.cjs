@@ -92,7 +92,7 @@ function toggleWindowShow() {
 
 function getHomePageUrl() {
   const queryParams = new URLSearchParams();
-  const disableFeatureEnvPrefix = "LUTRIS_GEMAPAD_UI_DISABLE_";
+  const disableFeatureEnvPrefix = "LUTRIS_GAMEPAD_UI_DISABLE_";
 
   for (const [k, v] of Object.entries(process.env)) {
     if (k.startsWith(disableFeatureEnvPrefix) && v === "1") {
