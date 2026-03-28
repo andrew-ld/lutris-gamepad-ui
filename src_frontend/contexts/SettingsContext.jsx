@@ -55,6 +55,14 @@ export const SettingsProvider = ({ children }) => {
     };
   }, [isMounted, disabledFeatures]);
 
+  useEffect(() => {
+    if (settings?.DISABLE_ANIMATIONS) {
+      document.body.classList.add("disable-animations");
+    } else {
+      document.body.classList.remove("disable-animations");
+    }
+  }, [settings?.DISABLE_ANIMATIONS]);
+
   const updateSetting = useCallback((key, value) => {
     ipc.setAppConfig(key, value);
   }, []);

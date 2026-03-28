@@ -51,3 +51,10 @@ html,
   padding-top: var(--top-bar-height);
   box-sizing: border-box;
 }
+
+body.disable-animations *,
+body.disable-animations *::before,
+body.disable-animations *::after {
+  animation: none !important;
+  transition: none !important;
+}
