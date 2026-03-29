@@ -7,6 +7,7 @@ import { useToastActions } from "../contexts/ToastContext";
 import { useTranslation } from "../contexts/TranslationContext";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
+import { useStaticSettings } from "../hooks/useStaticSettings";
 import * as api from "../utils/ipc";
 
 import About from "./About";
@@ -54,6 +55,8 @@ const SystemMenu = () => {
   const menuPowerButtonReference = useRef(null);
 
   const { fetchGames } = useLutrisActions();
+
+  const { staticSettings } = useStaticSettings();
 
   const openAudioSettingsModal = useCallback(() => {
     showModal((hideThisModal) => <VolumeControl onClose={hideThisModal} />);
@@ -110,27 +113,27 @@ const SystemMenu = () => {
         {
           label: t("Lutris Settings"),
           action: openLutrisSettingsModal,
-          disabled: settings.DISABLE_LUTRIS_SETTINGS,
+          disabled: staticSettings.DISABLE_LUTRIS_SETTINGS,
         },
         {
           label: t("Audio Settings"),
           action: openAudioSettingsModal,
-          disabled: settings.DISABLE_AUDIO_SETTINGS,
+          disabled: staticSettings.DISABLE_AUDIO_SETTINGS,
         },
         {
           label: t("Display Settings"),
           action: openDisplaySettingsModal,
-          disabled: settings.DISABLE_DISPLAY_SETTINGS,
+          disabled: staticSettings.DISABLE_DISPLAY_SETTINGS,
         },
         {
           label: t("Bluetooth Settings"),
           action: openBluetoothSettingsModal,
-          disabled: settings.DISABLE_BLUETOOTH_SETTINGS,
+          disabled: staticSettings.DISABLE_BLUETOOTH_SETTINGS,
         },
         {
           label: t("Open Lutris"),
           action: () => api.openLutris(),
-          disabled: settings.DISABLE_OPEN_LUTRIS,
+          disabled: staticSettings.DISABLE_OPEN_LUTRIS,
         },
         {
           label: t("Reboot System"),
@@ -138,7 +141,7 @@ const SystemMenu = () => {
           doubleConfirm: settings.doubleConfirmPowerManagement,
           firstConfirm: t("Are you sure you want to reboot the system?"),
           secondConfirm: t("Continue with system reboot?"),
-          disabled: settings.DISABLE_REBOOT_SYSTEM,
+          disabled: staticSettings.DISABLE_REBOOT_SYSTEM,
         },
         {
           label: t("Power Off System"),
@@ -146,7 +149,7 @@ const SystemMenu = () => {
           doubleConfirm: settings.doubleConfirmPowerManagement,
           firstConfirm: t("Are you sure you want to power off the system?"),
           secondConfirm: t("Continue with system power off?"),
-          disabled: settings.DISABLE_POWER_OFF_SYSTEM,
+          disabled: staticSettings.DISABLE_POWER_OFF_SYSTEM,
         },
         {
           label: t("Generate Bug Report"),
@@ -154,7 +157,7 @@ const SystemMenu = () => {
           firstConfirm: t(
             "Are you sure you want to generate the bug report file?",
           ),
-          disabled: settings.DISABLE_BUG_REPORT,
+          disabled: staticSettings.DISABLE_BUG_REPORT,
         },
         {
           label: t("Exit Application"),
@@ -165,23 +168,23 @@ const SystemMenu = () => {
         },
       ].filter((item) => !item.disabled),
     [
+      t,
       reloadLibraryAction,
-      openAudioSettingsModal,
-      openDisplaySettingsModal,
       openAboutModal,
-      openBluetoothSettingsModal,
       openSettingsModal,
       openLutrisSettingsModal,
-      t,
+      openAudioSettingsModal,
+      openDisplaySettingsModal,
+      openBluetoothSettingsModal,
       settings.doubleConfirmPowerManagement,
-      settings.DISABLE_LUTRIS_SETTINGS,
-      settings.DISABLE_AUDIO_SETTINGS,
-      settings.DISABLE_DISPLAY_SETTINGS,
-      settings.DISABLE_BLUETOOTH_SETTINGS,
-      settings.DISABLE_OPEN_LUTRIS,
-      settings.DISABLE_REBOOT_SYSTEM,
-      settings.DISABLE_POWER_OFF_SYSTEM,
-      settings.DISABLE_BUG_REPORT,
+      staticSettings.DISABLE_LUTRIS_SETTINGS,
+      staticSettings.DISABLE_AUDIO_SETTINGS,
+      staticSettings.DISABLE_DISPLAY_SETTINGS,
+      staticSettings.DISABLE_BLUETOOTH_SETTINGS,
+      staticSettings.DISABLE_OPEN_LUTRIS,
+      staticSettings.DISABLE_REBOOT_SYSTEM,
+      staticSettings.DISABLE_POWER_OFF_SYSTEM,
+      staticSettings.DISABLE_BUG_REPORT,
     ],
   );
 

@@ -7,8 +7,8 @@ import {
   useCallback,
 } from "react";
 
+import { useGamepadInputCompat } from "../hooks/useGamepadInputCompat";
 import { getMappedInput } from "../utils/gamepad_mapping";
-import { getGamepads } from "../utils/gamepads_compat";
 
 import { useSettingsState } from "./SettingsContext";
 
@@ -131,6 +131,8 @@ export const InputProvider = ({ children }) => {
   const gamepadAutorepeatState = useRef({});
 
   const { settings } = useSettingsState();
+
+  const { pollGamepads } = useGamepadInputCompat();
 
   useEffect(() => {
     gamepadAutorepeatMs.current = settings.gamepadAutorepeatMs;
@@ -260,7 +262,7 @@ export const InputProvider = ({ children }) => {
       const currentTimestamp = performance.now();
       const activeActionsSet = new Set();
       const rawPressedIndices = new Set();
-      const gamepads = await getGamepads();
+      const gamepads = await pollGamepads();
 
       setConnectedGamepadCount((prevCount) => {
         if (prevCount !== gamepads.length) {
@@ -412,7 +414,7 @@ export const InputProvider = ({ children }) => {
       window.removeEventListener("focus", handleWindowFocusChange);
       window.removeEventListener("blur", handleWindowFocusChange);
     };
-  }, [dispatchInputEvent]);
+  }, [dispatchInputEvent, pollGamepads]);
 
   const value = {
     subscribe: subscribeToInputEvents,

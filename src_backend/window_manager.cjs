@@ -90,18 +90,21 @@ function toggleWindowShow() {
   }
 }
 
-function getHomePageUrl() {
-  const queryParams = new URLSearchParams();
-  const disableFeatureEnvPrefix = "LUTRIS_GAMEPAD_UI_DISABLE_";
-
+function fillSearchParams(searchParams, envPrefix, searchParamPrefix) {
   for (const [k, v] of Object.entries(process.env)) {
-    if (k.startsWith(disableFeatureEnvPrefix) && v === "1") {
-      const flag = k.slice(disableFeatureEnvPrefix.length);
-      queryParams.append(`DISABLE_${flag}`, "1");
+    if (k.startsWith(envPrefix) && v === "1") {
+      const flag = k.slice(envPrefix.length);
+      searchParams.append(`${searchParamPrefix}_${flag}`, "1");
     }
   }
+}
 
-  const queryString = queryParams.toString();
+function getHomePageUrl() {
+  const searchParams = new URLSearchParams();
+  fillSearchParams(searchParams, "LUTRIS_GAMEPAD_UI_ENABLE_", "ENABLE");
+  fillSearchParams(searchParams, "LUTRIS_GAMEPAD_UI_DISABLE_", "DISABLE");
+
+  const queryString = searchParams.toString();
   const suffix = queryString ? `?${queryString}` : "";
 
   if (isDev) {
