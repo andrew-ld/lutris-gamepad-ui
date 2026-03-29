@@ -13,5 +13,5 @@ export async function getGamepads() {
     return sdlGamepads;
   }
 
-  return navigator.getGamepads();
+  return navigator.getGamepads().filter((g) => g !== null);
 }
