@@ -1,50 +1,64 @@
 const { SDL2_LIBRARY_NAME, bindSDL2 } = require("./sdl_bindings.cjs");
 const { logError, logInfo } = require("./utils.cjs");
 
-const handle = new Promise((resolve, reject) => {
-  try {
-    // WARNING: always lazy-load koffi
-    const koffi = require("koffi");
+const SDL_HANDLE = { promise: null };
 
-    for (const libraryName of SDL2_LIBRARY_NAME) {
-      try {
-        const lib = koffi.load(libraryName);
-        const sdl = bindSDL2(lib, koffi);
-
-        if (sdl.SDL_Init(sdl.SDL_INIT_GAMECONTROLLER) !== 0) {
-          throw new Error("Failed to initialize SDL2 GameController subsystem");
-        }
-
-        logInfo("SDL2 initialized!", libraryName);
-
-        const activeControllers = new Map();
-
-        const cleanup = () => {
-          for (const ptr of activeControllers.values()) {
-            if (ptr) sdl.SDL_GameControllerClose(ptr);
-          }
-          activeControllers.clear();
-          sdl.SDL_Quit();
-        };
-
-        process.on("exit", cleanup);
-
-        resolve({ sdl, activeControllers });
-        return;
-      } catch (error) {
-        logError("Unable to load", libraryName, error);
-      }
-    }
-
-    reject(new Error("Unable to load sdl2, missing shared library?"));
-  } catch (error) {
-    logError("Fatal error while load sdl2:", error);
-    reject(error);
+function getSdlHandle() {
+  if (SDL_HANDLE.promise) {
+    return SDL_HANDLE.promise;
   }
-});
+
+  const promise = new Promise((resolve, reject) => {
+    try {
+      // WARNING: always lazy-load koffi
+      const koffi = require("koffi");
+
+      for (const libraryName of SDL2_LIBRARY_NAME) {
+        try {
+          const lib = koffi.load(libraryName);
+          const sdl = bindSDL2(lib, koffi);
+
+          if (sdl.SDL_Init(sdl.SDL_INIT_GAMECONTROLLER) !== 0) {
+            throw new Error(
+              "Failed to initialize SDL2 GameController subsystem",
+            );
+          }
+
+          logInfo("SDL2 initialized!", libraryName);
+
+          const activeControllers = new Map();
+
+          const cleanup = () => {
+            for (const ptr of activeControllers.values()) {
+              if (ptr) sdl.SDL_GameControllerClose(ptr);
+            }
+            activeControllers.clear();
+            sdl.SDL_Quit();
+          };
+
+          process.on("exit", cleanup);
+
+          resolve({ sdl, activeControllers });
+          return;
+        } catch (error) {
+          logError("Unable to load", libraryName, error);
+        }
+      }
+
+      reject(new Error("Unable to load sdl2, missing shared library?"));
+    } catch (error) {
+      logError("Fatal error while load sdl2:", error);
+      reject(error);
+    }
+  });
+
+  SDL_HANDLE.promise = promise;
+
+  return promise;
+}
 
 async function pollGamepads() {
-  const { sdl, activeControllers } = await handle;
+  const { sdl, activeControllers } = await getSdlHandle();
 
   sdl.SDL_GameControllerUpdate();
 
