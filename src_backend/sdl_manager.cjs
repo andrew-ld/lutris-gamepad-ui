@@ -1,4 +1,4 @@
-const sdl_bindings = require("./sdl_bindings.cjs");
+const { SDL2_LIBRARY_NAME, bindSDL2 } = require("./sdl_bindings.cjs");
 const { logError, logInfo } = require("./utils.cjs");
 
 const handle = new Promise((resolve, reject) => {
@@ -6,10 +6,10 @@ const handle = new Promise((resolve, reject) => {
     // WARNING: always lazy-load koffi
     const koffi = require("koffi");
 
-    for (const libraryName of sdl_bindings.SDL2_LIBRARY_NAME) {
+    for (const libraryName of SDL2_LIBRARY_NAME) {
       try {
         const lib = koffi.load(libraryName);
-        const sdl = sdl_bindings.bindSDL2(lib, koffi);
+        const sdl = bindSDL2(lib, koffi);
 
         if (sdl.SDL_Init(sdl.SDL_INIT_GAMECONTROLLER) !== 0) {
           throw new Error("Failed to initialize SDL2 GameController subsystem");
