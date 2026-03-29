@@ -15,8 +15,6 @@ const {
 } = require("./src_backend/utils.cjs");
 const { createWindow } = require("./src_backend/window_manager.cjs");
 
-process.noAsar = true;
-
 process.on("unhandledRejection", (reason, promise) => {
   logError("Caught a global rejection:", reason, promise);
 });
