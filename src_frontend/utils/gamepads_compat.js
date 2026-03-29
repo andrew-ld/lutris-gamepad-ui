@@ -1,12 +1,16 @@
 import { pollGamepadsSdl } from "./ipc";
 
+const SDL_ERROR = { current: false };
+
 export async function getGamepads() {
   let sdlGamepads;
 
   try {
-    sdlGamepads = await pollGamepadsSdl();
+    if (!SDL_ERROR.current) {
+      sdlGamepads = await pollGamepadsSdl();
+    }
   } catch {
-    // SDL polling fails or is unavailable
+    SDL_ERROR.current = true;
   }
 
   if (sdlGamepads && sdlGamepads.length > 0) {

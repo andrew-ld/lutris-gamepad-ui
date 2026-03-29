@@ -1,5 +1,5 @@
 const sdl_bindings = require("./sdl_bindings.cjs");
-const { logError } = require("./utils.cjs");
+const { logError, logInfo } = require("./utils.cjs");
 
 const handle = new Promise((resolve, reject) => {
   try {
@@ -14,6 +14,8 @@ const handle = new Promise((resolve, reject) => {
         if (sdl.SDL_Init(sdl.SDL_INIT_GAMECONTROLLER) !== 0) {
           throw new Error("Failed to initialize SDL2 GameController subsystem");
         }
+
+        logInfo("SDL2 initialized!", libraryName);
 
         const activeControllers = new Map();
 
