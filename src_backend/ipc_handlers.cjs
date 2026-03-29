@@ -34,6 +34,7 @@ const {
   updateLutrisSetting,
   getLutrisRunners,
 } = require("./lutris_wrapper.cjs");
+const { mapSdlGamepadsToWebApi, pollGamepads } = require("./sdl_manager.cjs");
 const { getMainWindow } = require("./state.cjs");
 const { getUserTheme } = require("./theme_manager.cjs");
 const {
@@ -296,6 +297,11 @@ function registerIpcHandlers() {
   // Bug Reporter
   ipcOnWithError("create-bug-report", async () => {
     await createBugReportFile();
+  });
+
+  // Sdl
+  ipcHandleWithError("poll-gamepads-sdl", async () => {
+    return mapSdlGamepadsToWebApi(await pollGamepads());
   });
 }
 

@@ -156,6 +156,8 @@ function createWindow(onWindowClosedCallback) {
 
   const homePageUrl = getHomePageUrl();
 
+  logInfo("homePageUrl:", homePageUrl);
+
   app.on("web-contents-created", (_event, contents) => {
     contents.setWindowOpenHandler((details) => {
       logWarn("Tried to open window", details);

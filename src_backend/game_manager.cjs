@@ -110,9 +110,9 @@ async function getGames() {
 
   if (games.length === 0) return games;
 
-  games.forEach((g) => {
-    g.id = parseInt(g.id);
-  });
+  for (const g of games) {
+    g.id = Number.parseInt(g.id);
+  }
 
   try {
     const {

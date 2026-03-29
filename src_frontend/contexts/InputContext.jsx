@@ -8,7 +8,7 @@ import {
 } from "react";
 
 import { getMappedInput } from "../utils/gamepad_mapping";
-import { logInfo } from "../utils/ipc";
+import { getGamepads } from "../utils/gamepads_compat";
 
 import { useSettingsState } from "./SettingsContext";
 
@@ -227,12 +227,6 @@ export const InputProvider = ({ children }) => {
     [releaseInputFocus, triggerFocusUpdate],
   );
 
-  const refreshGamepadCount = useCallback(() => {
-    const count = navigator.getGamepads().filter(Boolean).length;
-    setConnectedGamepadCount(count);
-    return count;
-  }, []);
-
   useEffect(() => {
     const handleKeyboardKeyDown = (event) => {
       event.preventDefault();
@@ -262,11 +256,18 @@ export const InputProvider = ({ children }) => {
   }, [dispatchInputEvent]);
 
   useEffect(() => {
-    const executeGamepadPoll = () => {
+    const executeGamepadPoll = async () => {
       const currentTimestamp = performance.now();
       const activeActionsSet = new Set();
       const rawPressedIndices = new Set();
-      const gamepads = navigator.getGamepads();
+      const gamepads = await getGamepads();
+
+      setConnectedGamepadCount((prevCount) => {
+        if (prevCount !== gamepads.length) {
+          return gamepads.length;
+        }
+        return prevCount;
+      });
 
       let activeGamepad = null;
 
@@ -371,49 +372,28 @@ export const InputProvider = ({ children }) => {
         gamepadPollingRafId.current = null;
       }
       if (gamepadPollingIntervalId.current) {
-        clearInterval(gamepadPollingIntervalId.current);
+        clearTimeout(gamepadPollingIntervalId.current);
         gamepadPollingIntervalId.current = null;
       }
     };
 
     const startGamepadLoop = () => {
       stopGamepadLoop();
-
-      const count = navigator.getGamepads().filter(Boolean).length;
-      if (count === 0) {
-        isGamepadPollingActive.current = false;
-        logInfo("InputProvider: No gamepads detected. Polling stopped.");
-        return;
-      }
-
       isGamepadPollingActive.current = true;
 
-      if (document.hasFocus()) {
-        logInfo("InputProvider: Starting RAF polling (Focused).");
-        const loop = () => {
-          executeGamepadPoll();
+      const loop = async () => {
+        if (!isGamepadPollingActive.current) return;
+
+        await executeGamepadPoll();
+
+        if (document.hasFocus()) {
           gamepadPollingRafId.current = requestAnimationFrame(loop);
-        };
-        loop();
-      } else {
-        logInfo(
-          "InputProvider: Starting Interval polling (Blurred/Background).",
-        );
-        gamepadPollingIntervalId.current = setInterval(executeGamepadPoll, 16);
-      }
-    };
+        } else {
+          gamepadPollingIntervalId.current = setTimeout(loop, 16);
+        }
+      };
 
-    const handleGamepadConnected = () => {
-      refreshGamepadCount();
-      startGamepadLoop();
-    };
-
-    const handleGamepadDisconnected = () => {
-      const count = refreshGamepadCount();
-      if (count === 0) {
-        stopGamepadLoop();
-        isGamepadPollingActive.current = false;
-      }
+      loop();
     };
 
     const handleWindowFocusChange = () => {
@@ -422,34 +402,17 @@ export const InputProvider = ({ children }) => {
       }
     };
 
-    refreshGamepadCount();
+    startGamepadLoop();
 
-    if (navigator.getGamepads().some(Boolean)) {
-      startGamepadLoop();
-    }
-
-    globalThis.addEventListener("gamepadconnected", handleGamepadConnected);
-    globalThis.addEventListener(
-      "gamepaddisconnected",
-      handleGamepadDisconnected,
-    );
     window.addEventListener("focus", handleWindowFocusChange);
     window.addEventListener("blur", handleWindowFocusChange);
 
     return () => {
       stopGamepadLoop();
-      globalThis.removeEventListener(
-        "gamepadconnected",
-        handleGamepadConnected,
-      );
-      globalThis.removeEventListener(
-        "gamepaddisconnected",
-        handleGamepadDisconnected,
-      );
       window.removeEventListener("focus", handleWindowFocusChange);
       window.removeEventListener("blur", handleWindowFocusChange);
     };
-  }, [refreshGamepadCount, dispatchInputEvent]);
+  }, [dispatchInputEvent]);
 
   const value = {
     subscribe: subscribeToInputEvents,

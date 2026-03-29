@@ -56,11 +56,10 @@ export const SettingsProvider = ({ children }) => {
   }, [isMounted, disabledFeatures]);
 
   useEffect(() => {
-    if (settings?.DISABLE_ANIMATIONS) {
-      document.body.classList.add("disable-animations");
-    } else {
-      document.body.classList.remove("disable-animations");
-    }
+    document.body.classList.toggle(
+      "disable-animations",
+      Boolean(settings?.DISABLE_ANIMATIONS),
+    );
   }, [settings?.DISABLE_ANIMATIONS]);
 
   const updateSetting = useCallback((key, value) => {

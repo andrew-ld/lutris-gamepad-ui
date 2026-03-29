@@ -93,4 +93,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
   // Bug Report
   createBugReportFile: () => ipcRenderer.send("create-bug-report"),
+
+  // Sdl
+  pollGamepadsSdl: () => ipcRenderer.invoke("poll-gamepads-sdl"),
 });
