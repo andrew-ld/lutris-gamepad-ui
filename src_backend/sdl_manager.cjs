@@ -83,7 +83,6 @@ async function pollGamepads() {
 
       gamepads.push({
         index: i,
-        id: sdl.SDL_GameControllerName(ptr),
         axes: axes,
         buttons: buttons,
       });
@@ -131,7 +130,6 @@ const AXIS_MAPPING = [
 function mapSdlGamepadsToWebApi(gamepads) {
   return gamepads.map((gp) => ({
     index: gp.index,
-    id: gp.id,
     mapping: "standard",
     buttons: BUTTON_MAPPING.map((map) => {
       if (map.type === "button") {
