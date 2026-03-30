@@ -38,6 +38,7 @@ const {
   logInfo,
   isRunningInsideGamescope,
 } = require("./utils.cjs");
+const { cycleGamescopeFocus } = require("./x11_manager.cjs");
 
 function getWindowZoomFactor() {
   return getAppConfig().zoomFactor || 1;
@@ -72,21 +73,29 @@ function toggleWindowShow() {
     return;
   }
 
+  if (isRunningInsideGamescope()) {
+    logInfo("toggleWindowShow: using gamescope");
+    cycleGamescopeFocus().catch((error) => {
+      logError("cycleGamescopeFocus", error);
+    });
+    return;
+  }
+
   if (getRemoteDesktopSessionHandle()) {
-    if (!mainWindow.isVisible()) {
-      mainWindow.show();
-    }
     logInfo("toggleWindowShow: using remote desktop portal");
     sendAltTabDebounced();
+    return;
+  }
+
+  logInfo("toggleWindowShow: using fallback");
+
+  if (mainWindow.isMinimized()) {
+    mainWindow.maximizable();
+    mainWindow.hide();
+    mainWindow.restore();
+    mainWindow.show();
   } else {
-    logInfo("toggleWindowShow: using hide/show fallback");
-    if (mainWindow.isMinimized()) {
-      mainWindow.maximize();
-      mainWindow.hide();
-      mainWindow.restore();
-    } else {
-      mainWindow.minimize();
-    }
+    mainWindow.minimize();
   }
 }
 

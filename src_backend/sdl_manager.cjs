@@ -1,22 +1,24 @@
-const { SDL2_LIBRARY_NAME, bindSDL2 } = require("./sdl_bindings.cjs");
+const {
+  SDL2_LIBRARY_NAME,
+  bindSDL2,
+  configureKoffiSdl,
+} = require("./sdl_bindings.cjs");
 const { logError, logInfo } = require("./utils.cjs");
 
 const SDL_HANDLE = { promise: null };
 
 function getSdlHandle() {
-  if (SDL_HANDLE.promise) {
-    return SDL_HANDLE.promise;
-  }
+  if (SDL_HANDLE.promise) return SDL_HANDLE.promise;
 
-  const promise = new Promise((resolve, reject) => {
+  SDL_HANDLE.promise = new Promise((resolve, reject) => {
     try {
-      // WARNING: always lazy-load koffi
       const koffi = require("koffi");
+      configureKoffiSdl(koffi);
 
       for (const libraryName of SDL2_LIBRARY_NAME) {
         try {
           const lib = koffi.load(libraryName);
-          const sdl = bindSDL2(lib, koffi);
+          const sdl = bindSDL2(lib);
 
           if (sdl.SDL_Init(sdl.SDL_INIT_GAMECONTROLLER) !== 0) {
             throw new Error(
@@ -45,16 +47,14 @@ function getSdlHandle() {
         }
       }
 
-      reject(new Error("Unable to load sdl2, missing shared library?"));
+      reject(new Error("Unable to load sdl"));
     } catch (error) {
       logError("Fatal error while load sdl2:", error);
       reject(error);
     }
   });
 
-  SDL_HANDLE.promise = promise;
-
-  return promise;
+  return SDL_HANDLE.promise;
 }
 
 async function pollGamepads() {
