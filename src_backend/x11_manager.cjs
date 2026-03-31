@@ -137,14 +137,6 @@ async function x11gamescopeRotateActiveWindow() {
     0n,
     koffi,
   );
-  const { result: focused } = getProp(
-    x11,
-    dpy,
-    root,
-    gamescopeFocusedWindowAtom,
-    0n,
-    koffi,
-  );
 
   if (!rawFocusable || rawFocusable.length === 0) {
     return;
@@ -158,6 +150,15 @@ async function x11gamescopeRotateActiveWindow() {
       pid: BigInt(rawFocusable[i + 2]),
     });
   }
+
+  const { result: focused } = getProp(
+    x11,
+    dpy,
+    root,
+    gamescopeFocusedWindowAtom,
+    0n,
+    koffi,
+  );
 
   const currentFocusedWindow =
     focused && focused.length > 0 ? BigInt(focused[0]) : 0n;
