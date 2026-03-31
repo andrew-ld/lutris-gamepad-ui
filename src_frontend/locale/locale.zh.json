@@ -67,7 +67,7 @@
     "Display Settings": "显示设置",
     "Enable": "启用",
     "Failed to load brightness. Check your desktop environment compatibility.": "加载亮度失败。请检查桌面环境兼容性。",
-    "Failed to load night light. Check your desktop environment compatibility.": "加载夜光失败。请检查桌面环境兼容性。",
+    "Failed to load night light. Check your desktop environment compatibility.": "加载夜间模式失败。请检查桌面环境兼容性。",
     "Increase": "增加",
     "Loading Display Settings...": "正在加载显示设置...",
     "Night Light": "夜间模式",
