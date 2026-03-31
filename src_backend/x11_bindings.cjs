@@ -16,6 +16,7 @@ function bindX11(lib) {
     True: 1,
 
     XA_CARDINAL: 6n,
+    XA_ATOM: 4n,
     XA_WINDOW: 33n,
 
     PropModeReplace: 0,
@@ -27,6 +28,7 @@ function bindX11(lib) {
       "Atom XInternAtom(Display* display, const char* atom_name, Bool only_if_exists)",
     ),
     XFlush: lib.func("int XFlush(Display* display)"),
+    XSync: lib.func("int XSync(Display* display, Bool discard)"),
     XFree: lib.func("int XFree(void* data)"),
 
     XGetWindowProperty: lib.func(
@@ -43,6 +45,9 @@ function bindX11(lib) {
     XUnmapWindow: lib.func("int XUnmapWindow(Display* dpy, Window w)"),
     XLowerWindow: lib.func("int XLowerWindow(Display* dpy, Window w)"),
     XRaiseWindow: lib.func("int XRaiseWindow(Display* dpy, Window w)"),
+    XClearArea: lib.func(
+      "int XClearArea(Display* display, Window w, int x, int y, uint width, uint height, Bool exposures)",
+    ),
     XSetInputFocus: lib.func(
       "int XSetInputFocus(Display* dpy, Window focus, int revert_to, uint64 time)",
     ),

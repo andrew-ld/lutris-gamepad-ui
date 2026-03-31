@@ -6,7 +6,7 @@ const {
   configureKoffiX11,
 } = require("./x11_bindings.cjs");
 
-const X11_HANDLE = { promise: null };
+const X11_HANDLE = { promise: null, atom_cache: {} };
 
 function getX11Handle() {
   if (X11_HANDLE.promise) return X11_HANDLE.promise;
@@ -39,6 +39,13 @@ function getX11Handle() {
   });
 
   return X11_HANDLE.promise;
+}
+
+function getAtom(x11, dpy, name, onlyIfExists) {
+  if (!X11_HANDLE.atom_cache[name]) {
+    X11_HANDLE.atom_cache[name] = x11.XInternAtom(dpy, name, onlyIfExists);
+  }
+  return X11_HANDLE.atom_cache[name];
 }
 
 function getProp(x11, dpy, window, atom, type, koffi) {
@@ -93,7 +100,8 @@ function getProp(x11, dpy, window, atom, type, koffi) {
 async function x11gamescopeRotateActiveWindow() {
   const { x11, dpy, root, koffi } = await getX11Handle();
 
-  const gamescopeFocusableWindowsAtom = x11.XInternAtom(
+  const gamescopeFocusableWindowsAtom = getAtom(
+    x11,
     dpy,
     "GAMESCOPE_FOCUSABLE_WINDOWS",
     x11.True,
@@ -102,7 +110,8 @@ async function x11gamescopeRotateActiveWindow() {
     return;
   }
 
-  const gamescopeFocusedWindowAtom = x11.XInternAtom(
+  const gamescopeFocusedWindowAtom = getAtom(
+    x11,
     dpy,
     "GAMESCOPE_FOCUSED_WINDOW",
     x11.True,
@@ -111,7 +120,8 @@ async function x11gamescopeRotateActiveWindow() {
     return;
   }
 
-  const gamescopeCtrlWindowAtom = x11.XInternAtom(
+  const gamescopeCtrlWindowAtom = getAtom(
+    x11,
     dpy,
     "GAMESCOPECTRL_BASELAYER_WINDOW",
     x11.True,
@@ -120,7 +130,8 @@ async function x11gamescopeRotateActiveWindow() {
     return;
   }
 
-  const gamescopeCtrlAppIDAtom = x11.XInternAtom(
+  const gamescopeCtrlAppIDAtom = getAtom(
+    x11,
     dpy,
     "GAMESCOPECTRL_BASELAYER_APPID",
     x11.True,
@@ -202,11 +213,7 @@ async function x11gamescopeRotateActiveWindow() {
 async function x11gamescopeIsSteamControlled() {
   const { x11, dpy, root, koffi } = await getX11Handle();
 
-  const focusedAppAtom = x11.XInternAtom(
-    dpy,
-    "GAMESCOPE_FOCUSED_APP",
-    x11.True,
-  );
+  const focusedAppAtom = getAtom(x11, dpy, "GAMESCOPE_FOCUSED_APP", x11.True);
   if (focusedAppAtom === 0) {
     return false;
   }
@@ -232,24 +239,72 @@ async function x11gamescopeSetMainWindowActive(active) {
 
   const { x11, dpy, root, koffi } = await getX11Handle();
 
-  const steamGameAtom = x11.XInternAtom(dpy, "STEAM_GAME", x11.True);
+  const steamGameAtom = getAtom(x11, dpy, "STEAM_GAME", x11.False);
   if (steamGameAtom === 0) {
     return;
   }
 
-  const gamescopeFocusableWindowsAtom = x11.XInternAtom(
+  const gamescopeFocusableWindowsAtom = getAtom(
+    x11,
     dpy,
     "GAMESCOPE_FOCUSABLE_WINDOWS",
     x11.True,
   );
-  if (steamGameAtom === 0) {
+  if (gamescopeFocusableWindowsAtom === 0) {
     return;
   }
 
+  const zeroAppData = Buffer.alloc(8);
+  zeroAppData.writeBigUInt64LE(0n);
+
   if (active) {
-    // 1. Elevate Tier: Set STEAM_GAME on our window to its own ID (non-zero).
-    const myAppData = Buffer.alloc(4);
-    myAppData.writeUInt32LE(Number(myWindowId & 0xff_ff_ff_ffn));
+    // 1. Demote Others FIRST: This ensures our window is the only Tier 1 window
+    // when Gamescope re-evaluates focus during the mapping process.
+    const { result: rawFocusable } = getProp(
+      x11,
+      dpy,
+      root,
+      gamescopeFocusableWindowsAtom,
+      0n,
+      koffi,
+    );
+    if (!rawFocusable || rawFocusable.length === 0) {
+      return;
+    }
+
+    let foundMyWindow = false;
+
+    for (let i = 0; i < rawFocusable.length; i += 3) {
+      const winId = BigInt(rawFocusable[i]);
+      foundMyWindow = winId === myWindowId;
+      if (foundMyWindow) {
+        break;
+      }
+    }
+
+    if (!foundMyWindow) {
+      return;
+    }
+
+    for (let i = 0; i < rawFocusable.length; i += 3) {
+      const winId = BigInt(rawFocusable[i]);
+      if (winId !== myWindowId) {
+        x11.XChangeProperty(
+          dpy,
+          winId,
+          steamGameAtom,
+          x11.XA_CARDINAL,
+          32,
+          x11.PropModeReplace,
+          zeroAppData,
+          1,
+        );
+      }
+    }
+
+    // 2. Elevate Tier: Set STEAM_GAME on our window to its own ID (Tier 1).
+    const myAppData = Buffer.alloc(8);
+    myAppData.writeBigUInt64LE(myWindowId);
     x11.XChangeProperty(
       dpy,
       myWindowId,
@@ -261,47 +316,23 @@ async function x11gamescopeSetMainWindowActive(active) {
       1,
     );
 
-    // 2. Reset Map Sequence: Unmap then Map.
+    // XSync ensures the Tier changes are processed by the X server (and thus Gamescope)
+    // BEFORE we trigger the MapSequence reset.
+    x11.XSync(dpy, x11.False);
+
+    // 3. Reset Map Sequence: Unmap then Map.
+    // This makes us the "newest" window in the high-priority stack.
     x11.XUnmapWindow(dpy, myWindowId);
     x11.XMapWindow(dpy, myWindowId);
 
-    // 3. Demote Others (Strict Mode): Set STEAM_GAME to 0 for every window except ours.
-    const { result: rawFocusable } = getProp(
-      x11,
-      dpy,
-      root,
-      gamescopeFocusableWindowsAtom,
-      0n,
-      koffi,
-    );
-    if (rawFocusable && rawFocusable.length > 0) {
-      const zeroAppData = Buffer.alloc(4);
-      zeroAppData.writeUInt32LE(0);
+    // 4. Force damage/exposure to win the "Damage Rule" tie-breaker.
+    x11.XClearArea(dpy, myWindowId, 0, 0, 0, 0, x11.True);
 
-      for (let i = 0; i < rawFocusable.length; i += 3) {
-        const winId = BigInt(rawFocusable[i]);
-        if (winId !== myWindowId) {
-          x11.XChangeProperty(
-            dpy,
-            winId,
-            steamGameAtom,
-            x11.XA_CARDINAL,
-            32,
-            x11.PropModeReplace,
-            zeroAppData,
-            1,
-          );
-        }
-      }
-    }
-
-    // Explicitly set focus just in case
+    // 5. Final Raise and Input Focus
     x11.XRaiseWindow(dpy, myWindowId);
     x11.XSetInputFocus(dpy, myWindowId, 1, 0n);
   } else {
-    // 1. Drop Tier: Set STEAM_GAME on our window to 0.
-    const zeroAppData = Buffer.alloc(4);
-    zeroAppData.writeUInt32LE(0);
+    // 1. Drop Tier: Set STEAM_GAME on our window to 0 (Tier 2).
     x11.XChangeProperty(
       dpy,
       myWindowId,
@@ -313,10 +344,8 @@ async function x11gamescopeSetMainWindowActive(active) {
       1,
     );
 
-    // 2. Lower Window.
-    x11.XLowerWindow(dpy, myWindowId);
-
-    // 3. Restore Others: Set their STEAM_GAME back to their own IDs.
+    // 2. Restore Others: In non-steam mode, appID == Window ID.
+    // We restore everyone else to Tier 1 so they can resume normal focus.
     const { result: rawFocusable } = getProp(
       x11,
       dpy,
@@ -329,10 +358,9 @@ async function x11gamescopeSetMainWindowActive(active) {
     if (rawFocusable && rawFocusable.length > 0) {
       for (let i = 0; i < rawFocusable.length; i += 3) {
         const winId = BigInt(rawFocusable[i]);
-        const appId = BigInt(rawFocusable[i + 1]);
-        if (winId !== myWindowId && appId !== 0n) {
-          const appData = Buffer.alloc(4);
-          appData.writeUInt32LE(Number(appId & 0xff_ff_ff_ffn));
+        if (winId !== myWindowId) {
+          const appData = Buffer.alloc(8);
+          appData.writeBigUInt64LE(winId);
           x11.XChangeProperty(
             dpy,
             winId,
@@ -346,6 +374,9 @@ async function x11gamescopeSetMainWindowActive(active) {
         }
       }
     }
+
+    // 3. Lower Window.
+    x11.XLowerWindow(dpy, myWindowId);
   }
 
   x11.XFlush(dpy);
