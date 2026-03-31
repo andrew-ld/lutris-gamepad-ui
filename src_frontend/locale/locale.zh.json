@@ -1,0 +1,218 @@
+{
+  "components/About.jsx": {
+    "Author": "作者",
+    "Close": "关闭",
+    "Homepage": "主页",
+    "License": "许可",
+    "Open Link": "打开链接",
+    "Version": "版本"
+  },
+  "components/BluetoothMenu.jsx": {
+    "Attempting to establish a connection with the device.": "正在尝试与设备建立连接。",
+    "Bluetooth": "蓝牙",
+    "Bluetooth Settings": "蓝牙设置",
+    "Close": "关闭",
+    "Connect": "连接",
+    "Connect to \"{{targetName}}\"?": "要连接到 \"{{targetName}}\" 吗？",
+    "Connected": "已连接",
+    "Disconnect": "断开连接",
+    "Disconnect from \"{{targetName}}\"?": "要断开与 \"{{targetName}}\" 的连接吗？",
+    "No devices found. Ensure Bluetooth is powered on and press 'X' to start discovery.": "未找到设备。请确保蓝牙已开启并按 'X' 开始搜索。",
+    "Paired": "已配对",
+    "Power On": "开启",
+    "Power on {{adapterName}}": "开启 {{adapterName}}",
+    "Refresh": "刷新",
+    "Select": "选择",
+    "Start discovery": "开始搜索",
+    "Stop discovery": "停止搜索",
+    "The device will be disconnected from the system.": "该设备将从系统断开。"
+  },
+  "components/ConfirmationDialog.jsx": {
+    "Cancel": "取消",
+    "Confirm": "确认",
+    "Select": "选择"
+  },
+  "components/ControlsOverlay.jsx": {
+    "Clear Search": "清除搜索",
+    "Force close": "强制关闭",
+    "Launch Game": "启动游戏",
+    "Next": "下一个",
+    "Options": "选项",
+    "Pause Game": "暂停游戏",
+    "Power": "电源",
+    "Prev": "上一个",
+    "Resume Game": "继续游戏",
+    "Search": "搜索",
+    "Toggle Overlay": "切换覆盖层"
+  },
+  "components/CrashDialog.jsx": {
+    "Close Application": "关闭应用",
+    "Hide Error Details": "隐藏错误详情",
+    "Navigate": "导航",
+    "No component stack available.": "没有可用的组件堆栈。",
+    "No error message provided.": "未提供错误信息。",
+    "Oops! Something went wrong.": "哎呀！出现了错误。",
+    "Reload Application": "重载应用",
+    "Scroll Down": "向下滚动",
+    "Scroll Up": "向上滚动",
+    "Select": "选择",
+    "Show Error Details": "显示错误详情",
+    "The application has encountered an unexpected error.": "应用遇到未预期的错误。"
+  },
+  "components/DisplaySettings.jsx": {
+    "Brightness": "亮度",
+    "Close": "关闭",
+    "Decrease": "降低",
+    "Disable": "禁用",
+    "Display Settings": "显示设置",
+    "Enable": "启用",
+    "Failed to load brightness. Check your desktop environment compatibility.": "加载亮度失败。请检查桌面环境兼容性。",
+    "Failed to load night light. Check your desktop environment compatibility.": "加载夜光失败。请检查桌面环境兼容性。",
+    "Increase": "增加",
+    "Loading Display Settings...": "正在加载显示设置...",
+    "Night Light": "夜间模式",
+    "No display settings available.": "没有可用的显示设置。",
+    "Reload": "重载",
+    "Update": "更新"
+  },
+  "components/GameCard.jsx": {
+    "Last played: {{date}}": "上次游玩：{{date}}",
+    "Never": "从未",
+    "Playtime: {{playtime}}": "游玩时长：{{playtime}}"
+  },
+  "components/LibraryContainer.jsx": {
+    "Add games in Lutris and reload.": "在 Lutris 中添加游戏并重载。",
+    "Are you sure you want to close\n{{title}}?": "确定要关闭\n{{title}} 吗？",
+    "Are you sure you want to pause\n{{title}}?": "确定要暂停\n{{title}} 吗？",
+    "Loading library...": "正在加载库...",
+    "My Library": "我的库",
+    "No games found": "未找到游戏",
+    "No results for \"{{searchQuery}}\"": "未找到与 \"{{searchQuery}}\" 相关的结果",
+    "Search": "搜索",
+    "Search Library": "搜索库",
+    "This action will force-quit the game. Any unsaved progress may be lost.": "此操作将强制退出游戏，未保存的进度可能会丢失。",
+    "This feature is experimental. Pausing the game may cause issues.": "此功能为实验性。暂停游戏可能会导致问题。",
+    "Try a different search term or press 'B' to clear.": "请尝试不同的搜索词或按 'B' 清除。"
+  },
+  "components/LoadingIndicator.jsx": {
+    "Loading...": "加载中..."
+  },
+  "components/LutrisSettingsFlow.jsx": {
+    "Failed to fetch Lutris runners": "获取 Lutris 运行器失败",
+    "Global": "全局",
+    "Lutris Settings": "Lutris 设置",
+    "Select Runner": "选择运行器"
+  },
+  "components/LutrisSettingsMenu.jsx": {
+    "Close": "关闭",
+    "Default": "默认",
+    "Disable": "禁用",
+    "Enable": "启用",
+    "Lutris Settings": "Lutris 设置",
+    "Next": "下一个",
+    "Prev": "上一个",
+    "Select": "选择",
+    "Settings: {{name}}": "设置：{{name}}"
+  },
+  "components/OnScreenKeyboard.jsx": {
+    "Backspace": "退格",
+    "Close": "关闭",
+    "Enter": "回车",
+    "Select": "选择",
+    "Space": "空格",
+    "Submit": "提交"
+  },
+  "components/RowBasedMenu.jsx": {
+    "No items available.": "没有可用项。"
+  },
+  "components/RunningGame.jsx": {
+    "Now Playing": "正在游玩",
+    "Paused": "已暂停",
+    "Playtime: {{playtime}}": "游玩时长：{{playtime}}"
+  },
+  "components/SelectionMenu.jsx": {
+    "Back": "返回",
+    "Select": "选择"
+  },
+  "components/SettingsMenu.jsx": {
+    "Close": "关闭",
+    "Decrease": "减少",
+    "Disable": "禁用",
+    "Double Confirm Power Management": "电源管理双重确认",
+    "Enable": "启用",
+    "Gamepad Autorepeat Delay": "手柄按键重复延迟",
+    "General": "常规",
+    "Increase": "增加",
+    "Input & Power": "输入与电源",
+    "Keep Games Running On Quit": "退出时保持游戏运行",
+    "Library": "库",
+    "Next": "下一个",
+    "Prev": "上一个",
+    "Recently Played Shelf": "最近游玩展架",
+    "Settings": "设置",
+    "Show Hidden Games": "显示隐藏的游戏",
+    "Show Runner Icon": "显示运行器图标",
+    "UI Action Sound Feedbacks": "界面操作音效",
+    "Use Remote Desktop Portal": "使用远程桌面协议",
+    "Zoom Level": "缩放级别"
+  },
+  "components/SystemMenu.jsx": {
+    "About": "关于",
+    "Are you sure you want to exit the application?": "确定要退出应用吗？",
+    "Are you sure you want to generate the bug report file?": "确定要生成错误报告文件吗？",
+    "Are you sure you want to power off the system?": "确定要关闭系统吗？",
+    "Are you sure you want to reboot the system?": "确定要重启系统吗？",
+    "Audio Settings": "音频设置",
+    "Back": "返回",
+    "Bluetooth Settings": "蓝牙设置",
+    "Continue with exiting the application?": "继续退出应用吗？",
+    "Continue with system power off?": "继续关闭系统吗？",
+    "Continue with system reboot?": "继续重启系统吗？",
+    "Display Settings": "显示设置",
+    "Exit Application": "退出应用",
+    "Generate Bug Report": "生成错误报告",
+    "Lutris Settings": "Lutris 设置",
+    "Open Lutris": "打开 Lutris",
+    "Power Off System": "关机",
+    "Reboot System": "重启系统",
+    "Reload Library": "重载库",
+    "Reloading library...": "正在重载库...",
+    "Select": "选择",
+    "Settings": "设置",
+    "This action is final and cannot be undone.": "此操作不可撤销。"
+  },
+  "components/TopBar.jsx": {
+    "Muted": "静音",
+    "Offline": "离线"
+  },
+  "components/UpdateDialog.jsx": {
+    "A new version, {{version}}, is available for download.": "有新版本 {{version}} 可下载。",
+    "Go to Downloads": "前往下载",
+    "Later": "稍后",
+    "Update Available": "有可用更新"
+  },
+  "components/VolumeControl.jsx": {
+    "Audio Settings": "音频设置",
+    "Close": "关闭",
+    "Current Output:": "当前输出：",
+    "Decrease": "降低",
+    "Disable": "禁用",
+    "Enable": "启用",
+    "Increase": "增加",
+    "Loading Audio Settings...": "正在加载音频设置...",
+    "Mute": "静音",
+    "Next": "下一个",
+    "No devices found": "未找到设备",
+    "Prev": "上一个",
+    "Select Output": "选择输出",
+    "Set Device": "设置设备",
+    "UI Action Sound Feedbacks": "界面操作音效",
+    "Unmute": "取消静音",
+    "Volume": "音量"
+  },
+  "hooks/useGameShelves.js": {
+    "All Games": "所有游戏",
+    "Recently Played": "最近游玩",
+    "Results for \"{{searchQuery}}\"": "\"{{searchQuery}}\" 的结果"
+  }
+}
