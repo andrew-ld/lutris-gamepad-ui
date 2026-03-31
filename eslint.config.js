@@ -49,6 +49,8 @@ export default [
       "unicorn/filename-case": "off",
       "unicorn/no-array-reduce": "error",
       "promise/always-return": "off",
+      "unicorn/prefer-ternary": "off",
+      "unicorn/number-literal-case": "off",
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },

@@ -16,6 +16,7 @@ function bindX11(lib) {
     True: 1,
 
     XA_CARDINAL: 6n,
+    XA_WINDOW: 33n,
 
     PropModeReplace: 0,
 
@@ -36,6 +37,14 @@ function bindX11(lib) {
 
     XChangeProperty: lib.func(
       "int XChangeProperty(Display* dpy, Window w, Atom property, Atom type, int format, int mode, const void* data, int nelements)",
+    ),
+
+    XMapWindow: lib.func("int XMapWindow(Display* dpy, Window w)"),
+    XUnmapWindow: lib.func("int XUnmapWindow(Display* dpy, Window w)"),
+    XLowerWindow: lib.func("int XLowerWindow(Display* dpy, Window w)"),
+    XRaiseWindow: lib.func("int XRaiseWindow(Display* dpy, Window w)"),
+    XSetInputFocus: lib.func(
+      "int XSetInputFocus(Display* dpy, Window focus, int revert_to, uint64 time)",
     ),
   };
 }

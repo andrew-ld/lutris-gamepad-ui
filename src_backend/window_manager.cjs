@@ -38,7 +38,7 @@ const {
   logInfo,
   isRunningInsideGamescope,
 } = require("./utils.cjs");
-const { cycleGamescopeFocus } = require("./x11_manager.cjs");
+const { x11gamescopeToggleFocus } = require("./x11_manager.cjs");
 
 function getWindowZoomFactor() {
   return getAppConfig().zoomFactor || 1;
@@ -75,9 +75,13 @@ function toggleWindowShow() {
 
   if (isRunningInsideGamescope()) {
     logInfo("toggleWindowShow: using gamescope");
-    cycleGamescopeFocus().catch((error) => {
-      logError("cycleGamescopeFocus", error);
+
+    const showUp = !mainWindow.isFocused();
+
+    x11gamescopeToggleFocus(showUp).catch((error) => {
+      logError("x11gamescopeToggleFocus", error);
     });
+
     return;
   }
 
