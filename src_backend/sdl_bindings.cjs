@@ -5,7 +5,6 @@ function configureKoffiSdl(koffi) {
   koffi.alias("Uint16", "uint16_t");
   koffi.alias("Uint32", "uint32_t");
   koffi.alias("Sint16", "int16_t");
-
   koffi.pointer("SDL_GameController", koffi.opaque());
 }
 

@@ -1,8 +1,8 @@
 const X11_LIBRARY_NAME = ["libX11.so.6", "libX11.so"];
 
 function configureKoffiX11(koffi) {
-  koffi.alias("Window", "uint64");
-  koffi.alias("Atom", "uint64");
+  koffi.alias("Window", "unsigned long");
+  koffi.alias("Atom", "unsigned long");
   koffi.alias("Bool", "int");
   koffi.alias("Status", "int");
   koffi.pointer("Display", koffi.opaque());

@@ -95,3 +95,12 @@ export const createBugReportFile = () =>
   globalThis.electronAPI.createBugReportFile();
 
 export const pollGamepadsSdl = () => globalThis.electronAPI.pollGamepadsSdl();
+
+export function encodeAppProtocolPath(filePath) {
+  const sanitizedFilePath = filePath
+    .split("/")
+    .map((element) => encodeURIComponent(element))
+    .join("/");
+
+  return `app://${sanitizedFilePath}`;
+}

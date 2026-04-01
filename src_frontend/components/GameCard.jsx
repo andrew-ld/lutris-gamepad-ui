@@ -5,6 +5,7 @@ import { useSettingsState } from "../contexts/SettingsContext";
 import { useTranslation } from "../contexts/TranslationContext";
 import { useVisibilityObserver } from "../hooks/useVisibilityObserver";
 import { formatDate, formatPlaytime } from "../utils/datetime";
+import { encodeAppProtocolPath } from "../utils/ipc";
 
 import GameCover from "./GameCover";
 
@@ -28,7 +29,7 @@ const GameCard = React.forwardRef(({ game, onFocus, onClick }, reference) => {
       {isVisible ? (
         game.coverPath ? (
           <img
-            src={`app://${game.coverPath}`}
+            src={encodeAppProtocolPath(game.coverPath)}
             alt={game.title}
             className="game-card-cover"
             decoding="async"

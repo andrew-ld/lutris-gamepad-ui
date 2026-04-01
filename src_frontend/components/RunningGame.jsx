@@ -2,6 +2,7 @@ import "../styles/RunningGame.css";
 import { useTranslation } from "../contexts/TranslationContext";
 import { getDeterministicGradient } from "../utils/color";
 import { formatPlaytime } from "../utils/datetime";
+import { encodeAppProtocolPath } from "../utils/ipc";
 
 import GameCover from "./GameCover";
 
@@ -22,7 +23,7 @@ const RunningGamePage = ({ game, isPaused }) => {
         <div className="running-game-cover-container">
           {game.coverPath ? (
             <img
-              src={`app://${game.coverPath}`}
+              src={encodeAppProtocolPath(game.coverPath)}
               alt={game.title}
               className="running-game-cover"
               decoding="async"

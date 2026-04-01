@@ -73,6 +73,13 @@ async function pollGamepads() {
   const numJoysticks = sdl.SDL_NumJoysticks();
   const gamepads = [];
 
+  for (const [i, ptr] of activeControllers.entries()) {
+    if (i >= numJoysticks || sdl.SDL_GameControllerGetAttached(ptr) === 0) {
+      sdl.SDL_GameControllerClose(ptr);
+      activeControllers.delete(i);
+    }
+  }
+
   for (let i = 0; i < numJoysticks; i++) {
     if (sdl.SDL_IsGameController(i) === 0) continue;
 

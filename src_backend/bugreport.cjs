@@ -97,18 +97,24 @@ async function createBugReportFile() {
       content = inspect(error);
     }
 
-    let contentString;
+    let contentBytes;
     let contentExtension;
 
     if (Buffer.isBuffer(content)) {
-      contentString = content;
+      contentBytes = content;
       contentExtension = "txt";
     } else {
-      contentString = JSON.stringify(content, null, 2);
-      contentExtension = "json";
-    }
+      let contentString;
 
-    const contentBytes = new TextEncoder().encode(contentString);
+      if (typeof content === "string") {
+        contentString = content;
+      } else {
+        contentString = JSON.stringify(content, null, 2);
+      }
+
+      contentBytes = new TextEncoder().encode(contentString);
+      contentExtension = typeof content === "string" ? "txt" : "json";
+    }
 
     entries.push({
       header: {
