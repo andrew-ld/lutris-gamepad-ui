@@ -59,13 +59,7 @@ function parseInput(value) {
   return null;
 }
 
-async function fetchAndBuildJson() {
-  const response = await fetch(DB_URL);
-  if (!response.ok) {
-    throw new Error(`Failed: ${response.status}`);
-  }
-
-  const textData = await response.text();
+function buildJson(textData) {
   const lines = textData.split("\n");
   const database = {};
 
@@ -130,14 +124,30 @@ async function fetchAndBuildJson() {
     database[vidPidKey] = map;
   }
 
+  return database;
+}
+
+async function fetchAndBuildJson() {
+  const response = await fetch(DB_URL);
+  if (!response.ok) {
+    throw new Error(`Failed: ${response.status}`);
+  }
+
+  const textData = await response.text();
+  const database = buildJson(textData);
+
   fs.writeFileSync(
     "./src_frontend/resources/gamepad_mapping_db.json",
     JSON.stringify(database),
   );
+
+  fs.writeFileSync("./src_backend/resources/gamecontrollerdb.txt", textData);
 
   console.log(
     `Generated mappings for ${Object.keys(database).length} controllers.`,
   );
 }
 
-fetchAndBuildJson();
+if (require.main === module) {
+  fetchAndBuildJson();
+}

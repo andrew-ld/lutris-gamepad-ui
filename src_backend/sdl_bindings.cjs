@@ -15,7 +15,7 @@ function configureKoffiSdl(koffi) {
  * @returns {object} Object containing bound SDL methods and constants
  */
 function bindSDL2(lib) {
-  return {
+  const sdl = {
     // eslint-disable-next-line unicorn/numeric-separators-style
     SDL_INIT_GAMECONTROLLER: 0x00002000,
     SDL_CONTROLLER_AXIS_MAX: 6,
@@ -23,6 +23,16 @@ function bindSDL2(lib) {
 
     SDL_Init: lib.func("int SDL_Init(Uint32 flags)"),
     SDL_Quit: lib.func("void SDL_Quit(void)"),
+
+    SDL_RWFromFile: lib.func(
+      "void* SDL_RWFromFile(const char* file, const char* mode)",
+    ),
+    SDL_GameControllerAddMapping: lib.func(
+      "int SDL_GameControllerAddMapping(const char* mappingString)",
+    ),
+    SDL_GameControllerAddMappingsFromRW: lib.func(
+      "int SDL_GameControllerAddMappingsFromRW(void* rw, int freerw)",
+    ),
 
     SDL_NumJoysticks: lib.func("int SDL_NumJoysticks(void)"),
     SDL_IsGameController: lib.func(
@@ -51,6 +61,16 @@ function bindSDL2(lib) {
       "const char* SDL_GameControllerName(SDL_GameController* gamecontroller)",
     ),
   };
+
+  sdl.SDL_GameControllerAddMappingsFromFile = function (file) {
+    const rw = sdl.SDL_RWFromFile(file, "rwb");
+    if (!rw) {
+      return -1;
+    }
+    return sdl.SDL_GameControllerAddMappingsFromRW(rw, 1);
+  };
+
+  return sdl;
 }
 
 module.exports = { bindSDL2, SDL2_LIBRARY_NAME, configureKoffiSdl };

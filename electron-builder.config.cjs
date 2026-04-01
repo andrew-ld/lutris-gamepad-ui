@@ -33,6 +33,7 @@ module.exports = {
     "lutris_wrapper.sh",
     "lutris_wrapper.py",
     "electron_preload.cjs",
+    "src_backend/resources/gamecontrollerdb.txt",
   ],
   directories: { output: "release" },
   linux: {

@@ -6,13 +6,20 @@ const {
   configureKoffiX11,
 } = require("./x11_bindings.cjs");
 
-const X11_HANDLE = { promise: null, atom_cache: {} };
+const X11_HANDLE = {
+  promise: null,
+  atom_cache: {},
+  long_size: null,
+};
 
 function getX11Handle() {
   if (X11_HANDLE.promise) return X11_HANDLE.promise;
 
   X11_HANDLE.promise = new Promise((resolve, reject) => {
     const koffi = require("koffi");
+
+    X11_HANDLE.long_size = koffi.sizeof("long");
+
     configureKoffiX11(koffi);
 
     for (const libName of X11_LIBRARY_NAME) {
@@ -49,13 +56,15 @@ function getAtom(x11, dpy, name, onlyIfExists) {
 }
 
 function getProp(x11, dpy, window, atom, type, koffi) {
-  if (atom === 0n) return null;
+  if (atom == 0) return null;
 
-  const actualType = Buffer.alloc(8);
+  const { long_size } = X11_HANDLE;
+
+  const actualType = Buffer.alloc(long_size);
   const actualFormat = Buffer.alloc(4);
-  const nitems = Buffer.alloc(8);
-  const bytesAfter = Buffer.alloc(8);
-  const propPtr = Buffer.alloc(8);
+  const nitems = Buffer.alloc(long_size);
+  const bytesAfter = Buffer.alloc(long_size);
+  const propPtr = Buffer.alloc(long_size);
 
   const status = x11.XGetWindowProperty(
     dpy,
@@ -72,8 +81,15 @@ function getProp(x11, dpy, window, atom, type, koffi) {
     propPtr,
   );
 
-  const n = nitems.readBigUInt64LE(0);
-  const ptrAddress = propPtr.readBigUInt64LE(0);
+  const n =
+    long_size === 8
+      ? nitems.readBigUInt64LE(0)
+      : BigInt(nitems.readUInt32LE(0));
+
+  const ptrAddress =
+    long_size === 8
+      ? propPtr.readBigUInt64LE(0)
+      : BigInt(propPtr.readUInt32LE(0));
 
   if (status !== 0 || ptrAddress === 0n || n === 0n) {
     if (ptrAddress !== 0n) {
@@ -87,14 +103,31 @@ function getProp(x11, dpy, window, atom, type, koffi) {
   const realPtr = koffi.decode(propPtr, "void*", 1)[0];
   let result = null;
 
-  if (format === 32) {
-    result = koffi.decode(realPtr, "uint64", Number(n));
-  } else if (format === 8) {
-    result = koffi.decode(realPtr, "unsigned char", Number(n));
+  try {
+    if (format === 32) {
+      const rawResult = koffi.decode(realPtr, "unsigned long", Number(n));
+      result = rawResult.map(BigInt);
+    } else if (format === 8) {
+      result = koffi.decode(realPtr, "unsigned char", Number(n));
+    }
+  } finally {
+    x11.XFree(realPtr);
   }
 
-  x11.XFree(realPtr);
   return { status, ptrAddress, n, result };
+}
+
+function createPropData(bigIntValue) {
+  const { long_size } = X11_HANDLE;
+  const buf = Buffer.alloc(long_size);
+
+  if (long_size === 8) {
+    buf.writeBigUInt64LE(BigInt(bigIntValue), 0);
+  } else {
+    buf.writeUInt32LE(Number(BigInt(bigIntValue) & 0xff_ff_ff_ffn), 0);
+  }
+
+  return buf;
 }
 
 async function x11gamescopeRotateActiveWindow() {
@@ -106,9 +139,7 @@ async function x11gamescopeRotateActiveWindow() {
     "GAMESCOPE_FOCUSABLE_WINDOWS",
     x11.True,
   );
-  if (gamescopeFocusableWindowsAtom === 0) {
-    return;
-  }
+  if (gamescopeFocusableWindowsAtom == 0) return;
 
   const gamescopeFocusedWindowAtom = getAtom(
     x11,
@@ -116,9 +147,7 @@ async function x11gamescopeRotateActiveWindow() {
     "GAMESCOPE_FOCUSED_WINDOW",
     x11.True,
   );
-  if (gamescopeFocusedWindowAtom === 0) {
-    return;
-  }
+  if (gamescopeFocusedWindowAtom == 0) return;
 
   const gamescopeCtrlWindowAtom = getAtom(
     x11,
@@ -126,9 +155,7 @@ async function x11gamescopeRotateActiveWindow() {
     "GAMESCOPECTRL_BASELAYER_WINDOW",
     x11.True,
   );
-  if (gamescopeCtrlWindowAtom === 0) {
-    return;
-  }
+  if (gamescopeCtrlWindowAtom == 0) return;
 
   const gamescopeCtrlAppIDAtom = getAtom(
     x11,
@@ -136,9 +163,7 @@ async function x11gamescopeRotateActiveWindow() {
     "GAMESCOPECTRL_BASELAYER_APPID",
     x11.True,
   );
-  if (gamescopeCtrlAppIDAtom === 0) {
-    return;
-  }
+  if (gamescopeCtrlAppIDAtom == 0) return;
 
   const { result: rawFocusable } = getProp(
     x11,
@@ -161,6 +186,7 @@ async function x11gamescopeRotateActiveWindow() {
       pid: BigInt(rawFocusable[i + 2]),
     });
   }
+  if (apps.length < 2) return;
 
   const { result: focused } = getProp(
     x11,
@@ -174,17 +200,15 @@ async function x11gamescopeRotateActiveWindow() {
   const currentFocusedWindow =
     focused && focused.length > 0 ? BigInt(focused[0]) : 0n;
 
-  const currentIndex = apps.findIndex(
+  let currentIndex = apps.findIndex(
     (app) => app.window === currentFocusedWindow,
   );
 
+  if (currentIndex === -1) {
+    currentIndex = 0;
+  }
+
   const nextApp = apps[(currentIndex + 1) % apps.length];
-
-  const winData = Buffer.alloc(8);
-  winData.writeBigUInt64LE(nextApp.window);
-
-  const appData = Buffer.alloc(8);
-  appData.writeBigUInt64LE(nextApp.appID);
 
   x11.XChangeProperty(
     dpy,
@@ -193,7 +217,7 @@ async function x11gamescopeRotateActiveWindow() {
     x11.XA_CARDINAL,
     32,
     x11.PropModeReplace,
-    winData,
+    createPropData(nextApp.window),
     1,
   );
   x11.XChangeProperty(
@@ -203,7 +227,7 @@ async function x11gamescopeRotateActiveWindow() {
     x11.XA_CARDINAL,
     32,
     x11.PropModeReplace,
-    appData,
+    createPropData(nextApp.appID),
     1,
   );
 
@@ -214,7 +238,7 @@ async function x11gamescopeIsSteamControlled() {
   const { x11, dpy, root, koffi } = await getX11Handle();
 
   const focusedAppAtom = getAtom(x11, dpy, "GAMESCOPE_FOCUSED_APP", x11.True);
-  if (focusedAppAtom === 0) {
+  if (focusedAppAtom == 0) {
     return false;
   }
 
@@ -240,9 +264,7 @@ async function x11gamescopeSetMainWindowActive(active) {
   const { x11, dpy, root, koffi } = await getX11Handle();
 
   const steamGameAtom = getAtom(x11, dpy, "STEAM_GAME", x11.False);
-  if (steamGameAtom === 0) {
-    return;
-  }
+  if (steamGameAtom == 0) return;
 
   const gamescopeFocusableWindowsAtom = getAtom(
     x11,
@@ -250,12 +272,9 @@ async function x11gamescopeSetMainWindowActive(active) {
     "GAMESCOPE_FOCUSABLE_WINDOWS",
     x11.True,
   );
-  if (gamescopeFocusableWindowsAtom === 0) {
-    return;
-  }
+  if (gamescopeFocusableWindowsAtom == 0) return;
 
-  const zeroAppData = Buffer.alloc(8);
-  zeroAppData.writeBigUInt64LE(0n);
+  const zeroAppData = createPropData(0n);
 
   if (active) {
     // 1. Demote Others FIRST: This ensures our window is the only Tier 1 window
@@ -303,8 +322,6 @@ async function x11gamescopeSetMainWindowActive(active) {
     }
 
     // 2. Elevate Tier: Set STEAM_GAME on our window to its own ID (Tier 1).
-    const myAppData = Buffer.alloc(8);
-    myAppData.writeBigUInt64LE(myWindowId);
     x11.XChangeProperty(
       dpy,
       myWindowId,
@@ -312,7 +329,7 @@ async function x11gamescopeSetMainWindowActive(active) {
       x11.XA_CARDINAL,
       32,
       x11.PropModeReplace,
-      myAppData,
+      createPropData(myWindowId),
       1,
     );
 
@@ -359,8 +376,6 @@ async function x11gamescopeSetMainWindowActive(active) {
       for (let i = 0; i < rawFocusable.length; i += 3) {
         const winId = BigInt(rawFocusable[i]);
         if (winId !== myWindowId) {
-          const appData = Buffer.alloc(8);
-          appData.writeBigUInt64LE(winId);
           x11.XChangeProperty(
             dpy,
             winId,
@@ -368,7 +383,7 @@ async function x11gamescopeSetMainWindowActive(active) {
             x11.XA_CARDINAL,
             32,
             x11.PropModeReplace,
-            appData,
+            createPropData(winId),
             1,
           );
         }

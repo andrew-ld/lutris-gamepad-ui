@@ -3,7 +3,7 @@ const {
   bindSDL2,
   configureKoffiSdl,
 } = require("./sdl_bindings.cjs");
-const { logError, logInfo } = require("./utils.cjs");
+const { logError, logInfo, localeAppFile, logWarn } = require("./utils.cjs");
 
 const SDL_HANDLE = { promise: null };
 
@@ -24,6 +24,14 @@ function getSdlHandle() {
             throw new Error(
               "Failed to initialize SDL2 GameController subsystem",
             );
+          }
+
+          const mappingPath = localeAppFile(
+            "./src_backend/resources/gamecontrollerdb.txt",
+          );
+
+          if (sdl.SDL_GameControllerAddMappingsFromFile(mappingPath) < 0) {
+            logWarn("SDL2 unable to load gamepad mapping", mappingPath);
           }
 
           logInfo("SDL2 initialized!", libraryName);

@@ -257,4 +257,5 @@ module.exports = {
   isProcessPaused,
   getRunExclusive,
   execFilePromise,
+  localeAppFile,
 };
