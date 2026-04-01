@@ -62,7 +62,7 @@ function bindSDL2(lib) {
   };
 
   sdl.SDL_GameControllerAddMappingsFromFile = function (file) {
-    const rw = sdl.SDL_RWFromFile(file, "rwb");
+    const rw = sdl.SDL_RWFromFile(file, "rb");
     if (!rw) {
       return -1;
     }
