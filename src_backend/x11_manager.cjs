@@ -139,7 +139,12 @@ async function x11gamescopeRotateActiveWindow() {
     "GAMESCOPE_FOCUSABLE_WINDOWS",
     x11.True,
   );
-  if (gamescopeFocusableWindowsAtom == 0) return;
+  if (gamescopeFocusableWindowsAtom == 0) {
+    logError(
+      "x11gamescopeRotateActiveWindow: GAMESCOPE_FOCUSABLE_WINDOWS atom not found",
+    );
+    return;
+  }
 
   const gamescopeFocusedWindowAtom = getAtom(
     x11,
@@ -147,7 +152,12 @@ async function x11gamescopeRotateActiveWindow() {
     "GAMESCOPE_FOCUSED_WINDOW",
     x11.True,
   );
-  if (gamescopeFocusedWindowAtom == 0) return;
+  if (gamescopeFocusedWindowAtom == 0) {
+    logError(
+      "x11gamescopeRotateActiveWindow: GAMESCOPE_FOCUSED_WINDOW atom not found",
+    );
+    return;
+  }
 
   const gamescopeCtrlWindowAtom = getAtom(
     x11,
@@ -155,7 +165,12 @@ async function x11gamescopeRotateActiveWindow() {
     "GAMESCOPECTRL_BASELAYER_WINDOW",
     x11.True,
   );
-  if (gamescopeCtrlWindowAtom == 0) return;
+  if (gamescopeCtrlWindowAtom == 0) {
+    logError(
+      "x11gamescopeRotateActiveWindow: GAMESCOPECTRL_BASELAYER_WINDOW atom not found",
+    );
+    return;
+  }
 
   const gamescopeCtrlAppIDAtom = getAtom(
     x11,
@@ -163,7 +178,12 @@ async function x11gamescopeRotateActiveWindow() {
     "GAMESCOPECTRL_BASELAYER_APPID",
     x11.True,
   );
-  if (gamescopeCtrlAppIDAtom == 0) return;
+  if (gamescopeCtrlAppIDAtom == 0) {
+    logError(
+      "x11gamescopeRotateActiveWindow: GAMESCOPECTRL_BASELAYER_APPID atom not found",
+    );
+    return;
+  }
 
   const { result: rawFocusable } = getProp(
     x11,
@@ -175,6 +195,9 @@ async function x11gamescopeRotateActiveWindow() {
   );
 
   if (!rawFocusable || rawFocusable.length === 0) {
+    logInfo(
+      "x11gamescopeRotateActiveWindow: No focusable windows found (rawFocusable is empty or null)",
+    );
     return;
   }
 
@@ -186,7 +209,13 @@ async function x11gamescopeRotateActiveWindow() {
       pid: BigInt(rawFocusable[i + 2]),
     });
   }
-  if (apps.length < 2) return;
+
+  if (apps.length < 2) {
+    logInfo(
+      "x11gamescopeRotateActiveWindow: Less than 2 apps are focusable, skipping rotation",
+    );
+    return;
+  }
 
   const { result: focused } = getProp(
     x11,
@@ -232,6 +261,10 @@ async function x11gamescopeRotateActiveWindow() {
   );
 
   x11.XFlush(dpy);
+  logInfo(
+    "x11gamescopeRotateActiveWindow: Rotated to window ID",
+    nextApp.window,
+  );
 }
 
 async function x11gamescopeIsSteamControlled() {
@@ -239,6 +272,9 @@ async function x11gamescopeIsSteamControlled() {
 
   const focusedAppAtom = getAtom(x11, dpy, "GAMESCOPE_FOCUSED_APP", x11.True);
   if (focusedAppAtom == 0) {
+    logError(
+      "x11gamescopeIsSteamControlled: GAMESCOPE_FOCUSED_APP atom not found",
+    );
     return false;
   }
 
@@ -251,10 +287,20 @@ async function x11gamescopeIsSteamControlled() {
 
 async function x11gamescopeSetMainWindowActive(active) {
   const mainWindow = getMainWindow();
-  if (!mainWindow) return;
+  if (!mainWindow) {
+    logError(
+      "x11gamescopeSetMainWindowActive: mainWindow is null or undefined",
+    );
+    return;
+  }
 
   const handle = mainWindow.getNativeWindowHandle();
-  if (!handle || handle.length === 0) return;
+  if (!handle || handle.length === 0) {
+    logError(
+      "x11gamescopeSetMainWindowActive: Failed to get native window handle",
+    );
+    return;
+  }
 
   const myWindowId =
     handle.length === 8
@@ -264,7 +310,10 @@ async function x11gamescopeSetMainWindowActive(active) {
   const { x11, dpy, root, koffi } = await getX11Handle();
 
   const steamGameAtom = getAtom(x11, dpy, "STEAM_GAME", x11.False);
-  if (steamGameAtom == 0) return;
+  if (steamGameAtom == 0) {
+    logError("x11gamescopeSetMainWindowActive: STEAM_GAME atom not found");
+    return;
+  }
 
   const gamescopeFocusableWindowsAtom = getAtom(
     x11,
@@ -272,7 +321,12 @@ async function x11gamescopeSetMainWindowActive(active) {
     "GAMESCOPE_FOCUSABLE_WINDOWS",
     x11.True,
   );
-  if (gamescopeFocusableWindowsAtom == 0) return;
+  if (gamescopeFocusableWindowsAtom == 0) {
+    logError(
+      "x11gamescopeSetMainWindowActive: GAMESCOPE_FOCUSABLE_WINDOWS atom not found",
+    );
+    return;
+  }
 
   const zeroAppData = createPropData(0n);
 
@@ -288,6 +342,9 @@ async function x11gamescopeSetMainWindowActive(active) {
       koffi,
     );
     if (!rawFocusable || rawFocusable.length === 0) {
+      logError(
+        "x11gamescopeSetMainWindowActive (active=true): No focusable windows found (rawFocusable is empty)",
+      );
       return;
     }
 
@@ -302,6 +359,9 @@ async function x11gamescopeSetMainWindowActive(active) {
     }
 
     if (!foundMyWindow) {
+      logError(
+        `x11gamescopeSetMainWindowActive (active=true): My window ID ${myWindowId} not found in GAMESCOPE_FOCUSABLE_WINDOWS array`,
+      );
       return;
     }
 
@@ -348,6 +408,10 @@ async function x11gamescopeSetMainWindowActive(active) {
     // 5. Final Raise and Input Focus
     x11.XRaiseWindow(dpy, myWindowId);
     x11.XSetInputFocus(dpy, myWindowId, 1, 0n);
+
+    logInfo(
+      `x11gamescopeSetMainWindowActive (active=true): Successfully set window ID ${myWindowId} active`,
+    );
   } else {
     // 1. Drop Tier: Set STEAM_GAME on our window to 0 (Tier 2).
     x11.XChangeProperty(
@@ -388,10 +452,17 @@ async function x11gamescopeSetMainWindowActive(active) {
           );
         }
       }
+    } else {
+      logInfo(
+        "x11gamescopeSetMainWindowActive (active=false): Warning - no focusable windows found to restore. XLowerWindow will still run.",
+      );
     }
 
     // 3. Lower Window.
     x11.XLowerWindow(dpy, myWindowId);
+    logInfo(
+      `x11gamescopeSetMainWindowActive (active=false): Successfully lowered window ID ${myWindowId}`,
+    );
   }
 
   x11.XFlush(dpy);
