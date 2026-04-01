@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { useTranslation } from "../contexts/TranslationContext";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
@@ -14,7 +14,6 @@ const SCROLL_AMOUNT = 50;
 const CrashDialog = ({ error, errorInfo }) => {
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [focusedButtonIndex, setFocusedButtonIndex] = useState(0);
-  const containerReference = useRef(null);
   const translationContext = useTranslation();
   const playActionSound = usePlayButtonActionSound();
 
@@ -61,8 +60,9 @@ const CrashDialog = ({ error, errorInfo }) => {
   }, [buttons, focusedButtonIndex]);
 
   const handleScroll = useCallback((direction) => {
-    const scrollable =
-      containerReference.current?.querySelector(".legenda-content");
+    const scrollable = document.querySelector(
+      ".crash-dialog-container .legenda-content",
+    );
     if (scrollable) {
       scrollable.scrollTop += SCROLL_AMOUNT * (direction === "down" ? 1 : -1);
     }
@@ -107,29 +107,26 @@ const CrashDialog = ({ error, errorInfo }) => {
 
   useScopedInput(inputHandler, "CrashDialogFocus");
 
-  const legendItems = useMemo(() => {
-    const items = [];
-    if (detailsVisible) {
-      items.push(
-        {
-          button: "UP",
-          label: t("Scroll Up"),
-          onClick: () => handleScroll("up"),
-        },
-        {
-          button: "DOWN",
-          label: t("Scroll Down"),
-          onClick: () => handleScroll("down"),
-        },
-      );
-    }
-    items.push(
-      { button: "LEFT", label: t("Navigate") },
-      { button: "RIGHT", label: t("Navigate") },
-      { button: "A", label: t("Select"), onClick: selectedButtonAction },
+  const legendItems = [];
+  if (detailsVisible) {
+    legendItems.push(
+      {
+        button: "UP",
+        label: t("Scroll Up"),
+        onClick: () => handleScroll("up"),
+      },
+      {
+        button: "DOWN",
+        label: t("Scroll Down"),
+        onClick: () => handleScroll("down"),
+      },
     );
-    return items;
-  }, [selectedButtonAction, detailsVisible, handleScroll, t]);
+  }
+  legendItems.push(
+    { button: "LEFT", label: t("Navigate") },
+    { button: "RIGHT", label: t("Navigate") },
+    { button: "A", label: t("Select"), onClick: selectedButtonAction },
+  );
 
   const errorString = error
     ? error.toString()
@@ -147,7 +144,6 @@ const CrashDialog = ({ error, errorInfo }) => {
         description={t("The application has encountered an unexpected error.")}
         legendItems={legendItems}
         maxWidth="800px"
-        containerRef={containerReference}
         className="crash-dialog-container"
       >
         <div className="modal-buttons-row">

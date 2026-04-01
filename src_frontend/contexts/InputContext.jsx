@@ -120,7 +120,6 @@ export const InputProvider = ({ children }) => {
   const [, setFocusIteration] = useState(0);
   const [connectedGamepadCount, setConnectedGamepadCount] = useState(0);
 
-  const focusIdCounter = useRef(0);
   const focusStackReference = useRef([]);
 
   const gamepadPollingRafId = useRef(null);
@@ -195,7 +194,7 @@ export const InputProvider = ({ children }) => {
     [broadcastInputTypeChange, broadcastInputEvent],
   );
 
-  const releaseInputFocus = useCallback(
+  const popFocus = useCallback(
     (uniqueId) => {
       focusStackReference.current = focusStackReference.current.filter(
         (f) => f.uniqueId !== uniqueId,
@@ -205,28 +204,17 @@ export const InputProvider = ({ children }) => {
     [triggerFocusUpdate],
   );
 
-  const claimInputFocus = useCallback(
-    (claimantId) => {
-      const uniqueId = focusIdCounter.current++;
-      const newFocus = { claimantId, uniqueId };
+  const getFocusSnapshot = useCallback(() => {
+    return focusStackReference.current.at(-1)?.uniqueId ?? null;
+  }, []);
 
+  const pushFocus = useCallback(
+    (claimantId, uniqueId) => {
+      const newFocus = { claimantId, uniqueId };
       focusStackReference.current = [...focusStackReference.current, newFocus];
       triggerFocusUpdate();
-
-      const token = {
-        isAcquired: () => {
-          const stack = focusStackReference.current;
-          if (stack.length === 0) return false;
-          return stack.at(-1).uniqueId === uniqueId;
-        },
-        release: () => {
-          releaseInputFocus(uniqueId);
-        },
-      };
-
-      return token;
     },
-    [releaseInputFocus, triggerFocusUpdate],
+    [triggerFocusUpdate],
   );
 
   useEffect(() => {
@@ -278,21 +266,15 @@ export const InputProvider = ({ children }) => {
           continue;
         }
 
-        let buttons;
-        let axes;
+        let buttons = gp.buttons;
+        let axes = gp.axes;
 
-        if (gp.mapping === "standard") {
-          buttons = gp.buttons;
-          axes = gp.axes;
-        } else if (gp.mapping === "") {
+        if (gp.mapping === "") {
           const mappedInput = getMappedInput(gp);
-          if (!mappedInput) {
-            continue;
+          if (mappedInput) {
+            buttons = mappedInput.buttons;
+            axes = mappedInput.axes;
           }
-          buttons = mappedInput.buttons;
-          axes = mappedInput.axes;
-        } else {
-          continue;
         }
 
         let hasInput = false;
@@ -418,11 +400,13 @@ export const InputProvider = ({ children }) => {
 
   const value = {
     subscribe: subscribeToInputEvents,
-    claimInputFocus,
+    pushFocus,
+    popFocus,
     gamepadCount: connectedGamepadCount,
     subscribeToInputType,
     getLatestInputType: () => lastDetectedInputSourceReference.current,
     subscribeToFocusChanges,
+    getFocusSnapshot,
   };
 
   return (

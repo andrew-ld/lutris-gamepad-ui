@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 
 import { useAudio } from "../contexts/AudioContext";
 import {
@@ -43,7 +43,16 @@ const VolumeControl = ({ onClose }) => {
   const [highlightedSinkIndex, setHighlightedSinkIndex] = useState(0);
   const [focusedItem, setFocusedItem] = useState(null);
 
-  useEffect(() => {
+  const [prevAudioInfo, setPrevAudioInfo] = useState({
+    availableSinks,
+    defaultSinkName,
+  });
+
+  if (
+    availableSinks !== prevAudioInfo.availableSinks ||
+    defaultSinkName !== prevAudioInfo.defaultSinkName
+  ) {
+    setPrevAudioInfo({ availableSinks, defaultSinkName });
     if (availableSinks && availableSinks.length > 0) {
       const currentDefaultIndex = defaultSinkName
         ? availableSinks.findIndex((sink) => sink.name === defaultSinkName)
@@ -54,7 +63,7 @@ const VolumeControl = ({ onClose }) => {
     } else {
       setHighlightedSinkIndex(0);
     }
-  }, [availableSinks, defaultSinkName]);
+  }
 
   const toggleEnableUiActionSoundFeedbacks = useCallback(() => {
     updateSetting(

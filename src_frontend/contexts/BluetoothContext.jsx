@@ -24,7 +24,6 @@ export const BluetoothProvider = ({ children }) => {
   const isMounted = useIsMounted();
 
   useEffect(() => {
-    setIsLoading(true);
     void ipc
       .bluetoothGetState()
       .then(({ devices, adapters }) => {

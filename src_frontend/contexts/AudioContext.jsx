@@ -56,7 +56,10 @@ export const AudioProvider = ({ children }) => {
   }, [isMounted]);
 
   useEffect(() => {
-    fetchAudioInfo();
+    const initializeAudio = async () => {
+      await fetchAudioInfo();
+    };
+    void initializeAudio();
 
     const handleAudioInfoChanged = (info) => {
       processAudioInfo(info);

@@ -73,7 +73,6 @@ const RowBasedMenu = ({
 
   const containerReference = useRef(null);
   const listReference = useRef(null);
-  const selectedItemKeyReference = useRef(null);
   const activeSectionIndexReference = useRef(activeSectionIndex);
 
   useEffect(() => {
@@ -98,33 +97,34 @@ const RowBasedMenu = ({
     }
   }, [selectedIndex, items]);
 
-  useEffect(() => {
-    selectedItemKeyReference.current =
-      items.length > 0 && items[selectedIndex]
-        ? itemKey(items[selectedIndex], selectedIndex)
-        : null;
-  }, [selectedIndex, items, itemKey]);
+  const [selectedItemKey, setSelectedItemKey] = useState(null);
+  const [prevItems, setPrevItems] = useState(items);
 
-  useEffect(() => {
+  if (items !== prevItems) {
+    setPrevItems(items);
     if (items.length === 0) {
       setSelectedIndex(0);
-      onFocusChangeReference.current?.(null);
-      return;
-    }
-    if (selectedItemKeyReference.current === null) {
-      setSelectedIndex(0);
     } else {
-      const newIndex = items.findIndex(
-        (item, index) =>
-          itemKey(item, index) === selectedItemKeyReference.current,
-      );
-      if (newIndex === -1) {
+      if (selectedItemKey === null) {
         setSelectedIndex(0);
       } else {
-        setSelectedIndex(newIndex);
+        const newIndex = items.findIndex(
+          (item, index) => itemKey(item, index) === selectedItemKey,
+        );
+        if (newIndex === -1) {
+          setSelectedIndex(0);
+        } else if (newIndex !== selectedIndex) {
+          setSelectedIndex(newIndex);
+        }
       }
     }
-  }, [items, itemKey]);
+  }
+
+  const currentItem = items[selectedIndex];
+  const currentKey = currentItem ? itemKey(currentItem, selectedIndex) : null;
+  if (currentKey !== selectedItemKey) {
+    setSelectedItemKey(currentKey);
+  }
 
   useEffect(() => {
     if (!listReference.current || items.length === 0) return;

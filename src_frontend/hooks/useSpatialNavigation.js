@@ -8,9 +8,12 @@ export const useSpatialNavigation = (sections, numberColumns, options = {}) => {
     onMoveReference.current = options.onMove;
   }, [options.onMove]);
 
-  useEffect(() => {
+  const [prevSections, setPrevSections] = useState(sections);
+
+  if (sections !== prevSections) {
+    setPrevSections(sections);
     setCoords({ sectionIndex: 0, itemIndex: 0 });
-  }, [sections]);
+  }
 
   const move = useCallback(
     (direction) => {

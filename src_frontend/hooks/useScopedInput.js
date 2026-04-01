@@ -1,56 +1,61 @@
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  useId,
+} from "react";
 
 import { useInput } from "../contexts/InputContext";
 
 export const useScopedInput = (handler, focusId, isActive = true) => {
-  const { subscribe, claimInputFocus, subscribeToFocusChanges } = useInput();
-  const inputTokenReference = useRef(null);
+  const {
+    subscribe,
+    subscribeToFocusChanges,
+    getFocusSnapshot,
+    pushFocus,
+    popFocus,
+  } = useInput();
+
+  const uniqueId = useId();
   const latestHandler = useRef(handler);
-  const [isFocused, setIsFocused] = useState(false);
-  const wasAcquiredReference = useRef(false);
+
+  const topUniqueId = useSyncExternalStore(
+    subscribeToFocusChanges,
+    getFocusSnapshot,
+  );
+
+  const isFocused = isActive && topUniqueId === uniqueId;
+
+  const [wasAcquired, setWasAcquired] = useState(false);
+  if (isFocused && !wasAcquired) {
+    setWasAcquired(true);
+  }
+
+  const [prevIsActive, setPrevIsActive] = useState(isActive);
+  if (isActive !== prevIsActive) {
+    setPrevIsActive(isActive);
+    if (!isActive) {
+      setWasAcquired(false);
+    }
+  }
 
   useEffect(() => {
     latestHandler.current = handler;
   }, [handler]);
 
   useEffect(() => {
-    const handleFocusChange = () => {
-      const acquired = inputTokenReference.current?.isAcquired() ?? false;
-      if (acquired) {
-        wasAcquiredReference.current = true;
-      }
-      setIsFocused(acquired);
-    };
-
-    const unsubscribe = subscribeToFocusChanges(handleFocusChange);
-    return unsubscribe;
-  }, [subscribeToFocusChanges]);
-
-  useEffect(() => {
     if (isActive) {
-      inputTokenReference.current = claimInputFocus(focusId);
-      const acquired = inputTokenReference.current.isAcquired();
-      if (acquired) {
-        wasAcquiredReference.current = true;
-      }
-      setIsFocused(acquired);
-
+      pushFocus(focusId, uniqueId);
       return () => {
-        inputTokenReference.current?.release();
-        inputTokenReference.current = null;
-        setIsFocused(false);
-        wasAcquiredReference.current = false;
+        popFocus(uniqueId);
       };
-    } else {
-      setIsFocused(false);
-      wasAcquiredReference.current = false;
     }
-  }, [claimInputFocus, focusId, isActive]);
+  }, [pushFocus, popFocus, focusId, uniqueId, isActive]);
 
   useEffect(() => {
     const handleInput = (input) => {
-      const acquired = inputTokenReference.current?.isAcquired() ?? false;
-      if (input.isConsumed || !isActive || !acquired) {
+      if (input.isConsumed || !isFocused) {
         return;
       }
       input.isConsumed = true;
@@ -61,7 +66,7 @@ export const useScopedInput = (handler, focusId, isActive = true) => {
 
     const unsubscribe = subscribe(handleInput);
     return unsubscribe;
-  }, [subscribe, isActive]);
+  }, [subscribe, isFocused]);
 
-  return { isFocused, wasAcquired: wasAcquiredReference.current };
+  return { isFocused, wasAcquired };
 };

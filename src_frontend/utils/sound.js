@@ -17,6 +17,12 @@ export function playButtonActionSound(currentTime) {
     .catch((error) => logError("Could not play sound", error));
 }
 
+export function playStartupSound() {
+  if (globalThis.__LUTRIS_GAMEPAD_UI_STARTUP_SOUND_PLAYED__) return;
+  globalThis.__LUTRIS_GAMEPAD_UI_STARTUP_SOUND_PLAYED__ = true;
+  playButtonActionSound();
+}
+
 export function playButtonActionSoundThrottled() {
   const now = Date.now();
   if (now - lastButtonActionSoundPlaytime.current > ACTION_SOUND_THROTTLE_MS) {
