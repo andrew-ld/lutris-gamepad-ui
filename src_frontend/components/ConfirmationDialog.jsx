@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 
+import { useInput } from "../contexts/InputContext";
 import { useTranslation } from "../contexts/TranslationContext";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import { useScopedInput } from "../hooks/useScopedInput";
@@ -10,6 +11,7 @@ export const ConfirmationDialogFocusId = "ConfirmationDialog";
 
 const ConfirmationDialog = ({ message, description, onConfirm, onDeny }) => {
   const { t } = useTranslation();
+  const { isMouseActive } = useInput();
   const [confirmSelection, setConfirmSelection] = useState(0);
   const playActionSound = usePlayButtonActionSound();
 
@@ -79,12 +81,18 @@ const ConfirmationDialog = ({ message, description, onConfirm, onDeny }) => {
         <button
           className={`modal-button ${confirmSelection === 0 ? "focused" : ""}`}
           onClick={handleConfirm}
+          onMouseEnter={() => {
+            if (isMouseActive) setConfirmSelection(0);
+          }}
         >
           {t("Confirm")}
         </button>
         <button
           className={`modal-button ${confirmSelection === 1 ? "focused" : ""}`}
           onClick={handleDeny}
+          onMouseEnter={() => {
+            if (isMouseActive) setConfirmSelection(1);
+          }}
         >
           {t("Cancel")}
         </button>

@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 
+import { useInput } from "../contexts/InputContext";
 import { useTranslation } from "../contexts/TranslationContext";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import { useScopedInput } from "../hooks/useScopedInput";
@@ -11,6 +12,7 @@ export const OnScreenKeyboardFocusID = "OnScreenKeyboard";
 
 const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
   const { t } = useTranslation();
+  const { isMouseActive } = useInput();
   const [inputValue, setInputValue] = useState(initialValue || "");
   const [focusCoords, setFocusCoords] = useState({ x: 0, y: 0 });
   const playActionSound = usePlayButtonActionSound();
@@ -200,6 +202,9 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
                       isFocused ? "focused" : ""
                     }`}
                     onClick={() => handleKeyPress(keyId)}
+                    onMouseEnter={() => {
+                      if (isMouseActive) setFocusCoords({ x, y });
+                    }}
                   >
                     {keyLabel}
                   </button>

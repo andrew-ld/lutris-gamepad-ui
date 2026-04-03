@@ -1,26 +1,51 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 
+const defaultKeyExtractor = (item) => item?.id ?? item?.slug ?? item?.label;
+
 export const useSpatialNavigation = (sections, numberColumns, options = {}) => {
+  const { itemKey = defaultKeyExtractor, onMove } = options;
   const [coords, setCoords] = useState({ sectionIndex: 0, itemIndex: 0 });
-  const onMoveReference = useRef(options.onMove || null);
+  const onMoveReference = useRef(onMove || null);
 
   useEffect(() => {
-    onMoveReference.current = options.onMove;
-  }, [options.onMove]);
+    onMoveReference.current = onMove;
+  }, [onMove]);
+
+  const [selectedKey, setSelectedKey] = useState(() => {
+    const initialItem = sections[0]?.items?.[0];
+    return initialItem ? itemKey(initialItem) : null;
+  });
 
   const [prevSections, setPrevSections] = useState(sections);
 
   if (sections !== prevSections) {
     setPrevSections(sections);
-    setCoords({ sectionIndex: 0, itemIndex: 0 });
+    if (selectedKey !== null) {
+      let found = false;
+      for (const [sIdx, section] of sections.entries()) {
+        const items = section.items || [];
+        const iIdx = items.findIndex((item) => itemKey(item) === selectedKey);
+        if (iIdx !== -1) {
+          if (sIdx !== coords.sectionIndex || iIdx !== coords.itemIndex) {
+            setCoords({ sectionIndex: sIdx, itemIndex: iIdx });
+          }
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        setCoords({ sectionIndex: 0, itemIndex: 0 });
+        const firstItem = sections[0]?.items?.[0];
+        setSelectedKey(firstItem ? itemKey(firstItem) : null);
+      }
+    }
   }
 
   const move = useCallback(
     (direction) => {
       setCoords((current) => {
         const { sectionIndex, itemIndex } = current;
-        const currentSection = sections[sectionIndex];
-        const items = currentSection?.items || [];
+        const items = sections[sectionIndex]?.items || [];
 
         if (numberColumns === 0 || items.length === 0) return current;
 
@@ -28,7 +53,7 @@ export const useSpatialNavigation = (sections, numberColumns, options = {}) => {
         const currentRow = Math.floor(itemIndex / numberColumns);
         const currentCol = itemIndex % numberColumns;
 
-        let next = { ...current };
+        let next = { ...current, preventScroll: false };
 
         switch (direction) {
           case "UP": {
@@ -37,7 +62,7 @@ export const useSpatialNavigation = (sections, numberColumns, options = {}) => {
             } else {
               const previousSectionIndex =
                 (sectionIndex - 1 + sections.length) % sections.length;
-              const previousItems = sections[previousSectionIndex].items;
+              const previousItems = sections[previousSectionIndex].items || [];
               if (previousItems.length === 0) return current;
 
               const lastItemInPrevious = previousItems.length - 1;
@@ -66,7 +91,7 @@ export const useSpatialNavigation = (sections, numberColumns, options = {}) => {
               };
             } else {
               const nextSectionIndex = (sectionIndex + 1) % sections.length;
-              const nextItems = sections[nextSectionIndex].items;
+              const nextItems = sections[nextSectionIndex].items || [];
               if (nextItems.length === 0) return current;
               next = {
                 sectionIndex: nextSectionIndex,
@@ -107,6 +132,10 @@ export const useSpatialNavigation = (sections, numberColumns, options = {}) => {
           next.sectionIndex !== current.sectionIndex ||
           next.itemIndex !== current.itemIndex
         ) {
+          const nextItem = sections[next.sectionIndex]?.items?.[next.itemIndex];
+          if (nextItem) {
+            setSelectedKey(itemKey(nextItem));
+          }
           onMoveReference.current?.();
           return next;
         }
@@ -114,7 +143,7 @@ export const useSpatialNavigation = (sections, numberColumns, options = {}) => {
         return current;
       });
     },
-    [sections, numberColumns],
+    [sections, numberColumns, itemKey],
   );
 
   const moveSection = useCallback(
@@ -123,12 +152,34 @@ export const useSpatialNavigation = (sections, numberColumns, options = {}) => {
         if (sections.length <= 1) return current;
         const nextSectionIndex =
           (current.sectionIndex + delta + sections.length) % sections.length;
+        const nextItem = sections[nextSectionIndex]?.items?.[0];
+        if (nextItem) {
+          setSelectedKey(itemKey(nextItem));
+        }
         onMoveReference.current?.();
         return { sectionIndex: nextSectionIndex, itemIndex: 0 };
       });
     },
-    [sections],
+    [sections, itemKey],
   );
 
-  return { coords, setCoords, move, moveSection };
+  const setCoordsAndKey = useCallback(
+    (newCoordsOrUpdater) => {
+      setCoords((current) => {
+        const next =
+          typeof newCoordsOrUpdater === "function"
+            ? newCoordsOrUpdater(current)
+            : newCoordsOrUpdater;
+
+        const nextItem = sections[next.sectionIndex]?.items?.[next.itemIndex];
+        if (nextItem) {
+          setSelectedKey(itemKey(nextItem));
+        }
+        return next;
+      });
+    },
+    [sections, itemKey],
+  );
+
+  return { coords, setCoords: setCoordsAndKey, move, moveSection };
 };

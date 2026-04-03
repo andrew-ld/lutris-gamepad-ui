@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 
+import { useInput } from "../contexts/InputContext";
 import { useTranslation } from "../contexts/TranslationContext";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import { useScopedInput } from "../hooks/useScopedInput";
@@ -12,6 +13,7 @@ import "../styles/CrashDialog.css";
 const SCROLL_AMOUNT = 50;
 
 const CrashDialog = ({ error, errorInfo }) => {
+  const { isMouseActive } = useInput();
   const [detailsVisible, setDetailsVisible] = useState(false);
   const [focusedButtonIndex, setFocusedButtonIndex] = useState(0);
   const translationContext = useTranslation();
@@ -163,7 +165,9 @@ const CrashDialog = ({ error, errorInfo }) => {
               className={`modal-button ${
                 index === focusedButtonIndex ? "focused" : ""
               }`}
-              onMouseEnter={() => setFocusedButtonIndex(index)}
+              onMouseEnter={() => {
+                if (isMouseActive) setFocusedButtonIndex(index);
+              }}
             >
               {button.label}
             </button>

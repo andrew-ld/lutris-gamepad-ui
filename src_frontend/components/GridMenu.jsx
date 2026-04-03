@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useEffect } from "react";
 
+import { useInput } from "../contexts/InputContext";
 import { useFocusManager } from "../hooks/useFocusManager";
 import { useGridLayout } from "../hooks/useGridLayout";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
@@ -17,6 +18,7 @@ const GridMenu = ({
   focusId,
   isActive = true,
 }) => {
+  const { isMouseActive } = useInput();
   const playActionSound = usePlayButtonActionSound();
 
   const { numColumns, setGridRef } = useGridLayout(sections.length);
@@ -77,9 +79,10 @@ const GridMenu = ({
 
   const handleItemFocus = useCallback(
     (sectionIndex, itemIndex) => {
+      if (!isMouseActive) return;
       setCoords({ sectionIndex, itemIndex, preventScroll: true });
     },
-    [setCoords],
+    [setCoords, isMouseActive],
   );
 
   const hasContent = useMemo(
