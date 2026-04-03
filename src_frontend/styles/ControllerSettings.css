@@ -1,0 +1,33 @@
+.cs-loading {
+  padding: 24px 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cs-row-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-grow: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.cs-row-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+.cs-row-value {
+  margin-left: auto;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.cs-row-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

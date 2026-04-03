@@ -13,6 +13,7 @@ const defaultConfig = {
   showRunnerIcon: true,
   keepGamesRunningOnQuit: false,
   enableUiActionSoundFeedbacks: true,
+  controllerInputMode: "native",
 };
 
 const SUBSCRIPTIONS = {};

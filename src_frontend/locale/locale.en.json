@@ -32,6 +32,23 @@
     "Confirm": "Confirm",
     "Select": "Select"
   },
+  "components/ControllerSettings.jsx": {
+    "Back": "Back",
+    "Close": "Close",
+    "Controller Settings": "Controller Settings",
+    "Input Mode": "Input Mode",
+    "Native": "Native",
+    "No controllers detected.": "No controllers detected.",
+    "Refresh": "Refresh",
+    "Select": "Select",
+    "Test Controller": "Test Controller",
+    "Xinput": "Xinput"
+  },
+  "components/ControllerTester.jsx": {
+    "Close": "Close",
+    "Controller Test": "Controller Test",
+    "Waiting for controller input...": "Waiting for controller input..."
+  },
   "components/ControlsOverlay.jsx": {
     "Clear Search": "Clear Search",
     "Force close": "Force close",
@@ -168,6 +185,7 @@
     "Continue with exiting the application?": "Continue with exiting the application?",
     "Continue with system power off?": "Continue with system power off?",
     "Continue with system reboot?": "Continue with system reboot?",
+    "Controller Settings": "Controller Settings",
     "Display Settings": "Display Settings",
     "Exit Application": "Exit Application",
     "Generate Bug Report": "Generate Bug Report",

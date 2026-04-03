@@ -173,4 +173,34 @@ function mapSdlGamepadsToWebApi(gamepads) {
   }));
 }
 
-module.exports = { pollGamepads, mapSdlGamepadsToWebApi };
+async function listControllers() {
+  const { sdl, activeControllers } = await getSdlHandle();
+
+  sdl.SDL_GameControllerUpdate();
+
+  const numJoysticks = sdl.SDL_NumJoysticks();
+  const controllers = [];
+
+  for (let i = 0; i < numJoysticks; i++) {
+    if (sdl.SDL_IsGameController(i) === 0) continue;
+
+    let ptr = activeControllers.get(i);
+    if (!ptr) {
+      ptr = sdl.SDL_GameControllerOpen(i);
+      if (ptr) activeControllers.set(i, ptr);
+    }
+
+    if (!ptr || sdl.SDL_GameControllerGetAttached(ptr) === 0) continue;
+
+    const name = sdl.SDL_GameControllerName(ptr) || `Controller ${i + 1}`;
+
+    controllers.push({
+      index: i,
+      name,
+    });
+  }
+
+  return controllers;
+}
+
+module.exports = { pollGamepads, mapSdlGamepadsToWebApi, listControllers };

@@ -14,6 +14,7 @@ import * as api from "../utils/ipc";
 import About from "./About";
 import BluetoothMenu from "./BluetoothMenu";
 import ConfirmationDialog from "./ConfirmationDialog";
+import ControllerSettings from "./ControllerSettings";
 import DisplaySettings from "./DisplaySettings";
 import LegendaContainer from "./LegendaContainer";
 import LutrisSettingsFlow from "./LutrisSettingsFlow";
@@ -75,6 +76,13 @@ const SystemMenu = () => {
     setIsOpen(false);
   }, [showModal, setIsOpen]);
 
+  const openControllerSettingsModal = useCallback(() => {
+    showModal((hideThisModal) => (
+      <ControllerSettings onClose={hideThisModal} />
+    ));
+    setIsOpen(false);
+  }, [showModal, setIsOpen]);
+
   const openAboutModal = useCallback(() => {
     showModal((hideThisModal) => <About onClose={hideThisModal} />);
     setIsOpen(false);
@@ -133,6 +141,10 @@ const SystemMenu = () => {
           disabled: staticSettings.DISABLE_BLUETOOTH_SETTINGS,
         },
         {
+          label: t("Controller Settings"),
+          action: openControllerSettingsModal,
+        },
+        {
           label: t("Open Lutris"),
           action: () => api.openLutris(),
           disabled: staticSettings.DISABLE_OPEN_LUTRIS,
@@ -178,6 +190,7 @@ const SystemMenu = () => {
       openAudioSettingsModal,
       openDisplaySettingsModal,
       openBluetoothSettingsModal,
+      openControllerSettingsModal,
       settings.doubleConfirmPowerManagement,
       staticSettings.DISABLE_LUTRIS_SETTINGS,
       staticSettings.DISABLE_AUDIO_SETTINGS,

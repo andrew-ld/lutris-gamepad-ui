@@ -96,4 +96,5 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
   // Sdl
   pollGamepadsSdl: () => ipcRenderer.invoke("poll-gamepads-sdl"),
+  listControllers: () => ipcRenderer.invoke("list-controllers"),
 });
