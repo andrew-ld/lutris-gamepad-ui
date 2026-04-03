@@ -134,14 +134,21 @@ const ControllerSettings = ({ onClose }) => {
   const [controllers, setControllers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedController, setSelectedController] = useState(null);
+  const [inputMode, setInputMode] = useState("native");
   const currentMenuItem = useRef(null);
   const scrollParentReference = useRef(null);
 
   const fetchControllers = useCallback(async () => {
     setIsLoading(true);
     try {
-      const result = await api.listControllers();
+      const [result, config] = await Promise.all([
+        api.listControllers(),
+        api.getAppConfig(),
+      ]);
       setControllers(result || []);
+      if (config?.controllerInputMode) {
+        setInputMode(config.controllerInputMode);
+      }
     } catch {
       setControllers([]);
     } finally {
@@ -192,13 +199,25 @@ const ControllerSettings = ({ onClose }) => {
         isFocused={isFocused}
         onMouseEnter={onMouseEnter}
       >
-        <div className="cs-row-content">
-          <span className="cs-row-icon">🎮</span>
-          <span className="cs-row-label">{item.label}</span>
+        <div className="controller-settings-device">
+          <div className="controller-settings-device-header">
+            <span className="cs-row-label">{item.controller.name}</span>
+            <span className="controller-settings-mode-badge">
+              {inputMode}
+            </span>
+          </div>
+          <span className="controller-settings-meta">
+            {[
+              item.controller.family,
+              `${item.controller.vendorId}:${item.controller.productId}`,
+            ]
+              .filter(Boolean)
+              .join(" · ")}
+          </span>
         </div>
       </FocusableRow>
     ),
-    [],
+    [inputMode],
   );
 
   const legendItems = useMemo(
@@ -214,7 +233,10 @@ const ControllerSettings = ({ onClose }) => {
     return (
       <ControllerDetail
         controller={selectedController}
-        onBack={() => setSelectedController(null)}
+        onBack={() => {
+          setSelectedController(null);
+          fetchControllers();
+        }}
       />
     );
   }

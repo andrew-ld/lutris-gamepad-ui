@@ -173,6 +173,22 @@ function mapSdlGamepadsToWebApi(gamepads) {
   }));
 }
 
+const VENDOR_FAMILY_MAP = {
+  "054c": "playstation",
+  "045e": "xbox",
+  "057e": "nintendo",
+  "28de": "steam",
+  "2dc8": "8bitdo",
+  "0f0d": "generic",
+  "0079": "generic",
+  "0810": "generic",
+  "046d": "generic",
+};
+
+function classifyFamily(vendorId) {
+  return VENDOR_FAMILY_MAP[vendorId] || "unknown";
+}
+
 async function listControllers() {
   const { sdl, activeControllers } = await getSdlHandle();
 
@@ -193,10 +209,19 @@ async function listControllers() {
     if (!ptr || sdl.SDL_GameControllerGetAttached(ptr) === 0) continue;
 
     const name = sdl.SDL_GameControllerName(ptr) || `Controller ${i + 1}`;
+    const vendorId = sdl.SDL_GameControllerGetVendor(ptr)
+      .toString(16)
+      .padStart(4, "0");
+    const productId = sdl.SDL_GameControllerGetProduct(ptr)
+      .toString(16)
+      .padStart(4, "0");
 
     controllers.push({
       index: i,
       name,
+      vendorId,
+      productId,
+      family: classifyFamily(vendorId),
     });
   }
 

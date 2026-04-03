@@ -59,6 +59,12 @@ function bindSDL2(lib) {
     SDL_GameControllerName: lib.func(
       "const char* SDL_GameControllerName(SDL_GameController* gamecontroller)",
     ),
+    SDL_GameControllerGetVendor: lib.func(
+      "Uint16 SDL_GameControllerGetVendor(SDL_GameController* gamecontroller)",
+    ),
+    SDL_GameControllerGetProduct: lib.func(
+      "Uint16 SDL_GameControllerGetProduct(SDL_GameController* gamecontroller)",
+    ),
   };
 
   sdl.SDL_GameControllerAddMappingsFromFile = function (file) {
