@@ -6,6 +6,7 @@ import React, {
   useState,
 } from "react";
 
+import { useInput } from "../contexts/InputContext";
 import { useTranslation } from "../contexts/TranslationContext";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import { useScopedInput } from "../hooks/useScopedInput";
@@ -33,33 +34,10 @@ const RowBasedMenu = ({
 }) => {
   const { t } = useTranslation();
   const playActionSound = usePlayButtonActionSound();
+  const { isMouseActive } = useInput();
 
   const [activeSectionIndex, setActiveSectionIndex] =
     useState(initialSectionIndex);
-  const [selectedIndex, setSelectedIndex] = useState(initialSelectedIndex);
-
-  useEffect(() => {
-    onStateChange?.({ activeSectionIndex, selectedIndex });
-  }, [activeSectionIndex, selectedIndex, onStateChange]);
-
-  const activeSectionIdReference = useRef(null);
-
-  useEffect(() => {
-    if (sections && sections[activeSectionIndex]) {
-      activeSectionIdReference.current = sections[activeSectionIndex].id;
-    }
-  }, [activeSectionIndex, sections]);
-
-  useEffect(() => {
-    if (sections && activeSectionIdReference.current !== null) {
-      const newSectionIndex = sections.findIndex(
-        (s) => s.id === activeSectionIdReference.current,
-      );
-      if (newSectionIndex !== -1 && newSectionIndex !== activeSectionIndex) {
-        setActiveSectionIndex(newSectionIndex);
-      }
-    }
-  }, [sections, activeSectionIndex]);
 
   const items = useMemo(() => {
     return sections
@@ -67,64 +45,45 @@ const RowBasedMenu = ({
       : baseItems || [];
   }, [sections, activeSectionIndex, baseItems]);
 
-  const selectedIndexReference = useRef(selectedIndex);
-  const onActionReference = useRef(onAction);
-  const onFocusChangeReference = useRef(onFocusChange);
+  const [selectedKey, setSelectedKey] = useState(() => {
+    const initialItem = items[initialSelectedIndex];
+    return initialItem ? itemKey(initialItem, initialSelectedIndex) : null;
+  });
 
-  const containerReference = useRef(null);
+  const selectedIndex = useMemo(() => {
+    if (selectedKey === null) return 0;
+    const index = items.findIndex(
+      (item, idx) => itemKey(item, idx) === selectedKey,
+    );
+    if (index === -1) {
+      return 0;
+    }
+    return index;
+  }, [items, selectedKey, itemKey]);
+
+  if (selectedKey === null && items.length > 0) {
+    setSelectedKey(itemKey(items[0], 0));
+  }
+
   const listReference = useRef(null);
-  const activeSectionIndexReference = useRef(activeSectionIndex);
+
+  const latestItemsReference = useRef(items);
+  const latestSelectedIndexReference = useRef(selectedIndex);
 
   useEffect(() => {
-    selectedIndexReference.current = selectedIndex;
-  }, [selectedIndex]);
+    latestItemsReference.current = items;
+    latestSelectedIndexReference.current = selectedIndex;
+  });
 
   useEffect(() => {
-    activeSectionIndexReference.current = activeSectionIndex;
-  }, [activeSectionIndex]);
+    onStateChange?.({ activeSectionIndex, selectedIndex });
+  }, [activeSectionIndex, selectedIndex, onStateChange]);
 
   useEffect(() => {
-    onActionReference.current = onAction;
-  }, [onAction]);
-
-  useEffect(() => {
-    onFocusChangeReference.current = onFocusChange;
-  }, [onFocusChange]);
-
-  useEffect(() => {
-    if (onFocusChangeReference.current) {
-      onFocusChangeReference.current(items[selectedIndex] ?? null);
+    if (onFocusChange) {
+      onFocusChange(items[selectedIndex] ?? null);
     }
-  }, [selectedIndex, items]);
-
-  const [selectedItemKey, setSelectedItemKey] = useState(null);
-  const [prevItems, setPrevItems] = useState(items);
-
-  if (items !== prevItems) {
-    setPrevItems(items);
-    if (items.length === 0) {
-      setSelectedIndex(0);
-    } else {
-      if (selectedItemKey === null) {
-        setSelectedIndex(0);
-      } else {
-        const newIndex = items.findIndex(
-          (item, index) => itemKey(item, index) === selectedItemKey,
-        );
-        if (newIndex === -1) {
-          setSelectedIndex(0);
-        } else if (newIndex !== selectedIndex) {
-          setSelectedIndex(newIndex);
-        }
-      }
-    }
-  }
-
-  const currentItem = items[selectedIndex];
-  const currentKey = currentItem ? itemKey(currentItem, selectedIndex) : null;
-  if (currentKey !== selectedItemKey) {
-    setSelectedItemKey(currentKey);
-  }
+  }, [selectedIndex, items, onFocusChange]);
 
   useEffect(() => {
     if (!listReference.current || items.length === 0) return;
@@ -132,10 +91,12 @@ const RowBasedMenu = ({
     const scrollParent = findScrollableParent(listReference.current);
     const selectedElement = listReference.current.children[selectedIndex];
 
+    if (!selectedElement) return;
+
     if (selectedIndex === 0) {
       if (scrollParent) {
         scrollParent.scrollTo({ top: 0, behavior: "smooth" });
-      } else if (selectedElement) {
+      } else {
         selectedElement.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     } else if (selectedIndex === items.length - 1) {
@@ -144,28 +105,28 @@ const RowBasedMenu = ({
           top: scrollParent.scrollHeight,
           behavior: "smooth",
         });
-      } else if (selectedElement) {
+      } else {
         selectedElement.scrollIntoView({ behavior: "smooth", block: "end" });
       }
     } else {
-      if (selectedElement) {
-        selectedElement.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-        });
-      }
+      selectedElement.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
     }
   }, [selectedIndex, items]);
 
   const inputHandler = useCallback(
     (input) => {
+      const currentItems = latestItemsReference.current;
+      const currentIndex = latestSelectedIndexReference.current;
+
       if (sections && sections.length > 1) {
         if (input.name === "L1") {
           playActionSound();
           setActiveSectionIndex((previous) =>
             previous > 0 ? previous - 1 : sections.length - 1,
           );
-          setSelectedIndex(0);
           return;
         }
 
@@ -174,55 +135,49 @@ const RowBasedMenu = ({
           setActiveSectionIndex((previous) =>
             previous < sections.length - 1 ? previous + 1 : 0,
           );
-          setSelectedIndex(0);
           return;
         }
       }
 
-      if (items.length === 0) {
-        if (onActionReference.current) {
+      if (currentItems.length === 0) {
+        if (onAction) {
           playActionSound();
-          onActionReference.current(input.name, null);
+          onAction(input.name, null);
         }
         return;
       }
 
-      const currentItem = items[selectedIndexReference.current];
-
       switch (input.name) {
         case "UP": {
-          setSelectedIndex((previous) => {
-            const next = previous - 1;
-            playActionSound();
-            return next < 0 ? items.length - 1 : next;
-          });
+          playActionSound();
+          const nextIndex =
+            currentIndex - 1 < 0 ? currentItems.length - 1 : currentIndex - 1;
+          const nextItem = currentItems[nextIndex];
+          if (nextItem) {
+            setSelectedKey(itemKey(nextItem, nextIndex));
+          }
           break;
         }
         case "DOWN": {
-          setSelectedIndex((previous) => {
-            const next = previous + 1;
-            playActionSound();
-            return next > items.length - 1 ? 0 : next;
-          });
+          playActionSound();
+          const nextIndex =
+            currentIndex + 1 > currentItems.length - 1 ? 0 : currentIndex + 1;
+          const nextItem = currentItems[nextIndex];
+          if (nextItem) {
+            setSelectedKey(itemKey(nextItem, nextIndex));
+          }
           break;
         }
-        case "LEFT":
-        case "RIGHT":
-        case "A":
-        case "B":
-        case "X":
-        case "Y":
-        case "L1":
-        case "R1": {
-          if (onActionReference.current) {
+        default: {
+          if (onAction) {
             playActionSound();
-            onActionReference.current(input.name, currentItem);
+            onAction(input.name, currentItems[currentIndex]);
           }
           break;
         }
       }
     },
-    [items, sections, playActionSound],
+    [sections, onAction, playActionSound, itemKey],
   );
 
   const { isFocused, wasAcquired } = useScopedInput(
@@ -239,12 +194,19 @@ const RowBasedMenu = ({
 
   const handleSectionClick = useCallback((index) => {
     setActiveSectionIndex(index);
-    setSelectedIndex(0);
   }, []);
 
-  const handleItemClick = useCallback((index) => {
-    setSelectedIndex(index);
-  }, []);
+  const handleItemClick = useCallback(
+    (index) => {
+      if (!isMouseActive) return;
+
+      const item = items[index];
+      if (item) {
+        setSelectedKey(itemKey(item, index));
+      }
+    },
+    [items, itemKey, isMouseActive],
+  );
 
   const renderSections = () => {
     if (!sections || sections.length === 0) {
@@ -292,7 +254,7 @@ const RowBasedMenu = ({
   };
 
   return (
-    <div ref={containerReference} className="row-based-menu-container">
+    <div className="row-based-menu-container">
       {renderSections()}
       {renderContent()}
     </div>
