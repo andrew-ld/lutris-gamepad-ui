@@ -119,6 +119,8 @@ export const InputProvider = ({ children }) => {
 
   const [, setFocusIteration] = useState(0);
   const [connectedGamepadCount, setConnectedGamepadCount] = useState(0);
+  const [isMouseActive, setIsMouseActive] = useState(false);
+  const mouseTimeoutReference = useRef(null);
 
   const focusStackReference = useRef([]);
 
@@ -132,6 +134,23 @@ export const InputProvider = ({ children }) => {
   const { settings } = useSettingsState();
 
   const { pollGamepads } = useGamepadInputCompat();
+
+  useEffect(() => {
+    const handleMouseMove = () => {
+      setIsMouseActive(true);
+      clearTimeout(mouseTimeoutReference.current);
+      mouseTimeoutReference.current = setTimeout(() => {
+        setIsMouseActive(false);
+      }, 500);
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      clearTimeout(mouseTimeoutReference.current);
+    };
+  }, []);
 
   useEffect(() => {
     gamepadAutorepeatMs.current = settings.gamepadAutorepeatMs;
@@ -184,6 +203,11 @@ export const InputProvider = ({ children }) => {
       ) {
         lastDetectedInputSourceReference.current = inputSource;
         broadcastInputTypeChange();
+
+        if (inputSource !== "mouse") {
+          setIsMouseActive(false);
+          clearTimeout(mouseTimeoutReference.current);
+        }
       }
       if (document.hasFocus() || !inputEvent || inputEvent?.name === "Super") {
         broadcastInputEvent(inputEvent);
@@ -407,6 +431,7 @@ export const InputProvider = ({ children }) => {
     getLatestInputType: () => lastDetectedInputSourceReference.current,
     subscribeToFocusChanges,
     getFocusSnapshot,
+    isMouseActive,
   };
 
   return (

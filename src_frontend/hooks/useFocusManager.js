@@ -22,15 +22,8 @@ export const useFocusManager = (activeCoords, numberColumns, isActive) => {
 
     const { sectionIndex, itemIndex, preventScroll } = activeCoords;
 
-    // Clear previous focus
-    for (const section of itemReferences.current) {
-      if (section)
-        for (const item of section) item?.classList.remove("focused");
-    }
-
     const target = itemReferences.current[sectionIndex]?.[itemIndex];
     if (target) {
-      target.classList.add("focused");
       if (preventScroll) {
         target.focus({ preventScroll: true });
       } else {

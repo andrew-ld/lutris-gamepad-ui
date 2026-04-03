@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 
+import { useInput } from "../contexts/InputContext";
 import { useModalActions } from "../contexts/ModalContext";
 import { useToastActions } from "../contexts/ToastContext";
+import { useStaticSettings } from "../hooks/useStaticSettings";
 import { onShowToast, onUpdateAvailable } from "../utils/ipc";
 
 import LibraryContainer from "./LibraryContainer";
@@ -10,6 +12,8 @@ import TopBar from "./TopBar";
 import UpdateDialog from "./UpdateDialog";
 
 const AppContent = () => {
+  const { isMouseActive } = useInput();
+  const { staticSettings } = useStaticSettings();
   const { showToast } = useToastActions();
   const { showModal } = useModalActions();
 
@@ -41,7 +45,11 @@ const AppContent = () => {
   }, [showToast, showModal]);
 
   return (
-    <div className="App">
+    <div
+      className={`App ${isMouseActive ? "mouse-active" : ""} ${
+        staticSettings?.DISABLE_ANIMATIONS ? "disable-animations" : ""
+      }`}
+    >
       <TopBar />
       <SystemMenu />
       <LibraryContainer />

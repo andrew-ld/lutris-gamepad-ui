@@ -10,6 +10,7 @@ const DialogLayout = ({
   className = "",
   contentClassName = "",
   containerRef,
+  contentRef,
   style = {},
 }) => {
   return (
@@ -18,7 +19,7 @@ const DialogLayout = ({
       style={{ maxWidth, ...style }}
       ref={containerRef}
     >
-      <LegendaContainer legendItems={legendItems}>
+      <LegendaContainer legendItems={legendItems} ref={contentRef}>
         <div className={`dialog-layout-content ${contentClassName}`}>
           {title && <h2 className="dialog-layout-title">{title}</h2>}
           {description && (

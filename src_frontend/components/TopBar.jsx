@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 import packageJson from "../../package.json";
 import { useAudio } from "../contexts/AudioContext";
@@ -12,17 +12,15 @@ const TopBar = () => {
   const { gamepadCount } = useInput();
   const { volume, isMuted, isLoading: audioIsLoading } = useAudio();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const timeReference = useRef(null);
+  const [time, setTime] = useState("");
 
   useEffect(() => {
     const updateClock = () => {
-      if (timeReference.current) {
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2, "0");
-        const minutes = String(now.getMinutes()).padStart(2, "0");
-        const seconds = String(now.getSeconds()).padStart(2, "0");
-        timeReference.current.textContent = `${hours}:${minutes}:${seconds}`;
-      }
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+      const seconds = String(now.getSeconds()).padStart(2, "0");
+      setTime(`${hours}:${minutes}:${seconds}`);
     };
 
     updateClock();
@@ -56,7 +54,7 @@ const TopBar = () => {
   return (
     <div className="top-bar">
       <div className="top-bar-content">
-        <span className="top-bar-item top-bar-time" ref={timeReference}></span>
+        <span className="top-bar-item top-bar-time">{time}</span>
         <span className="top-bar-item top-bar-separator">|</span>
         <span className="top-bar-item top-bar-gamepads">
           🎮 {gamepadCount > 0 ? gamepadCount : "N/A"}

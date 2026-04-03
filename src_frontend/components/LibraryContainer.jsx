@@ -3,6 +3,7 @@ import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { useLutris, useLutrisActions } from "../contexts/LutrisContext";
 import { useModalActions, useModalState } from "../contexts/ModalContext";
 import { useTranslation } from "../contexts/TranslationContext";
+import { useUI } from "../contexts/UIContext";
 import { useGameShelves } from "../hooks/useGameShelves";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
@@ -26,6 +27,7 @@ const LibraryContainer = () => {
   const { launchGame, closeRunningGame } = useLutrisActions();
   const { showModal } = useModalActions();
   const { isModalOpen } = useModalState();
+  const { toggleSystemMenu } = useUI();
   const playActionSound = usePlayButtonActionSound();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -214,8 +216,8 @@ const LibraryContainer = () => {
   ]);
 
   const openSystemMenu = useCallback(() => {
-    globalThis.dispatchEvent(new Event("toggle-system-menu"));
-  }, []);
+    toggleSystemMenu();
+  }, [toggleSystemMenu]);
 
   if (loading) {
     return <LoadingIndicator message={t("Loading library...")} />;
@@ -258,11 +260,12 @@ const LibraryContainer = () => {
     controlsOverlayProperties.onShowSearchModal = showSearchModalCallback;
   }
 
-  const renderItem = (game, { _isFocused }, { onFocus, onClick, ref }) => (
+  const renderItem = (game, { isFocused }, { onFocus, onClick, ref }) => (
     <GameCard
       key={game.id}
       ref={ref}
       game={game}
+      isFocused={isFocused}
       onFocus={onFocus}
       onClick={onClick}
     />

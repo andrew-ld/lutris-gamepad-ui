@@ -25,7 +25,7 @@
   box-sizing: border-box;
 }
 
-body:not(.mouse-active) * {
+.App:not(.mouse-active) * {
   pointer-events: none;
   cursor: default !important;
 }
@@ -52,9 +52,9 @@ html,
   box-sizing: border-box;
 }
 
-body.disable-animations *,
-body.disable-animations *::before,
-body.disable-animations *::after {
+.App.disable-animations *,
+.App.disable-animations *::before,
+.App.disable-animations *::after {
   animation: none !important;
   transition: none !important;
 }

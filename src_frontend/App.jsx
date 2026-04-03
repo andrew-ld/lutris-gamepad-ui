@@ -1,6 +1,5 @@
 import AppContent from "./components/AppContent";
 import AppInitializer from "./components/AppInitializer";
-import AppMouseFocus from "./components/AppMouseFocus";
 import Compose from "./components/Compose";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ModalRenderer from "./components/ModalRenderer";
@@ -13,10 +12,12 @@ import { ModalProvider } from "./contexts/ModalContext";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import { ToastProvider } from "./contexts/ToastContext";
 import { TranslationProvider } from "./contexts/TranslationContext";
+import { UIProvider } from "./contexts/UIContext";
 
 function App() {
   const providers = [
     SettingsProvider,
+    UIProvider,
     InputProvider,
     TranslationProvider,
     ErrorBoundary,
@@ -30,7 +31,6 @@ function App() {
   return (
     <AppInitializer>
       <Compose components={providers}>
-        <AppMouseFocus />
         <AppContent />
         <ModalRenderer />
         <ToastContainer />

@@ -16,6 +16,7 @@ const CrashDialog = ({ error, errorInfo }) => {
   const [focusedButtonIndex, setFocusedButtonIndex] = useState(0);
   const translationContext = useTranslation();
   const playActionSound = usePlayButtonActionSound();
+  const [contentElement, setContentElement] = useState(null);
 
   const t = useCallback(
     (key, replacements, filename) => {
@@ -59,14 +60,18 @@ const CrashDialog = ({ error, errorInfo }) => {
     }
   }, [buttons, focusedButtonIndex]);
 
-  const handleScroll = useCallback((direction) => {
-    const scrollable = document.querySelector(
-      ".crash-dialog-container .legenda-content",
-    );
-    if (scrollable) {
-      scrollable.scrollTop += SCROLL_AMOUNT * (direction === "down" ? 1 : -1);
-    }
-  }, []);
+  const handleScroll = useCallback(
+    (direction) => {
+      if (contentElement) {
+        contentElement.scrollTo({
+          top:
+            contentElement.scrollTop +
+            SCROLL_AMOUNT * (direction === "down" ? 1 : -1),
+        });
+      }
+    },
+    [contentElement],
+  );
 
   const inputHandler = useCallback(
     (input) => {
@@ -107,26 +112,29 @@ const CrashDialog = ({ error, errorInfo }) => {
 
   useScopedInput(inputHandler, "CrashDialogFocus");
 
-  const legendItems = [];
-  if (detailsVisible) {
-    legendItems.push(
-      {
-        button: "UP",
-        label: t("Scroll Up"),
-        onClick: () => handleScroll("up"),
-      },
-      {
-        button: "DOWN",
-        label: t("Scroll Down"),
-        onClick: () => handleScroll("down"),
-      },
+  const legendItems = useMemo(() => {
+    const items = [];
+    if (detailsVisible) {
+      items.push(
+        {
+          button: "UP",
+          label: t("Scroll Up"),
+          onClick: () => handleScroll("up"),
+        },
+        {
+          button: "DOWN",
+          label: t("Scroll Down"),
+          onClick: () => handleScroll("down"),
+        },
+      );
+    }
+    items.push(
+      { button: "LEFT", label: t("Navigate") },
+      { button: "RIGHT", label: t("Navigate") },
+      { button: "A", label: t("Select"), onClick: selectedButtonAction },
     );
-  }
-  legendItems.push(
-    { button: "LEFT", label: t("Navigate") },
-    { button: "RIGHT", label: t("Navigate") },
-    { button: "A", label: t("Select"), onClick: selectedButtonAction },
-  );
+    return items;
+  }, [detailsVisible, handleScroll, selectedButtonAction, t]);
 
   const errorString = error
     ? error.toString()
@@ -145,6 +153,7 @@ const CrashDialog = ({ error, errorInfo }) => {
         legendItems={legendItems}
         maxWidth="800px"
         className="crash-dialog-container"
+        contentRef={setContentElement}
       >
         <div className="modal-buttons-row">
           {buttons.map((button, index) => (

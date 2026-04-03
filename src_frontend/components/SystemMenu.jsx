@@ -5,6 +5,7 @@ import { useModalActions, useModalState } from "../contexts/ModalContext";
 import { useSettingsState } from "../contexts/SettingsContext";
 import { useToastActions } from "../contexts/ToastContext";
 import { useTranslation } from "../contexts/TranslationContext";
+import { useUI } from "../contexts/UIContext";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import { useStaticSettings } from "../hooks/useStaticSettings";
@@ -43,7 +44,7 @@ export const SystemMenuFocusId = "SystemMenu";
 
 const SystemMenu = () => {
   const { t } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false);
+  const { isSystemMenuOpen: isOpen, setSystemMenuOpen: setIsOpen } = useUI();
   const [focusedItem, setFocusedItem] = useState(null);
   const { showModal } = useModalActions();
   const { showToast } = useToastActions();
@@ -61,22 +62,22 @@ const SystemMenu = () => {
   const openAudioSettingsModal = useCallback(() => {
     showModal((hideThisModal) => <VolumeControl onClose={hideThisModal} />);
     setIsOpen(false);
-  }, [showModal]);
+  }, [showModal, setIsOpen]);
 
   const openBluetoothSettingsModal = useCallback(() => {
     showModal((hideThisModal) => <BluetoothMenu onClose={hideThisModal} />);
     setIsOpen(false);
-  }, [showModal]);
+  }, [showModal, setIsOpen]);
 
   const openDisplaySettingsModal = useCallback(() => {
     showModal((hideThisModal) => <DisplaySettings onClose={hideThisModal} />);
     setIsOpen(false);
-  }, [showModal]);
+  }, [showModal, setIsOpen]);
 
   const openAboutModal = useCallback(() => {
     showModal((hideThisModal) => <About onClose={hideThisModal} />);
     setIsOpen(false);
-  }, [showModal]);
+  }, [showModal, setIsOpen]);
 
   const reloadLibraryAction = useCallback(async () => {
     showToast({
@@ -89,14 +90,14 @@ const SystemMenu = () => {
   const openSettingsModal = useCallback(() => {
     showModal((hideThisModal) => <SettingsMenu onClose={hideThisModal} />);
     setIsOpen(false);
-  }, [showModal]);
+  }, [showModal, setIsOpen]);
 
   const openLutrisSettingsModal = useCallback(() => {
     showModal((hideThisModal) => (
       <LutrisSettingsFlow onClose={hideThisModal} />
     ));
     setIsOpen(false);
-  }, [showModal]);
+  }, [showModal, setIsOpen]);
 
   const menuItems = useMemo(
     () =>
@@ -233,7 +234,7 @@ const SystemMenu = () => {
         item.action();
       }
     },
-    [openConfirmation, t],
+    [openConfirmation, t, setIsOpen],
   );
 
   useEffect(() => {
@@ -249,7 +250,7 @@ const SystemMenu = () => {
       const isOpening = !previous;
       return isOpening;
     });
-  }, []);
+  }, [setIsOpen]);
 
   const handleMenuAction = useCallback(
     (actionName, item) => {
@@ -259,7 +260,7 @@ const SystemMenu = () => {
         setIsOpen(false);
       }
     },
-    [handleAction],
+    [handleAction, setIsOpen],
   );
 
   useGlobalShortcut([
@@ -272,12 +273,6 @@ const SystemMenu = () => {
       active: !isModalOpen,
     },
   ]);
-
-  useEffect(() => {
-    globalThis.addEventListener("toggle-system-menu", toggleMenu);
-    return () =>
-      globalThis.removeEventListener("toggle-system-menu", toggleMenu);
-  }, [toggleMenu]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -293,9 +288,9 @@ const SystemMenu = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isOpen, setIsOpen]);
 
-  const closeMenuCallback = useCallback(() => setIsOpen(false), []);
+  const closeMenuCallback = useCallback(() => setIsOpen(false), [setIsOpen]);
 
   const handleSelect = useCallback(() => {
     if (focusedItem) {
