@@ -555,6 +555,8 @@ def serve_virtual_controller(mode: str, controller_id: Optional[str], exclusive_
                 "mode": mode,
                 "controller": selected["name"],
                 "exclusive": exclusive_grab,
+                "vendorId": selected.get("vendorId", "0000"),
+                "productId": selected.get("productId", "0000"),
             }
         ),
         flush=True,

@@ -7,6 +7,7 @@ const {
 const { localeAppFile, logError, logInfo, logWarn } = require("./utils.cjs");
 
 let helperProcess = null;
+let grabbedDevice = null;
 
 function getControllerHelperPath() {
   return localeAppFile("controller_helper.py");
@@ -44,6 +45,17 @@ function startXinputHelper() {
     const text = stdoutDecoder.decode(data).trim();
     if (text) {
       logInfo("controller_mode_manager", text);
+      try {
+        const msg = JSON.parse(text);
+        if (msg.status === "ready" && msg.vendorId && msg.productId) {
+          grabbedDevice = {
+            vendorId: msg.vendorId,
+            productId: msg.productId,
+          };
+        }
+      } catch {
+        // not JSON, ignore
+      }
     }
   });
 
@@ -58,6 +70,7 @@ function startXinputHelper() {
     logInfo("controller_mode_manager", `xinput helper exited with code ${code}`);
     if (helperProcess === proc) {
       helperProcess = null;
+      grabbedDevice = null;
     }
   });
 
@@ -65,6 +78,7 @@ function startXinputHelper() {
     logError("controller_mode_manager", "failed to start xinput helper", error);
     if (helperProcess === proc) {
       helperProcess = null;
+      grabbedDevice = null;
     }
   });
 
@@ -79,6 +93,7 @@ function stopXinputHelper() {
   logInfo("controller_mode_manager", "stopping xinput helper");
   helperProcess.kill("SIGTERM");
   helperProcess = null;
+  grabbedDevice = null;
 }
 
 function applyInputMode(mode) {
@@ -103,7 +118,12 @@ function shutdownControllerModeManager() {
   stopXinputHelper();
 }
 
+function getGrabbedDevice() {
+  return grabbedDevice;
+}
+
 module.exports = {
   initControllerModeManager,
   shutdownControllerModeManager,
+  getGrabbedDevice,
 };
