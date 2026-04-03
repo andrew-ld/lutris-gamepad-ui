@@ -4,6 +4,18 @@ A simple, TV-friendly, gamepad-navigable frontend for the [Lutris](https://lutri
 
 [View Screenshots](./README_SCREENSHOTS.md)
 
+## Table of Contents
+- [Requirements](#requirements)
+- [Installation](#installation)
+  - [AppImage (Recommended)](#appimage-recommended)
+  - [Arch User Repository (AUR)](#arch-user-repository-aur)
+- [Features](#features)
+- [Custom Theming Guide](#custom-theming-guide)
+- [Building from Source](#building-from-source)
+- [Configuration](#configuration)
+  - [Environment Variables](#environment-variables)
+- [License](#license)
+
 ## Requirements
 
 - A Linux-based operating system.
@@ -13,6 +25,8 @@ A simple, TV-friendly, gamepad-navigable frontend for the [Lutris](https://lutri
   - **BlueZ** (optional, for Bluetooth management).
   - **GNOME** or **KDE** (optional, for native display management).
   - **ddcutil** (optional, for external monitor brightness control).
+  - **SDL2** (optional, for LUTRIS_GAMEPAD_UI_ENABLE_SDL_INPUT).
+  - **X11** (optional, for Gamescope focus management).
 
 ## Installation
 
@@ -120,6 +134,28 @@ To change the main accent color from red to blue:
     ```bash
     npm run build
     ```
+
+## Configuration
+
+### Environment Variables
+
+You can customize the application's behavior using the following environment variables. Set them to `1` to enable/disable the respective feature.
+
+| Variable | Description |
+| :--- | :--- |
+| `LUTRIS_GAMEPAD_UI_IS_DEV` | Enable development mode (hot reloading, devtools). |
+| `LUTRIS_GAMEPAD_UI_FORCE_WINDOWED` | Force the application to run in a window instead of fullscreen. |
+| `LUTRIS_GAMEPAD_UI_LOCALE_CLEANUP` | Remove unused translation strings during build. |
+| `LUTRIS_GAMEPAD_UI_ENABLE_SDL_INPUT` | Use SDL2 for gamepad input (alternative to Web Gamepad API). |
+| `LUTRIS_GAMEPAD_UI_DISABLE_ANIMATIONS` | Disable all UI animations for a faster feel or lower resource usage. |
+| `LUTRIS_GAMEPAD_UI_DISABLE_LUTRIS_SETTINGS` | Hide the "Lutris settings" from the system menu. |
+| `LUTRIS_GAMEPAD_UI_DISABLE_AUDIO_SETTINGS` | Hide the "Audio settings" from the system menu. |
+| `LUTRIS_GAMEPAD_UI_DISABLE_DISPLAY_SETTINGS` | Hide the "Display settings" from the system menu. |
+| `LUTRIS_GAMEPAD_UI_DISABLE_BLUETOOTH_SETTINGS` | Hide the "Bluetooth settings" from the system menu. |
+| `LUTRIS_GAMEPAD_UI_DISABLE_OPEN_LUTRIS` | Hide the "Open Lutris" option from the system menu. |
+| `LUTRIS_GAMEPAD_UI_DISABLE_REBOOT_SYSTEM` | Hide the "Reboot System" option from the system menu. |
+| `LUTRIS_GAMEPAD_UI_DISABLE_POWER_OFF_SYSTEM` | Hide the "Power Off System" option from the system menu. |
+| `LUTRIS_GAMEPAD_UI_DISABLE_BUG_REPORT` | Hide the "Generate Bug Report" option from the system menu. |
 
 ## License
 
