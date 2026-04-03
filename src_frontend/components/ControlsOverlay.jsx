@@ -17,6 +17,7 @@ const ControlsOverlay = ({
   onPrevCategory,
   onNextCategory,
   isGamePaused,
+  scrollParentRef,
 }) => {
   const { t } = useTranslation();
   const legendItems = [];
@@ -88,7 +89,9 @@ const ControlsOverlay = ({
 
   return (
     <div className="controls-overlay-wrapper">
-      <LegendaContainer legendItems={legendItems}>{children}</LegendaContainer>
+      <LegendaContainer legendItems={legendItems} ref={scrollParentRef}>
+        {children}
+      </LegendaContainer>
     </div>
   );
 };

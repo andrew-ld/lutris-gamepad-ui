@@ -17,6 +17,7 @@ const GridMenu = ({
   onFocusChange,
   focusId,
   isActive = true,
+  scrollParentRef,
 }) => {
   const { isMouseActive } = useInput();
   const playActionSound = usePlayButtonActionSound();
@@ -33,6 +34,7 @@ const GridMenu = ({
     coords,
     numColumns,
     isActive,
+    scrollParentRef,
   );
 
   useEffect(() => {

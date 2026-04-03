@@ -10,7 +10,6 @@ import { useInput } from "../contexts/InputContext";
 import { useTranslation } from "../contexts/TranslationContext";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import { useScopedInput } from "../hooks/useScopedInput";
-import { findScrollableParent } from "../utils/dom";
 
 import "../styles/RowBasedMenu.css";
 
@@ -31,6 +30,7 @@ const RowBasedMenu = ({
   initialSelectedIndex = 0,
   onStateChange,
   emptyMessage,
+  scrollParentRef,
 }) => {
   const { t } = useTranslation();
   const playActionSound = usePlayButtonActionSound();
@@ -88,7 +88,7 @@ const RowBasedMenu = ({
   useEffect(() => {
     if (!listReference.current || items.length === 0) return;
 
-    const scrollParent = findScrollableParent(listReference.current);
+    const scrollParent = scrollParentRef?.current;
     const selectedElement = listReference.current.children[selectedIndex];
 
     if (!selectedElement) return;
@@ -114,7 +114,7 @@ const RowBasedMenu = ({
         block: "nearest",
       });
     }
-  }, [selectedIndex, items]);
+  }, [selectedIndex, items, scrollParentRef]);
 
   const inputHandler = useCallback(
     (input) => {

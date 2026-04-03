@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useState } from "react";
+import { useMemo, useCallback, useState, useRef } from "react";
 
 import packageJson from "../../package.json";
 import { useTranslation } from "../contexts/TranslationContext";
@@ -14,6 +14,7 @@ export const AboutFocusId = "About";
 const About = ({ onClose }) => {
   const { t } = useTranslation();
   const [focusedItem, setFocusedItem] = useState(null);
+  const scrollParentReference = useRef(null);
 
   const menuItems = useMemo(
     () => [
@@ -95,6 +96,7 @@ const About = ({ onClose }) => {
       description={packageJson.description}
       legendItems={legendItems}
       maxWidth="600px"
+      contentRef={scrollParentReference}
     >
       <RowBasedMenu
         items={menuItems}
@@ -102,6 +104,7 @@ const About = ({ onClose }) => {
         onAction={handleAction}
         focusId={AboutFocusId}
         onFocusChange={handleFocusChange}
+        scrollParentRef={scrollParentReference}
       />
     </DialogLayout>
   );

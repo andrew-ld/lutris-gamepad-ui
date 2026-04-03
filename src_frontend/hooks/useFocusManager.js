@@ -1,6 +1,11 @@
 import { useEffect, useRef, useCallback } from "react";
 
-export const useFocusManager = (activeCoords, numberColumns, isActive) => {
+export const useFocusManager = (
+  activeCoords,
+  numberColumns,
+  isActive,
+  scrollParentRef,
+) => {
   const containerReference = useRef(null);
   const itemReferences = useRef([]);
   const sectionReferences = useRef([]);
@@ -49,15 +54,14 @@ export const useFocusManager = (activeCoords, numberColumns, isActive) => {
     const currentRow =
       numberColumns > 0 ? Math.floor(itemIndex / numberColumns) : 0;
     if (sectionIndex === 0 && currentRow === 0) {
-      const scrollParent =
-        containerReference.current?.closest(".legenda-content");
+      const scrollParent = scrollParentRef?.current;
       if (scrollParent && scrollParent.scrollTop > 0) {
         scrollParent.scrollTo({ top: 0, behavior: "smooth" });
       }
     }
 
     previousCoords.current = activeCoords;
-  }, [activeCoords, numberColumns, isActive]);
+  }, [activeCoords, numberColumns, isActive, scrollParentRef]);
 
   return {
     containerRef: containerReference,

@@ -32,6 +32,7 @@ const LibraryContainer = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const gameCloseModalReference = useRef(null);
+  const scrollParentReference = useRef(null);
 
   const { shelves } = useGameShelves(games, searchQuery);
 
@@ -234,7 +235,10 @@ const LibraryContainer = () => {
     controlsOverlayProperties.isGamePaused = isGamePaused;
 
     return (
-      <ControlsOverlay {...controlsOverlayProperties}>
+      <ControlsOverlay
+        {...controlsOverlayProperties}
+        scrollParentRef={scrollParentReference}
+      >
         <RunningGame
           game={runningGame}
           isPaused={isGamePaused}
@@ -293,7 +297,10 @@ const LibraryContainer = () => {
   );
 
   return (
-    <ControlsOverlay {...controlsOverlayProperties}>
+    <ControlsOverlay
+      {...controlsOverlayProperties}
+      scrollParentRef={scrollParentReference}
+    >
       <GridMenu
         sections={sections}
         renderItem={renderItem}
@@ -303,6 +310,7 @@ const LibraryContainer = () => {
         onFocusChange={setFocusedGame}
         focusId={LibraryContainerFocusID}
         isActive={!runningGame && !isModalOpen}
+        scrollParentRef={scrollParentReference}
       />
     </ControlsOverlay>
   );

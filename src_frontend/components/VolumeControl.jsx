@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 
 import { useAudio } from "../contexts/AudioContext";
 import {
@@ -27,6 +27,7 @@ const VolumeControl = ({ onClose }) => {
   const { t } = useTranslation();
   const { settings } = useSettingsState();
   const { updateSetting } = useSettingsActions();
+  const scrollParentReference = useRef(null);
 
   const {
     volume,
@@ -322,6 +323,7 @@ const VolumeControl = ({ onClose }) => {
       title={t("Audio Settings")}
       legendItems={legendItems}
       maxWidth="600px"
+      contentRef={scrollParentReference}
     >
       {currentDefaultSinkObject && (
         <div className="volume-control-current-sink-display">
@@ -340,6 +342,7 @@ const VolumeControl = ({ onClose }) => {
         onAction={handleAction}
         focusId={VolumeControlFocusID}
         onFocusChange={handleFocusChange}
+        scrollParentRef={scrollParentReference}
       />
     </DialogLayout>
   );

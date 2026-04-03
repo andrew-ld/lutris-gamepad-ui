@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useRef } from "react";
 
 import {
   useSettingsActions,
@@ -27,6 +27,7 @@ const AUTOREPEAT_STEP = 25; // 25ms
 const SettingsMenu = ({ onClose }) => {
   const { t } = useTranslation();
   const [focusedItem, setFocusedItem] = useState(null);
+  const scrollParentReference = useRef(null);
 
   const { settings } = useSettingsState();
   const { updateSetting } = useSettingsActions();
@@ -558,6 +559,7 @@ const SettingsMenu = ({ onClose }) => {
       title={t("Settings")}
       legendItems={legendItems}
       maxWidth="600px"
+      contentRef={scrollParentReference}
     >
       <RowBasedMenu
         sections={menuSections}
@@ -565,6 +567,7 @@ const SettingsMenu = ({ onClose }) => {
         onAction={handleAction}
         onFocusChange={setFocusedItem}
         focusId={SettingsMenuFocusId}
+        scrollParentRef={scrollParentReference}
       />
     </DialogLayout>
   );
