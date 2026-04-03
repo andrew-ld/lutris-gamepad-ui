@@ -14,9 +14,9 @@
   "scripts": {
     "dev": "vite",
     "start": "LUTRIS_GAMEPAD_UI_IS_DEV=1 concurrently \"npm run dev\" \"npm run electron:dev\"",
-    "start:prod": "npm run build:vite && electron39 electron.cjs",
-    "start:prod-wayland": "npm run build:vite && electron39 electron.cjs --ozone-platform=wayland",
-    "start:prod-steamdeck": "npm run build:vite && gamescope -W 1280 -w 1280 -H 800 -h 800 -- electron39 electron.cjs",
+    "start:prod": "npm run build:vite && npx electron electron.cjs",
+    "start:prod-wayland": "npm run build:vite && npx electron electron.cjs --ozone-platform=wayland",
+    "start:prod-steamdeck": "npm run build:vite && gamescope -W 1280 -w 1280 -H 800 -h 800 -- npx electron electron.cjs",
     "build:vite": "vite build",
     "electron:build": "electron-builder --config electron-builder.config.cjs",
     "build": "npm run build:vite && npm run electron:build",
