@@ -54,7 +54,6 @@ const SystemMenu = () => {
 
   const menuReference = useRef(null);
   const menuPowerButtonReference = useRef(null);
-  const scrollParentReference = useRef(null);
 
   const { fetchGames } = useLutrisActions();
 
@@ -336,7 +335,6 @@ const SystemMenu = () => {
         <div className="system-menu-overlay">
           <LegendaContainer
             legendItems={legendItems}
-            ref={scrollParentReference}
           >
             <RowBasedMenu
               items={menuItems}
@@ -346,7 +344,6 @@ const SystemMenu = () => {
               onFocusLost={closeMenuCallback}
               focusId={SystemMenuFocusId}
               isActive={isOpen}
-              scrollParentRef={scrollParentReference}
             />
           </LegendaContainer>
         </div>

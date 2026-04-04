@@ -1,4 +1,4 @@
-import { useMemo, useCallback, useRef } from "react";
+import { useMemo, useCallback } from "react";
 
 import { useTranslation } from "../contexts/TranslationContext";
 
@@ -17,7 +17,6 @@ const SelectionMenu = ({
   showCheckmark = true,
 }) => {
   const { t } = useTranslation();
-  const scrollParentReference = useRef(null);
 
   const handleAction = useCallback(
     (actionName, item) => {
@@ -88,7 +87,6 @@ const SelectionMenu = ({
       description={description}
       legendItems={legendItems}
       maxWidth={maxWidth}
-      contentRef={scrollParentReference}
     >
       <RowBasedMenu
         items={items}
@@ -96,7 +94,6 @@ const SelectionMenu = ({
         onAction={handleAction}
         focusId="SelectionMenu"
         initialSelectedIndex={initialIndex}
-        scrollParentRef={scrollParentReference}
       />
     </DialogLayout>
   );
