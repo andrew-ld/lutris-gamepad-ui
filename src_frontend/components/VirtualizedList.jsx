@@ -91,7 +91,7 @@ const VirtualizedList = ({
     [items, getCumulativeHeight],
   );
 
-  let isVirtualizing =
+  const isVirtualizing =
     viewportHeight > 0 && totalContentHeight > viewportHeight + 2;
 
   let targetScrollTop = currentScrollTop;
@@ -117,45 +117,45 @@ const VirtualizedList = ({
     targetScrollTop = 0;
   }
 
-  // We must track the previous scroll position to accurately calculate directional scrolling.
-  // Setting state during render safely tells React to immediately retry rendering with the
-  // updated scroll target, avoiding cascading renders and effect loops.
   if (Math.abs(targetScrollTop - currentScrollTop) > 0.5) {
     setCurrentScrollTop(targetScrollTop);
   }
 
   let renderStartIndex = 0;
   let renderEndIndex = items.length;
+  let isActuallyVirtualizing = false;
 
   if (isVirtualizing) {
     let accumulatedHeight = 0;
-    let currentIndex = 0;
+    let coreStartIndex = 0;
 
-    while (currentIndex < items.length) {
-      const currentItemHeight = itemHeights[currentIndex] || baseHeight;
+    while (coreStartIndex < items.length) {
+      const currentItemHeight = itemHeights[coreStartIndex] || baseHeight;
       if (accumulatedHeight + currentItemHeight > targetScrollTop) {
         break;
       }
       accumulatedHeight += currentItemHeight;
-      currentIndex++;
+      coreStartIndex++;
     }
-
-    renderStartIndex = Math.max(0, currentIndex - OVERSCAN_COUNT);
 
     let endAccumulatedHeight = accumulatedHeight;
-    let endIndex = currentIndex;
+    let coreEndIndex = coreStartIndex;
 
     while (
-      endIndex < items.length &&
+      coreEndIndex < items.length &&
       endAccumulatedHeight < targetScrollTop + viewportHeight
     ) {
-      endAccumulatedHeight += itemHeights[endIndex] || baseHeight;
-      endIndex++;
+      endAccumulatedHeight += itemHeights[coreEndIndex] || baseHeight;
+      coreEndIndex++;
     }
 
-    renderEndIndex = Math.min(items.length, endIndex + OVERSCAN_COUNT);
+    isActuallyVirtualizing = coreStartIndex > 0 || coreEndIndex < items.length;
+
+    renderStartIndex = Math.max(0, coreStartIndex - OVERSCAN_COUNT);
+    renderEndIndex = Math.min(items.length, coreEndIndex + OVERSCAN_COUNT);
   } else if (viewportHeight === 0 && items.length > MAX_INITIAL_RENDER_COUNT) {
-    renderEndIndex = MAX_INITIAL_RENDER_COUNT;
+    renderEndIndex = Math.min(items.length, MAX_INITIAL_RENDER_COUNT);
+    isActuallyVirtualizing = true;
   }
 
   const visibleItems = items
@@ -165,10 +165,8 @@ const VirtualizedList = ({
       originalIndex: renderStartIndex + offset,
     }));
 
-  isVirtualizing = visibleItems.length !== items.length;
-
   const scrollBarInfo = (() => {
-    if (!isVirtualizing) return null;
+    if (!isActuallyVirtualizing) return null;
 
     const minThumbHeight = 20;
     const thumbHeightRatio = viewportHeight / totalContentHeight;
@@ -189,9 +187,11 @@ const VirtualizedList = ({
   })();
 
   const innerListStyle = {
-    transform: isVirtualizing ? `translateY(${-targetScrollTop}px)` : "none",
-    transition: isVirtualizing ? "transform 0.2s ease-out" : "none",
-    willChange: isVirtualizing ? "transform" : "auto",
+    transform: isActuallyVirtualizing
+      ? `translateY(${-targetScrollTop}px)`
+      : "none",
+    transition: isActuallyVirtualizing ? "transform 0.2s ease-out" : "none",
+    willChange: isActuallyVirtualizing ? "transform" : "auto",
     display: "flex",
     flexDirection: "column",
     flexShrink: 0,
@@ -217,7 +217,7 @@ const VirtualizedList = ({
       }}
     >
       <div className="virtualized-list-inner" style={innerListStyle}>
-        {isVirtualizing && (
+        {isActuallyVirtualizing && (
           <div style={{ height: topSpacerHeight, flexShrink: 0 }} />
         )}
 
@@ -235,7 +235,7 @@ const VirtualizedList = ({
           });
         })}
 
-        {isVirtualizing && (
+        {isActuallyVirtualizing && (
           <div style={{ height: bottomSpacerHeight, flexShrink: 0 }} />
         )}
       </div>
