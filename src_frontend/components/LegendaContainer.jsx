@@ -7,7 +7,10 @@ const LegendaContainer = React.forwardRef(
   ({ children, legendItems = [], scrollable = true }, ref) => {
     return (
       <div className="legenda-container">
-        <div className={`legenda-content ${scrollable ? "" : "no-scroll"}`} ref={ref}>
+        <div
+          className={`legenda-content ${scrollable ? "" : "no-scroll"}`}
+          ref={ref}
+        >
           {children}
         </div>
         {legendItems.length > 0 && (

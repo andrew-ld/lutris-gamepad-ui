@@ -20,7 +20,11 @@ const DialogLayout = ({
       style={{ maxWidth, ...style }}
       ref={containerRef}
     >
-      <LegendaContainer legendItems={legendItems} ref={contentRef} scrollable={scrollable}>
+      <LegendaContainer
+        legendItems={legendItems}
+        ref={contentRef}
+        scrollable={scrollable}
+      >
         <div className={`dialog-layout-content ${contentClassName}`}>
           {title && <h2 className="dialog-layout-title">{title}</h2>}
           {description && (

@@ -22,7 +22,7 @@ const VirtualizedList = ({
   const [viewportHeight, setViewportHeight] = useState(0);
   const [containerPaddingTop, setContainerPaddingTop] = useState(0);
   const [itemHeights, setItemHeights] = useState({});
-  const [baseHeight, setBaseHeight] = useState(64); 
+  const [baseHeight, setBaseHeight] = useState(64);
   const [currentScrollTop, setCurrentScrollTop] = useState(0);
 
   const safeSelectedIndex = useMemo(() => {
@@ -91,7 +91,7 @@ const VirtualizedList = ({
     [items.length, getCumulativeHeight],
   );
 
-  const isVirtualizing =
+  let isVirtualizing =
     viewportHeight > 0 && totalContentHeight > viewportHeight + 2;
 
   let targetScrollTop = currentScrollTop;
@@ -155,16 +155,16 @@ const VirtualizedList = ({
     renderEndIndex = MAX_INITIAL_RENDER_COUNT;
   }
 
-  const visibleItems = useMemo(() => {
-    return items
-      .slice(renderStartIndex, renderEndIndex)
-      .map((item, offset) => ({
-        item,
-        originalIndex: renderStartIndex + offset,
-      }));
-  }, [items, renderStartIndex, renderEndIndex]);
+  const visibleItems = items
+    .slice(renderStartIndex, renderEndIndex)
+    .map((item, offset) => ({
+      item,
+      originalIndex: renderStartIndex + offset,
+    }));
 
-  const scrollBarInfo = useMemo(() => {
+  isVirtualizing = visibleItems.length !== items.length;
+
+  const scrollBarInfo = (() => {
     if (!isVirtualizing) return null;
 
     const minThumbHeight = 20;
@@ -183,13 +183,7 @@ const VirtualizedList = ({
       containerPaddingTop + scrollPercentage * thumbScrollableRange;
 
     return { top: thumbTopPosition, height: thumbHeight };
-  }, [
-    isVirtualizing,
-    viewportHeight,
-    totalContentHeight,
-    targetScrollTop,
-    containerPaddingTop,
-  ]);
+  })();
 
   const innerListStyle = {
     transform: isVirtualizing ? `translateY(${-targetScrollTop}px)` : "none",

@@ -333,10 +333,7 @@ const SystemMenu = () => {
 
       {isOpen && (
         <div className="system-menu-overlay">
-          <LegendaContainer
-            legendItems={legendItems}
-            scrollable={false}
-          >
+          <LegendaContainer legendItems={legendItems} scrollable={false}>
             <RowBasedMenu
               items={menuItems}
               renderItem={renderMenuItem}
