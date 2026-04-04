@@ -95,6 +95,7 @@ const About = ({ onClose }) => {
       description={packageJson.description}
       legendItems={legendItems}
       maxWidth="600px"
+      scrollable={false}
     >
       <RowBasedMenu
         items={menuItems}

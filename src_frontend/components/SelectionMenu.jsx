@@ -87,6 +87,7 @@ const SelectionMenu = ({
       description={description}
       legendItems={legendItems}
       maxWidth={maxWidth}
+      scrollable={false}
     >
       <RowBasedMenu
         items={items}

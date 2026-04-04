@@ -335,6 +335,7 @@ const SystemMenu = () => {
         <div className="system-menu-overlay">
           <LegendaContainer
             legendItems={legendItems}
+            scrollable={false}
           >
             <RowBasedMenu
               items={menuItems}

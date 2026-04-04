@@ -558,6 +558,7 @@ const SettingsMenu = ({ onClose }) => {
       title={t("Settings")}
       legendItems={legendItems}
       maxWidth="600px"
+      scrollable={false}
     >
       <RowBasedMenu
         sections={menuSections}

@@ -15,9 +15,7 @@
   overflow-y: auto;
 }
 
-/* Disable scrolling on the legenda-content if it contains a RowBasedMenu or VirtualizedList, 
-   so the VirtualizedList can handle its own height constraint and scrolling */
-.legenda-content:has(.row-based-menu-container) {
+.legenda-content.no-scroll {
   overflow-y: hidden;
 }
 

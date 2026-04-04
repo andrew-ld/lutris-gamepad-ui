@@ -219,6 +219,7 @@ const LutrisSettingsMenu = ({
       title={currentTitle}
       legendItems={legendItems}
       maxWidth={maxWidth}
+      scrollable={false}
     >
       {loading ? (
         <div

@@ -229,6 +229,7 @@ const DisplaySettings = ({ onClose }) => {
       title={t("Display Settings")}
       legendItems={legendItems}
       maxWidth="600px"
+      scrollable={false}
     >
       {brightnessError && (
         <p className="display-settings-error-msg">

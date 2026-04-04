@@ -205,6 +205,7 @@ const BluetoothMenu = ({ onClose }) => {
       title={t("Bluetooth Settings")}
       legendItems={legendItems}
       maxWidth="600px"
+      scrollable={false}
     >
       {isLoading && !isDiscovering ? (
         <div
