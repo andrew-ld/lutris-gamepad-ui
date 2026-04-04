@@ -103,6 +103,7 @@ const ControllerDetail = ({ controller, onBack }) => {
     return (
       <ControllerTester
         controllerIndex={controller.index}
+        controllerFamily={controller.family}
         onClose={() => setShowTester(false)}
       />
     );
