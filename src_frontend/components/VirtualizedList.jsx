@@ -22,7 +22,7 @@ const VirtualizedList = ({
   const [viewportHeight, setViewportHeight] = useState(0);
   const [containerPaddingTop, setContainerPaddingTop] = useState(0);
   const [itemHeights, setItemHeights] = useState({});
-  const [baseHeight, setBaseHeight] = useState(64); // Fully dynamic base height
+  const [baseHeight, setBaseHeight] = useState(64); 
   const [currentScrollTop, setCurrentScrollTop] = useState(0);
 
   const safeSelectedIndex = useMemo(() => {
