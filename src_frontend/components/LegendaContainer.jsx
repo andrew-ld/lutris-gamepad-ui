@@ -4,10 +4,13 @@ import ButtonIcon from "./ButtonIcon";
 import "../styles/LegendaContainer.css";
 
 const LegendaContainer = React.forwardRef(
-  ({ children, legendItems = [] }, ref) => {
+  ({ children, legendItems = [], scrollable = true }, ref) => {
     return (
       <div className="legenda-container">
-        <div className="legenda-content" ref={ref}>
+        <div
+          className={`legenda-content ${scrollable ? "" : "no-scroll"}`}
+          ref={ref}
+        >
           {children}
         </div>
         {legendItems.length > 0 && (

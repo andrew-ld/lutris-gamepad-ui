@@ -2,14 +2,16 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
+  useRef,
 } from "react";
 
 import { useInput } from "../contexts/InputContext";
 import { useTranslation } from "../contexts/TranslationContext";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import { useScopedInput } from "../hooks/useScopedInput";
+
+import VirtualizedList from "./VirtualizedList";
 
 import "../styles/RowBasedMenu.css";
 
@@ -30,7 +32,6 @@ const RowBasedMenu = ({
   initialSelectedIndex = 0,
   onStateChange,
   emptyMessage,
-  scrollParentRef,
 }) => {
   const { t } = useTranslation();
   const playActionSound = usePlayButtonActionSound();
@@ -65,8 +66,6 @@ const RowBasedMenu = ({
     setSelectedKey(itemKey(items[0], 0));
   }
 
-  const listReference = useRef(null);
-
   const latestItemsReference = useRef(items);
   const latestSelectedIndexReference = useRef(selectedIndex);
 
@@ -84,37 +83,6 @@ const RowBasedMenu = ({
       onFocusChange(items[selectedIndex] ?? null);
     }
   }, [selectedIndex, items, onFocusChange]);
-
-  useEffect(() => {
-    if (!listReference.current || items.length === 0) return;
-
-    const scrollParent = scrollParentRef?.current;
-    const selectedElement = listReference.current.children[selectedIndex];
-
-    if (!selectedElement) return;
-
-    if (selectedIndex === 0) {
-      if (scrollParent) {
-        scrollParent.scrollTo({ top: 0, behavior: "smooth" });
-      } else {
-        selectedElement.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    } else if (selectedIndex === items.length - 1) {
-      if (scrollParent) {
-        scrollParent.scrollTo({
-          top: scrollParent.scrollHeight,
-          behavior: "smooth",
-        });
-      } else {
-        selectedElement.scrollIntoView({ behavior: "smooth", block: "end" });
-      }
-    } else {
-      selectedElement.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-      });
-    }
-  }, [selectedIndex, items, scrollParentRef]);
 
   const inputHandler = useCallback(
     (input) => {
@@ -243,13 +211,13 @@ const RowBasedMenu = ({
     }
 
     return (
-      <div ref={listReference} className="row-based-menu-list">
-        {items.map((item, index) =>
-          renderItem(item, index === selectedIndex, () =>
-            handleItemClick(index),
-          ),
-        )}
-      </div>
+      <VirtualizedList
+        items={items}
+        selectedIndex={selectedIndex}
+        renderItem={renderItem}
+        onItemClick={handleItemClick}
+        className="row-based-menu-list"
+      />
     );
   };
 

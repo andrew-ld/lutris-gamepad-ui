@@ -8,24 +8,9 @@
 .row-based-menu-list {
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
   padding: var(--row-based-menu-list-padding, 10px 24px);
-  scrollbar-width: thin;
-  scrollbar-color: var(--accent-color) transparent;
-}
-
-.row-based-menu-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.row-based-menu-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.row-based-menu-list::-webkit-scrollbar-thumb {
-  background-color: var(--accent-color);
-  border-radius: 4px;
 }
 
 .row-based-menu-sections {

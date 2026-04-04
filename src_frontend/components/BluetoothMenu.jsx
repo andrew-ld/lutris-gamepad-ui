@@ -30,7 +30,6 @@ const BluetoothMenu = ({ onClose }) => {
   } = useBluetoothActions();
   const { showModal } = useModalActions();
   const currentMenuItem = useRef(null);
-  const scrollParentReference = useRef(null);
 
   const handleDeviceAction = useCallback(
     (device) => {
@@ -206,7 +205,7 @@ const BluetoothMenu = ({ onClose }) => {
       title={t("Bluetooth Settings")}
       legendItems={legendItems}
       maxWidth="600px"
-      contentRef={scrollParentReference}
+      scrollable={false}
     >
       {isLoading && !isDiscovering ? (
         <div
@@ -230,7 +229,6 @@ const BluetoothMenu = ({ onClose }) => {
           onFocusChange={(item) => {
             currentMenuItem.current = item;
           }}
-          scrollParentRef={scrollParentReference}
           emptyMessage={t(
             "No devices found. Ensure Bluetooth is powered on and press 'X' to start discovery.",
           )}

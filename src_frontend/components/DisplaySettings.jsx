@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 
 import { useTranslation } from "../contexts/TranslationContext";
 import { useIsMounted } from "../hooks/useIsMounted";
@@ -27,7 +27,6 @@ const DisplaySettings = ({ onClose }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [brightnessError, setBrightnessError] = useState(true);
   const [nightLightError, setNightLightError] = useState(true);
-  const scrollParentReference = useRef(null);
 
   const fetchSettings = useCallback(async () => {
     setIsLoading(true);
@@ -230,7 +229,7 @@ const DisplaySettings = ({ onClose }) => {
       title={t("Display Settings")}
       legendItems={legendItems}
       maxWidth="600px"
-      contentRef={scrollParentReference}
+      scrollable={false}
     >
       {brightnessError && (
         <p className="display-settings-error-msg">
@@ -252,7 +251,6 @@ const DisplaySettings = ({ onClose }) => {
         onAction={handleAction}
         focusId={DisplaySettingsFocusID}
         onFocusChange={setFocusedItem}
-        scrollParentRef={scrollParentReference}
         emptyMessage={t("No display settings available.")}
       />
     </DialogLayout>

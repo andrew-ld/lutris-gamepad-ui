@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, useRef } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useTranslation } from "../contexts/TranslationContext";
 import { useIsMounted } from "../hooks/useIsMounted";
@@ -37,7 +37,6 @@ const LutrisSettingsMenu = ({
   const [loading, setLoading] = useState(true);
   const [focusedItem, setFocusedItem] = useState(null);
   const [selectingItem, setSelectingItem] = useState(null);
-  const scrollParentReference = useRef(null);
   const [menuState, setMenuState] = useState({
     activeSectionIndex: 0,
     selectedIndex: 0,
@@ -220,7 +219,7 @@ const LutrisSettingsMenu = ({
       title={currentTitle}
       legendItems={legendItems}
       maxWidth={maxWidth}
-      contentRef={scrollParentReference}
+      scrollable={false}
     >
       {loading ? (
         <div
@@ -247,7 +246,6 @@ const LutrisSettingsMenu = ({
             initialSectionIndex={menuState.activeSectionIndex}
             initialSelectedIndex={menuState.selectedIndex}
             onStateChange={setMenuState}
-            scrollParentRef={scrollParentReference}
           />
         )
       )}
