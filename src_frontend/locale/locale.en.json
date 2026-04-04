@@ -8,12 +8,10 @@
     "Version": "Version"
   },
   "components/AddGameDialog.jsx": {
-    ".. (Parent Directory)": ".. (Parent Directory)",
     "Add game": "Add game",
     "Close": "Close",
     "Create a local installed game entry in Lutris.": "Create a local installed game entry in Lutris.",
     "Default": "Default",
-    "Directory": "Directory",
     "Disable": "Disable",
     "Enable": "Enable",
     "Failed to add game": "Failed to add game",
@@ -28,7 +26,6 @@
     "Runner not provided": "Runner not provided",
     "Save": "Save",
     "Select": "Select",
-    "Select this directory": "Select this directory",
     "Set": "Set"
   },
   "components/BluetoothMenu.jsx": {
@@ -145,6 +142,11 @@
     "Select": "Select",
     "Space": "Space",
     "Submit": "Submit"
+  },
+  "components/Pathfinder.jsx": {
+    ".. (Parent Directory)": ".. (Parent Directory)",
+    "Directory": "Directory",
+    "Select this directory": "Select this directory"
   },
   "components/RowBasedMenu.jsx": {
     "No items available.": "No items available."

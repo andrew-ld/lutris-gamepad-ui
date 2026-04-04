@@ -10,6 +10,7 @@ import DialogLayout from "./DialogLayout";
 import FocusableRow from "./FocusableRow";
 import LoadingIndicator from "./LoadingIndicator";
 import OnScreenKeyboard from "./OnScreenKeyboard";
+import Pathfinder from "./Pathfinder";
 import RowBasedMenu from "./RowBasedMenu";
 import SelectionMenu from "./SelectionMenu";
 import ToggleButton from "./ToggleButton";
@@ -18,17 +19,15 @@ import "../styles/AddGameDialog.css";
 import "../styles/SettingsMenu.css";
 
 const AddGameDialogFocusId = "AddGameDialog";
-const SELECT_CURRENT_DIRECTORY = "__select_current_directory__";
-const NAVIGATE_PARENT = "__navigate_parent__";
 
 const slugifyValue = (value) => {
 	return String(value || "")
 		.normalize("NFKD")
-		.replace(/[^\w\s-]/g, "")
+		.replaceAll(/[^\w\s-]/g, "")
 		.trim()
 		.toLowerCase()
-		.replace(/[\s_-]+/g, "-")
-		.replace(/^-+|-+$/g, "");
+		.replaceAll(/[\s_-]+/g, "-")
+		.replaceAll(/^-+|-+$/g, "");
 };
 
 const isPathLikeType = (type) => {
@@ -94,19 +93,11 @@ const AddGameDialog = ({ onClose, maxWidth = "860px" }) => {
 	const [runners, setRunners] = useState([]);
 	const [gameInfo, setGameInfo] = useState({});
 
-	const [optionsBySection, setOptionsBySection] = useState({
-		game: [],
-		runner: [],
-		system: [],
-	});
+	const [optionsBySection, setOptionsBySection] = useState({});
 	const [tabDefinitions, setTabDefinitions] = useState([]);
 	const [gameInfoFields, setGameInfoFields] = useState([]);
 
-	const [optionValues, setOptionValues] = useState({
-		game: {},
-		runner: {},
-		system: {},
-	});
+	const [optionValues, setOptionValues] = useState({});
 	const initializedRef = useRef(false);
 
 	const runnerChoices = useMemo(() => {
@@ -121,7 +112,7 @@ const AddGameDialog = ({ onClose, maxWidth = "860px" }) => {
 		(key) => {
 			if (key === "slug") {
 				const explicitSlug = gameInfo[key];
-				if (explicitSlug !== undefined && explicitSlug !== null && String(explicitSlug).trim() !== "") {
+				if (String(explicitSlug ?? "").trim()) {
 					return explicitSlug;
 				}
 				return slugifyValue(gameInfo.name);
@@ -142,25 +133,17 @@ const AddGameDialog = ({ onClose, maxWidth = "860px" }) => {
 		}));
 	}, []);
 
-	const openKeyboardForOption = useCallback(
-		(item) => {
-			setKeyboardItem({
-				target: "option",
-				label: item.label,
-				initialValue: item.value,
-				item,
-			});
-		},
-		[],
-	);
+	const openKeyboard = useCallback((item) => {
+		setKeyboardItem({ target: item.kind, label: item.label, initialValue: item.value, item });
+	}, []);
 
 	const fetchSettingsForRunner = useCallback(
 		async (runnerSlug) => {
 			if (!runnerSlug) {
-				setOptionsBySection({ game: [], runner: [], system: [] });
+				setOptionsBySection({});
 				setTabDefinitions([]);
 				setGameInfoFields([]);
-				setOptionValues({ game: {}, runner: {}, system: {} });
+				setOptionValues({});
 				return;
 			}
 
@@ -253,17 +236,13 @@ const AddGameDialog = ({ onClose, maxWidth = "860px" }) => {
 		loadRunners();
 	}, [fetchSettingsForRunner, isMounted, onClose, showToast, t]);
 
-	const openKeyboardForItem = useCallback(
-		(item) => {
-			setKeyboardItem({
-				target: "game_info",
-				label: item.label,
-				initialValue: item.value,
-				item,
-			});
-		},
-		[],
-	);
+	const writeToTarget = useCallback((targetItem, value) => {
+		if (targetItem?.kind === "option") {
+			updateOptionValue(targetItem.section, targetItem.key, value);
+		} else if (targetItem) {
+			updateGameInfo(targetItem.key, value);
+		}
+	}, [updateGameInfo, updateOptionValue]);
 
 	const browsePath = useCallback(
 		async (path, targetItem) => {
@@ -292,6 +271,20 @@ const AddGameDialog = ({ onClose, maxWidth = "860px" }) => {
 		},
 		[browsePath],
 	);
+
+	const activateItem = useCallback((item) => {
+		if (item.kind === "game_info" && item.key === "runner") {
+			setSelectingItem({ type: "runner" });
+		} else if (isPathLikeItem(item)) {
+			openPathBrowserForItem(item);
+		} else if (item.type === "bool") {
+			updateOptionValue(item.section, item.key, !item.value);
+		} else if (item.choices?.length > 0) {
+			setSelectingItem({ type: "option", item });
+		} else {
+			openKeyboard(item);
+		}
+	}, [openKeyboard, openPathBrowserForItem, updateOptionValue]);
 
 	const getSectionPayload = useCallback(
 		(sectionName) => {
@@ -406,68 +399,62 @@ const AddGameDialog = ({ onClose, maxWidth = "860px" }) => {
 		tabDefinitions,
 	]);
 
-	const renderMenuItem = useCallback(
-		(item, isFocused, onMouseEnter) => {
-			let control = null;
-
+	const getMenuItemControl = useCallback(
+		(item) => {
 			if (item.kind === "option" && item.type === "bool") {
-				control = (
+				return (
 					<ToggleButton
 						isToggledOn={!!item.value}
 						labelOn={t("Disable")}
 						labelOff={t("Enable")}
 					/>
 				);
-			} else if (item.kind === "option" && item.choices && item.choices.length > 0) {
+			}
+
+			if (item.kind === "option" && item.choices?.length > 0) {
 				const found = item.choices.find(
 					(choice) => String(choice[1]) === String(item.value),
 				);
-				control = <div className="settings-menu-value">{found ? found[0] : t("Default")}</div>;
-			} else if (item.kind === "game_info" && item.key === "runner") {
+				return (
+					<div className="settings-menu-value">
+						{found ? found[0] : t("Default")}
+					</div>
+				);
+			}
+
+			if (item.kind === "game_info" && item.key === "runner") {
 				const selectedRunner = runnerChoices.find(
 					(choice) => String(choice[1]) === String(item.value),
 				);
-				control = (
-					<div className="settings-menu-value">{selectedRunner ? selectedRunner[0] : t("Select")}</div>
+				return (
+					<div className="settings-menu-value">
+						{selectedRunner ? selectedRunner[0] : t("Select")}
+					</div>
 				);
-			} else {
-				control = <div className="settings-menu-value">{item.value || t("Set")}</div>;
 			}
 
+			return (
+				<div className="settings-menu-value">{item.value || t("Set")}</div>
+			);
+		},
+		[runnerChoices, t],
+	);
+
+	const renderMenuItem = useCallback(
+		(item, isFocused, onMouseEnter) => {
 			return (
 				<FocusableRow
 					key={item.id}
 					isFocused={isFocused}
 					onMouseEnter={onMouseEnter}
-					onClick={() => {
-						if (item.kind === "game_info" && item.key === "runner") {
-							setSelectingItem({ type: "runner" });
-						} else if (isPathLikeItem(item)) {
-							openPathBrowserForItem(item);
-						} else if (item.kind === "game_info") {
-							openKeyboardForItem(item);
-						} else if (item.type === "bool") {
-							updateOptionValue(item.section, item.key, !item.value);
-						} else if (item.choices && item.choices.length > 0) {
-							setSelectingItem({ type: "option", item });
-						} else if (item.kind === "option") {
-							openKeyboardForOption(item);
-						}
-					}}
+					onClick={() => activateItem(item)}
 				>
 					<span className="settings-menu-label">{item.label}</span>
-					{control}
+					{getMenuItemControl(item)}
 				</FocusableRow>
 			);
 		},
-		[
-			openKeyboardForItem,
-			openKeyboardForOption,
-			openPathBrowserForItem,
-			runnerChoices,
-			t,
-			updateOptionValue,
-		],
+		[activateItem, getMenuItemControl],
 	);
 
 	const handleMenuAction = useCallback(
@@ -486,28 +473,9 @@ const AddGameDialog = ({ onClose, maxWidth = "860px" }) => {
 				return;
 			}
 
-			if (item.kind === "game_info" && item.key === "runner") {
-				setSelectingItem({ type: "runner" });
-			} else if (isPathLikeItem(item)) {
-				openPathBrowserForItem(item);
-			} else if (item.kind === "game_info") {
-				openKeyboardForItem(item);
-			} else if (item.type === "bool") {
-				updateOptionValue(item.section, item.key, !item.value);
-			} else if (item.choices && item.choices.length > 0) {
-				setSelectingItem({ type: "option", item });
-			} else if (item.kind === "option") {
-				openKeyboardForOption(item);
-			}
+			activateItem(item);
 		},
-		[
-			onClose,
-			onSave,
-			openKeyboardForItem,
-			openKeyboardForOption,
-			openPathBrowserForItem,
-			updateOptionValue,
-		],
+		[activateItem, onClose, onSave],
 	);
 
 	const legendItems = useMemo(() => {
@@ -536,118 +504,85 @@ const AddGameDialog = ({ onClose, maxWidth = "860px" }) => {
 		];
 	}, [focusedItem, menuSections.length, onClose, onSave, t]);
 
-	if (selectingItem?.type === "runner") {
-		return (
-			<SelectionMenu
-				title={t("Runner")}
-				options={runnerChoices}
-				currentValue={getGameInfoValue("runner")}
-				maxWidth={maxWidth}
-				onSelect={async (runnerSlug) => {
-					updateGameInfo("runner", runnerSlug);
-					await fetchSettingsForRunner(runnerSlug);
-					setSelectingItem(null);
-				}}
-				onClose={() => setSelectingItem(null)}
-			/>
-		);
-	}
+	const renderModal = () => {
+		if (selectingItem?.type === "runner") {
+			return (
+				<SelectionMenu
+					title={t("Runner")}
+					options={runnerChoices}
+					currentValue={getGameInfoValue("runner")}
+					maxWidth={maxWidth}
+					onSelect={async (runnerSlug) => {
+						updateGameInfo("runner", runnerSlug);
+						await fetchSettingsForRunner(runnerSlug);
+						setSelectingItem(null);
+					}}
+					onClose={() => setSelectingItem(null)}
+				/>
+			);
+		}
 
-	if (selectingItem?.type === "option") {
-		const { item } = selectingItem;
-		return (
-			<SelectionMenu
-				title={item.label}
-				options={item.choices || []}
-				currentValue={item.value}
-				maxWidth={maxWidth}
-				onSelect={(newValue) => {
-					updateOptionValue(item.section, item.key, newValue);
-					setSelectingItem(null);
-				}}
-				onClose={() => setSelectingItem(null)}
-			/>
-		);
-	}
+		if (selectingItem?.type === "option") {
+			const { item } = selectingItem;
+			return (
+				<SelectionMenu
+					title={item.label}
+					options={item.choices || []}
+					currentValue={item.value}
+					maxWidth={maxWidth}
+					onSelect={(newValue) => {
+						updateOptionValue(item.section, item.key, newValue);
+						setSelectingItem(null);
+					}}
+					onClose={() => setSelectingItem(null)}
+				/>
+			);
+		}
 
-	if (keyboardItem) {
-		return (
-			<OnScreenKeyboard
-				label={keyboardItem.label}
-				initialValue={String(keyboardItem.initialValue || "")}
-				onConfirm={(value) => {
-					if (keyboardItem.target === "option") {
-						updateOptionValue(
-							keyboardItem.item.section,
-							keyboardItem.item.key,
-							value,
-						);
-					} else {
-						updateGameInfo(keyboardItem.item.key, value);
-					}
-					setKeyboardItem(null);
-				}}
-				onClose={() => setKeyboardItem(null)}
-			/>
-		);
-	}
-
-	if (pathBrowserState) {
-		const { data, targetItem } = pathBrowserState;
-		const isRootPath = data.path === data.parent;
-		const options = [
-			[t("Select this directory"), SELECT_CURRENT_DIRECTORY],
-			...(isRootPath ? [] : [[t(".. (Parent Directory)"), NAVIGATE_PARENT]]),
-			...data.entries.map((entry) => {
-				const labelPrefix = entry.type === "directory" ? "[DIR]" : "[FILE]";
-				const suffix = entry.type === "directory" ? "/" : "";
-				return [`${labelPrefix} ${entry.name}${suffix}`, entry.path];
-			}),
-		];
-
-		return (
-			<SelectionMenu
-				title={targetItem?.label || t("Directory")}
-				description={data.path}
-				options={options}
-				currentValue={targetItem?.value}
-				maxWidth={maxWidth}
-				showCheckmark={false}
-				onSelect={async (value) => {
-					if (value === SELECT_CURRENT_DIRECTORY) {
-						if (targetItem?.kind === "option") {
-							updateOptionValue(targetItem.section, targetItem.key, data.path);
-						} else if (targetItem) {
-							updateGameInfo(targetItem.key, data.path);
+		if (keyboardItem) {
+			return (
+				<OnScreenKeyboard
+					label={keyboardItem.label}
+					initialValue={String(keyboardItem.initialValue || "")}
+					onConfirm={(value) => {
+						if (keyboardItem.target === "option") {
+							updateOptionValue(
+								keyboardItem.item.section,
+								keyboardItem.item.key,
+								value,
+							);
+						} else {
+							updateGameInfo(keyboardItem.item.key, value);
 						}
+						setKeyboardItem(null);
+					}}
+					onClose={() => setKeyboardItem(null)}
+				/>
+			);
+		}
+
+		if (pathBrowserState) {
+			return (
+				<Pathfinder
+					data={pathBrowserState.data}
+					targetItem={pathBrowserState.targetItem}
+					maxWidth={maxWidth}
+					onNavigate={browsePath}
+					onSelectPath={(targetItem, path) => {
+						writeToTarget(targetItem, path);
 						setPathBrowserState(null);
-						return;
-					}
+					}}
+					onClose={() => setPathBrowserState(null)}
+					t={t}
+				/>
+			);
+		}
 
-					if (value === NAVIGATE_PARENT) {
-						await browsePath(data.parent, targetItem);
-						return;
-					}
+		return null;
+	};
 
-					const entry = data.entries.find((item) => item.path === value);
-					if (!entry) {
-						return;
-					}
-
-					if (entry.type === "directory") {
-						await browsePath(entry.path, targetItem);
-					} else {
-						if (targetItem?.kind === "option") {
-							updateOptionValue(targetItem.section, targetItem.key, entry.path);
-						} else if (targetItem) {
-							updateGameInfo(targetItem.key, entry.path);
-						}
-						setPathBrowserState(null);
-					}
-				}}
-				onClose={() => setPathBrowserState(null)}
-			/>
-		);
+	if (renderModal()) {
+		return renderModal();
 	}
 
 	return (

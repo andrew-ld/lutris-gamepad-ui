@@ -19,6 +19,7 @@ from lutris.config import LutrisConfig, make_game_config_id
 from lutris.database import categories, games
 from lutris.database.games import get_game_by_field
 from lutris.gui.widgets.utils import get_runtime_icon_path
+from lutris.services.lutris import download_lutris_media
 from lutris.runners import import_runner
 from lutris.startup import init_lutris
 from lutris.runners import get_installed as get_installed_runners
@@ -318,6 +319,12 @@ def create_local_game_main(payload_json):
         game_data["directory"] = directory
 
     created = games.add_game(**game_data)
+
+    try:
+        download_lutris_media(slug)
+    except Exception:
+        pass
+
     _print_subcommand_output(
         {
             "status": "success",

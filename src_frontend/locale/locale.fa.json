@@ -161,6 +161,11 @@
     "Space": "فاصله",
     "Submit": "تائید"
   },
+  "components/Pathfinder.jsx": {
+    ".. (Parent Directory)": ".. (Parent Directory)",
+    "Directory": "Directory",
+    "Select this directory": "Select this directory"
+  },
   "components/RowBasedMenu.jsx": {
     "No items available.": "هیچ موردی در دسترس نیست."
   },
