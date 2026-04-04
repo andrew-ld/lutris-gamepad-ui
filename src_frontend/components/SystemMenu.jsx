@@ -12,6 +12,7 @@ import { useStaticSettings } from "../hooks/useStaticSettings";
 import * as api from "../utils/ipc";
 
 import About from "./About";
+import AddGameDialog from "./AddGameDialog";
 import BluetoothMenu from "./BluetoothMenu";
 import ConfirmationDialog from "./ConfirmationDialog";
 import DisplaySettings from "./DisplaySettings";
@@ -99,6 +100,11 @@ const SystemMenu = () => {
     setIsOpen(false);
   }, [showModal, setIsOpen]);
 
+  const openAddGameModal = useCallback(() => {
+    showModal((hideThisModal) => <AddGameDialog onClose={hideThisModal} />);
+    setIsOpen(false);
+  }, [showModal, setIsOpen]);
+
   const menuItems = useMemo(
     () =>
       [
@@ -114,6 +120,11 @@ const SystemMenu = () => {
         {
           label: t("Lutris Settings"),
           action: openLutrisSettingsModal,
+          disabled: staticSettings.DISABLE_LUTRIS_SETTINGS,
+        },
+        {
+          label: t("Add game"),
+          action: openAddGameModal,
           disabled: staticSettings.DISABLE_LUTRIS_SETTINGS,
         },
         {
@@ -174,6 +185,7 @@ const SystemMenu = () => {
       openAboutModal,
       openSettingsModal,
       openLutrisSettingsModal,
+      openAddGameModal,
       openAudioSettingsModal,
       openDisplaySettingsModal,
       openBluetoothSettingsModal,

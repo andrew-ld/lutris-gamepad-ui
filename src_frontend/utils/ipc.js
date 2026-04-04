@@ -50,6 +50,10 @@ export const getUserTheme = () => globalThis.electronAPI.getUserTheme();
 export const getLutrisSettings = (gameSlug, runnerSlug) =>
   globalThis.electronAPI.getLutrisSettings(gameSlug, runnerSlug);
 export const getLutrisRunners = () => globalThis.electronAPI.getLutrisRunners();
+export const addLutrisLocalGame = (payload) =>
+  globalThis.electronAPI.addLutrisLocalGame(payload);
+export const browseLutrisPath = (path) =>
+  globalThis.electronAPI.browseLutrisPath(path);
 export const updateLutrisSetting = (
   section,
   key,

@@ -90,6 +90,16 @@ async function getLutrisRunners() {
   return await invokeLutrisSubcommand("list-runners");
 }
 
+async function createLocalLutrisGame(payload) {
+  return await invokeLutrisSubcommand("create-local-game", [
+    JSON.stringify(payload),
+  ]);
+}
+
+async function browseLutrisPath(path) {
+  return await invokeLutrisSubcommand("browse-path", [path]);
+}
+
 module.exports = {
   getCoverartPath,
   getRuntimeIconPath,
@@ -98,5 +108,7 @@ module.exports = {
   getLutrisSettings,
   updateLutrisSetting,
   getLutrisRunners,
+  createLocalLutrisGame,
+  browseLutrisPath,
   invokeLutris,
 };

@@ -33,6 +33,8 @@ const {
   getLutrisSettings,
   updateLutrisSetting,
   getLutrisRunners,
+  createLocalLutrisGame,
+  browseLutrisPath,
 } = require("./lutris_wrapper.cjs");
 const { mapSdlGamepadsToWebApi, pollGamepads } = require("./sdl_manager.cjs");
 const { getMainWindow } = require("./state.cjs");
@@ -278,6 +280,14 @@ function registerIpcHandlers() {
 
   ipcHandleWithError("get-lutris-runners", async () => {
     return await getLutrisRunners();
+  });
+
+  ipcHandleWithError("add-lutris-local-game", async (_event, payload) => {
+    return await createLocalLutrisGame(payload);
+  });
+
+  ipcHandleWithError("browse-lutris-path", async (_event, path) => {
+    return await browseLutrisPath(path);
   });
 
   ipcHandleWithError(
