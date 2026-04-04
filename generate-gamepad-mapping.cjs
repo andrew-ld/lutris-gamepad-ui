@@ -1,19 +1,7 @@
 const fs = require("node:fs");
 
-const DB_SOURCES = [
-  {
-    name: "mdqinc/SDL_GameControllerDB",
-    url: "https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/refs/heads/master/gamecontrollerdb.txt",
-  },
-  {
-    name: "mdqinc/SDL_GameControllerDB (raw master fallback)",
-    url: "https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/master/gamecontrollerdb.txt",
-  },
-  {
-    name: "gabomdq/SDL_GameControllerDB (legacy mirror)",
-    url: "https://raw.githubusercontent.com/gabomdq/SDL_GameControllerDB/master/gamecontrollerdb.txt",
-  },
-];
+const DB_URL =
+  "https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/refs/heads/master/gamecontrollerdb.txt";
 
 const STD_BTN = {
   a: 0,
@@ -140,64 +128,24 @@ function buildJson(textData) {
 }
 
 async function fetchAndBuildJson() {
-  let response = null;
-  let sourceName = null;
-  let sourceUrl = null;
-  const failures = [];
-
-  for (const source of DB_SOURCES) {
-    try {
-      const candidate = await fetch(source.url);
-      if (!candidate.ok) {
-        failures.push(`${source.name}: HTTP ${candidate.status}`);
-        continue;
-      }
-
-      response = candidate;
-      sourceName = source.name;
-      sourceUrl = source.url;
-      break;
-    } catch (error) {
-      failures.push(`${source.name}: ${error?.message || String(error)}`);
-    }
-  }
-
-  if (!response) {
-    throw new Error(`Failed to download controller DB from all sources:\n${failures.join("\n")}`);
+  const response = await fetch(DB_URL);
+  if (!response.ok) {
+    throw new Error(`Failed: ${response.status}`);
   }
 
   const textData = await response.text();
   const database = buildJson(textData);
-  const generatedAt = new Date().toISOString();
 
   fs.writeFileSync(
     "./src_frontend/resources/gamepad_mapping_db.json",
     JSON.stringify(database),
   );
 
-  fs.writeFileSync(
-    "./src_frontend/resources/gamepad_mapping_db.meta.json",
-    JSON.stringify(
-      {
-        generatedAt,
-        sourceName,
-        sourceUrl,
-        fallbackSources: DB_SOURCES.map((item) => ({
-          name: item.name,
-          url: item.url,
-        })),
-        controllerCount: Object.keys(database).length,
-      },
-      null,
-      2,
-    ),
-  );
-
   fs.writeFileSync("./src_backend/resources/gamecontrollerdb.txt", textData);
 
-  console.log(`Generated mappings for ${Object.keys(database).length} controllers.`);
-  console.log(`Source: ${sourceName}`);
-  console.log(`URL: ${sourceUrl}`);
+  console.log(
+    `Generated mappings for ${Object.keys(database).length} controllers.`,
+  );
 }
 
 if (require.main === module) {
