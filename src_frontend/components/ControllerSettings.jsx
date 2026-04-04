@@ -23,26 +23,36 @@ const ControllerDetail = ({ controller, onBack }) => {
   const [inputMode, setInputMode] = useState("native");
   const [showTester, setShowTester] = useState(false);
   const scrollParentReference = useRef(null);
+  const isXboxFamily = controller?.family === "xbox";
 
   useEffect(() => {
     api
       .getAppConfig()
       .then((cfg) => {
-        if (cfg?.controllerInputMode) {
-          setInputMode(cfg.controllerInputMode);
+        const configuredMode = cfg?.controllerInputMode || "native";
+        const resolvedMode = isXboxFamily ? "native" : configuredMode;
+
+        setInputMode(resolvedMode);
+
+        if (isXboxFamily && configuredMode !== "native") {
+          api.setAppConfig("controllerInputMode", "native");
         }
       })
       .catch(() => {});
-  }, []);
+  }, [isXboxFamily]);
 
   const cycleInputMode = useCallback(() => {
+    if (isXboxFamily) {
+      return;
+    }
+
     setInputMode((prev) => {
       const next =
         INPUT_MODES[(INPUT_MODES.indexOf(prev) + 1) % INPUT_MODES.length];
       api.setAppConfig("controllerInputMode", next);
       return next;
     });
-  }, []);
+  }, [isXboxFamily]);
 
   const handleAction = useCallback(
     (actionName, item) => {
@@ -69,13 +79,14 @@ const ControllerDetail = ({ controller, onBack }) => {
         id: "input-mode",
         label: t("Input Mode"),
         value: modeLabel,
+        disabled: isXboxFamily,
       },
       {
         id: "test-controller",
         label: t("Test Controller"),
       },
     ],
-    [modeLabel, t],
+    [isXboxFamily, modeLabel, t],
   );
 
   const renderItem = useCallback(
@@ -85,9 +96,13 @@ const ControllerDetail = ({ controller, onBack }) => {
         isFocused={isFocused}
         onMouseEnter={onMouseEnter}
       >
-        <div className="cs-row-content">
+        <div className={`cs-row-content ${item.disabled ? "disabled" : ""}`}>
           <span className="cs-row-label">{item.label}</span>
-          {item.value && <span className="cs-row-value">{item.value}</span>}
+          {item.value && (
+            <span className={`cs-row-value ${item.disabled ? "disabled" : ""}`}>
+              {item.value}
+            </span>
+          )}
         </div>
       </FocusableRow>
     ),

@@ -15,12 +15,20 @@
   overflow: hidden;
 }
 
+.cs-row-content.disabled {
+  opacity: 0.45;
+}
+
 .cs-row-value {
   margin-left: auto;
   color: var(--accent-color);
   font-weight: 600;
   text-transform: capitalize;
   font-size: 0.9rem;
+}
+
+.cs-row-value.disabled {
+  color: var(--text-secondary-color, rgba(255, 255, 255, 0.72));
 }
 
 .cs-row-label {
