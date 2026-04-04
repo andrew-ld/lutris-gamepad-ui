@@ -117,6 +117,9 @@ const VirtualizedList = ({
     targetScrollTop = 0;
   }
 
+  // We must track the previous scroll position to accurately calculate directional scrolling.
+  // Setting state during render safely tells React to immediately retry rendering with the
+  // updated scroll target, avoiding cascading renders and effect loops.
   if (Math.abs(targetScrollTop - currentScrollTop) > 0.5) {
     setCurrentScrollTop(targetScrollTop);
   }
