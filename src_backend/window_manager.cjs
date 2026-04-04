@@ -94,10 +94,10 @@ function toggleWindowShow() {
   logInfo("toggleWindowShow: using fallback");
 
   if (mainWindow.isMinimized()) {
-    mainWindow.maximizable();
     mainWindow.hide();
     mainWindow.restore();
     mainWindow.show();
+    mainWindow.maximize();
   } else {
     mainWindow.minimize();
   }
