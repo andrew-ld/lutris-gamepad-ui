@@ -88,7 +88,7 @@ const VirtualizedList = ({
 
   const totalContentHeight = useMemo(
     () => getCumulativeHeight(items.length),
-    [items.length, getCumulativeHeight],
+    [items, getCumulativeHeight],
   );
 
   let isVirtualizing =
