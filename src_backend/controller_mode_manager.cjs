@@ -8,6 +8,7 @@ const { localeAppFile, logError, logInfo, logWarn } = require("./utils.cjs");
 
 let helperProcess = null;
 let grabbedDevice = null;
+let virtualDevice = null;
 
 function getControllerHelperPath() {
   return localeAppFile("controller_helper.py");
@@ -53,6 +54,9 @@ function startXinputHelper() {
             productId: msg.productId,
           };
         }
+        if (msg.status === "ready" && msg.virtualDevice) {
+          virtualDevice = msg.virtualDevice;
+        }
       } catch {
         // not JSON, ignore
       }
@@ -71,6 +75,7 @@ function startXinputHelper() {
     if (helperProcess === proc) {
       helperProcess = null;
       grabbedDevice = null;
+      virtualDevice = null;
     }
   });
 
@@ -79,6 +84,7 @@ function startXinputHelper() {
     if (helperProcess === proc) {
       helperProcess = null;
       grabbedDevice = null;
+      virtualDevice = null;
     }
   });
 
@@ -94,6 +100,7 @@ function stopXinputHelper() {
   helperProcess.kill("SIGTERM");
   helperProcess = null;
   grabbedDevice = null;
+  virtualDevice = null;
 }
 
 function applyInputMode(mode) {
@@ -122,8 +129,13 @@ function getGrabbedDevice() {
   return grabbedDevice;
 }
 
+function getVirtualDevice() {
+  return virtualDevice;
+}
+
 module.exports = {
   initControllerModeManager,
   shutdownControllerModeManager,
   getGrabbedDevice,
+  getVirtualDevice,
 };

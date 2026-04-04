@@ -519,6 +519,25 @@ def _create_virtual_device(mode):
     )
 
 
+def _get_uinput_event_path(ui) -> Optional[str]:
+    # Different evdev versions expose the device path through different attributes.
+    try:
+        if hasattr(ui, "device") and ui.device is not None:
+            for attr in ("path", "fn"):
+                value = getattr(ui.device, attr, None)
+                if value:
+                    return value
+    except Exception:
+        pass
+
+    for attr in ("devnode", "path", "fn"):
+        value = getattr(ui, attr, None)
+        if value:
+            return value
+
+    return None
+
+
 def serve_virtual_controller(mode: str, controller_id: Optional[str], exclusive_grab: bool):
     if evdev is None:
         raise RuntimeError("python-evdev is not installed")
@@ -535,6 +554,8 @@ def serve_virtual_controller(mode: str, controller_id: Optional[str], exclusive_
 
     input_device = evdev.InputDevice(selected["eventPath"])
     ui = _create_virtual_device(mode)
+    virtual_cfg = TARGET_DEVICE_CONFIGS[mode]
+    virtual_event_path = _get_uinput_event_path(ui)
 
     if exclusive_grab:
         input_device.grab()
@@ -557,6 +578,13 @@ def serve_virtual_controller(mode: str, controller_id: Optional[str], exclusive_
                 "exclusive": exclusive_grab,
                 "vendorId": selected.get("vendorId", "0000"),
                 "productId": selected.get("productId", "0000"),
+                "virtualDevice": {
+                    "name": virtual_cfg["name"],
+                    "vendorId": f"{virtual_cfg['vendor']:04x}",
+                    "productId": f"{virtual_cfg['product']:04x}",
+                    "version": f"{virtual_cfg['version']:04x}",
+                    "eventPath": virtual_event_path,
+                },
             }
         ),
         flush=True,

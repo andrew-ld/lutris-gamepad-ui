@@ -48,13 +48,16 @@ const txtFill = (pressed, color) =>
   pressed ? "#fff" : `${color}aa`;
 
 const TriggerMeter = ({ x, y, width, label, value, accent, align = "start" }) => {
-  const barX = align === "center" ? -(width / 2) : align === "end" ? -width : 0;
-  const labelX = align === "center" ? 0 : align === "end" ? 0 : 0;
-  const textAnchor = align === "center" ? "middle" : align === "end" ? "end" : "start";
+  const alignment = {
+    center: { barX: -(width / 2), textAnchor: "middle" },
+    end: { barX: -width, textAnchor: "end" },
+    start: { barX: 0, textAnchor: "start" },
+  };
+  const { barX, textAnchor } = alignment[align] || alignment.start;
 
   return (
     <g transform={`translate(${x},${y})`}>
-      <text x={labelX} y="-5" textAnchor={textAnchor} fontSize="10" fill="rgba(255,255,255,0.34)" fontFamily="monospace">
+      <text x="0" y="-5" textAnchor={textAnchor} fontSize="10" fill="rgba(255,255,255,0.34)" fontFamily="monospace">
         {label} {Math.round(value * 100)}%
       </text>
       <rect x={barX} y="0" width={width} height="7" rx="3.5" fill="rgba(255,255,255,0.05)" />
@@ -580,12 +583,12 @@ const ControllerTester = ({ onClose, controllerIndex, controllerFamily }) => {
       legendItems={legendItems}
       maxWidth="700px"
     >
-      {!s ? (
-        <div className="ct-no-data">{t("Waiting for controller input...")}</div>
-      ) : (
+      {s ? (
         <div className="ct-layout">
           <ModelComponent s={s} />
         </div>
+      ) : (
+        <div className="ct-no-data">{t("Waiting for controller input...")}</div>
       )}
     </DialogLayout>
   );

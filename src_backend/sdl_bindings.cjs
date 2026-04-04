@@ -22,6 +22,7 @@ function bindSDL2(lib) {
 
     SDL_Init: lib.func("int SDL_Init(Uint32 flags)"),
     SDL_Quit: lib.func("void SDL_Quit(void)"),
+    SDL_PumpEvents: lib.func("void SDL_PumpEvents(void)"),
 
     SDL_RWFromFile: lib.func(
       "void* SDL_RWFromFile(const char* file, const char* mode)",
@@ -66,6 +67,22 @@ function bindSDL2(lib) {
       "Uint16 SDL_GameControllerGetProduct(SDL_GameController* gamecontroller)",
     ),
   };
+
+  try {
+    sdl.SDL_GameControllerGetProductVersion = lib.func(
+      "Uint16 SDL_GameControllerGetProductVersion(SDL_GameController* gamecontroller)",
+    );
+  } catch {
+    sdl.SDL_GameControllerGetProductVersion = null;
+  }
+
+  try {
+    sdl.SDL_GameControllerPath = lib.func(
+      "const char* SDL_GameControllerPath(SDL_GameController* gamecontroller)",
+    );
+  } catch {
+    sdl.SDL_GameControllerPath = null;
+  }
 
   sdl.SDL_GameControllerAddMappingsFromFile = function (file) {
     const rw = sdl.SDL_RWFromFile(file, "rb");

@@ -1,3 +1,5 @@
+const { getAppConfig } = require("./config_manager.cjs");
+const { getVirtualDevice } = require("./controller_mode_manager.cjs");
 const {
   SDL2_LIBRARY_NAME,
   bindSDL2,
@@ -189,13 +191,45 @@ function classifyFamily(vendorId) {
   return VENDOR_FAMILY_MAP[vendorId] || "unknown";
 }
 
+function isAppGeneratedXinputController(controller, virtualDevice) {
+  if (!virtualDevice) return false;
+
+  // Best signal: exact event node path match.
+  if (virtualDevice.eventPath && controller.path) {
+    return virtualDevice.eventPath === controller.path;
+  }
+
+  // Fallback: strict signature match.
+  if (!virtualDevice.name || !virtualDevice.vendorId || !virtualDevice.productId) {
+    return false;
+  }
+
+  if (controller.name !== virtualDevice.name) {
+    return false;
+  }
+
+  if (controller.vendorId !== virtualDevice.vendorId || controller.productId !== virtualDevice.productId) {
+    return false;
+  }
+
+  if (virtualDevice.version && controller.version) {
+    return controller.version === virtualDevice.version;
+  }
+
+  return true;
+}
+
 async function listControllers() {
   const { sdl, activeControllers } = await getSdlHandle();
 
+  sdl.SDL_PumpEvents();
   sdl.SDL_GameControllerUpdate();
 
   const numJoysticks = sdl.SDL_NumJoysticks();
   const controllers = [];
+  const appConfig = getAppConfig();
+  const virtualDevice =
+    appConfig?.controllerInputMode === "xinput" ? getVirtualDevice() : null;
 
   for (let i = 0; i < numJoysticks; i++) {
     if (sdl.SDL_IsGameController(i) === 0) continue;
@@ -215,14 +249,28 @@ async function listControllers() {
     const productId = sdl.SDL_GameControllerGetProduct(ptr)
       .toString(16)
       .padStart(4, "0");
+    const version = sdl.SDL_GameControllerGetProductVersion
+      ? sdl.SDL_GameControllerGetProductVersion(ptr).toString(16).padStart(4, "0")
+      : null;
+    const path = sdl.SDL_GameControllerPath
+      ? sdl.SDL_GameControllerPath(ptr)
+      : null;
 
-    controllers.push({
+    const controller = {
       index: i,
       name,
       vendorId,
       productId,
+      version,
+      path,
       family: classifyFamily(vendorId),
-    });
+    };
+
+    if (isAppGeneratedXinputController(controller, virtualDevice)) {
+      continue;
+    }
+
+    controllers.push(controller);
   }
 
   return controllers;
