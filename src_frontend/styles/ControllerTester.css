@@ -22,3 +22,25 @@
 .ct-stick-anim {
   transition: cx 0.04s linear, cy 0.04s linear, fill 0.08s;
 }
+
+.ct-model-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  filter: drop-shadow(0 4px 24px rgba(0, 0, 0, 0.5));
+}
+
+.ct-model-base {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: transparent;
+  border-radius: 12px;
+}
+
+.ct-model-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}

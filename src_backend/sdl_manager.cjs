@@ -1,4 +1,5 @@
 const { getAppConfig } = require("./config_manager.cjs");
+const { resolveControllerIdentity } = require("./controller_family_db.cjs");
 const { getVirtualDevice } = require("./controller_mode_manager.cjs");
 const {
   SDL2_LIBRARY_NAME,
@@ -175,22 +176,6 @@ function mapSdlGamepadsToWebApi(gamepads) {
   }));
 }
 
-const VENDOR_FAMILY_MAP = {
-  "054c": "playstation",
-  "045e": "xbox",
-  "057e": "nintendo",
-  "28de": "steam",
-  "2dc8": "8bitdo",
-  "0f0d": "generic",
-  "0079": "generic",
-  "0810": "generic",
-  "046d": "generic",
-};
-
-function classifyFamily(vendorId) {
-  return VENDOR_FAMILY_MAP[vendorId] || "unknown";
-}
-
 function isAppGeneratedXinputController(controller, virtualDevice) {
   if (!virtualDevice) return false;
 
@@ -204,7 +189,7 @@ function isAppGeneratedXinputController(controller, virtualDevice) {
     return false;
   }
 
-  if (controller.name !== virtualDevice.name) {
+  if (controller.rawName !== virtualDevice.name) {
     return false;
   }
 
@@ -242,7 +227,7 @@ async function listControllers() {
 
     if (!ptr || sdl.SDL_GameControllerGetAttached(ptr) === 0) continue;
 
-    const name = sdl.SDL_GameControllerName(ptr) || `Controller ${i + 1}`;
+    const rawName = sdl.SDL_GameControllerName(ptr) || `Controller ${i + 1}`;
     const vendorId = sdl.SDL_GameControllerGetVendor(ptr)
       .toString(16)
       .padStart(4, "0");
@@ -255,15 +240,19 @@ async function listControllers() {
     const path = sdl.SDL_GameControllerPath
       ? sdl.SDL_GameControllerPath(ptr)
       : null;
+    const identity = resolveControllerIdentity(vendorId, productId, rawName);
 
     const controller = {
       index: i,
-      name,
+      name: identity.standardizedName,
+      rawName,
       vendorId,
       productId,
       version,
       path,
-      family: classifyFamily(vendorId),
+      databaseKey: identity.databaseKey,
+      isRecognized: identity.isRecognized,
+      family: identity.family,
     };
 
     if (isAppGeneratedXinputController(controller, virtualDevice)) {

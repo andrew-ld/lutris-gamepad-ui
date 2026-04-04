@@ -25,11 +25,14 @@ const ControllerDetail = ({ controller, onBack }) => {
   const scrollParentReference = useRef(null);
 
   useEffect(() => {
-    api.getAppConfig().then((cfg) => {
-      if (cfg?.controllerInputMode) {
-        setInputMode(cfg.controllerInputMode);
-      }
-    });
+    api
+      .getAppConfig()
+      .then((cfg) => {
+        if (cfg?.controllerInputMode) {
+          setInputMode(cfg.controllerInputMode);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const cycleInputMode = useCallback(() => {
@@ -102,8 +105,7 @@ const ControllerDetail = ({ controller, onBack }) => {
   if (showTester) {
     return (
       <ControllerTester
-        controllerIndex={controller.index}
-        controllerFamily={controller.family}
+        controller={controller}
         onClose={() => setShowTester(false)}
       />
     );
