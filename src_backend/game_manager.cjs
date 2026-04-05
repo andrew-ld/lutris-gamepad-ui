@@ -309,12 +309,19 @@ function launchGame(gameId) {
 
   globalShortcut.register("CommandOrControl+X", toggleWindowShow);
 
+  let onGameClosedDispatched = false;
+
   const onGameClosed = () => {
+    if (onGameClosedDispatched) return;
+    onGameClosedDispatched = true;
+
     setRunningGameProcess(null);
+
     if (mainWindow) {
       mainWindow.webContents.send("game-closed");
       mainWindow.show();
     }
+
     globalShortcut.unregister("CommandOrControl+X");
   };
 
