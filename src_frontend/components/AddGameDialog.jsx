@@ -4,6 +4,14 @@ import { useLutrisActions } from "../contexts/LutrisContext";
 import { useToastActions } from "../contexts/ToastContext";
 import { useTranslation } from "../contexts/TranslationContext";
 import { useIsMounted } from "../hooks/useIsMounted";
+import {
+  buildGameInfoPayload,
+  buildOptionsBySection,
+  buildSectionPayload,
+  isPathLikeItem,
+  mergeOptionValues,
+  slugifyValue,
+} from "../utils/addGameDialog";
 import * as api from "../utils/ipc";
 
 import DialogLayout from "./DialogLayout";
@@ -19,600 +27,578 @@ import "../styles/AddGameDialog.css";
 import "../styles/SettingsMenu.css";
 
 const AddGameDialogFocusId = "AddGameDialog";
-
-const slugifyValue = (value) => {
-	return String(value || "")
-		.normalize("NFKD")
-		.replaceAll(/[^\w\s-]/g, "")
-		.trim()
-		.toLowerCase()
-		.replaceAll(/[\s_-]+/g, "-")
-		.replaceAll(/^-+|-+$/g, "");
-};
-
-const isPathLikeType = (type) => {
-	const normalized = String(type || "").toLowerCase();
-	return (
-		normalized.includes("path") ||
-		normalized.includes("directory") ||
-		normalized.includes("folder") ||
-		normalized.includes("file")
-	);
-};
-
-const isPathLikeKey = (key) => {
-	return /(path|dir|directory|folder|file|executable|binary|rom)/i.test(
-		String(key || ""),
-	);
-};
-
-const isPathLikeItem = (item) => {
-	if (!item) {
-		return false;
-	}
-
-	return isPathLikeType(item.type) || isPathLikeKey(item.key);
-};
-
-const getOptionInitialValue = (option) => {
-	if (option.value !== undefined && option.value !== null) {
-		return option.value;
-	}
-
-	if (option.default !== undefined && option.default !== null) {
-		return option.default;
-	}
-
-	if (option.type === "bool") {
-		return false;
-	}
-
-	return "";
+const INITIAL_MENU_STATE = {
+  activeSectionIndex: 0,
+  selectedIndex: 0,
 };
 
 const AddGameDialog = ({ onClose, maxWidth = "860px" }) => {
-	const { t } = useTranslation();
-	const { showToast } = useToastActions();
-	const { fetchGames } = useLutrisActions();
-	const isMounted = useIsMounted();
+  const { t } = useTranslation();
+  const { showToast } = useToastActions();
+  const { fetchGames } = useLutrisActions();
+  const isMounted = useIsMounted();
 
-	const [loadingRunners, setLoadingRunners] = useState(true);
-	const [loadingSettings, setLoadingSettings] = useState(false);
-	const [saving, setSaving] = useState(false);
+  const [loadingRunners, setLoadingRunners] = useState(true);
+  const [loadingSettings, setLoadingSettings] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-	const [focusedItem, setFocusedItem] = useState(null);
-	const [selectingItem, setSelectingItem] = useState(null);
-	const [keyboardItem, setKeyboardItem] = useState(null);
-	const [menuState, setMenuState] = useState({
-		activeSectionIndex: 0,
-		selectedIndex: 0,
-	});
+  const [focusedItem, setFocusedItem] = useState(null);
+  const [modalState, setModalState] = useState(null);
+  const [menuState, setMenuState] = useState(INITIAL_MENU_STATE);
 
-	const [pathBrowserState, setPathBrowserState] = useState(null);
+  const [runners, setRunners] = useState([]);
+  const [gameInfo, setGameInfo] = useState({});
 
-	const [runners, setRunners] = useState([]);
-	const [gameInfo, setGameInfo] = useState({});
+  const [optionsBySection, setOptionsBySection] = useState({});
+  const [tabDefinitions, setTabDefinitions] = useState([]);
+  const [gameInfoFields, setGameInfoFields] = useState([]);
 
-	const [optionsBySection, setOptionsBySection] = useState({});
-	const [tabDefinitions, setTabDefinitions] = useState([]);
-	const [gameInfoFields, setGameInfoFields] = useState([]);
+  const [optionValues, setOptionValues] = useState({});
+  const initializedRef = useRef(false);
 
-	const [optionValues, setOptionValues] = useState({});
-	const initializedRef = useRef(false);
+  const runnerChoices = useMemo(() => {
+    return runners.map((runner) => [runner.human_name, runner.name]);
+  }, [runners]);
 
-	const runnerChoices = useMemo(() => {
-		return runners.map((runner) => [runner.human_name, runner.name]);
-	}, [runners]);
+  const openModal = useCallback((type, payload = {}) => {
+    setModalState({ type, ...payload });
+  }, []);
 
-	const updateGameInfo = useCallback((key, value) => {
-		setGameInfo((previous) => ({ ...previous, [key]: value }));
-	}, []);
+  const closeModal = useCallback(() => {
+    setModalState(null);
+  }, []);
 
-	const getGameInfoValue = useCallback(
-		(key) => {
-			if (key === "slug") {
-				const explicitSlug = gameInfo[key];
-				if (String(explicitSlug ?? "").trim()) {
-					return explicitSlug;
-				}
-				return slugifyValue(gameInfo.name);
-			}
+  const updateGameInfo = useCallback((key, value) => {
+    setGameInfo((previous) => ({ ...previous, [key]: value }));
+  }, []);
 
-			return gameInfo[key] ?? "";
-		},
-		[gameInfo],
-	);
+  const getGameInfoValue = useCallback(
+    (key) => {
+      if (key === "slug") {
+        const explicitSlug = gameInfo[key];
+        if (String(explicitSlug ?? "").trim()) {
+          return explicitSlug;
+        }
+        return slugifyValue(gameInfo.name);
+      }
 
-	const updateOptionValue = useCallback((section, key, value) => {
-		setOptionValues((previous) => ({
-			...previous,
-			[section]: {
-				...previous[section],
-				[key]: value,
-			},
-		}));
-	}, []);
+      return gameInfo[key] ?? "";
+    },
+    [gameInfo],
+  );
 
-	const openKeyboard = useCallback((item) => {
-		setKeyboardItem({ target: item.kind, label: item.label, initialValue: item.value, item });
-	}, []);
+  const updateOptionValue = useCallback((section, key, value) => {
+    setOptionValues((previous) => ({
+      ...previous,
+      [section]: {
+        ...previous[section],
+        [key]: value,
+      },
+    }));
+  }, []);
 
-	const fetchSettingsForRunner = useCallback(
-		async (runnerSlug) => {
-			if (!runnerSlug) {
-				setOptionsBySection({});
-				setTabDefinitions([]);
-				setGameInfoFields([]);
-				setOptionValues({});
-				return;
-			}
+  const openKeyboard = useCallback(
+    (item) => {
+      openModal("keyboard", { item });
+    },
+    [openModal],
+  );
 
-			setLoadingSettings(true);
-			try {
-				const data = await api.getLutrisSettings(null, runnerSlug);
-				if (!isMounted()) {
-					return;
-				}
+  const fetchSettingsForRunner = useCallback(
+    async (runnerSlug) => {
+      if (!runnerSlug) {
+        setOptionsBySection({});
+        setTabDefinitions([]);
+        setGameInfoFields([]);
+        setOptionValues({});
+        return;
+      }
 
-				setTabDefinitions(data?.tabs || []);
-				setGameInfoFields(data?.game_info_fields || []);
+      setLoadingSettings(true);
+      try {
+        const data = await api.getLutrisSettings(null, runnerSlug);
+        if (!isMounted()) {
+          return;
+        }
 
-				const nextOptions = {};
-				for (const tab of data?.tabs || []) {
-					if (tab.kind !== "options" || !tab.section) {
-						continue;
-					}
+        setTabDefinitions(data?.tabs || []);
+        setGameInfoFields(data?.game_info_fields || []);
 
-					nextOptions[tab.section] = data?.settings?.[tab.section] || [];
-				}
+        const nextOptions = buildOptionsBySection(data?.tabs, data?.settings);
 
-				setOptionsBySection(nextOptions);
-				setOptionValues((previous) => {
-					const next = {};
+        setOptionsBySection(nextOptions);
+        setOptionValues((previous) => {
+          return mergeOptionValues(previous, nextOptions);
+        });
+      } finally {
+        if (isMounted()) {
+          setLoadingSettings(false);
+        }
+      }
+    },
+    [isMounted],
+  );
 
-					for (const sectionName of Object.keys(nextOptions)) {
-						next[sectionName] = {};
-						for (const option of nextOptions[sectionName]) {
-							const previousValue = previous[sectionName]?.[option.key];
-							next[sectionName][option.key] =
-								previousValue === undefined
-									? getOptionInitialValue(option)
-									: previousValue;
-						}
-					}
+  useEffect(() => {
+    if (initializedRef.current) {
+      return;
+    }
 
-					return next;
-				});
-			} finally {
-				if (isMounted()) {
-					setLoadingSettings(false);
-				}
-			}
-		},
-		[isMounted],
-	);
+    initializedRef.current = true;
 
-	useEffect(() => {
-		if (initializedRef.current) {
-			return;
-		}
+    const loadRunners = async () => {
+      setLoadingRunners(true);
+      try {
+        const data = await api.getLutrisRunners();
+        if (!isMounted()) {
+          return;
+        }
 
-		initializedRef.current = true;
+        const availableRunners = data?.runners || [];
+        setRunners(availableRunners);
 
-		const loadRunners = async () => {
-			setLoadingRunners(true);
-			try {
-				const data = await api.getLutrisRunners();
-				if (!isMounted()) {
-					return;
-				}
+        if (availableRunners.length === 0) {
+          showToast({ title: t("No Lutris runners available"), type: "error" });
+          onClose();
+        } else {
+          const initialRunner = availableRunners[0].name;
+          setGameInfo((previous) => ({
+            ...previous,
+            runner: previous.runner || initialRunner,
+          }));
+          await fetchSettingsForRunner(initialRunner);
+        }
+      } catch {
+        if (isMounted()) {
+          showToast({
+            title: t("Failed to fetch Lutris runners"),
+            type: "error",
+          });
+          onClose();
+        }
+      } finally {
+        if (isMounted()) {
+          setLoadingRunners(false);
+        }
+      }
+    };
 
-				const availableRunners = data?.runners || [];
-				setRunners(availableRunners);
+    loadRunners();
+  }, [fetchSettingsForRunner, isMounted, onClose, showToast, t]);
 
-				if (availableRunners.length === 0) {
-					showToast({ title: t("No Lutris runners available"), type: "error" });
-					onClose();
-				} else {
-					const initialRunner = availableRunners[0].name;
-					setGameInfo((previous) => ({
-						...previous,
-						runner: previous.runner || initialRunner,
-					}));
-					await fetchSettingsForRunner(initialRunner);
-				}
-			} catch {
-				if (isMounted()) {
-					showToast({ title: t("Failed to fetch Lutris runners"), type: "error" });
-					onClose();
-				}
-			} finally {
-				if (isMounted()) {
-					setLoadingRunners(false);
-				}
-			}
-		};
+  const writeToTarget = useCallback(
+    (targetItem, value) => {
+      if (!targetItem) {
+        return;
+      }
 
-		loadRunners();
-	}, [fetchSettingsForRunner, isMounted, onClose, showToast, t]);
+      if (targetItem.kind === "option") {
+        updateOptionValue(targetItem.section, targetItem.key, value);
+        return;
+      }
 
-	const writeToTarget = useCallback((targetItem, value) => {
-		if (targetItem?.kind === "option") {
-			updateOptionValue(targetItem.section, targetItem.key, value);
-		} else if (targetItem) {
-			updateGameInfo(targetItem.key, value);
-		}
-	}, [updateGameInfo, updateOptionValue]);
+      updateGameInfo(targetItem.key, value);
+    },
+    [updateGameInfo, updateOptionValue],
+  );
 
-	const browsePath = useCallback(
-		async (path, targetItem) => {
-			try {
-				const next = await api.browseLutrisPath(path || ".");
-				if (!isMounted()) {
-					return;
-				}
-				setPathBrowserState({
-					data: next,
-					targetItem,
-				});
-			} catch {
-				if (isMounted()) {
-					showToast({ title: t("Failed to browse path"), type: "error" });
-				}
-			}
-		},
-		[isMounted, showToast, t],
-	);
+  const browsePath = useCallback(
+    async (path, targetItem) => {
+      try {
+        const next = await api.browseLutrisPath(path || "~");
+        if (!isMounted()) {
+          return;
+        }
+        openModal("path-browser", {
+          data: next,
+          targetItem,
+        });
+      } catch {
+        if (isMounted()) {
+          showToast({ title: t("Failed to browse path"), type: "error" });
+        }
+      }
+    },
+    [isMounted, openModal, showToast, t],
+  );
 
-	const openPathBrowserForItem = useCallback(
-		async (item) => {
-			const initialPath = String(item.value || "").trim() || "~";
-			await browsePath(initialPath, item);
-		},
-		[browsePath],
-	);
+  const openPathBrowserForItem = useCallback(
+    async (item) => {
+      const initialPath = String(item.value || "").trim() || "~";
+      await browsePath(initialPath, item);
+    },
+    [browsePath],
+  );
 
-	const activateItem = useCallback((item) => {
-		if (item.kind === "game_info" && item.key === "runner") {
-			setSelectingItem({ type: "runner" });
-		} else if (isPathLikeItem(item)) {
-			openPathBrowserForItem(item);
-		} else if (item.type === "bool") {
-			updateOptionValue(item.section, item.key, !item.value);
-		} else if (item.choices?.length > 0) {
-			setSelectingItem({ type: "option", item });
-		} else {
-			openKeyboard(item);
-		}
-	}, [openKeyboard, openPathBrowserForItem, updateOptionValue]);
+  const activateItem = useCallback(
+    (item) => {
+      if (item.kind === "game_info" && item.key === "runner") {
+        openModal("runner");
+        return;
+      }
 
-	const getSectionPayload = useCallback(
-		(sectionName) => {
-			const options = optionsBySection[sectionName] || [];
-			const values = optionValues[sectionName] || {};
-			const payload = {};
+      if (isPathLikeItem(item)) {
+        openPathBrowserForItem(item);
+        return;
+      }
 
-			for (const option of options) {
-				const value = values[option.key];
-				if (option.type === "bool") {
-					payload[option.key] = Boolean(value);
-				} else if (value !== "" && value !== null && value !== undefined) {
-					payload[option.key] = value;
-				}
-			}
+      if (item.type === "bool") {
+        updateOptionValue(item.section, item.key, !item.value);
+        return;
+      }
 
-			return payload;
-		},
-		[optionValues, optionsBySection],
-	);
+      if (item.choices?.length > 0) {
+        openModal("option", { item });
+        return;
+      }
 
-	const onSave = useCallback(async () => {
-		const name = String(getGameInfoValue("name")).trim();
-		const runner = String(getGameInfoValue("runner")).trim();
+      openKeyboard(item);
+    },
+    [openKeyboard, openModal, openPathBrowserForItem, updateOptionValue],
+  );
 
-		if (!name) {
-			showToast({ title: t("Please fill in the name"), type: "error" });
-			return;
-		}
+  const getSectionPayload = useCallback(
+    (sectionName) => {
+      return buildSectionPayload(
+        optionsBySection[sectionName],
+        optionValues[sectionName],
+      );
+    },
+    [optionValues, optionsBySection],
+  );
 
-		if (!runner) {
-			showToast({ title: t("Runner not provided"), type: "error" });
-			return;
-		}
+  const onSave = useCallback(async () => {
+    const name = String(getGameInfoValue("name")).trim();
+    const runner = String(getGameInfoValue("runner")).trim();
 
-		const gameInfoPayload = Object.fromEntries(
-			gameInfoFields.map((field) => [field.key, getGameInfoValue(field.key)]),
-		);
+    if (!name) {
+      showToast({ title: t("Please fill in the name"), type: "error" });
+      return;
+    }
 
-		setSaving(true);
-		try {
-			await api.addLutrisLocalGame({
-				...gameInfoPayload,
-				name,
-				runner,
-				options: {
-					game: getSectionPayload("game"),
-					runner: getSectionPayload("runner"),
-					system: getSectionPayload("system"),
-				},
-			});
+    if (!runner) {
+      showToast({ title: t("Runner not provided"), type: "error" });
+      return;
+    }
 
-			await fetchGames();
-			showToast({ title: t("Game added"), type: "success" });
-			onClose();
-		} catch {
-			showToast({ title: t("Failed to add game"), type: "error" });
-		} finally {
-			if (isMounted()) {
-				setSaving(false);
-			}
-		}
-	}, [
-		fetchGames,
-		gameInfoFields,
-		getGameInfoValue,
-		getSectionPayload,
-		isMounted,
-		onClose,
-		showToast,
-		t,
-	]);
+    const gameInfoPayload = buildGameInfoPayload(
+      gameInfoFields,
+      getGameInfoValue,
+    );
 
-	const menuSections = useMemo(() => {
-		return tabDefinitions.map((tab) => {
-			if (tab.kind === "game_info") {
-				return {
-					id: tab.id,
-					label: t(tab.label),
-					items: gameInfoFields.map((field) => ({
-						id: `${tab.id}-${field.key}`,
-						kind: "game_info",
-						key: field.key,
-						label: t(field.label),
-						value: getGameInfoValue(field.key),
-						type: field.type,
-					})),
-				};
-			}
+    setSaving(true);
+    try {
+      await api.addLutrisLocalGame({
+        ...gameInfoPayload,
+        name,
+        runner,
+        options: {
+          game: getSectionPayload("game"),
+          runner: getSectionPayload("runner"),
+          system: getSectionPayload("system"),
+        },
+      });
 
-			return {
-				id: tab.id,
-				label: t(tab.label),
-				items: (optionsBySection[tab.section] || []).map((option) => ({
-					id: `${tab.section}-${option.key}`,
-					kind: "option",
-					section: tab.section,
-					key: option.key,
-					label: option.label || option.key,
-					type: option.type,
-					value: optionValues[tab.section]?.[option.key],
-					choices: option.choices,
-				})),
-			};
-		});
-	}, [
-		gameInfoFields,
-		getGameInfoValue,
-		optionValues,
-		optionsBySection,
-		t,
-		tabDefinitions,
-	]);
+      await fetchGames();
+      showToast({ title: t("Game added"), type: "success" });
+      onClose();
+    } catch {
+      showToast({ title: t("Failed to add game"), type: "error" });
+    } finally {
+      if (isMounted()) {
+        setSaving(false);
+      }
+    }
+  }, [
+    fetchGames,
+    gameInfoFields,
+    getGameInfoValue,
+    getSectionPayload,
+    isMounted,
+    onClose,
+    showToast,
+    t,
+  ]);
 
-	const getMenuItemControl = useCallback(
-		(item) => {
-			if (item.kind === "option" && item.type === "bool") {
-				return (
-					<ToggleButton
-						isToggledOn={!!item.value}
-						labelOn={t("Disable")}
-						labelOff={t("Enable")}
-					/>
-				);
-			}
+  const selectRunner = useCallback(
+    async (runnerSlug) => {
+      updateGameInfo("runner", runnerSlug);
+      await fetchSettingsForRunner(runnerSlug);
+    },
+    [fetchSettingsForRunner, updateGameInfo],
+  );
 
-			if (item.kind === "option" && item.choices?.length > 0) {
-				const found = item.choices.find(
-					(choice) => String(choice[1]) === String(item.value),
-				);
-				return (
-					<div className="settings-menu-value">
-						{found ? found[0] : t("Default")}
-					</div>
-				);
-			}
+  const renderSelectionModal = useCallback(
+    ({ title, options, currentValue, onSelect }) => {
+      return (
+        <SelectionMenu
+          title={title}
+          options={options}
+          currentValue={currentValue}
+          maxWidth={maxWidth}
+          onSelect={async (value) => {
+            await onSelect(value);
+            closeModal();
+          }}
+          onClose={closeModal}
+        />
+      );
+    },
+    [closeModal, maxWidth],
+  );
 
-			if (item.kind === "game_info" && item.key === "runner") {
-				const selectedRunner = runnerChoices.find(
-					(choice) => String(choice[1]) === String(item.value),
-				);
-				return (
-					<div className="settings-menu-value">
-						{selectedRunner ? selectedRunner[0] : t("Select")}
-					</div>
-				);
-			}
+  const menuSections = useMemo(() => {
+    return tabDefinitions.map((tab) => {
+      if (tab.kind === "game_info") {
+        return {
+          id: tab.id,
+          label: t(tab.label),
+          items: gameInfoFields.map((field) => ({
+            id: `${tab.id}-${field.key}`,
+            kind: "game_info",
+            key: field.key,
+            label: t(field.label),
+            value: getGameInfoValue(field.key),
+            type: field.type,
+          })),
+        };
+      }
 
-			return (
-				<div className="settings-menu-value">{item.value || t("Set")}</div>
-			);
-		},
-		[runnerChoices, t],
-	);
+      return {
+        id: tab.id,
+        label: t(tab.label),
+        items: (optionsBySection[tab.section] || []).map((option) => ({
+          id: `${tab.section}-${option.key}`,
+          kind: "option",
+          section: tab.section,
+          key: option.key,
+          label: option.label || option.key,
+          type: option.type,
+          value: optionValues[tab.section]?.[option.key],
+          choices: option.choices,
+        })),
+      };
+    });
+  }, [
+    gameInfoFields,
+    getGameInfoValue,
+    optionValues,
+    optionsBySection,
+    t,
+    tabDefinitions,
+  ]);
 
-	const renderMenuItem = useCallback(
-		(item, isFocused, onMouseEnter) => {
-			return (
-				<FocusableRow
-					key={item.id}
-					isFocused={isFocused}
-					onMouseEnter={onMouseEnter}
-					onClick={() => activateItem(item)}
-				>
-					<span className="settings-menu-label">{item.label}</span>
-					{getMenuItemControl(item)}
-				</FocusableRow>
-			);
-		},
-		[activateItem, getMenuItemControl],
-	);
+  const getMenuItemControl = useCallback(
+    (item) => {
+      if (item.kind === "option" && item.type === "bool") {
+        return (
+          <ToggleButton
+            isToggledOn={!!item.value}
+            labelOn={t("Disable")}
+            labelOff={t("Enable")}
+          />
+        );
+      }
 
-	const handleMenuAction = useCallback(
-		(actionName, item) => {
-			if (actionName === "B") {
-				onClose();
-				return;
-			}
+      if (item.kind === "option" && item.choices?.length > 0) {
+        const found = item.choices.find(
+          (choice) => String(choice[1]) === String(item.value),
+        );
+        return (
+          <div className="settings-menu-value">
+            {found ? found[0] : t("Default")}
+          </div>
+        );
+      }
 
-			if (actionName === "X") {
-				onSave();
-				return;
-			}
+      if (item.kind === "game_info" && item.key === "runner") {
+        const selectedRunner = runnerChoices.find(
+          (choice) => String(choice[1]) === String(item.value),
+        );
+        return (
+          <div className="settings-menu-value">
+            {selectedRunner ? selectedRunner[0] : t("Select")}
+          </div>
+        );
+      }
 
-			if (actionName !== "A" || !item) {
-				return;
-			}
+      return (
+        <div className="settings-menu-value">{item.value || t("Set")}</div>
+      );
+    },
+    [runnerChoices, t],
+  );
 
-			activateItem(item);
-		},
-		[activateItem, onClose, onSave],
-	);
+  const renderMenuItem = useCallback(
+    (item, isFocused, onMouseEnter) => {
+      return (
+        <FocusableRow
+          key={item.id}
+          isFocused={isFocused}
+          onMouseEnter={onMouseEnter}
+          onClick={() => activateItem(item)}
+        >
+          <span className="settings-menu-label">{item.label}</span>
+          {getMenuItemControl(item)}
+        </FocusableRow>
+      );
+    },
+    [activateItem, getMenuItemControl],
+  );
 
-	const legendItems = useMemo(() => {
-		const sectionButtons =
-			menuSections.length > 1
-				? [
-						{ button: "L1", label: t("Prev") },
-						{ button: "R1", label: t("Next") },
-					]
-				: [];
+  const handleMenuAction = useCallback(
+    (actionName, item) => {
+      if (actionName === "B") {
+        onClose();
+        return;
+      }
 
-		const actionButtons = [];
-		if (focusedItem) {
-			let actionLabel = t("Select");
-			if (focusedItem.kind === "option" && focusedItem.type === "bool") {
-				actionLabel = focusedItem.value ? t("Disable") : t("Enable");
-			}
-			actionButtons.push({ button: "A", label: actionLabel });
-		}
+      if (actionName === "X") {
+        onSave();
+        return;
+      }
 
-		return [
-			...sectionButtons,
-			...actionButtons,
-			{ button: "X", label: t("Save"), onClick: onSave },
-			{ button: "B", label: t("Close"), onClick: onClose },
-		];
-	}, [focusedItem, menuSections.length, onClose, onSave, t]);
+      if (actionName !== "A" || !item) {
+        return;
+      }
 
-	const renderModal = () => {
-		if (selectingItem?.type === "runner") {
-			return (
-				<SelectionMenu
-					title={t("Runner")}
-					options={runnerChoices}
-					currentValue={getGameInfoValue("runner")}
-					maxWidth={maxWidth}
-					onSelect={async (runnerSlug) => {
-						updateGameInfo("runner", runnerSlug);
-						await fetchSettingsForRunner(runnerSlug);
-						setSelectingItem(null);
-					}}
-					onClose={() => setSelectingItem(null)}
-				/>
-			);
-		}
+      activateItem(item);
+    },
+    [activateItem, onClose, onSave],
+  );
 
-		if (selectingItem?.type === "option") {
-			const { item } = selectingItem;
-			return (
-				<SelectionMenu
-					title={item.label}
-					options={item.choices || []}
-					currentValue={item.value}
-					maxWidth={maxWidth}
-					onSelect={(newValue) => {
-						updateOptionValue(item.section, item.key, newValue);
-						setSelectingItem(null);
-					}}
-					onClose={() => setSelectingItem(null)}
-				/>
-			);
-		}
+  const legendItems = useMemo(() => {
+    const sectionButtons =
+      menuSections.length > 1
+        ? [
+            { button: "L1", label: t("Prev") },
+            { button: "R1", label: t("Next") },
+          ]
+        : [];
 
-		if (keyboardItem) {
-			return (
-				<OnScreenKeyboard
-					label={keyboardItem.label}
-					initialValue={String(keyboardItem.initialValue || "")}
-					onConfirm={(value) => {
-						if (keyboardItem.target === "option") {
-							updateOptionValue(
-								keyboardItem.item.section,
-								keyboardItem.item.key,
-								value,
-							);
-						} else {
-							updateGameInfo(keyboardItem.item.key, value);
-						}
-						setKeyboardItem(null);
-					}}
-					onClose={() => setKeyboardItem(null)}
-				/>
-			);
-		}
+    const actionButtons = [];
+    if (focusedItem) {
+      let actionLabel = t("Select");
+      if (focusedItem.kind === "option" && focusedItem.type === "bool") {
+        actionLabel = focusedItem.value ? t("Disable") : t("Enable");
+      }
+      actionButtons.push({ button: "A", label: actionLabel });
+    }
 
-		if (pathBrowserState) {
-			return (
-				<Pathfinder
-					data={pathBrowserState.data}
-					targetItem={pathBrowserState.targetItem}
-					maxWidth={maxWidth}
-					onNavigate={browsePath}
-					onSelectPath={(targetItem, path) => {
-						writeToTarget(targetItem, path);
-						setPathBrowserState(null);
-					}}
-					onClose={() => setPathBrowserState(null)}
-					t={t}
-				/>
-			);
-		}
+    return [
+      ...sectionButtons,
+      ...actionButtons,
+      { button: "X", label: t("Save"), onClick: onSave },
+      { button: "B", label: t("Close"), onClick: onClose },
+    ];
+  }, [focusedItem, menuSections.length, onClose, onSave, t]);
 
-		return null;
-	};
+  const renderModal = useCallback(() => {
+    if (!modalState) {
+      return null;
+    }
 
-	if (renderModal()) {
-		return renderModal();
-	}
+    if (modalState.type === "runner") {
+      return renderSelectionModal({
+        title: t("Runner"),
+        options: runnerChoices,
+        currentValue: getGameInfoValue("runner"),
+        onSelect: selectRunner,
+      });
+    }
 
-	return (
-		<DialogLayout
-			title={t("Add game")}
-			description={t("Create a local installed game entry in Lutris.")}
-			legendItems={legendItems}
-			maxWidth={maxWidth}
-			scrollable={false}
-		>
-			{loadingRunners || loadingSettings ? (
-				<div className="add-game-dialog-loading">
-					<LoadingIndicator />
-				</div>
-			) : (
-				<RowBasedMenu
-					sections={menuSections}
-					renderItem={renderMenuItem}
-					onAction={handleMenuAction}
-					onFocusChange={setFocusedItem}
-					focusId={AddGameDialogFocusId}
-					itemKey={(item) => item.id}
-					initialSectionIndex={menuState.activeSectionIndex}
-					initialSelectedIndex={menuState.selectedIndex}
-					onStateChange={setMenuState}
-					isActive={!saving}
-				/>
-			)}
-		</DialogLayout>
-	);
+    if (modalState.type === "option") {
+      const { item } = modalState;
+      return renderSelectionModal({
+        title: item.label,
+        options: item.choices || [],
+        currentValue: item.value,
+        onSelect: (newValue) => {
+          updateOptionValue(item.section, item.key, newValue);
+        },
+      });
+    }
+
+    if (modalState.type === "keyboard") {
+      const { item } = modalState;
+      return (
+        <OnScreenKeyboard
+          label={item.label}
+          initialValue={String(item.value || "")}
+          onConfirm={(value) => {
+            writeToTarget(item, value);
+            closeModal();
+          }}
+          onClose={closeModal}
+        />
+      );
+    }
+
+    if (modalState.type === "path-browser") {
+      return (
+        <Pathfinder
+          data={modalState.data}
+          targetItem={modalState.targetItem}
+          maxWidth={maxWidth}
+          onNavigate={browsePath}
+          onSelectPath={(targetItem, path) => {
+            writeToTarget(targetItem, path);
+            closeModal();
+          }}
+          onClose={closeModal}
+          t={t}
+        />
+      );
+    }
+
+    return null;
+  }, [
+    browsePath,
+    closeModal,
+    getGameInfoValue,
+    maxWidth,
+    modalState,
+    renderSelectionModal,
+    runnerChoices,
+    selectRunner,
+    t,
+    updateOptionValue,
+    writeToTarget,
+  ]);
+
+  const activeModal = renderModal();
+  if (activeModal) {
+    return activeModal;
+  }
+
+  return (
+    <DialogLayout
+      title={t("Add game")}
+      description={t("Create a local installed game entry in Lutris.")}
+      legendItems={legendItems}
+      maxWidth={maxWidth}
+      scrollable={false}
+    >
+      {loadingRunners || loadingSettings ? (
+        <div className="add-game-dialog-loading">
+          <LoadingIndicator />
+        </div>
+      ) : (
+        <RowBasedMenu
+          sections={menuSections}
+          renderItem={renderMenuItem}
+          onAction={handleMenuAction}
+          onFocusChange={setFocusedItem}
+          focusId={AddGameDialogFocusId}
+          itemKey={(item) => item.id}
+          initialSectionIndex={menuState.activeSectionIndex}
+          initialSelectedIndex={menuState.selectedIndex}
+          onStateChange={setMenuState}
+          isActive={!saving}
+        />
+      )}
+    </DialogLayout>
+  );
 };
 
 export default AddGameDialog;

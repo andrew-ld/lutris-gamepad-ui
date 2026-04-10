@@ -232,13 +232,6 @@ def list_runners_main():
     _print_subcommand_output({"runners": result})
 
 
-def _coerce_bool(value):
-    if isinstance(value, bool):
-        return value
-    if isinstance(value, str):
-        return value.lower() in ["1", "true", "yes", "on"]
-    return bool(value)
-
 
 def _prepare_slug(name, slug):
     candidate = slugify((slug or "").strip())
@@ -334,38 +327,6 @@ def create_local_game_main(payload_json):
     )
 
 
-def browse_path_main(path):
-    requested_path = path or os.path.expanduser("~")
-    absolute_path = os.path.abspath(os.path.expanduser(requested_path))
-
-    if not os.path.exists(absolute_path):
-        raise ValueError("path does not exist")
-
-    if os.path.isfile(absolute_path):
-        _print_subcommand_output(
-            {
-                "path": absolute_path,
-                "parent": os.path.dirname(absolute_path),
-                "entries": [],
-            }
-        )
-        return
-
-    entries = []
-    for name in sorted(os.listdir(absolute_path), key=lambda value: value.lower()):
-        full_path = os.path.join(absolute_path, name)
-        entry_type = "directory" if os.path.isdir(full_path) else "file"
-        entries.append({"name": name, "path": full_path, "type": entry_type})
-
-    _print_subcommand_output(
-        {
-            "path": absolute_path,
-            "parent": os.path.dirname(absolute_path),
-            "entries": entries,
-        }
-    )
-
-
 def patch_gtk_dbus_singleton():
     """
     Prevents the Gtk.Application from registering a unique application ID
@@ -440,10 +401,6 @@ def main():
     elif "--create-local-game" in sys.argv:
         payload_json = sys.argv[sys.argv.index("--create-local-game") + 1]
         create_local_game_main(payload_json)
-
-    elif "--browse-path" in sys.argv:
-        path = sys.argv[sys.argv.index("--browse-path") + 1]
-        browse_path_main(path)
 
     else:
         lutris_main()

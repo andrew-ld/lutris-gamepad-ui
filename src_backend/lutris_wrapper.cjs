@@ -96,10 +96,6 @@ async function createLocalLutrisGame(payload) {
   ]);
 }
 
-async function browseLutrisPath(path) {
-  return await invokeLutrisSubcommand("browse-path", [path]);
-}
-
 module.exports = {
   getCoverartPath,
   getRuntimeIconPath,
@@ -109,6 +105,5 @@ module.exports = {
   updateLutrisSetting,
   getLutrisRunners,
   createLocalLutrisGame,
-  browseLutrisPath,
   invokeLutris,
 };
