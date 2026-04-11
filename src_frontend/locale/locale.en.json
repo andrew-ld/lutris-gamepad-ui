@@ -7,6 +7,27 @@
     "Open Link": "Open Link",
     "Version": "Version"
   },
+  "components/AddGameDialog.jsx": {
+    "Add game": "Add game",
+    "Close": "Close",
+    "Create a local installed game entry in Lutris.": "Create a local installed game entry in Lutris.",
+    "Default": "Default",
+    "Disable": "Disable",
+    "Enable": "Enable",
+    "Failed to add game": "Failed to add game",
+    "Failed to browse path": "Failed to browse path",
+    "Failed to fetch Lutris runners": "Failed to fetch Lutris runners",
+    "Game added": "Game added",
+    "Next": "Next",
+    "No Lutris runners available": "No Lutris runners available",
+    "Please fill in the name": "Please fill in the name",
+    "Prev": "Prev",
+    "Runner": "Runner",
+    "Runner not provided": "Runner not provided",
+    "Save": "Save",
+    "Select": "Select",
+    "Set": "Set"
+  },
   "components/BluetoothMenu.jsx": {
     "Attempting to establish a connection with the device.": "Attempting to establish a connection with the device.",
     "Bluetooth": "Bluetooth",
@@ -122,6 +143,11 @@
     "Space": "Space",
     "Submit": "Submit"
   },
+  "components/Pathfinder.jsx": {
+    ".. (Parent Directory)": ".. (Parent Directory)",
+    "Directory": "Directory",
+    "Select this directory": "Select this directory"
+  },
   "components/RowBasedMenu.jsx": {
     "No items available.": "No items available."
   },
@@ -158,6 +184,7 @@
   },
   "components/SystemMenu.jsx": {
     "About": "About",
+    "Add game": "Add game",
     "Are you sure you want to exit the application?": "Are you sure you want to exit the application?",
     "Are you sure you want to generate the bug report file?": "Are you sure you want to generate the bug report file?",
     "Are you sure you want to power off the system?": "Are you sure you want to power off the system?",

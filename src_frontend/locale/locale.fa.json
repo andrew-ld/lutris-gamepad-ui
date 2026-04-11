@@ -7,6 +7,45 @@
     "Open Link": "باز کردن پیوند",
     "Version": "نگارش"
   },
+  "components/AddGameDialog.jsx": {
+    ".. (Parent Directory)": ".. (Parent Directory)",
+    "Add game": "Add game",
+    "Add game tabs": "Add game tabs",
+    "Cancel": "Cancel",
+    "Close": "Close",
+    "Create a local installed game entry in Lutris.": "Create a local installed game entry in Lutris.",
+    "Default": "Default",
+    "Directory": "Directory",
+    "Disable": "Disable",
+    "Enable": "Enable",
+    "Failed to add game": "Failed to add game",
+    "Failed to browse path": "Failed to browse path",
+    "Failed to fetch Lutris runners": "Failed to fetch Lutris runners",
+    "Game Info": "Game Info",
+    "Game added": "Game added",
+    "Game options": "Game options",
+    "Identifier": "Identifier",
+    "Name": "Name",
+    "Next": "Next",
+    "No Lutris runners available": "No Lutris runners available",
+    "No game options available": "No game options available",
+    "No runner options available": "No runner options available",
+    "No system options available": "No system options available",
+    "Please fill in the name": "Please fill in the name",
+    "Prev": "Prev",
+    "Release year": "Release year",
+    "Runner": "Runner",
+    "Runner not provided": "Runner not provided",
+    "Runner options": "Runner options",
+    "Save": "Save",
+    "Saving...": "Saving...",
+    "Select": "Select",
+    "Select Runner": "Select Runner",
+    "Select this directory": "Select this directory",
+    "Set": "Set",
+    "Sort name": "Sort name",
+    "System options": "System options"
+  },
   "components/BluetoothMenu.jsx": {
     "Attempting to establish a connection with the device.": "تلاش برای برقراری اتصال با دستگاه.",
     "Bluetooth": "بلوتوث",
@@ -122,6 +161,11 @@
     "Space": "فاصله",
     "Submit": "تائید"
   },
+  "components/Pathfinder.jsx": {
+    ".. (Parent Directory)": ".. (Parent Directory)",
+    "Directory": "Directory",
+    "Select this directory": "Select this directory"
+  },
   "components/RowBasedMenu.jsx": {
     "No items available.": "هیچ موردی در دسترس نیست."
   },
@@ -158,6 +202,7 @@
   },
   "components/SystemMenu.jsx": {
     "About": "درباره",
+    "Add game": "Add game",
     "Are you sure you want to exit the application?": "آیا مطمئنید که می‌خواهید از برنامه خارج شوید؟",
     "Are you sure you want to generate the bug report file?": "Are you sure you want to generate the bug report file?",
     "Are you sure you want to power off the system?": "آیا مطمئنید که می‌خواهید سامانه را خاموش کنید؟",

@@ -33,7 +33,9 @@ const {
   getLutrisSettings,
   updateLutrisSetting,
   getLutrisRunners,
+  createLocalLutrisGame,
 } = require("./lutris_wrapper.cjs");
+const { browsePath } = require("./path_browser.cjs");
 const { mapSdlGamepadsToWebApi, pollGamepads } = require("./sdl_manager.cjs");
 const { getMainWindow } = require("./state.cjs");
 const { getUserTheme } = require("./theme_manager.cjs");
@@ -77,6 +79,12 @@ const ipcOnWithError = (channel, listener) => {
       logError("ipcOnWithError", channel, error);
       toastError(channel, error);
     }
+  });
+};
+
+const registerLutrisIpcHandler = (channel, listener) => {
+  ipcHandleWithError(channel, async (_event, ...arguments_) => {
+    return await listener(...arguments_);
   });
 };
 
@@ -269,30 +277,13 @@ function registerIpcHandlers() {
   });
 
   // Lutris Settings
-  ipcHandleWithError(
-    "get-lutris-settings",
-    async (_event, gameSlug, runnerSlug) => {
-      return await getLutrisSettings(gameSlug, runnerSlug);
-    },
-  );
-
-  ipcHandleWithError("get-lutris-runners", async () => {
-    return await getLutrisRunners();
+  registerLutrisIpcHandler("get-lutris-settings", getLutrisSettings);
+  registerLutrisIpcHandler("get-lutris-runners", getLutrisRunners);
+  registerLutrisIpcHandler("add-lutris-local-game", createLocalLutrisGame);
+  registerLutrisIpcHandler("update-lutris-setting", updateLutrisSetting);
+  ipcHandleWithError("browse-lutris-path", async (_event, requestedPath) => {
+    return await browsePath(requestedPath);
   });
-
-  ipcHandleWithError(
-    "update-lutris-setting",
-    async (_event, section, key, value, type, gameSlug, runnerSlug) => {
-      return await updateLutrisSetting(
-        section,
-        key,
-        value,
-        type,
-        gameSlug,
-        runnerSlug,
-      );
-    },
-  );
 
   // Bug Reporter
   ipcOnWithError("create-bug-report", async () => {
