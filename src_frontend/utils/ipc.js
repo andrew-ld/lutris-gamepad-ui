@@ -96,8 +96,8 @@ export const onAppConfigChanged = createSubscriber("app-config-changed");
 export const createBugReportFile = () =>
   globalThis.electronAPI.createBugReportFile();
 
-export const pollGamepadsSdl = () =>
-  deserializeGamepads(globalThis.electronAPI.pollGamepadsSdl());
+export const pollGamepadsSdl = async () =>
+  deserializeGamepads(await globalThis.electronAPI.pollGamepadsSdl());
 
 export function encodeAppProtocolPath(filePath) {
   const sanitizedFilePath = filePath
