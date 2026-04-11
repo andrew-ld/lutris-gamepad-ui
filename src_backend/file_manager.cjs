@@ -1,11 +1,12 @@
 const fs = require("node:fs/promises");
+const { homedir } = require("node:os");
 const path = require("node:path");
 
 const { logWarn } = require("./utils.cjs");
 
 async function listDirectory(directoryPath) {
   if (directoryPath === null) {
-    directoryPath = process.env.HOME || "/";
+    directoryPath = homedir() || "/";
   }
 
   const targetDirectory = path.resolve(directoryPath);

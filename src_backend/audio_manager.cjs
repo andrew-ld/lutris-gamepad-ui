@@ -51,6 +51,32 @@ async function sendCurrentAudioInfo(pulseClient) {
   mainWindow.webContents.send("audio-info-changed", audioInfo);
 }
 
+async function getPulseCookie() {
+  const possiblePaths = [];
+
+  if (process.env.PULSE_COOKIE) {
+    possiblePaths.push(process.env.PULSE_COOKIE);
+  }
+
+  if (process.env.XDG_RUNTIME_DIR) {
+    possiblePaths.push(path.join(process.env.XDG_RUNTIME_DIR, "pulse/cookie"));
+  }
+
+  possiblePaths.push(path.join(homedir(), ".config/pulse/cookie"));
+
+  for (const possiblePath of possiblePaths) {
+    try {
+      if (existsSync(possiblePath)) {
+        return await readFile(possiblePath);
+      }
+    } catch (error) {
+      logError("unable to read PulseAudio cookie at", possiblePath, error);
+    }
+  }
+
+  logError("PulseAudio cookie file does not exist");
+}
+
 const sendCurrentAudioInfoDebounced = debounce(sendCurrentAudioInfo, 100);
 
 /** @returns {Promise<PAClient | null>} */
@@ -65,12 +91,12 @@ function initializePulseAudioClient() {
   }
 
   initializationPromise = (async () => {
-    const pulseAudioCookiePath = path.join(homedir(), ".config/pulse/cookie");
     let pulseAudioCookieBuffer;
-    if (existsSync(pulseAudioCookiePath)) {
-      pulseAudioCookieBuffer = await readFile(pulseAudioCookiePath);
-    } else {
-      logError("PulseAudio cookie file does not exist:", pulseAudioCookiePath);
+
+    try {
+      pulseAudioCookieBuffer = await getPulseCookie();
+    } catch (error) {
+      logError("unable to read PulseAudio cookie", error);
     }
 
     const pa = new PAClient({ cookie: pulseAudioCookieBuffer });
