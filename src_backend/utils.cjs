@@ -91,17 +91,32 @@ async function retryAsync(function_, options = {}) {
   }
 }
 
-const debounce = (function_, wait) => {
+const debounce = (func, wait, maxPostpones = 10) => {
   let timeout;
+  let postpones = 0;
 
-  return function executedFunction(...arguments_) {
-    const later = () => {
-      clearTimeout(timeout);
-      function_(...arguments_);
-    };
+  let lastContext;
+  let lastArgs;
+
+  const later = () => {
+    timeout = null;
+    postpones = 0;
+    func.apply(lastContext, lastArgs);
+  };
+
+  return function (...args) {
+    lastContext = globalThis;
+    lastArgs = args;
 
     clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
+    postpones += 1;
+
+    if (postpones > maxPostpones) {
+      postpones = 0;
+      func.apply(lastContext, lastArgs);
+    } else {
+      timeout = setTimeout(later, wait);
+    }
   };
 };
 
