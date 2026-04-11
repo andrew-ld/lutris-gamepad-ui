@@ -75,6 +75,9 @@
     "Reload": "重载",
     "Update": "更新"
   },
+  "components/FilePicker.jsx": {
+    "Select Current Directory": "Select Current Directory"
+  },
   "components/GameCard.jsx": {
     "Last played: {{date}}": "上次游玩：{{date}}",
     "Never": "从未",

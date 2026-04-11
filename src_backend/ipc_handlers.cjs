@@ -22,6 +22,7 @@ const {
   getNightLight,
   setNightLight,
 } = require("./display_manager.cjs");
+const { listDirectory } = require("./file_manager.cjs");
 const {
   getGames,
   launchGame,
@@ -302,6 +303,14 @@ function registerIpcHandlers() {
   // Sdl
   ipcHandleWithError("poll-gamepads-sdl", async () => {
     return mapSdlGamepadsToWebApi(await pollGamepads());
+  });
+
+  // File Manager
+  ipcHandleWithError("list-directory", async (_event, dirPath) => {
+    if (typeof dirPath !== "string" && dirPath !== null) {
+      throw new TypeError("Invalid dirPath: not a string");
+    }
+    return await listDirectory(dirPath);
   });
 }
 

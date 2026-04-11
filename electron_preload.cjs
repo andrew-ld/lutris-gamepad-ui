@@ -96,4 +96,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
 
   // Sdl
   pollGamepadsSdl: () => ipcRenderer.invoke("poll-gamepads-sdl"),
+
+  // File Manager
+  listDirectory: (dirPath) => ipcRenderer.invoke("list-directory", dirPath),
 });

@@ -75,6 +75,9 @@
     "Reload": "Reload",
     "Update": "Update"
   },
+  "components/FilePicker.jsx": {
+    "Select Current Directory": "Select Current Directory"
+  },
   "components/GameCard.jsx": {
     "Last played: {{date}}": "Last played: {{date}}",
     "Never": "Never",
