@@ -41,37 +41,54 @@ const RowBasedMenu = ({
     useState(initialSectionIndex);
 
   const items = useMemo(() => {
-    return sections
+    return sections && sections.length > 0
       ? sections[activeSectionIndex]?.items || []
       : baseItems || [];
   }, [sections, activeSectionIndex, baseItems]);
 
-  const [selectedKey, setSelectedKey] = useState(() => {
-    const initialItem = items[initialSelectedIndex];
-    return initialItem ? itemKey(initialItem, initialSelectedIndex) : null;
+  const [selectedKeys, setSelectedKeys] = useState(() => {
+    const initialItems =
+      sections && sections.length > 0
+        ? sections[initialSectionIndex]?.items || []
+        : baseItems || [];
+    const initialItem = initialItems[initialSelectedIndex];
+
+    if (initialItem) {
+      return {
+        [initialSectionIndex]: itemKey(initialItem, initialSelectedIndex),
+      };
+    }
+    return {};
   });
 
   const selectedIndex = useMemo(() => {
-    if (selectedKey === null) return 0;
-    const index = items.findIndex(
-      (item, idx) => itemKey(item, idx) === selectedKey,
-    );
-    if (index === -1) {
-      return 0;
+    if (items.length === 0) return 0;
+
+    const currentKey = selectedKeys[activeSectionIndex];
+    if (currentKey !== undefined) {
+      const index = items.findIndex(
+        (item, idx) => itemKey(item, idx) === currentKey,
+      );
+      if (index !== -1) return index;
     }
-    return index;
-  }, [items, selectedKey, itemKey]);
 
-  if (selectedKey === null && items.length > 0) {
-    setSelectedKey(itemKey(items[0], 0));
-  }
+    return 0;
+  }, [items, selectedKeys, activeSectionIndex, itemKey]);
 
-  const latestItemsReference = useRef(items);
-  const latestSelectedIndexReference = useRef(selectedIndex);
+  const stateRef = useRef({
+    items,
+    selectedIndex,
+    activeSectionIndex,
+    sectionsLength: sections?.length || 0,
+  });
 
   useEffect(() => {
-    latestItemsReference.current = items;
-    latestSelectedIndexReference.current = selectedIndex;
+    stateRef.current = {
+      items,
+      selectedIndex,
+      activeSectionIndex,
+      sectionsLength: sections?.length || 0,
+    };
   });
 
   useEffect(() => {
@@ -86,22 +103,26 @@ const RowBasedMenu = ({
 
   const inputHandler = useCallback(
     (input) => {
-      const currentItems = latestItemsReference.current;
-      const currentIndex = latestSelectedIndexReference.current;
+      const {
+        items: currentItems,
+        selectedIndex: currentIndex,
+        activeSectionIndex: currentSection,
+        sectionsLength,
+      } = stateRef.current;
 
-      if (sections && sections.length > 1) {
+      if (sectionsLength > 1) {
         if (input.name === "L1") {
           playActionSound();
-          setActiveSectionIndex((previous) =>
-            previous > 0 ? previous - 1 : sections.length - 1,
+          setActiveSectionIndex((prev) =>
+            prev > 0 ? prev - 1 : sectionsLength - 1,
           );
           return;
         }
 
         if (input.name === "R1") {
           playActionSound();
-          setActiveSectionIndex((previous) =>
-            previous < sections.length - 1 ? previous + 1 : 0,
+          setActiveSectionIndex((prev) =>
+            prev < sectionsLength - 1 ? prev + 1 : 0,
           );
           return;
         }
@@ -119,20 +140,26 @@ const RowBasedMenu = ({
         case "UP": {
           playActionSound();
           const nextIndex =
-            currentIndex - 1 < 0 ? currentItems.length - 1 : currentIndex - 1;
+            currentIndex > 0 ? currentIndex - 1 : currentItems.length - 1;
           const nextItem = currentItems[nextIndex];
           if (nextItem) {
-            setSelectedKey(itemKey(nextItem, nextIndex));
+            setSelectedKeys((prev) => ({
+              ...prev,
+              [currentSection]: itemKey(nextItem, nextIndex),
+            }));
           }
           break;
         }
         case "DOWN": {
           playActionSound();
           const nextIndex =
-            currentIndex + 1 > currentItems.length - 1 ? 0 : currentIndex + 1;
+            currentIndex < currentItems.length - 1 ? currentIndex + 1 : 0;
           const nextItem = currentItems[nextIndex];
           if (nextItem) {
-            setSelectedKey(itemKey(nextItem, nextIndex));
+            setSelectedKeys((prev) => ({
+              ...prev,
+              [currentSection]: itemKey(nextItem, nextIndex),
+            }));
           }
           break;
         }
@@ -145,7 +172,7 @@ const RowBasedMenu = ({
         }
       }
     },
-    [sections, onAction, playActionSound, itemKey],
+    [onAction, playActionSound, itemKey],
   );
 
   const { isFocused, wasAcquired } = useScopedInput(
@@ -170,10 +197,13 @@ const RowBasedMenu = ({
 
       const item = items[index];
       if (item) {
-        setSelectedKey(itemKey(item, index));
+        setSelectedKeys((prev) => ({
+          ...prev,
+          [activeSectionIndex]: itemKey(item, index),
+        }));
       }
     },
-    [items, itemKey, isMouseActive],
+    [items, itemKey, isMouseActive, activeSectionIndex],
   );
 
   const renderSections = () => {
