@@ -1,13 +1,10 @@
 import React, {
   useCallback,
-  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
-
-import { useInput } from "../contexts/InputContext";
 
 const FOCUS_SCROLL_BUFFER = 15;
 const OVERSCAN_COUNT = 2;
@@ -20,30 +17,18 @@ const VirtualizedList = ({
   onItemClick,
   className = "",
 }) => {
-  const { isMouseActive } = useInput();
-
   const containerRef = useRef(null);
 
   const [viewportHeight, setViewportHeight] = useState(0);
   const [containerPaddingTop, setContainerPaddingTop] = useState(0);
   const [itemHeights, setItemHeights] = useState({});
   const [baseHeight, setBaseHeight] = useState(64);
-
-  const [userScrollTop, setUserScrollTop] = useState(0);
-  const [isAnimatedScroll, setIsAnimatedScroll] = useState(false);
-
-  const isMouseActiveRef = useRef(isMouseActive);
-
-  useLayoutEffect(() => {
-    isMouseActiveRef.current = isMouseActive;
-  }, [isMouseActive]);
+  const [currentScrollTop, setCurrentScrollTop] = useState(0);
 
   const safeSelectedIndex = useMemo(() => {
     if (!items || items.length === 0) return 0;
     return Math.max(0, Math.min(selectedIndex, items.length - 1));
   }, [items, selectedIndex]);
-
-  const [prevSafeIndex, setPrevSafeIndex] = useState(safeSelectedIndex);
 
   useLayoutEffect(() => {
     if (!containerRef.current) return;
@@ -78,153 +63,96 @@ const VirtualizedList = ({
 
     const style = globalThis.getComputedStyle(node);
     const margin = Number.parseFloat(style.marginBottom) || 0;
+
     const rect = node.getBoundingClientRect();
     const totalHeight = rect.height + margin;
 
     setItemHeights((previousHeights) => {
-      const prev = previousHeights[index];
-      if (prev !== undefined && Math.abs(prev - totalHeight) < 0.5) {
-        return previousHeights;
-      }
+      if (previousHeights[index] === totalHeight) return previousHeights;
       return { ...previousHeights, [index]: totalHeight };
     });
 
     if (index === 0) {
-      setBaseHeight((prev) =>
-        Math.abs(prev - totalHeight) < 0.5 ? prev : totalHeight,
-      );
+      setBaseHeight((prev) => (prev === totalHeight ? prev : totalHeight));
     }
   }, []);
 
-  const { offsets, totalHeight } = useMemo(() => {
-    const newOffsets = new Float64Array(items.length);
-    let total = 0;
-    for (let i = 0; i < items.length; i++) {
-      newOffsets[i] = total;
-      total += itemHeights[i] || baseHeight;
-    }
-    return { offsets: newOffsets, totalHeight: total };
-  }, [items.length, itemHeights, baseHeight]);
-
-  const isVirtualizing = viewportHeight > 0 && totalHeight > viewportHeight + 2;
-  const maxPossibleScroll = Math.max(0, totalHeight - viewportHeight);
-  const clampedScrollTop = Math.max(
-    0,
-    Math.min(userScrollTop, maxPossibleScroll),
+  const getCumulativeHeight = useCallback(
+    (targetIndex) => {
+      let total = 0;
+      for (let i = 0; i < targetIndex; i++) {
+        total += itemHeights[i] || baseHeight;
+      }
+      return total;
+    },
+    [itemHeights, baseHeight],
   );
 
-  if (safeSelectedIndex !== prevSafeIndex) {
-    setPrevSafeIndex(safeSelectedIndex);
+  const totalContentHeight = useMemo(
+    () => getCumulativeHeight(items.length),
+    [items, getCumulativeHeight],
+  );
 
-    if (isVirtualizing) {
-      const itemTop = offsets[safeSelectedIndex];
-      const itemHeight = itemHeights[safeSelectedIndex] || baseHeight;
-      const itemBottom = itemTop + itemHeight;
+  const isVirtualizing =
+    viewportHeight > 0 && totalContentHeight > viewportHeight + 2;
 
-      const topBoundary = userScrollTop + FOCUS_SCROLL_BUFFER;
-      const bottomBoundary =
-        userScrollTop + viewportHeight - FOCUS_SCROLL_BUFFER;
+  let targetScrollTop = currentScrollTop;
 
-      let newScroll = userScrollTop;
+  if (isVirtualizing) {
+    const itemTop = getCumulativeHeight(safeSelectedIndex);
+    const itemHeight = itemHeights[safeSelectedIndex] || baseHeight;
+    const itemBottom = itemTop + itemHeight;
 
-      if (itemTop < topBoundary) {
-        newScroll = itemTop - FOCUS_SCROLL_BUFFER;
-      } else if (itemBottom > bottomBoundary) {
-        newScroll = itemBottom + FOCUS_SCROLL_BUFFER - viewportHeight;
-      }
+    const topBoundary = targetScrollTop + FOCUS_SCROLL_BUFFER;
+    const bottomBoundary =
+      targetScrollTop + viewportHeight - FOCUS_SCROLL_BUFFER;
 
-      const finalScroll = Math.max(0, Math.min(newScroll, maxPossibleScroll));
-
-      if (finalScroll !== userScrollTop) {
-        setUserScrollTop(finalScroll);
-        setIsAnimatedScroll(true);
-      }
+    if (itemTop < topBoundary) {
+      targetScrollTop = itemTop - FOCUS_SCROLL_BUFFER;
+    } else if (itemBottom > bottomBoundary) {
+      targetScrollTop = itemBottom + FOCUS_SCROLL_BUFFER - viewportHeight;
     }
+
+    const maxPossibleScroll = Math.max(0, totalContentHeight - viewportHeight);
+    targetScrollTop = Math.max(0, Math.min(targetScrollTop, maxPossibleScroll));
+  } else {
+    targetScrollTop = 0;
   }
 
-  const scrollMetricsRef = useRef({ maxScroll: 0 });
-  useEffect(() => {
-    scrollMetricsRef.current.maxScroll = maxPossibleScroll;
-  }, [maxPossibleScroll]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container || !isVirtualizing) return;
-
-    const handleWheel = (e) => {
-      if (!isMouseActiveRef.current) return;
-
-      e.preventDefault();
-      setIsAnimatedScroll(false);
-      setUserScrollTop((prev) => {
-        return Math.max(
-          0,
-          Math.min(prev + e.deltaY, scrollMetricsRef.current.maxScroll),
-        );
-      });
-    };
-
-    let lastY = 0;
-    const handleTouchStart = (e) => {
-      lastY = e.touches[0].clientY;
-      setIsAnimatedScroll(false);
-    };
-
-    const handleTouchMove = (e) => {
-      e.preventDefault();
-      const y = e.touches[0].clientY;
-      const deltaY = lastY - y;
-      lastY = y;
-      setUserScrollTop((prev) => {
-        return Math.max(
-          0,
-          Math.min(prev + deltaY, scrollMetricsRef.current.maxScroll),
-        );
-      });
-    };
-
-    container.addEventListener("wheel", handleWheel, { passive: false });
-    container.addEventListener("touchstart", handleTouchStart, {
-      passive: false,
-    });
-    container.addEventListener("touchmove", handleTouchMove, {
-      passive: false,
-    });
-
-    return () => {
-      container.removeEventListener("wheel", handleWheel);
-      container.removeEventListener("touchstart", handleTouchStart);
-      container.removeEventListener("touchmove", handleTouchMove);
-    };
-  }, [isVirtualizing]);
+  if (Math.abs(targetScrollTop - currentScrollTop) > 0.5) {
+    setCurrentScrollTop(targetScrollTop);
+  }
 
   let renderStartIndex = 0;
   let renderEndIndex = items.length;
   let isActuallyVirtualizing = false;
 
   if (isVirtualizing) {
-    let low = 0;
-    let high = items.length - 1;
+    let accumulatedHeight = 0;
+    let coreStartIndex = 0;
 
-    while (low <= high) {
-      const mid = Math.floor((low + high) / 2);
-      if (offsets[mid] <= clampedScrollTop) {
-        low = mid + 1;
-      } else {
-        high = mid - 1;
+    while (coreStartIndex < items.length) {
+      const currentItemHeight = itemHeights[coreStartIndex] || baseHeight;
+      if (accumulatedHeight + currentItemHeight > targetScrollTop) {
+        break;
       }
+      accumulatedHeight += currentItemHeight;
+      coreStartIndex++;
     }
-    const coreStartIndex = Math.max(0, low - 1);
 
+    let endAccumulatedHeight = accumulatedHeight;
     let coreEndIndex = coreStartIndex;
+
     while (
       coreEndIndex < items.length &&
-      offsets[coreEndIndex] < clampedScrollTop + viewportHeight
+      endAccumulatedHeight < targetScrollTop + viewportHeight
     ) {
+      endAccumulatedHeight += itemHeights[coreEndIndex] || baseHeight;
       coreEndIndex++;
     }
 
     isActuallyVirtualizing = coreStartIndex > 0 || coreEndIndex < items.length;
+
     renderStartIndex = Math.max(0, coreStartIndex - OVERSCAN_COUNT);
     renderEndIndex = Math.min(items.length, coreEndIndex + OVERSCAN_COUNT);
   } else if (viewportHeight === 0 && items.length > MAX_INITIAL_RENDER_COUNT) {
@@ -243,30 +171,30 @@ const VirtualizedList = ({
     if (!isActuallyVirtualizing) return null;
 
     const minThumbHeight = 20;
-    const thumbHeightRatio = viewportHeight / totalHeight;
+    const thumbHeightRatio = viewportHeight / totalContentHeight;
     const thumbHeight = Math.max(
       minThumbHeight,
       thumbHeightRatio * viewportHeight,
     );
 
-    const scrollableRange = totalHeight - viewportHeight;
+    const scrollableRange = totalContentHeight - viewportHeight;
     const thumbScrollableRange = viewportHeight - thumbHeight;
 
     const scrollPercentage =
-      scrollableRange > 0 ? clampedScrollTop / scrollableRange : 0;
+      scrollableRange > 0 ? targetScrollTop / scrollableRange : 0;
     const thumbTopPosition =
       containerPaddingTop + scrollPercentage * thumbScrollableRange;
 
     return { top: thumbTopPosition, height: thumbHeight };
   })();
 
-  const topSpacerHeight = renderStartIndex > 0 ? offsets[renderStartIndex] : 0;
+  const topSpacerHeight = getCumulativeHeight(renderStartIndex);
   const bottomSpacerHeight = Math.max(
     0,
-    totalHeight - (offsets[renderEndIndex] || totalHeight),
+    totalContentHeight - getCumulativeHeight(renderEndIndex),
   );
 
-  const roundedScrollTop = Math.round(clampedScrollTop);
+  const roundedScrollTop = Math.round(targetScrollTop);
   const roundedTopSpacerHeight = Math.round(topSpacerHeight);
   const roundedBottomSpacerHeight = Math.round(bottomSpacerHeight);
 
@@ -274,10 +202,7 @@ const VirtualizedList = ({
     transform: isActuallyVirtualizing
       ? `translate3d(0, ${-roundedScrollTop}px, 0)`
       : "none",
-    transition:
-      isActuallyVirtualizing && isAnimatedScroll
-        ? "transform 0.2s ease-out"
-        : "none",
+    transition: isActuallyVirtualizing ? "transform 0.2s ease-out" : "none",
     willChange: isActuallyVirtualizing ? "transform" : "auto",
     display: "flex",
     flexDirection: "column",
@@ -295,7 +220,6 @@ const VirtualizedList = ({
         minHeight: 0,
         display: "flex",
         flexDirection: "column",
-        touchAction: "none",
       }}
     >
       <div className="virtualized-list-inner" style={innerListStyle}>
