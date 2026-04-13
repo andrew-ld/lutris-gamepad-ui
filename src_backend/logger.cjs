@@ -1,4 +1,5 @@
 const fs = require("node:fs");
+const { EOL } = require("node:os");
 const path = require("node:path");
 const { format } = require("node:util");
 
@@ -75,7 +76,7 @@ const writeLog = (level, ...arguments_) => {
   consoleMethod(consoleFormattedMessage, ...arguments_);
 
   if (logStream && logStream.writable) {
-    const fileFormattedMessage = `${consoleFormattedMessage} ${format(...arguments_)}\n\r`;
+    const fileFormattedMessage = `${consoleFormattedMessage} ${format(...arguments_)}${EOL}`;
 
     logStream.write(fileFormattedMessage, (error) => {
       if (error) {
