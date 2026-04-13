@@ -1,4 +1,5 @@
 const fs = require("node:fs");
+const path = require("node:path");
 const { format } = require("node:util");
 
 const { getLogFilePath } = require("./storage.cjs");
@@ -11,6 +12,34 @@ const levelToConsoleMethod = {
   WARN: console.warn,
   ERROR: console.error,
 };
+
+function getCallerFilename() {
+  const originalPrepareStackTrace = Error.prepareStackTrace;
+  const originalStackTraceLimit = Error.stackTraceLimit;
+
+  let callerFilename = null;
+
+  try {
+    Error.prepareStackTrace = (_err, stack) => stack;
+    Error.stackTraceLimit = 3;
+
+    // eslint-disable-next-line unicorn/error-message
+    const err = new Error();
+
+    Error.captureStackTrace(err, getCallerFilename);
+
+    const callSite = err.stack[2];
+
+    if (callSite) {
+      callerFilename = callSite.getFileName();
+    }
+  } finally {
+    Error.prepareStackTrace = originalPrepareStackTrace;
+    Error.stackTraceLimit = originalStackTraceLimit;
+  }
+
+  return callerFilename;
+}
 
 function initialize() {
   if (logStream !== undefined) {
@@ -33,13 +62,23 @@ const writeLog = (level, ...arguments_) => {
 
   const timestamp = new Date().toISOString();
   const message = format(...arguments_);
-  const formattedMessage = `[${timestamp}] [${level}] ${message}`;
+
+  let callerFilename = getCallerFilename();
+
+  if (callerFilename) {
+    callerFilename = path.parse(callerFilename).name;
+  } else {
+    callerFilename = "<unknown>";
+  }
+
+  const consoleFormattedMessage = `[${timestamp}] [${level}] [${callerFilename}]`;
+  const fileFormattedMessage = `${consoleFormattedMessage} ${message}`;
 
   const consoleMethod = levelToConsoleMethod[level] || console.log;
-  consoleMethod(`[${timestamp}] [${level}]`, ...arguments_);
+  consoleMethod(consoleFormattedMessage, ...arguments_);
 
   if (logStream && logStream.writable) {
-    logStream.write(formattedMessage + "\n\r", (error) => {
+    logStream.write(fileFormattedMessage + "\n\r", (error) => {
       if (error) {
         console.error("Failed to write to log file:", error);
         logStream = null;
