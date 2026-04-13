@@ -60,9 +60,6 @@ function initialize() {
 const writeLog = (level, ...arguments_) => {
   initialize();
 
-  const timestamp = new Date().toISOString();
-  const message = format(...arguments_);
-
   let callerFilename = getCallerFilename();
 
   if (callerFilename) {
@@ -71,13 +68,15 @@ const writeLog = (level, ...arguments_) => {
     callerFilename = "<unknown>";
   }
 
+  const timestamp = new Date().toISOString();
   const consoleFormattedMessage = `[${timestamp}] [${level}] [${callerFilename}]`;
-  const fileFormattedMessage = `${consoleFormattedMessage} ${message}\n\r`;
-
   const consoleMethod = levelToConsoleMethod[level] || console.log;
+
   consoleMethod(consoleFormattedMessage, ...arguments_);
 
   if (logStream && logStream.writable) {
+    const fileFormattedMessage = `${consoleFormattedMessage} ${format(...arguments_)}\n\r`;
+
     logStream.write(fileFormattedMessage, (error) => {
       if (error) {
         console.error("Failed to write to log file:", error);
