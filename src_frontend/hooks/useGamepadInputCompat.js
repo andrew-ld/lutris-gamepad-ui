@@ -1,15 +1,21 @@
 import { useCallback, useState } from "react";
 
+import { useSettingsState } from "../contexts/SettingsContext";
 import { pollGamepadsSdl } from "../utils/ipc";
 
 import { useStaticSettings } from "./useStaticSettings";
 
 export const useGamepadInputCompat = () => {
   const { staticSettings } = useStaticSettings();
+  const { settings } = useSettingsState();
   const [sdlWorking, setSdlWorking] = useState(true);
 
   const pollGamepads = useCallback(async () => {
-    if (sdlWorking && staticSettings.ENABLE_SDL_INPUT) {
+    const useSdlInput =
+      sdlWorking &&
+      (staticSettings.ENABLE_SDL_INPUT || settings.enableSdlInput);
+
+    if (useSdlInput) {
       try {
         const gamepads = await pollGamepadsSdl();
         if (gamepads && gamepads.length > 0) return gamepads;
@@ -19,7 +25,7 @@ export const useGamepadInputCompat = () => {
     }
 
     return navigator.getGamepads().filter((g) => g !== null);
-  }, [staticSettings.ENABLE_SDL_INPUT, sdlWorking]);
+  }, [staticSettings.ENABLE_SDL_INPUT, sdlWorking, settings.enableSdlInput]);
 
   return { pollGamepads };
 };

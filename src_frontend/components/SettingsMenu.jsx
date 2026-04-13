@@ -79,6 +79,10 @@ const SettingsMenu = ({ onClose }) => {
     updateSetting("showRunnerIcon", !settings.showRunnerIcon);
   }, [settings, updateSetting]);
 
+  const toggleUseSdlInput = useCallback(() => {
+    updateSetting("enableSdlInput", !settings.enableSdlInput);
+  }, [settings, updateSetting]);
+
   const toggleDoubleConfirmPowerManagement = useCallback(() => {
     updateSetting(
       "doubleConfirmPowerManagement",
@@ -146,6 +150,12 @@ const SettingsMenu = ({ onClose }) => {
         label: t("Gamepad Autorepeat Delay"),
       });
     }
+    if (settings.enableSdlInput !== undefined) {
+      inputPowerItems.push({
+        type: "SDL_INPUT",
+        label: t("Gamepad SDL Input"),
+      });
+    }
     if (settings.doubleConfirmPowerManagement !== undefined) {
       inputPowerItems.push({
         type: "DOUBLE_CONFIRM_POWER_MANAGEMENT",
@@ -192,6 +202,10 @@ const SettingsMenu = ({ onClose }) => {
           if (actionName === "A") toggleDoubleConfirmPowerManagement();
           break;
         }
+        case "SDL_INPUT": {
+          if (actionName === "A") toggleUseSdlInput();
+          break;
+        }
         case "RECENTLY_PLAYED": {
           if (actionName === "A") toggleShowRecentlyPlayed();
           break;
@@ -229,6 +243,7 @@ const SettingsMenu = ({ onClose }) => {
       toggleUseRemoteDesktopPortal,
       toggleKeepGamesRunningOnQuit,
       toggleEnableUiActionSoundFeedbacks,
+      toggleUseSdlInput,
     ],
   );
 
@@ -306,6 +321,24 @@ const SettingsMenu = ({ onClose }) => {
                 labelOn={t("Disable")}
                 labelOff={t("Enable")}
                 onClick={toggleDoubleConfirmPowerManagement}
+              />
+            </FocusableRow>
+          );
+        }
+        case "SDL_INPUT": {
+          return (
+            <FocusableRow
+              key={item.type}
+              isFocused={isFocused}
+              onMouseEnter={onMouseEnter}
+              onClick={toggleUseSdlInput}
+            >
+              <span className="settings-menu-label">{item.label}</span>
+              <ToggleButton
+                isToggledOn={settings.enableSdlInput}
+                labelOn={t("Disable")}
+                labelOff={t("Enable")}
+                onClick={toggleUseSdlInput}
               />
             </FocusableRow>
           );
@@ -415,6 +448,7 @@ const SettingsMenu = ({ onClose }) => {
       toggleUseRemoteDesktopPortal,
       toggleKeepGamesRunningOnQuit,
       toggleEnableUiActionSoundFeedbacks,
+      toggleUseSdlInput,
     ],
   );
 
@@ -499,6 +533,15 @@ const SettingsMenu = ({ onClose }) => {
 
         break;
       }
+      case "SDL_INPUT": {
+        buttons.push({
+          button: "A",
+          label: settings.enableSdlInput ? t("Disable") : t("Enable"),
+          onClick: toggleUseSdlInput,
+        });
+
+        break;
+      }
       case "USE_REMOTE_DESKTOP_PORTAL": {
         buttons.push({
           button: "A",
@@ -549,6 +592,7 @@ const SettingsMenu = ({ onClose }) => {
     toggleUseRemoteDesktopPortal,
     toggleKeepGamesRunningOnQuit,
     toggleEnableUiActionSoundFeedbacks,
+    toggleUseSdlInput,
     onClose,
     t,
   ]);
