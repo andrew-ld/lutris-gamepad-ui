@@ -72,13 +72,13 @@ const writeLog = (level, ...arguments_) => {
   }
 
   const consoleFormattedMessage = `[${timestamp}] [${level}] [${callerFilename}]`;
-  const fileFormattedMessage = `${consoleFormattedMessage} ${message}`;
+  const fileFormattedMessage = `${consoleFormattedMessage} ${message}\n\r`;
 
   const consoleMethod = levelToConsoleMethod[level] || console.log;
   consoleMethod(consoleFormattedMessage, ...arguments_);
 
   if (logStream && logStream.writable) {
-    logStream.write(fileFormattedMessage + "\n\r", (error) => {
+    logStream.write(fileFormattedMessage, (error) => {
       if (error) {
         console.error("Failed to write to log file:", error);
         logStream = null;
