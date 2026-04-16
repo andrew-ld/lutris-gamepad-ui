@@ -4,9 +4,13 @@ import runpy
 import shutil
 import sys
 import typing
-from inspect import signature
+import inspect
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__import__("lutris").__file__)))
+lutris_bin_path = shutil.which("lutris")
+lutris_dir_path = os.path.join(os.path.dirname(lutris_bin_path), os.pardir)
+
+sys.path.insert(0, lutris_dir_path)
+sys.argv[0] = lutris_bin_path
 
 import gi
 
@@ -95,7 +99,7 @@ def resolve_choices(source, key):
     if not source:
         return []
     if callable(source):
-        sig = signature(source)
+        sig = inspect.signature(source)
         items = source(key) if sig.parameters else source()
     else:
         items = source
