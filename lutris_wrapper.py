@@ -21,10 +21,14 @@ from lutris import settings, sysoptions
 from lutris.config import LutrisConfig
 from lutris.database import categories, games
 from lutris.database.games import get_game_by_field
-from lutris.gui.widgets.utils import get_runtime_icon_path
 from lutris.runners import import_runner
 from lutris.startup import init_lutris
 from lutris.runners import get_installed as get_installed_runners
+
+try:
+    from lutris.gui.widgets.utils import get_runtime_icon_path
+except ImportError:
+    get_runtime_icon_path = None
 
 try:
     from lutris.runners import InvalidRunnerError
@@ -44,6 +48,9 @@ def get_coverart_path_main():
 
 
 def get_runtime_icon_path_main(icon_name: str):
+    if get_runtime_icon_path is None:
+        sys.exit(1)
+
     icon_path = get_runtime_icon_path(icon_name)
 
     if icon_path is not None:
