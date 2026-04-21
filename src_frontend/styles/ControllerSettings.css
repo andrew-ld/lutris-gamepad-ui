@@ -1,0 +1,69 @@
+.cs-loading {
+  padding: 24px 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cs-row-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-grow: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.cs-row-content.disabled {
+  opacity: 0.45;
+}
+
+.cs-row-value {
+  margin-left: auto;
+  color: var(--accent-color);
+  font-weight: 600;
+  text-transform: capitalize;
+  font-size: 0.9rem;
+}
+
+.cs-row-value.disabled {
+  color: var(--text-secondary-color, rgba(255, 255, 255, 0.72));
+}
+
+.cs-row-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.controller-settings-device {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.controller-settings-device-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.controller-settings-mode-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(255, 80, 80, 0.15);
+  color: #ff5050;
+}
+
+.controller-settings-meta {
+  color: var(--text-secondary-color, rgba(255, 255, 255, 0.72));
+  font-size: 0.9rem;
+  text-transform: capitalize;
+}

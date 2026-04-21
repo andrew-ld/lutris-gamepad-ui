@@ -32,6 +32,23 @@
     "Confirm": "确认",
     "Select": "选择"
   },
+  "components/ControllerSettings.jsx": {
+    "Back": "Back",
+    "Close": "Close",
+    "Controller Settings": "Controller Settings",
+    "Input Mode": "Input Mode",
+    "Native": "Native",
+    "No controllers detected.": "No controllers detected.",
+    "Refresh": "Refresh",
+    "Select": "Select",
+    "Test Controller": "Test Controller",
+    "Xinput": "Xinput"
+  },
+  "components/ControllerTester.jsx": {
+    "Close": "Close",
+    "Controller Test": "Controller Test",
+    "Waiting for controller input...": "Waiting for controller input..."
+  },
   "components/ControlsOverlay.jsx": {
     "Clear Search": "清除搜索",
     "Force close": "强制关闭",
@@ -172,6 +189,7 @@
     "Continue with exiting the application?": "继续退出应用吗？",
     "Continue with system power off?": "继续关闭系统吗？",
     "Continue with system reboot?": "继续重启系统吗？",
+    "Controller Settings": "Controller Settings",
     "Display Settings": "显示设置",
     "Exit Application": "退出应用",
     "Generate Bug Report": "生成错误报告",

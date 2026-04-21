@@ -96,6 +96,7 @@ export const onAppConfigChanged = createSubscriber("app-config-changed");
 export const createBugReportFile = () =>
   globalThis.electronAPI.createBugReportFile();
 
+export const listControllers = () => globalThis.electronAPI.listControllers();
 export const pollGamepadsSdl = async () =>
   deserializeGamepads(await globalThis.electronAPI.pollGamepadsSdl());
 
