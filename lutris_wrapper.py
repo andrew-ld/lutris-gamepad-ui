@@ -4,9 +4,13 @@ import runpy
 import shutil
 import sys
 import typing
-from inspect import signature
+import inspect
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__import__("lutris").__file__)))
+lutris_bin_path = shutil.which("lutris")
+lutris_dir_path = os.path.join(os.path.dirname(lutris_bin_path), os.pardir)
+
+sys.path.insert(0, lutris_dir_path)
+sys.argv[0] = lutris_bin_path
 
 import gi
 
@@ -17,10 +21,14 @@ from lutris import settings, sysoptions
 from lutris.config import LutrisConfig
 from lutris.database import categories, games
 from lutris.database.games import get_game_by_field
-from lutris.gui.widgets.utils import get_runtime_icon_path
 from lutris.runners import import_runner
 from lutris.startup import init_lutris
 from lutris.runners import get_installed as get_installed_runners
+
+try:
+    from lutris.gui.widgets.utils import get_runtime_icon_path
+except ImportError:
+    get_runtime_icon_path = None
 
 try:
     from lutris.runners import InvalidRunnerError
@@ -40,6 +48,9 @@ def get_coverart_path_main():
 
 
 def get_runtime_icon_path_main(icon_name: str):
+    if get_runtime_icon_path is None:
+        sys.exit(1)
+
     icon_path = get_runtime_icon_path(icon_name)
 
     if icon_path is not None:
@@ -95,7 +106,7 @@ def resolve_choices(source, key):
     if not source:
         return []
     if callable(source):
-        sig = signature(source)
+        sig = inspect.signature(source)
         items = source(key) if sig.parameters else source()
     else:
         items = source

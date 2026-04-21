@@ -77,14 +77,14 @@ const GridMenu = ({
     [sections, coords, move, moveSection, onAction],
   );
 
-  useScopedInput(inputHandler, focusId, isActive);
+  const { isFocused } = useScopedInput(inputHandler, focusId, isActive);
 
   const handleItemFocus = useCallback(
     (sectionIndex, itemIndex) => {
-      if (!isMouseActive) return;
+      if (!isMouseActive || !isFocused) return;
       setCoords({ sectionIndex, itemIndex, preventScroll: true });
     },
-    [setCoords, isMouseActive],
+    [setCoords, isMouseActive, isFocused],
   );
 
   const hasContent = useMemo(

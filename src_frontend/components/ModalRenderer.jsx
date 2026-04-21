@@ -25,6 +25,15 @@ const ModalRenderer = () => {
   }
 
   useEffect(() => {
+    const handleWindowResize = () => {
+      resetSize();
+    };
+
+    window.addEventListener("resize", handleWindowResize);
+    return () => window.removeEventListener("resize", handleWindowResize);
+  }, [resetSize]);
+
+  useEffect(() => {
     if (!contentReference.current || !isModalOpen) return;
 
     const observer = new ResizeObserver((entries) => {

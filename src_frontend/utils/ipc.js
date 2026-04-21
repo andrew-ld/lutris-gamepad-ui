@@ -1,3 +1,5 @@
+import { deserializeGamepads } from "./sdl_gamepad_deserialize";
+
 export const getGames = () => globalThis.electronAPI.getGames();
 export const launchGame = (game) => globalThis.electronAPI.launchGame(game.id);
 export const closeGame = (game) => globalThis.electronAPI.closeGame(game.id);
@@ -94,8 +96,9 @@ export const onAppConfigChanged = createSubscriber("app-config-changed");
 export const createBugReportFile = () =>
   globalThis.electronAPI.createBugReportFile();
 
-export const pollGamepadsSdl = () => globalThis.electronAPI.pollGamepadsSdl();
 export const listControllers = () => globalThis.electronAPI.listControllers();
+export const pollGamepadsSdl = async () =>
+  deserializeGamepads(await globalThis.electronAPI.pollGamepadsSdl());
 
 export function encodeAppProtocolPath(filePath) {
   const sanitizedFilePath = filePath
@@ -105,3 +108,6 @@ export function encodeAppProtocolPath(filePath) {
 
   return `app://${sanitizedFilePath}`;
 }
+
+export const listDirectory = (dirPath) =>
+  globalThis.electronAPI.listDirectory(dirPath);

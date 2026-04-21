@@ -137,17 +137,29 @@ export const InputProvider = ({ children }) => {
 
   useEffect(() => {
     const handleMouseMove = () => {
+      if (!document.hasFocus()) {
+        return;
+      }
+
       setIsMouseActive(true);
       clearTimeout(mouseTimeoutReference.current);
+
       mouseTimeoutReference.current = setTimeout(() => {
         setIsMouseActive(false);
       }, 500);
     };
 
+    const handleBlur = () => {
+      setIsMouseActive(false);
+      clearTimeout(mouseTimeoutReference.current);
+    };
+
     document.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("blur", handleBlur);
 
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("blur", handleBlur);
       clearTimeout(mouseTimeoutReference.current);
     };
   }, []);

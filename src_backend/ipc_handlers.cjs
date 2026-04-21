@@ -22,6 +22,7 @@ const {
   getNightLight,
   setNightLight,
 } = require("./display_manager.cjs");
+const { listDirectory } = require("./file_manager.cjs");
 const {
   getGames,
   launchGame,
@@ -34,6 +35,7 @@ const {
   updateLutrisSetting,
   getLutrisRunners,
 } = require("./lutris_wrapper.cjs");
+const { serializeGamepads } = require("./sdl_gamepad_serialize.cjs");
 const { mapSdlGamepadsToWebApi, pollGamepads, listControllers } = require("./sdl_manager.cjs");
 const { getMainWindow } = require("./state.cjs");
 const { getUserTheme } = require("./theme_manager.cjs");
@@ -301,7 +303,15 @@ function registerIpcHandlers() {
 
   // Sdl
   ipcHandleWithError("poll-gamepads-sdl", async () => {
-    return mapSdlGamepadsToWebApi(await pollGamepads());
+    return serializeGamepads(mapSdlGamepadsToWebApi(await pollGamepads()));
+  });
+
+  // File Manager
+  ipcHandleWithError("list-directory", async (_event, dirPath) => {
+    if (typeof dirPath !== "string" && dirPath !== null) {
+      throw new TypeError("Invalid dirPath: not a string");
+    }
+    return await listDirectory(dirPath);
   });
 
   ipcHandleWithError("list-controllers", async () => {

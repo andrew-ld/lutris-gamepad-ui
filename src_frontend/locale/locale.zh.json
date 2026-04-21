@@ -92,6 +92,9 @@
     "Reload": "重载",
     "Update": "更新"
   },
+  "components/FilePicker.jsx": {
+    "Select Current Directory": "Select Current Directory"
+  },
   "components/GameCard.jsx": {
     "Last played: {{date}}": "上次游玩：{{date}}",
     "Never": "从未",
@@ -158,6 +161,7 @@
     "Double Confirm Power Management": "电源管理双重确认",
     "Enable": "启用",
     "Gamepad Autorepeat Delay": "手柄按键重复延迟",
+    "Gamepad SDL Input": "Gamepad SDL Input",
     "General": "常规",
     "Increase": "增加",
     "Input & Power": "输入与电源",

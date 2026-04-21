@@ -63,7 +63,9 @@ const VirtualizedList = ({
 
     const style = globalThis.getComputedStyle(node);
     const margin = Number.parseFloat(style.marginBottom) || 0;
-    const totalHeight = node.offsetHeight + margin;
+
+    const rect = node.getBoundingClientRect();
+    const totalHeight = rect.height + margin;
 
     setItemHeights((previousHeights) => {
       if (previousHeights[index] === totalHeight) return previousHeights;
@@ -186,9 +188,19 @@ const VirtualizedList = ({
     return { top: thumbTopPosition, height: thumbHeight };
   })();
 
+  const topSpacerHeight = getCumulativeHeight(renderStartIndex);
+  const bottomSpacerHeight = Math.max(
+    0,
+    totalContentHeight - getCumulativeHeight(renderEndIndex),
+  );
+
+  const roundedScrollTop = Math.round(targetScrollTop);
+  const roundedTopSpacerHeight = Math.round(topSpacerHeight);
+  const roundedBottomSpacerHeight = Math.round(bottomSpacerHeight);
+
   const innerListStyle = {
     transform: isActuallyVirtualizing
-      ? `translateY(${-targetScrollTop}px)`
+      ? `translate3d(0, ${-roundedScrollTop}px, 0)`
       : "none",
     transition: isActuallyVirtualizing ? "transform 0.2s ease-out" : "none",
     willChange: isActuallyVirtualizing ? "transform" : "auto",
@@ -196,12 +208,6 @@ const VirtualizedList = ({
     flexDirection: "column",
     flexShrink: 0,
   };
-
-  const topSpacerHeight = getCumulativeHeight(renderStartIndex);
-  const bottomSpacerHeight = Math.max(
-    0,
-    totalContentHeight - getCumulativeHeight(renderEndIndex),
-  );
 
   return (
     <div
@@ -218,7 +224,7 @@ const VirtualizedList = ({
     >
       <div className="virtualized-list-inner" style={innerListStyle}>
         {isActuallyVirtualizing && (
-          <div style={{ height: topSpacerHeight, flexShrink: 0 }} />
+          <div style={{ height: roundedTopSpacerHeight, flexShrink: 0 }} />
         )}
 
         {visibleItems.map(({ item, originalIndex }) => {
@@ -236,7 +242,7 @@ const VirtualizedList = ({
         })}
 
         {isActuallyVirtualizing && (
-          <div style={{ height: bottomSpacerHeight, flexShrink: 0 }} />
+          <div style={{ height: roundedBottomSpacerHeight, flexShrink: 0 }} />
         )}
       </div>
 

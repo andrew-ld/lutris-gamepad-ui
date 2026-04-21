@@ -92,6 +92,9 @@
     "Reload": "Reload",
     "Update": "Update"
   },
+  "components/FilePicker.jsx": {
+    "Select Current Directory": "Select Current Directory"
+  },
   "components/GameCard.jsx": {
     "Last played: {{date}}": "Ultimo avvio: {{date}}",
     "Never": "Mai giocato",
@@ -158,6 +161,7 @@
     "Double Confirm Power Management": "Doppia conferma menu spegnimento",
     "Enable": "Attiva",
     "Gamepad Autorepeat Delay": "Ritardo autoripetizione gamepad",
+    "Gamepad SDL Input": "Gamepad SDL Input",
     "General": "General",
     "Increase": "Aumenta",
     "Input & Power": "Input & Power",
