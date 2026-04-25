@@ -1,75 +1,64 @@
-const SDL2_LIBRARY_NAME = ["libSDL2-2.0.so.0", "libSDL2.so", "libSDL2-2.0.so"];
+const SDL3_LIBRARY_NAME = ["libSDL3.so.0", "libSDL3.so"];
 
 function configureKoffiSdl(koffi) {
   koffi.alias("Uint8", "uint8_t");
   koffi.alias("Uint16", "uint16_t");
   koffi.alias("Uint32", "uint32_t");
   koffi.alias("Sint16", "int16_t");
-  koffi.pointer("SDL_GameController", koffi.opaque());
+  koffi.alias("SDL_JoystickID", "uint32_t");
+  koffi.pointer("SDL_Gamepad", koffi.opaque());
 }
 
 /**
- * Binds and returns SDL2 GameController functions.
+ * Binds and returns SDL3 Gamepad functions.
  * @param {object} lib - The loaded Koffi library instance
  * @returns {object} Object containing bound SDL methods and constants
  */
-function bindSDL2(lib) {
+function bindSDL3(lib) {
   const sdl = {
     // eslint-disable-next-line unicorn/numeric-separators-style
-    SDL_INIT_GAMECONTROLLER: 0x00002000,
-    SDL_CONTROLLER_AXIS_MAX: 6,
-    SDL_CONTROLLER_BUTTON_MAX: 15,
+    SDL_INIT_GAMEPAD: 0x00002000,
+    SDL_GAMEPAD_AXIS_COUNT: 6,
+    SDL_GAMEPAD_BUTTON_COUNT: 15,
 
-    SDL_Init: lib.func("int SDL_Init(Uint32 flags)"),
+    SDL_Init: lib.func("bool SDL_Init(Uint32 flags)"),
     SDL_Quit: lib.func("void SDL_Quit(void)"),
 
-    SDL_RWFromFile: lib.func(
-      "void* SDL_RWFromFile(const char* file, const char* mode)",
+    SDL_AddGamepadMapping: lib.func(
+      "bool SDL_AddGamepadMapping(const char* mappingString)",
     ),
-    SDL_GameControllerAddMapping: lib.func(
-      "int SDL_GameControllerAddMapping(const char* mappingString)",
-    ),
-    SDL_GameControllerAddMappingsFromRW: lib.func(
-      "int SDL_GameControllerAddMappingsFromRW(void* rw, int freerw)",
+    SDL_AddGamepadMappingsFromFile: lib.func(
+      "int SDL_AddGamepadMappingsFromFile(const char* file)",
     ),
 
-    SDL_NumJoysticks: lib.func("int SDL_NumJoysticks(void)"),
-    SDL_IsGameController: lib.func(
-      "int SDL_IsGameController(int joystick_index)",
+    SDL_GetGamepads: lib.func("SDL_JoystickID* SDL_GetGamepads(int* count)"),
+    SDL_free: lib.func("void SDL_free(void* mem)"),
+
+    SDL_IsGamepad: lib.func("bool SDL_IsGamepad(SDL_JoystickID instance_id)"),
+
+    SDL_OpenGamepad: lib.func(
+      "SDL_Gamepad* SDL_OpenGamepad(SDL_JoystickID instance_id)",
+    ),
+    SDL_CloseGamepad: lib.func("void SDL_CloseGamepad(SDL_Gamepad* gamepad)"),
+    SDL_GamepadConnected: lib.func(
+      "bool SDL_GamepadConnected(SDL_Gamepad* gamepad)",
     ),
 
-    SDL_GameControllerOpen: lib.func(
-      "SDL_GameController* SDL_GameControllerOpen(int joystick_index)",
-    ),
-    SDL_GameControllerClose: lib.func(
-      "void SDL_GameControllerClose(SDL_GameController* gamecontroller)",
-    ),
-    SDL_GameControllerGetAttached: lib.func(
-      "int SDL_GameControllerGetAttached(SDL_GameController* gamecontroller)",
-    ),
+    SDL_UpdateGamepads: lib.func("void SDL_UpdateGamepads(void)"),
+    SDL_PumpEvents: lib.func("void SDL_PumpEvents(void)"),
 
-    SDL_GameControllerUpdate: lib.func("void SDL_GameControllerUpdate(void)"),
-
-    SDL_GameControllerGetAxis: lib.func(
-      "Sint16 SDL_GameControllerGetAxis(SDL_GameController* gamecontroller, int axis)",
+    SDL_GetGamepadAxis: lib.func(
+      "Sint16 SDL_GetGamepadAxis(SDL_Gamepad* gamepad, int axis)",
     ),
-    SDL_GameControllerGetButton: lib.func(
-      "Uint8 SDL_GameControllerGetButton(SDL_GameController* gamecontroller, int button)",
+    SDL_GetGamepadButton: lib.func(
+      "Uint8 SDL_GetGamepadButton(SDL_Gamepad* gamepad, int button)",
     ),
-    SDL_GameControllerName: lib.func(
-      "const char* SDL_GameControllerName(SDL_GameController* gamecontroller)",
+    SDL_GetGamepadName: lib.func(
+      "const char* SDL_GetGamepadName(SDL_Gamepad* gamepad)",
     ),
-  };
-
-  sdl.SDL_GameControllerAddMappingsFromFile = function (file) {
-    const rw = sdl.SDL_RWFromFile(file, "rb");
-    if (!rw) {
-      return -1;
-    }
-    return sdl.SDL_GameControllerAddMappingsFromRW(rw, 1);
   };
 
   return sdl;
 }
 
-module.exports = { bindSDL2, SDL2_LIBRARY_NAME, configureKoffiSdl };
+module.exports = { bindSDL3, SDL3_LIBRARY_NAME, configureKoffiSdl };

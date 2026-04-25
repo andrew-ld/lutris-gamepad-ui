@@ -1,6 +1,6 @@
 const W3C_BUTTON_COUNT = 17;
 const W3C_AXIS_COUNT = 4;
-const BYTES_PER_GAMEPAD = 1 + 4 + 6 * 4;
+const BYTES_PER_GAMEPAD = 4 + 4 + 6 * 4; // 4 bytes for index (Uint32), 4 for button mask, 2*4 for triggers, 4*4 for axes
 
 function serializeGamepads(gamepads) {
   if (!gamepads || gamepads.length === 0) {
@@ -15,8 +15,8 @@ function serializeGamepads(gamepads) {
   let offset = 1;
 
   for (const gp of gamepads) {
-    view.setUint8(offset, gp.index);
-    offset += 1;
+    view.setUint32(offset, gp.index, true);
+    offset += 4;
 
     let mask = 0;
     for (let b = 0; b < W3C_BUTTON_COUNT; b++) {

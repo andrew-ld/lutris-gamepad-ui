@@ -16,8 +16,8 @@ export function deserializeGamepads(buffer) {
   let offset = 1;
 
   for (let i = 0; i < numGamepads; i++) {
-    const index = view.getUint8(offset);
-    offset += 1;
+    const index = view.getUint32(offset, true);
+    offset += 4;
 
     const mask = view.getUint32(offset, true);
     offset += 4;

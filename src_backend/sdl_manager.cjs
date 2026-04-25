@@ -1,6 +1,6 @@
 const {
-  SDL2_LIBRARY_NAME,
-  bindSDL2,
+  SDL3_LIBRARY_NAME,
+  bindSDL3,
   configureKoffiSdl,
 } = require("./sdl_bindings.cjs");
 const { logError, logInfo, localeAppFile, logWarn } = require("./utils.cjs");
@@ -15,32 +15,30 @@ function getSdlHandle() {
       const koffi = require("koffi");
       configureKoffiSdl(koffi);
 
-      for (const libraryName of SDL2_LIBRARY_NAME) {
+      for (const libraryName of SDL3_LIBRARY_NAME) {
         try {
           const lib = koffi.load(libraryName);
-          const sdl = bindSDL2(lib);
+          const sdl = bindSDL3(lib);
 
-          if (sdl.SDL_Init(sdl.SDL_INIT_GAMECONTROLLER) !== 0) {
-            throw new Error(
-              "Failed to initialize SDL2 GameController subsystem",
-            );
+          if (!sdl.SDL_Init(sdl.SDL_INIT_GAMEPAD)) {
+            throw new Error("Failed to initialize SDL3 Gamepad subsystem");
           }
 
           const mappingPath = localeAppFile(
             "./src_backend/resources/gamecontrollerdb.txt",
           );
 
-          if (sdl.SDL_GameControllerAddMappingsFromFile(mappingPath) < 0) {
-            logWarn("SDL2 unable to load gamepad mapping", mappingPath);
+          if (sdl.SDL_AddGamepadMappingsFromFile(mappingPath) < 0) {
+            logWarn("SDL3 unable to load gamepad mapping", mappingPath);
           }
 
-          logInfo("SDL2 initialized!", libraryName);
+          logInfo("SDL3 initialized!", libraryName);
 
           const activeControllers = new Map();
 
           const cleanup = () => {
             for (const ptr of activeControllers.values()) {
-              if (ptr) sdl.SDL_GameControllerClose(ptr);
+              if (ptr) sdl.SDL_CloseGamepad(ptr);
             }
             activeControllers.clear();
             sdl.SDL_Quit();
@@ -48,16 +46,16 @@ function getSdlHandle() {
 
           process.on("exit", cleanup);
 
-          resolve({ sdl, activeControllers });
+          resolve({ sdl, activeControllers, koffi });
           return;
         } catch (error) {
           logError("Unable to load", libraryName, error);
         }
       }
 
-      reject(new Error("Unable to load sdl"));
+      reject(new Error("Unable to load SDL3"));
     } catch (error) {
-      logError("Fatal error while load sdl2:", error);
+      logError("Fatal error while load SDL3:", error);
       reject(error);
     }
   });
@@ -66,52 +64,67 @@ function getSdlHandle() {
 }
 
 async function pollGamepads() {
-  const { sdl, activeControllers } = await getSdlHandle();
+  const { sdl, activeControllers, koffi } = await getSdlHandle();
 
-  sdl.SDL_GameControllerUpdate();
+  sdl.SDL_PumpEvents();
+  sdl.SDL_UpdateGamepads();
 
-  const numJoysticks = sdl.SDL_NumJoysticks();
-  const gamepads = [];
+  const countPtr = new Int32Array(1);
+  const gamepadsPtr = sdl.SDL_GetGamepads(countPtr);
+  const numGamepads = countPtr[0];
+  const currentInstanceIds = new Set();
 
-  for (const [i, ptr] of activeControllers.entries()) {
-    if (i >= numJoysticks || sdl.SDL_GameControllerGetAttached(ptr) === 0) {
-      sdl.SDL_GameControllerClose(ptr);
-      activeControllers.delete(i);
+  if (gamepadsPtr) {
+    try {
+      const ids = koffi.decode(gamepadsPtr, "SDL_JoystickID", numGamepads);
+      for (let i = 0; i < numGamepads; i++) {
+        currentInstanceIds.add(ids[i]);
+      }
+    } finally {
+      sdl.SDL_free(gamepadsPtr);
     }
   }
 
-  for (let i = 0; i < numJoysticks; i++) {
-    if (sdl.SDL_IsGameController(i) === 0) continue;
+  const gamepads = [];
 
-    let ptr = activeControllers.get(i);
+  for (const [instanceId, ptr] of activeControllers.entries()) {
+    if (!currentInstanceIds.has(instanceId) || !sdl.SDL_GamepadConnected(ptr)) {
+      sdl.SDL_CloseGamepad(ptr);
+      activeControllers.delete(instanceId);
+    }
+  }
 
-    if (!ptr) {
-      ptr = sdl.SDL_GameControllerOpen(i);
-      if (ptr) activeControllers.set(i, ptr);
+  for (const instanceId of currentInstanceIds) {
+    let ptr = activeControllers.get(instanceId);
+
+    if (!ptr && sdl.SDL_IsGamepad(instanceId)) {
+      ptr = sdl.SDL_OpenGamepad(instanceId);
+      if (ptr) activeControllers.set(instanceId, ptr);
     }
 
     if (ptr) {
-      if (sdl.SDL_GameControllerGetAttached(ptr) === 0) {
-        sdl.SDL_GameControllerClose(ptr);
-        activeControllers.delete(i);
+      if (!sdl.SDL_GamepadConnected(ptr)) {
+        sdl.SDL_CloseGamepad(ptr);
+        activeControllers.delete(instanceId);
         continue;
       }
 
       const axes = [];
       const buttons = [];
 
-      for (let a = 0; a < sdl.SDL_CONTROLLER_AXIS_MAX; a++) {
-        const rawValue = sdl.SDL_GameControllerGetAxis(ptr, a);
-        axes.push(rawValue / 32_767);
+      for (let a = 0; a < sdl.SDL_GAMEPAD_AXIS_COUNT; a++) {
+        const rawValue = sdl.SDL_GetGamepadAxis(ptr, a);
+        const normalized = Math.max(-1, Math.min(1, rawValue / 32_767));
+        axes.push(normalized);
       }
 
-      for (let b = 0; b < sdl.SDL_CONTROLLER_BUTTON_MAX; b++) {
-        const isPressed = sdl.SDL_GameControllerGetButton(ptr, b);
+      for (let b = 0; b < sdl.SDL_GAMEPAD_BUTTON_COUNT; b++) {
+        const isPressed = sdl.SDL_GetGamepadButton(ptr, b);
         buttons.push(isPressed === 1);
       }
 
       gamepads.push({
-        index: i,
+        index: instanceId,
         axes: axes,
         buttons: buttons,
       });
@@ -121,14 +134,14 @@ async function pollGamepads() {
   return gamepads;
 }
 
-// Mapping definitions based on SDL2 Controller Enums and W3C Standard Gamepad layout.
-// SDL2 Buttons: 0:A, 1:B, 2:X, 3:Y, 4:BACK, 5:GUIDE, 6:START, 7:L3, 8:R3, 9:L1, 10:R1, 11:UP, 12:DOWN, 13:LEFT, 14:RIGHT
-// SDL2 Axes: 0:LeftX, 1:LeftY, 2:RightX, 3:RightY, 4:L2, 5:R2
+// Mapping definitions based on SDL3 Gamepad Enums and W3C Standard Gamepad layout.
+// SDL3 Buttons: 0:SOUTH, 1:EAST, 2:WEST, 3:NORTH, 4:BACK, 5:GUIDE, 6:START, 7:L3, 8:R3, 9:L1, 10:R1, 11:UP, 12:DOWN, 13:LEFT, 14:RIGHT
+// SDL3 Axes: 0:LeftX, 1:LeftY, 2:RightX, 3:RightY, 4:L2, 5:R2
 const BUTTON_MAPPING = [
-  { type: "button", index: 0 }, // 0: A
-  { type: "button", index: 1 }, // 1: B
-  { type: "button", index: 2 }, // 2: X
-  { type: "button", index: 3 }, // 3: Y
+  { type: "button", index: 0 }, // 0: SOUTH (A)
+  { type: "button", index: 1 }, // 1: EAST (B)
+  { type: "button", index: 2 }, // 2: WEST (X)
+  { type: "button", index: 3 }, // 3: NORTH (Y)
   { type: "button", index: 9 }, // 4: L1
   { type: "button", index: 10 }, // 5: R1
   { type: "axis", index: 4 }, // 6: L2 (Trigger)
@@ -152,7 +165,7 @@ const AXIS_MAPPING = [
 ];
 
 /**
- * Maps SDL2 gamepad data to the standard Web Gamepad API format.
+ * Maps SDL3 gamepad data to the standard Web Gamepad API format.
  * @param {Array} gamepads - The raw gamepads from pollGamepads()
  * @returns {Array} Gamepads in Web API format
  */
