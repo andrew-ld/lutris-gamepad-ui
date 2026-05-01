@@ -37,18 +37,18 @@ const ModalRenderer = () => {
     if (!contentReference.current || !isModalOpen) return;
 
     const observer = new ResizeObserver((entries) => {
-      let maxWidth = 0;
-      let maxHeight = 0;
+      let measuredWidth = 0;
+      let measuredHeight = 0;
 
       for (const entry of entries) {
-        maxWidth = Math.max(entry.target.offsetWidth, maxWidth);
-        maxHeight = Math.max(entry.target.offsetHeight, maxHeight);
+        measuredWidth = Math.max(entry.target.offsetWidth, measuredWidth);
+        measuredHeight = Math.max(entry.target.offsetHeight, measuredHeight);
       }
 
-      if (maxWidth > 0 || maxHeight > 0) {
+      if (measuredWidth > 0 || measuredHeight > 0) {
         setMaxSize((previous) => ({
-          width: Math.max(previous.width, maxWidth),
-          height: Math.max(previous.height, maxHeight),
+          width: Math.max(previous.width, measuredWidth),
+          height: Math.max(previous.height, measuredHeight),
         }));
       }
     });

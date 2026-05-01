@@ -13,6 +13,6 @@
   color: var(--text-primary);
   font-size: 1.2rem;
   font-weight: bold;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+  text-shadow: 0.0625rem 0.0625rem 0.1875rem rgba(0, 0, 0, 0.7);
   line-height: 1.3;
 }

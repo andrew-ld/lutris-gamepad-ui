@@ -11,7 +11,7 @@ import LoadingIndicator from "./LoadingIndicator";
 import LutrisAddGameSettingsMenu from "./LutrisAddGameSettingsMenu";
 import SelectionMenu from "./SelectionMenu";
 
-const LutrisAddGameFlow = ({ onClose, onSaved, maxWidth = "700px" }) => {
+const LutrisAddGameFlow = ({ onClose, onSaved }) => {
   const { t } = useTranslation();
   const { showToast } = useToastActions();
   const { resetSize } = useViewActions();
@@ -71,15 +71,8 @@ const LutrisAddGameFlow = ({ onClose, onSaved, maxWidth = "700px" }) => {
 
   if (loading) {
     return (
-      <DialogLayout title={t("Add Game")} maxWidth={maxWidth}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "200px",
-          }}
-        >
+      <DialogLayout title={t("Add Game")}>
+        <div className="dialog-layout-loading">
           <LoadingIndicator />
         </div>
       </DialogLayout>
@@ -95,7 +88,6 @@ const LutrisAddGameFlow = ({ onClose, onSaved, maxWidth = "700px" }) => {
         currentValue={selectedRunner}
         onSelect={handleSelectRunner}
         onClose={onClose}
-        maxWidth={maxWidth}
         showCheckmark={false}
       />
     );
@@ -108,7 +100,6 @@ const LutrisAddGameFlow = ({ onClose, onSaved, maxWidth = "700px" }) => {
       onClose={handleBackToSelection}
       onDone={onClose}
       onSaved={onSaved}
-      maxWidth={maxWidth}
     />
   );
 };

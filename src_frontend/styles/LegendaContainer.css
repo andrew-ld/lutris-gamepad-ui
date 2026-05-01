@@ -11,7 +11,7 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  padding: var(--legenda-content-padding, 24px 0);
+  padding: var(--legenda-content-padding, 1.5rem 0);
   overflow-y: auto;
 }
 
@@ -20,8 +20,8 @@
 }
 
 .legenda-footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 12px 16px;
+  border-top: 0.0625rem solid rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1rem;
   display: flex;
   justify-content: center;
   flex-shrink: 0;
@@ -30,6 +30,6 @@
 .legenda-items-wrapper {
   display: flex;
   justify-content: flex-start;
-  gap: 16px;
+  gap: 1rem;
   flex-wrap: wrap;
 }

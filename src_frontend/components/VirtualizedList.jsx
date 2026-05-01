@@ -251,12 +251,12 @@ const VirtualizedList = ({
           className="virtualized-list-scrollbar"
           style={{
             position: "absolute",
-            right: "4px",
+            right: "0.25rem",
             top: `${scrollBarInfo.top}px`,
-            width: "4px",
+            width: "0.25rem",
             height: `${scrollBarInfo.height}px`,
             backgroundColor: "var(--accent-color)",
-            borderRadius: "2px",
+            borderRadius: "999rem",
             opacity: 0.6,
             transition: "top 0.2s ease-out",
             pointerEvents: "none",

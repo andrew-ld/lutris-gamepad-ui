@@ -1,13 +1,13 @@
 .system-menu-container {
   position: fixed;
-  top: 15px;
-  right: 15px;
+  top: 0.9375rem;
+  right: 0.9375rem;
   z-index: 2000;
 }
 
 .system-menu-toggle {
-  width: 40px;
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
   border: none;
   background-color: rgba(20, 20, 20, 0.9);
@@ -24,8 +24,8 @@
 }
 
 .system-menu-toggle svg {
-  width: 24px;
-  height: 24px;
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .system-menu-toggle:hover {
@@ -35,23 +35,23 @@
 }
 
 .system-menu-toggle:focus {
-  outline: 2px solid var(--accent-color);
-  outline-offset: 2px;
+  outline: 0.125rem solid var(--accent-color);
+  outline-offset: 0.125rem;
   background-color: rgba(229, 9, 20, 0.8);
 }
 
 .system-menu-overlay {
   position: absolute;
-  top: 50px;
+  top: 3.125rem;
   right: 0;
   background-color: rgba(28, 28, 28, 0.98);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-  min-width: 200px;
-  padding-top: 8px;
+  border-radius: 0.5rem;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0.25rem 0.625rem rgba(0, 0, 0, 0.5);
+  min-width: 12.5rem;
+  padding-top: 0.5rem;
   animation: fadeInMenu 0.2s ease-out;
-  max-height: calc(100vh - 85px);
+  max-height: calc(100vh - 5.3125rem);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -65,7 +65,7 @@
 @keyframes fadeInMenu {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-0.625rem);
   }
   to {
     opacity: 1;
@@ -80,7 +80,7 @@
 }
 
 .system-menu-item {
-  padding: 12px 20px;
+  padding: 0.75rem 1.25rem;
   color: var(--text-secondary);
   cursor: pointer;
   font-size: 1rem;

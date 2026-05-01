@@ -10,7 +10,6 @@ const LutrisSettingsMenu = ({
   gameSlug = null,
   runnerSlug = null,
   onClose,
-  maxWidth = "700px",
 }) => {
   const { t } = useTranslation();
   const isMounted = useIsMounted();
@@ -77,7 +76,6 @@ const LutrisSettingsMenu = ({
       loading={loading}
       onClose={onClose}
       onUpdateSetting={updateSetting}
-      maxWidth={maxWidth}
     />
   );
 };

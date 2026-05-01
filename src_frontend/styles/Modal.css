@@ -23,9 +23,9 @@
 
 .modal-content {
   background-color: var(--secondary-background);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.6);
+  border-radius: 0.5rem;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0.5rem 0.9375rem rgba(0, 0, 0, 0.6);
   max-width: 90vw;
   max-height: 90vh;
   display: flex;

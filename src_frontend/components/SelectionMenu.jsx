@@ -13,7 +13,6 @@ const SelectionMenu = ({
   currentValue,
   onSelect,
   onClose,
-  maxWidth = "600px",
   showCheckmark = true,
 }) => {
   const { t } = useTranslation();
@@ -86,7 +85,7 @@ const SelectionMenu = ({
       title={title}
       description={description}
       legendItems={legendItems}
-      maxWidth={maxWidth}
+      className="wide"
       scrollable={false}
     >
       <RowBasedMenu

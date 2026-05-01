@@ -94,7 +94,7 @@ const About = ({ onClose }) => {
       title="Lutris Gamepad UI"
       description={packageJson.description}
       legendItems={legendItems}
-      maxWidth="600px"
+      className="wide"
       scrollable={false}
     >
       <RowBasedMenu

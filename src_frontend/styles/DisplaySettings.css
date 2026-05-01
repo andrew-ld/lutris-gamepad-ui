@@ -2,7 +2,7 @@
   font-size: 1rem;
   color: var(--text-secondary);
   flex-shrink: 0;
-  margin-right: 10px;
+  margin-right: 0.625rem;
 }
 
 .display-settings-value {
@@ -15,8 +15,8 @@
   font-size: 0.9rem;
   color: var(--error-color, #ff4d4d);
   text-align: center;
-  margin-bottom: 16px;
-  padding: 0 16px;
+  margin-bottom: 1rem;
+  padding: 0 1rem;
 }
 
 .focusable-row.focused .display-settings-label {

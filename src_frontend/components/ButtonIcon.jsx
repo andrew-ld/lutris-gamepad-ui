@@ -148,7 +148,7 @@ const CtrlXIcon = () => (
     fill="currentColor"
     width="1.5em"
     height="1em"
-    style={{ letterSpacing: "0.5px" }}
+    style={{ letterSpacing: "0.03em" }}
   >
     <text
       x="50%"

@@ -1,17 +1,9 @@
 import "../styles/PercentageBar.css";
 
-const PercentageBar = ({
-  percent,
-  label,
-  showValue = true,
-  containerWidth,
-}) => {
+const PercentageBar = ({ percent, label, showValue = true }) => {
   return (
     <div className="percentage-bar-display">
-      <div
-        className="percentage-bar-container"
-        style={containerWidth ? { width: containerWidth } : {}}
-      >
+      <div className="percentage-bar-container">
         <div
           className="percentage-bar-fill"
           style={{ width: `${percent}%` }}

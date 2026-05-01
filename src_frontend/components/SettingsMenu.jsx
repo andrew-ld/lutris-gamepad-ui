@@ -264,7 +264,6 @@ const SettingsMenu = ({ onClose }) => {
                   100
                 }
                 label={`${Math.round(settings.zoomFactor * 100)}%`}
-                containerWidth="120px"
               />
             </FocusableRow>
           );
@@ -284,7 +283,6 @@ const SettingsMenu = ({ onClose }) => {
                   100
                 }
                 label={`${settings.gamepadAutorepeatMs}ms`}
-                containerWidth="120px"
               />
             </FocusableRow>
           );
@@ -601,7 +599,7 @@ const SettingsMenu = ({ onClose }) => {
     <DialogLayout
       title={t("Settings")}
       legendItems={legendItems}
-      maxWidth="600px"
+      className="wide"
       scrollable={false}
     >
       <RowBasedMenu

@@ -25,7 +25,6 @@ const LutrisAddGameSettingsMenu = ({
   onClose,
   onDone = onClose,
   onSaved,
-  maxWidth = "700px",
 }) => {
   const { t } = useTranslation();
   const { showToast } = useToastActions();
@@ -182,7 +181,6 @@ const LutrisAddGameSettingsMenu = ({
       onUpdateSetting={updateSetting}
       onSubmit={handleSubmit}
       submitLabel={t("Save")}
-      maxWidth={maxWidth}
       sectionOrder={ADD_GAME_SECTION_ORDER}
       sectionLabels={sectionLabels}
     />

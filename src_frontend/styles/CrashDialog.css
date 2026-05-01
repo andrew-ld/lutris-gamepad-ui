@@ -9,20 +9,20 @@
   justify-content: center;
   align-items: center;
   color: var(--text-primary);
-  padding: 20px;
+  padding: 1.25rem;
 }
 
 .crash-dialog-container .legenda-content {
-  --legenda-content-padding: 24px 32px;
+  --legenda-content-padding: 1.5rem 2rem;
 }
 
 .crash-dialog-details {
   background-color: var(--primary-background);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  padding: 16px;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.375rem;
+  padding: 1rem;
   text-align: left;
-  margin-top: 16px;
+  margin-top: 1rem;
 }
 
 .crash-dialog-details pre {

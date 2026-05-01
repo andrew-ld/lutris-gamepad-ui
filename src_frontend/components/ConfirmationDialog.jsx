@@ -75,7 +75,6 @@ const ConfirmationDialog = ({ message, description, onConfirm, onDeny }) => {
       title={message}
       description={description}
       legendItems={legendItems}
-      maxWidth="400px"
     >
       <div className="modal-buttons-group">
         <button

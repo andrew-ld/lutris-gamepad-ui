@@ -204,19 +204,11 @@ const BluetoothMenu = ({ onClose }) => {
     <DialogLayout
       title={t("Bluetooth Settings")}
       legendItems={legendItems}
-      maxWidth="600px"
+      className="wide"
       scrollable={false}
     >
       {isLoading && !isDiscovering ? (
-        <div
-          style={{
-            padding: "24px 0",
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+        <div className="dialog-layout-loading">
           <LoadingIndicator />
         </div>
       ) : (

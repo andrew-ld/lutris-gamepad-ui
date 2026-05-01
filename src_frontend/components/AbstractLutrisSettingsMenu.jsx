@@ -107,7 +107,6 @@ const AbstractLutrisSettingsMenu = ({
   onUpdateSetting,
   onSubmit,
   submitLabel,
-  maxWidth = "700px",
   sectionOrder = DEFAULT_SECTION_ORDER,
   sectionLabels,
   focusId = LutrisSettingsMenuFocusId,
@@ -303,7 +302,6 @@ const AbstractLutrisSettingsMenu = ({
         title={selectingItem.label}
         options={selectingItem.choices}
         currentValue={selectingItem.value}
-        maxWidth={maxWidth}
         onSelect={async (newValue) => {
           await updateItemAndCloseSubView(
             selectingItem,
@@ -320,7 +318,6 @@ const AbstractLutrisSettingsMenu = ({
     return (
       <OnScreenKeyboard
         label={editingItem.label}
-        maxWidth={maxWidth}
         initialValue={String(editingItem.value || "")}
         onConfirm={async (newValue) => {
           await updateItemAndCloseSubView(
@@ -339,7 +336,6 @@ const AbstractLutrisSettingsMenu = ({
       <FilePicker
         title={pickingItem.label}
         mode={pickingItem.type}
-        maxWidth={maxWidth}
         initialPath={getPickerInitialPath(pickingItem)}
         onSelect={async (newValue) => {
           await updateItemAndCloseSubView(
@@ -357,7 +353,7 @@ const AbstractLutrisSettingsMenu = ({
     <DialogLayout
       title={title}
       legendItems={legendItems}
-      maxWidth={maxWidth}
+      className="wide"
       scrollable={false}
     >
       {loading ? (

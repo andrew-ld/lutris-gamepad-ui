@@ -145,7 +145,7 @@ const DisplaySettings = ({ onClose }) => {
         >
           <span className="display-settings-label">{item.label}</span>
           {item.type === CONTROL_TYPES.BRIGHTNESS && (
-            <PercentageBar percent={brightness} containerWidth="150px" />
+            <PercentageBar percent={brightness} />
           )}
           {item.type === CONTROL_TYPES.NIGHT_LIGHT && (
             <ToggleButton
@@ -213,9 +213,8 @@ const DisplaySettings = ({ onClose }) => {
     return (
       <DialogLayout
         legendItems={[{ button: "B", label: t("Close"), onClick: onClose }]}
-        maxWidth="600px"
       >
-        <div style={{ padding: "24px 0" }}>
+        <div className="dialog-layout-loading">
           <p className="display-settings-title">
             {t("Loading Display Settings...")}
           </p>
@@ -228,7 +227,7 @@ const DisplaySettings = ({ onClose }) => {
     <DialogLayout
       title={t("Display Settings")}
       legendItems={legendItems}
-      maxWidth="600px"
+      className="wide"
       scrollable={false}
     >
       {brightnessError && (

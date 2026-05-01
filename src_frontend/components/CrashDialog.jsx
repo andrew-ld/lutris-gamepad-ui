@@ -153,8 +153,7 @@ const CrashDialog = ({ error, errorInfo }) => {
         title={t("Oops! Something went wrong.")}
         description={t("The application has encountered an unexpected error.")}
         legendItems={legendItems}
-        maxWidth="800px"
-        className="crash-dialog-container"
+        className="crash-dialog-container wide"
         contentRef={setContentElement}
       >
         <div className="modal-buttons-row">

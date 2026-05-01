@@ -7,7 +7,7 @@
 .bt-menu-row-content {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 0.75rem;
   flex-grow: 1;
   min-width: 0;
   overflow: hidden;
@@ -27,7 +27,7 @@
 
 .bt-status-indicator::before {
   content: "|";
-  margin-right: 8px;
+  margin-right: 0.5rem;
   color: var(--text-secondary);
   opacity: 0.4;
 }
@@ -43,20 +43,20 @@
 .bt-menu-row-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 1rem;
   color: var(--text-secondary);
   margin-left: auto;
-  padding-left: 16px;
+  padding-left: 1rem;
 }
 
 .bt-menu-action-button {
-  padding: 8px 16px;
+  padding: 0.5rem 1rem;
   font-size: 0.9rem;
   font-weight: bold;
   background-color: rgba(255, 255, 255, 0.1);
   color: var(--text-secondary);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.25rem;
   cursor: pointer;
   transition:
     background-color 0.2s ease,

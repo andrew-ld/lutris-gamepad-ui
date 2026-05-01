@@ -57,7 +57,6 @@ const UpdateDialog = ({ newVersion, releaseUrl, onClose }) => {
         version: newVersion,
       })}
       legendItems={legendItems}
-      maxWidth="450px"
     >
       <div className="modal-buttons-group">
         <button

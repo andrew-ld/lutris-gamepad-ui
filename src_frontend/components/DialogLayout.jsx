@@ -6,7 +6,6 @@ const DialogLayout = ({
   description,
   children,
   legendItems = [],
-  maxWidth = "500px",
   className = "",
   contentClassName = "",
   containerRef,
@@ -17,7 +16,7 @@ const DialogLayout = ({
   return (
     <div
       className={`dialog-layout-container ${className}`}
-      style={{ maxWidth, ...style }}
+      style={style}
       ref={containerRef}
     >
       <LegendaContainer

@@ -2,7 +2,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 3 / 4;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   overflow: hidden;
   cursor: pointer;
   transition:
@@ -16,7 +16,7 @@
 .game-card:focus-within .game-card:focus {
   transform: scale(1.1);
   z-index: 10;
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0.625rem 0.9375rem rgba(0, 0, 0, 0.7);
 }
 
 .game-card-cover {
@@ -52,7 +52,7 @@
 .game-card-info {
   padding: 1rem;
   color: var(--text-primary);
-  transform: translateY(20px);
+  transform: translateY(1.25rem);
   transition: transform 0.3s ease;
 }
 
@@ -66,27 +66,27 @@
   font-size: 1rem;
   font-weight: bold;
   margin: 0 0 0.5rem 0;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  text-shadow: 0.0625rem 0.0625rem 0.1875rem rgba(0, 0, 0, 0.8);
 }
 
 .game-card-info p {
   font-size: 0.8rem;
   margin: 0.2rem 0;
   color: var(--text-secondary);
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  text-shadow: 0.0625rem 0.0625rem 0.1875rem rgba(0, 0, 0, 0.8);
 }
 
 .game-card:focus {
-  outline: 3px solid var(--accent-color);
-  outline-offset: 2px;
+  outline: 0.1875rem solid var(--accent-color);
+  outline-offset: 0.125rem;
 }
 
 .game-card.focused {
   transform: scale(1.1);
   z-index: 10;
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.7);
-  outline: 3px solid var(--accent-color);
-  outline-offset: 2px;
+  box-shadow: 0 0.625rem 0.9375rem rgba(0, 0, 0, 0.7);
+  outline: 0.1875rem solid var(--accent-color);
+  outline-offset: 0.125rem;
 }
 
 .game-card.focused .game-card-overlay {
@@ -99,13 +99,13 @@
 
 .game-card-runner-icon {
   position: absolute;
-  bottom: 8px;
-  right: 8px;
-  width: 24px;
-  height: 24px;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
   object-fit: contain;
   background-color: rgba(0, 0, 0, 0.6);
-  border-radius: 4px;
-  padding: 2px;
+  border-radius: 0.25rem;
+  padding: 0.125rem;
   pointer-events: none;
 }

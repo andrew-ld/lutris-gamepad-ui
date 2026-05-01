@@ -11,7 +11,7 @@ import LoadingIndicator from "./LoadingIndicator";
 import LutrisSettingsMenu from "./LutrisSettingsMenu";
 import SelectionMenu from "./SelectionMenu";
 
-const LutrisSettingsFlow = ({ onClose, maxWidth = "700px" }) => {
+const LutrisSettingsFlow = ({ onClose }) => {
   const { t } = useTranslation();
   const { showToast } = useToastActions();
   const { resetSize } = useViewActions();
@@ -67,15 +67,8 @@ const LutrisSettingsFlow = ({ onClose, maxWidth = "700px" }) => {
 
   if (loading) {
     return (
-      <DialogLayout title={t("Lutris Settings")} maxWidth={maxWidth}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "200px",
-          }}
-        >
+      <DialogLayout title={t("Lutris Settings")}>
+        <div className="dialog-layout-loading">
           <LoadingIndicator />
         </div>
       </DialogLayout>
@@ -91,7 +84,6 @@ const LutrisSettingsFlow = ({ onClose, maxWidth = "700px" }) => {
         currentValue={selectedRunner}
         onSelect={handleSelectRunner}
         onClose={onClose}
-        maxWidth={maxWidth}
         showCheckmark={false}
       />
     );

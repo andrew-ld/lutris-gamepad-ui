@@ -1,21 +1,21 @@
 .percentage-bar-display {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0.625rem;
 }
 
 .percentage-bar-container {
-  width: 100px;
-  height: 8px;
+  inline-size: clamp(6rem, 14vw, 10rem);
+  block-size: 0.5rem;
   background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
+  border-radius: 999rem;
   overflow: hidden;
 }
 
 .percentage-bar-fill {
   height: 100%;
   background-color: var(--accent-color);
-  border-radius: 4px;
+  border-radius: 999rem;
   transition: width 0.1s linear;
 }
 

@@ -8,16 +8,16 @@
   color: var(--text-secondary);
   display: flex;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 1.25rem;
   box-sizing: border-box;
   z-index: 1900;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 0.0625rem solid rgba(255, 255, 255, 0.1);
 }
 
 .top-bar-content {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 0.75rem;
 }
 
 .top-bar-item {

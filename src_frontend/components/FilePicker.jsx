@@ -16,7 +16,6 @@ const FilePicker = ({
   title,
   mode = "file",
   initialPath = null,
-  maxWidth = "600px",
 }) => {
   const { t } = useTranslation();
   const isMounted = useIsMounted();
@@ -103,7 +102,7 @@ const FilePicker = ({
 
   if (isLoading) {
     return (
-      <DialogLayout title={title} description={currentPath} maxWidth={maxWidth}>
+      <DialogLayout title={title} description={currentPath} className="wide">
         <LoadingIndicator />
       </DialogLayout>
     );
@@ -116,7 +115,6 @@ const FilePicker = ({
       options={options}
       onSelect={handleSelect}
       onClose={onClose}
-      maxWidth={maxWidth}
       showCheckmark={false}
     />
   );
