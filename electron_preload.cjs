@@ -77,6 +77,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getLutrisSettings: (gameSlug, runnerSlug) =>
     ipcRenderer.invoke("get-lutris-settings", gameSlug, runnerSlug),
   getLutrisRunners: () => ipcRenderer.invoke("get-lutris-runners"),
+  getNewGameLutrisSettings: (runnerSlug) =>
+    ipcRenderer.invoke("get-new-game-lutris-settings", runnerSlug),
   updateLutrisSetting: (section, key, value, type, gameSlug, runnerSlug) =>
     ipcRenderer.invoke(
       "update-lutris-setting",
@@ -87,6 +89,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
       gameSlug,
       runnerSlug,
     ),
+  addLutrisGame: (gameData) => ipcRenderer.invoke("add-lutris-game", gameData),
 
   // Generic
   log: (level, arguments_) => ipcRenderer.send("log", level, arguments_),

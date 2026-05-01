@@ -10,7 +10,13 @@ import "../styles/OnScreenKeyboard.css";
 
 export const OnScreenKeyboardFocusID = "OnScreenKeyboard";
 
-const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
+const OnScreenKeyboard = ({
+  initialValue,
+  onConfirm,
+  onClose,
+  label,
+  maxWidth = "800px",
+}) => {
   const { t } = useTranslation();
   const { isMouseActive } = useInput();
   const [inputValue, setInputValue] = useState(initialValue || "");
@@ -178,7 +184,7 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
   );
 
   return (
-    <DialogLayout legendItems={legendItems} maxWidth="800px">
+    <DialogLayout legendItems={legendItems} maxWidth={maxWidth}>
       <div className="osk-container">
         <div className="osk-input-display">
           <label className="osk-label">{label}</label>

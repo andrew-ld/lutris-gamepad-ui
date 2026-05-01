@@ -13,12 +13,18 @@
   font-size: 1rem;
   font-weight: bold;
   color: var(--text-primary);
+  max-width: 55%;
+  min-width: 0;
+  overflow: hidden;
+  padding-right: 0.25em;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .settings-menu-value.generic {
   font-weight: normal;
   color: var(--text-secondary);
-  font-style: italic;
 }
 
 .unsupported-option {

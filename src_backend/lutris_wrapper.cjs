@@ -69,6 +69,15 @@ async function getLutrisSettings(gameSlug = null, runnerSlug = null) {
   });
 }
 
+async function getNewGameLutrisSettings(runnerSlug) {
+  return settingsRunExclusive(async () => {
+    return await invokeLutrisSubcommand("get-new-game-settings", [
+      "--runner",
+      runnerSlug,
+    ]);
+  });
+}
+
 async function updateLutrisSetting(
   section,
   key,
@@ -86,6 +95,12 @@ async function updateLutrisSetting(
   });
 }
 
+async function addLutrisGame(gameData) {
+  return settingsRunExclusive(async () => {
+    return await invokeLutrisSubcommand("add-game", [JSON.stringify(gameData)]);
+  });
+}
+
 async function getLutrisRunners() {
   return await invokeLutrisSubcommand("list-runners");
 }
@@ -96,7 +111,9 @@ module.exports = {
   getAllGamesCategories,
   getLutrisGames,
   getLutrisSettings,
+  getNewGameLutrisSettings,
   updateLutrisSetting,
+  addLutrisGame,
   getLutrisRunners,
   invokeLutris,
 };

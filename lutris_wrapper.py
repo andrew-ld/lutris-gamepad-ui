@@ -18,12 +18,14 @@ gi.require_version("Gtk", "3.0")
 
 from gi.repository import Gtk
 from lutris import settings, sysoptions
-from lutris.config import LutrisConfig
+from lutris.config import LutrisConfig, make_game_config_id
 from lutris.database import categories, games
 from lutris.database.games import get_game_by_field
+from lutris.game import Game
 from lutris.runners import import_runner
 from lutris.startup import init_lutris
 from lutris.runners import get_installed as get_installed_runners
+from lutris.util.strings import slugify
 
 try:
     from lutris.gui.widgets.utils import get_runtime_icon_path
@@ -77,7 +79,7 @@ def list_games_main():
     _print_subcommand_output(games.get_games(filters={"installed": 1}))
 
 
-def get_config(game_slug=None, runner_slug=None):
+def get_config(game_slug=None, runner_slug=None, config_level=None):
     if game_slug:
         game = get_game_by_field(game_slug, "slug") or get_game_by_field(
             game_slug, "id"
@@ -88,6 +90,8 @@ def get_config(game_slug=None, runner_slug=None):
             LutrisConfig(runner_slug=game["runner"], game_config_id=game["configpath"]),
             game["runner"],
         )
+    if config_level == "game":
+        return LutrisConfig(runner_slug=runner_slug, level="game"), runner_slug
     return LutrisConfig(runner_slug=runner_slug), runner_slug
 
 
@@ -142,7 +146,7 @@ def format_option(opt, values):
     }
 
 
-def get_settings_main(game_slug=None, runner_slug=None):
+def get_settings_main(game_slug=None, runner_slug=None, config_level=None):
     init_lutris()
     game_name = None
     if game_slug:
@@ -152,7 +156,7 @@ def get_settings_main(game_slug=None, runner_slug=None):
         if game:
             game_name = game["name"]
 
-    config, r_slug = get_config(game_slug, runner_slug)
+    config, r_slug = get_config(game_slug, runner_slug, config_level)
     if not config:
         _print_subcommand_output({})
         return
@@ -218,6 +222,69 @@ def update_setting_main(
     _print_subcommand_output({"status": "success"})
 
 
+def apply_settings_payload(config, settings_payload):
+    target_attr = f"{config.level}_level"
+    target = getattr(config, target_attr)
+
+    for section, options in settings_payload.items():
+        if section not in ["system", "runner", "game"] or not isinstance(
+            options, dict
+        ):
+            continue
+
+        target_section = config.runner_slug if section == "runner" else section
+        if target_section not in target:
+            target[target_section] = {}
+
+        for key, value in options.items():
+            if key:
+                target[target_section][key] = value
+
+
+def add_game_main(payload_json):
+    init_lutris()
+    payload = json.loads(payload_json)
+    name = str(payload.get("name") or "").strip()
+    runner_slug = payload.get("runner")
+
+    if not name or not runner_slug:
+        sys.exit(1)
+
+    import_runner(runner_slug)
+
+    game_slug = slugify(name)
+    config = LutrisConfig(runner_slug=runner_slug, level="game")
+    config.game_config_id = make_game_config_id(game_slug)
+    apply_settings_payload(config, payload.get("settings") or {})
+
+    game = Game()
+    game.name = name
+    game.sortname = str(payload.get("sortname") or "")
+    game.slug = game_slug
+    game.runner_name = runner_slug
+    game.is_installed = True
+
+    year = payload.get("year")
+    if year is not None and str(year).strip():
+        game.year = int(year)
+    else:
+        game.year = None
+
+    game.config = config
+    if "icon" not in game.custom_images:
+        game.runner.extract_icon(game_slug)
+    game.save()
+
+    _print_subcommand_output(
+        {
+            "status": "success",
+            "game_id": game.id,
+            "slug": game.slug,
+            "name": game.name,
+        }
+    )
+
+
 def list_runners_main():
     installed_runners = get_installed_runners()
     result = [{"name": r.name, "human_name": r.human_name} for r in installed_runners]
@@ -269,6 +336,12 @@ def main():
             runner_slug = sys.argv[sys.argv.index("--runner") + 1]
         get_settings_main(game_slug=game_slug, runner_slug=runner_slug)
 
+    elif "--get-new-game-settings" in sys.argv:
+        runner_slug = None
+        if "--runner" in sys.argv:
+            runner_slug = sys.argv[sys.argv.index("--runner") + 1]
+        get_settings_main(runner_slug=runner_slug, config_level="game")
+
     elif "--update-setting" in sys.argv:
         idx = sys.argv.index("--update-setting")
         section = sys.argv[idx + 1]
@@ -294,6 +367,9 @@ def main():
 
     elif "--list-runners" in sys.argv:
         list_runners_main()
+
+    elif "--add-game" in sys.argv:
+        add_game_main(sys.argv[sys.argv.index("--add-game") + 1])
 
     else:
         lutris_main()

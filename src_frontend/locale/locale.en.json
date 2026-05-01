@@ -7,6 +7,18 @@
     "Open Link": "Open Link",
     "Version": "Version"
   },
+  "components/AbstractLutrisSettingsMenu.jsx": {
+    "Browse": "Browse",
+    "Close": "Close",
+    "Default": "Default",
+    "Disable": "Disable",
+    "Edit": "Edit",
+    "Enable": "Enable",
+    "Next": "Next",
+    "Prev": "Prev",
+    "Save": "Save",
+    "Select": "Select"
+  },
   "components/BluetoothMenu.jsx": {
     "Attempting to establish a connection with the device.": "Attempting to establish a connection with the device.",
     "Bluetooth": "Bluetooth",
@@ -100,6 +112,27 @@
   "components/LoadingIndicator.jsx": {
     "Loading...": "Loading..."
   },
+  "components/LutrisAddGameFlow.jsx": {
+    "Add Game": "Add Game",
+    "Failed to fetch Lutris runners": "Failed to fetch Lutris runners",
+    "Select Runner": "Select Runner"
+  },
+  "components/LutrisAddGameSettingsMenu.jsx": {
+    "Add Game: {{runner}}": "Add Game: {{runner}}",
+    "Added {{name}}": "Added {{name}}",
+    "Game": "Game",
+    "Game name is required": "Game name is required",
+    "Info": "Info",
+    "Name": "Name",
+    "Optional": "Optional",
+    "Release year": "Release year",
+    "Release year must be a number": "Release year must be a number",
+    "Required": "Required",
+    "Runner": "Runner",
+    "Save": "Save",
+    "Sort name": "Sort name",
+    "System": "System"
+  },
   "components/LutrisSettingsFlow.jsx": {
     "Failed to fetch Lutris runners": "Failed to fetch Lutris runners",
     "Global": "Global",
@@ -107,14 +140,7 @@
     "Select Runner": "Select Runner"
   },
   "components/LutrisSettingsMenu.jsx": {
-    "Close": "Close",
-    "Default": "Default",
-    "Disable": "Disable",
-    "Enable": "Enable",
     "Lutris Settings": "Lutris Settings",
-    "Next": "Next",
-    "Prev": "Prev",
-    "Select": "Select",
     "Settings: {{name}}": "Settings: {{name}}"
   },
   "components/OnScreenKeyboard.jsx": {
@@ -162,6 +188,7 @@
   },
   "components/SystemMenu.jsx": {
     "About": "About",
+    "Add Game": "Add Game",
     "Are you sure you want to exit the application?": "Are you sure you want to exit the application?",
     "Are you sure you want to generate the bug report file?": "Are you sure you want to generate the bug report file?",
     "Are you sure you want to power off the system?": "Are you sure you want to power off the system?",

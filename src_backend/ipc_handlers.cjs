@@ -32,7 +32,9 @@ const {
 const {
   invokeLutris,
   getLutrisSettings,
+  getNewGameLutrisSettings,
   updateLutrisSetting,
+  addLutrisGame,
   getLutrisRunners,
 } = require("./lutris_wrapper.cjs");
 const { serializeGamepads } = require("./sdl_gamepad_serialize.cjs");
@@ -283,6 +285,16 @@ function registerIpcHandlers() {
   });
 
   ipcHandleWithError(
+    "get-new-game-lutris-settings",
+    async (_event, runnerSlug) => {
+      if (typeof runnerSlug !== "string" || runnerSlug.length === 0) {
+        throw new TypeError("Invalid runnerSlug: not a string");
+      }
+      return await getNewGameLutrisSettings(runnerSlug);
+    },
+  );
+
+  ipcHandleWithError(
     "update-lutris-setting",
     async (_event, section, key, value, type, gameSlug, runnerSlug) => {
       return await updateLutrisSetting(
@@ -295,6 +307,13 @@ function registerIpcHandlers() {
       );
     },
   );
+
+  ipcHandleWithError("add-lutris-game", async (_event, gameData) => {
+    if (!gameData || typeof gameData !== "object") {
+      throw new TypeError("Invalid gameData: not an object");
+    }
+    return await addLutrisGame(gameData);
+  });
 
   // Bug Reporter
   ipcOnWithError("create-bug-report", async () => {

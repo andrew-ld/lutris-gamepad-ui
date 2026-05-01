@@ -16,6 +16,7 @@ import BluetoothMenu from "./BluetoothMenu";
 import ConfirmationDialog from "./ConfirmationDialog";
 import DisplaySettings from "./DisplaySettings";
 import LegendaContainer from "./LegendaContainer";
+import LutrisAddGameFlow from "./LutrisAddGameFlow";
 import LutrisSettingsFlow from "./LutrisSettingsFlow";
 import RowBasedMenu from "./RowBasedMenu";
 import SettingsMenu from "./SettingsMenu";
@@ -99,6 +100,13 @@ const SystemMenu = () => {
     setIsOpen(false);
   }, [showModal, setIsOpen]);
 
+  const openLutrisAddGameModal = useCallback(() => {
+    showModal((hideThisModal) => (
+      <LutrisAddGameFlow onClose={hideThisModal} onSaved={fetchGames} />
+    ));
+    setIsOpen(false);
+  }, [fetchGames, showModal, setIsOpen]);
+
   const menuItems = useMemo(
     () =>
       [
@@ -114,6 +122,11 @@ const SystemMenu = () => {
         {
           label: t("Lutris Settings"),
           action: openLutrisSettingsModal,
+          disabled: staticSettings.DISABLE_LUTRIS_SETTINGS,
+        },
+        {
+          label: t("Add Game"),
+          action: openLutrisAddGameModal,
           disabled: staticSettings.DISABLE_LUTRIS_SETTINGS,
         },
         {
@@ -174,6 +187,7 @@ const SystemMenu = () => {
       openAboutModal,
       openSettingsModal,
       openLutrisSettingsModal,
+      openLutrisAddGameModal,
       openAudioSettingsModal,
       openDisplaySettingsModal,
       openBluetoothSettingsModal,

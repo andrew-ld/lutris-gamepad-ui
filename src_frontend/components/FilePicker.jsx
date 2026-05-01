@@ -10,7 +10,14 @@ import SelectionMenu from "./SelectionMenu";
 
 const ACTION_SELECT_CURRENT_DIRECTORY = "ACTION_SELECT_CURRENT_DIRECTORY";
 
-const FilePicker = ({ onSelect, onClose, title, mode = "file" }) => {
+const FilePicker = ({
+  onSelect,
+  onClose,
+  title,
+  mode = "file",
+  initialPath = null,
+  maxWidth = "600px",
+}) => {
   const { t } = useTranslation();
   const isMounted = useIsMounted();
 
@@ -18,7 +25,7 @@ const FilePicker = ({ onSelect, onClose, title, mode = "file" }) => {
 
   const [directoryData, setDirectoryData] = useState({});
 
-  const { currentPath, entries } = directoryData;
+  const { currentPath, entries = [] } = directoryData;
 
   const loadDirectory = useCallback(
     async (directoryPath = null) => {
@@ -40,8 +47,8 @@ const FilePicker = ({ onSelect, onClose, title, mode = "file" }) => {
   );
 
   useEffect(() => {
-    loadDirectory();
-  }, [loadDirectory]);
+    loadDirectory(initialPath);
+  }, [loadDirectory, initialPath]);
 
   const handleSelect = useCallback(
     (selectedValue) => {
@@ -96,7 +103,7 @@ const FilePicker = ({ onSelect, onClose, title, mode = "file" }) => {
 
   if (isLoading) {
     return (
-      <DialogLayout title={title} description={currentPath}>
+      <DialogLayout title={title} description={currentPath} maxWidth={maxWidth}>
         <LoadingIndicator />
       </DialogLayout>
     );
@@ -109,6 +116,7 @@ const FilePicker = ({ onSelect, onClose, title, mode = "file" }) => {
       options={options}
       onSelect={handleSelect}
       onClose={onClose}
+      maxWidth={maxWidth}
       showCheckmark={false}
     />
   );
