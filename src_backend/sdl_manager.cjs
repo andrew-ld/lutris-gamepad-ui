@@ -1,3 +1,6 @@
+const { getAppConfig } = require("./config_manager.cjs");
+const { resolveControllerIdentity } = require("./controller_family_db.cjs");
+const { getVirtualDevice } = require("./controller_mode_manager.cjs");
 const {
   SDL3_LIBRARY_NAME,
   bindSDL3,
@@ -186,4 +189,101 @@ function mapSdlGamepadsToWebApi(gamepads) {
   }));
 }
 
-module.exports = { pollGamepads, mapSdlGamepadsToWebApi };
+function isAppGeneratedXinputController(controller, virtualDevice) {
+  return Boolean(
+    virtualDevice?.eventPath &&
+      controller.path &&
+      virtualDevice.eventPath === controller.path,
+  );
+}
+
+async function listControllers() {
+  const { sdl, activeControllers, koffi } = await getSdlHandle();
+
+  sdl.SDL_PumpEvents();
+  sdl.SDL_UpdateGamepads();
+
+  const countPtr = new Int32Array(1);
+  const gamepadsPtr = sdl.SDL_GetGamepads(countPtr);
+  const numGamepads = countPtr[0];
+  const currentInstanceIds = new Set();
+
+  if (gamepadsPtr) {
+    try {
+      const decoded = koffi.decode(gamepadsPtr, "SDL_JoystickID", numGamepads);
+      for (let i = 0; i < numGamepads; i++) {
+        currentInstanceIds.add(decoded[i]);
+      }
+    } finally {
+      sdl.SDL_free(gamepadsPtr);
+    }
+  }
+
+  for (const [instanceId, ptr] of activeControllers.entries()) {
+    if (!currentInstanceIds.has(instanceId) || !sdl.SDL_GamepadConnected(ptr)) {
+      sdl.SDL_CloseGamepad(ptr);
+      activeControllers.delete(instanceId);
+    }
+  }
+
+  const controllers = [];
+  const appConfig = getAppConfig();
+  const virtualDevice =
+    appConfig?.controllerInputMode === "xinput" ? getVirtualDevice() : null;
+
+  for (const instanceId of currentInstanceIds) {
+    if (!sdl.SDL_IsGamepad(instanceId)) {
+      continue;
+    }
+
+    let ptr = activeControllers.get(instanceId);
+    if (!ptr) {
+      ptr = sdl.SDL_OpenGamepad(instanceId);
+      if (ptr) {
+        activeControllers.set(instanceId, ptr);
+      }
+    }
+
+    if (!ptr || !sdl.SDL_GamepadConnected(ptr)) {
+      continue;
+    }
+
+    const rawName = sdl.SDL_GetGamepadName(ptr) || `Controller ${controllers.length + 1}`;
+    const vendorId = sdl.SDL_GetGamepadVendor(ptr)
+      .toString(16)
+      .padStart(4, "0");
+    const productId = sdl.SDL_GetGamepadProduct(ptr)
+      .toString(16)
+      .padStart(4, "0");
+    const version = sdl.SDL_GetGamepadProductVersion
+      ? sdl.SDL_GetGamepadProductVersion(ptr).toString(16).padStart(4, "0")
+      : null;
+    const path = sdl.SDL_GetGamepadPath
+      ? sdl.SDL_GetGamepadPath(ptr)
+      : null;
+    const identity = resolveControllerIdentity(vendorId, productId, rawName);
+
+    const controller = {
+      index: instanceId,
+      name: identity.standardizedName,
+      rawName,
+      vendorId,
+      productId,
+      version,
+      path,
+      databaseKey: identity.databaseKey,
+      isRecognized: identity.isRecognized,
+      family: identity.family,
+    };
+
+    if (isAppGeneratedXinputController(controller, virtualDevice)) {
+      continue;
+    }
+
+    controllers.push(controller);
+  }
+
+  return controllers;
+}
+
+module.exports = { pollGamepads, mapSdlGamepadsToWebApi, listControllers };

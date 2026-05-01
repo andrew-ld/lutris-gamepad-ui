@@ -17,6 +17,7 @@ const defaultConfig = {
   keepGamesRunningOnQuit: false,
   enableUiActionSoundFeedbacks: true,
   enableSdlInput: false,
+  controllerInputMode: "native",
 };
 
 const SUBSCRIPTIONS = {};

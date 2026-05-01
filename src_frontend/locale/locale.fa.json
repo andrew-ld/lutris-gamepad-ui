@@ -32,6 +32,23 @@
     "Confirm": "پذیرفتن",
     "Select": "انتخاب"
   },
+  "components/ControllerSettings.jsx": {
+    "Back": "Back",
+    "Close": "Close",
+    "Controller Settings": "Controller Settings",
+    "Input Mode": "Input Mode",
+    "Native": "Native",
+    "No controllers detected.": "No controllers detected.",
+    "Refresh": "Refresh",
+    "Select": "Select",
+    "Test Controller": "Test Controller",
+    "Xinput": "Xinput"
+  },
+  "components/ControllerTester.jsx": {
+    "Close": "Close",
+    "Controller Test": "Controller Test",
+    "Waiting for controller input...": "Waiting for controller input..."
+  },
   "components/ControlsOverlay.jsx": {
     "Clear Search": "پاک‌کردن جستجو",
     "Force close": "بستن اجباری",
@@ -172,6 +189,7 @@
     "Continue with exiting the application?": "ادامه دادن به خروج از برنامه؟",
     "Continue with system power off?": "ادامه دادن به خاموش کردن سامانه؟",
     "Continue with system reboot?": "ادامه دادن به باز راه‌اندازی سامانه؟",
+    "Controller Settings": "Controller Settings",
     "Display Settings": "Display Settings",
     "Exit Application": "خروج از برنامه",
     "Generate Bug Report": "Generate Bug Report",

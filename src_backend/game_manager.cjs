@@ -6,6 +6,7 @@ const path = require("node:path");
 const { globalShortcut } = require("electron");
 
 const { getAppConfig } = require("./config_manager.cjs");
+const { getGrabbedDevice } = require("./controller_mode_manager.cjs");
 const {
   getCoverartPath,
   getRuntimeIconPath,
@@ -280,13 +281,27 @@ function launchGame(gameId) {
   }
 
   const gameStartTime = Date.now();
+  const appConfig = getAppConfig();
+
+  const spawnOptions = {
+    detached: appConfig.keepGamesRunningOnQuit,
+  };
+
+  const grabbed = getGrabbedDevice();
+  if (appConfig.controllerInputMode === "xinput" && grabbed) {
+    const vid = `0x${grabbed.vendorId}`;
+    const pid = `0x${grabbed.productId}`;
+    spawnOptions.env = {
+      ...process.env,
+      SDL_GAMECONTROLLER_IGNORE_DEVICES: `${vid}/${pid}`,
+      SDL_JOYSTICK_IGNORE_DEVICES: `${vid}/${pid}`,
+    };
+  }
 
   const newGameProcess = spawn(
     "bash",
     [getLutrisWrapperPath(), `lutris:rungameid/${gameId}`],
-    {
-      detached: getAppConfig().keepGamesRunningOnQuit,
-    },
+    spawnOptions,
   );
 
   const stdoutTextDecoder = new TextDecoder();

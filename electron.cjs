@@ -2,6 +2,10 @@ const { app, Menu } = require("electron");
 
 const { getAppConfig } = require("./src_backend/config_manager.cjs");
 const {
+  initControllerModeManager,
+  shutdownControllerModeManager,
+} = require("./src_backend/controller_mode_manager.cjs");
+const {
   closeRunningGameProcess,
   toggleGamePause,
 } = require("./src_backend/game_manager.cjs");
@@ -34,6 +38,7 @@ app.on("second-instance", () => {
 });
 
 app.on("window-all-closed", () => {
+  shutdownControllerModeManager();
   if (getAppConfig().keepGamesRunningOnQuit) {
     toggleGamePause({ forceStatus: "running" });
   } else {
@@ -88,6 +93,7 @@ app
 
     try {
       registerIpcHandlers();
+      initControllerModeManager();
       createWindow(() => {
         logInfo("Main window closed!");
         if (!getAppConfig().keepGamesRunningOnQuit) {

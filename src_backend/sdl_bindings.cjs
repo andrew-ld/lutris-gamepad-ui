@@ -56,7 +56,29 @@ function bindSDL3(lib) {
     SDL_GetGamepadName: lib.func(
       "const char* SDL_GetGamepadName(SDL_Gamepad* gamepad)",
     ),
+    SDL_GetGamepadVendor: lib.func(
+      "Uint16 SDL_GetGamepadVendor(SDL_Gamepad* gamepad)",
+    ),
+    SDL_GetGamepadProduct: lib.func(
+      "Uint16 SDL_GetGamepadProduct(SDL_Gamepad* gamepad)",
+    ),
   };
+
+  try {
+    sdl.SDL_GetGamepadProductVersion = lib.func(
+      "Uint16 SDL_GetGamepadProductVersion(SDL_Gamepad* gamepad)",
+    );
+  } catch {
+    sdl.SDL_GetGamepadProductVersion = null;
+  }
+
+  try {
+    sdl.SDL_GetGamepadPath = lib.func(
+      "const char* SDL_GetGamepadPath(SDL_Gamepad* gamepad)",
+    );
+  } catch {
+    sdl.SDL_GetGamepadPath = null;
+  }
 
   return sdl;
 }
