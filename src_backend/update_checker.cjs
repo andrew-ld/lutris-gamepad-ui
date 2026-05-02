@@ -6,8 +6,15 @@ const { logInfo, logError } = require("./utils.cjs");
 const REPO_OWNER = "andrew-ld";
 const REPO_NAME = "lutris-gamepad-ui";
 const GITHUB_API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/releases/latest`;
+const IS_UPDATE_CHECKER_DISABLED =
+  process.env.LUTRIS_GAMEPAD_UI_DISABLE_UPDATE_CHECKER === "1";
 
 async function checkForUpdates() {
+  if (IS_UPDATE_CHECKER_DISABLED) {
+    logInfo("Update checker disabled, skipping update check.");
+    return;
+  }
+
   if (!process.env.APPIMAGE) {
     logInfo("Not an AppImage, skipping update check.");
     return;

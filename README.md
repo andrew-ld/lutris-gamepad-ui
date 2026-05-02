@@ -149,6 +149,7 @@ You can customize the application's behavior using the following environment var
 | `LUTRIS_GAMEPAD_UI_LOCALE_CLEANUP`             | Remove unused translation strings during build.                      |
 | `LUTRIS_GAMEPAD_UI_ENABLE_SDL_INPUT`           | Use SDL3 for gamepad input (alternative to Web Gamepad API).         |
 | `LUTRIS_GAMEPAD_UI_DISABLE_ANIMATIONS`         | Disable all UI animations for a faster feel or lower resource usage. |
+| `LUTRIS_GAMEPAD_UI_DISABLE_UPDATE_CHECKER`     | Disable the AppImage update checker.                                 |
 | `LUTRIS_GAMEPAD_UI_DISABLE_LUTRIS_SETTINGS`    | Hide the "Lutris settings" from the system menu.                     |
 | `LUTRIS_GAMEPAD_UI_DISABLE_AUDIO_SETTINGS`     | Hide the "Audio settings" from the system menu.                      |
 | `LUTRIS_GAMEPAD_UI_DISABLE_DISPLAY_SETTINGS`   | Hide the "Display settings" from the system menu.                    |
