@@ -1,7 +1,7 @@
 import js from "@eslint/js";
+import eslintReact from "@eslint-react/eslint-plugin";
 import importX from "eslint-plugin-import-x";
 import promise from "eslint-plugin-promise";
-import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import unicorn from "eslint-plugin-unicorn";
@@ -12,6 +12,12 @@ export default [
   {
     ignores: ["dist/**", "node_modules/**", "release/**", "index.html"],
   },
+
+  ...[eslintReact.configs.recommended].flat().map(config => ({
+    ...config,
+    files: ["src_frontend/**/*.{js,jsx}"],
+  })),
+
   {
     // Global settings for all JS/JSX files
     files: ["**/*.{js,jsx,cjs}"],
@@ -24,13 +30,7 @@ export default [
         },
       },
     },
-    settings: {
-      react: {
-        version: "19.2",
-      },
-    },
     plugins: {
-      react,
       "react-hooks": reactHooks,
       "react-refresh": reactRefresh,
       import: importX,
@@ -39,11 +39,10 @@ export default [
     },
     rules: {
       ...js.configs.recommended.rules,
-      ...react.configs.recommended.rules,
-      ...react.configs["jsx-runtime"].rules,
       ...reactHooks.configs.recommended.rules,
       ...promise.configs["flat/recommended"].rules,
       ...unicorn.configs["recommended"].rules,
+
       "unicorn/prevent-abbreviations": "off",
       "unicorn/no-null": "off",
       "unicorn/filename-case": "off",
@@ -56,7 +55,6 @@ export default [
         { allowConstantExport: true },
       ],
       "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-      "react/prop-types": "off",
       "import/order": [
         "warn",
         {

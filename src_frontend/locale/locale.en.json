@@ -242,10 +242,5 @@
     "UI Action Sound Feedbacks": "UI Action Sound Feedbacks",
     "Unmute": "Unmute",
     "Volume": "Volume"
-  },
-  "hooks/useGameShelves.js": {
-    "All Games": "All Games",
-    "Recently Played": "Recently Played",
-    "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\""
   }
 }
