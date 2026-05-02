@@ -246,6 +246,7 @@ const RowBasedMenu = ({
         selectedIndex={selectedIndex}
         renderItem={renderItem}
         onItemClick={handleItemClick}
+        itemKey={itemKey}
         className="row-based-menu-list"
       />
     );

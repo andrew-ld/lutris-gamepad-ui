@@ -10,6 +10,7 @@ const FOCUS_SCROLL_BUFFER = 15;
 const OVERSCAN_COUNT = 2;
 const MAX_INITIAL_RENDER_COUNT = 30;
 const EMPTY_ITEM_HEIGHTS = {};
+const defaultItemKey = (_item, index) => index;
 
 const getWheelDelta = (event, lineHeight, pageHeight) => {
   if (event.deltaMode === 1) {
@@ -28,6 +29,7 @@ const VirtualizedList = ({
   selectedIndex,
   renderItem,
   onItemClick,
+  itemKey = defaultItemKey,
   className = "",
 }) => {
   const containerRef = useRef(null);
@@ -321,7 +323,7 @@ const VirtualizedList = ({
           if (!element) return null;
 
           return React.cloneElement(element, {
-            key: originalIndex,
+            key: itemKey(item, originalIndex) ?? originalIndex,
             ref: (node) => measureRef(node, originalIndex),
           });
         })}
