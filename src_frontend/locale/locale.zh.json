@@ -88,6 +88,8 @@
     "Update": "更新"
   },
   "components/FilePicker.jsx": {
+    "No directories available.": "No directories available.",
+    "No files available.": "No files available.",
     "Select Current Directory": "Select Current Directory"
   },
   "components/GameCard.jsx": {
@@ -140,14 +142,7 @@
     "Select Runner": "选择运行器"
   },
   "components/LutrisSettingsMenu.jsx": {
-    "Close": "关闭",
-    "Default": "默认",
-    "Disable": "禁用",
-    "Enable": "启用",
     "Lutris Settings": "Lutris 设置",
-    "Next": "下一个",
-    "Prev": "上一个",
-    "Select": "选择",
     "Settings: {{name}}": "设置：{{name}}"
   },
   "components/OnScreenKeyboard.jsx": {
@@ -249,8 +244,8 @@
     "Volume": "音量"
   },
   "hooks/useGameShelves.js": {
-    "All Games": "所有游戏",
-    "Recently Played": "最近游玩",
-    "Results for \"{{searchQuery}}\"": "\"{{searchQuery}}\" 的结果"
+    "All Games": "All Games",
+    "Recently Played": "Recently Played",
+    "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\""
   }
 }

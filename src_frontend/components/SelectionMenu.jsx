@@ -6,6 +6,8 @@ import DialogLayout from "./DialogLayout";
 import FocusableRow from "./FocusableRow";
 import RowBasedMenu from "./RowBasedMenu";
 
+const EMPTY_LEGEND_ITEMS = [];
+
 const SelectionMenu = ({
   title,
   description,
@@ -13,19 +15,24 @@ const SelectionMenu = ({
   currentValue,
   onSelect,
   onClose,
+  onAction,
+  extraLegendItems = EMPTY_LEGEND_ITEMS,
+  emptyMessage,
   showCheckmark = true,
 }) => {
   const { t } = useTranslation();
 
   const handleAction = useCallback(
     (actionName, item) => {
-      if (actionName === "A") {
+      if (actionName === "A" && item) {
         onSelect(item.value);
       } else if (actionName === "B") {
         onClose();
+      } else {
+        onAction?.(actionName, item);
       }
     },
-    [onSelect, onClose],
+    [onSelect, onClose, onAction],
   );
 
   const renderItem = useCallback(
@@ -65,13 +72,21 @@ const SelectionMenu = ({
     [options],
   );
 
-  const legendItems = useMemo(
-    () => [
-      { button: "A", label: t("Select") },
-      { button: "B", label: t("Back"), onClick: onClose },
-    ],
-    [t, onClose],
-  );
+  const legendItems = useMemo(() => {
+    const result = [];
+
+    if (items.length > 0) {
+      result.push({ button: "A", label: t("Select") });
+    }
+
+    for (const item of extraLegendItems) {
+      result.push(item);
+    }
+
+    result.push({ button: "B", label: t("Back"), onClick: onClose });
+
+    return result;
+  }, [items.length, t, extraLegendItems, onClose]);
 
   const initialIndex = useMemo(() => {
     const index = items.findIndex(
@@ -94,6 +109,7 @@ const SelectionMenu = ({
         onAction={handleAction}
         focusId="SelectionMenu"
         initialSelectedIndex={initialIndex}
+        emptyMessage={emptyMessage}
       />
     </DialogLayout>
   );

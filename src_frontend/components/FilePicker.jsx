@@ -8,8 +8,6 @@ import DialogLayout from "./DialogLayout";
 import LoadingIndicator from "./LoadingIndicator";
 import SelectionMenu from "./SelectionMenu";
 
-const ACTION_SELECT_CURRENT_DIRECTORY = "ACTION_SELECT_CURRENT_DIRECTORY";
-
 const FilePicker = ({
   onSelect,
   onClose,
@@ -51,11 +49,6 @@ const FilePicker = ({
 
   const handleSelect = useCallback(
     (selectedValue) => {
-      if (selectedValue === ACTION_SELECT_CURRENT_DIRECTORY) {
-        onSelect(currentPath);
-        return;
-      }
-
       const selectedEntry = entries.find(
         (entry) => entry.path === selectedValue,
       );
@@ -70,21 +63,12 @@ const FilePicker = ({
         onSelect(selectedEntry.path);
       }
     },
-    [currentPath, entries, loadDirectory, mode, onSelect],
+    [entries, loadDirectory, mode, onSelect],
   );
 
   const options = useMemo(() => {
-    const generatedOptions = [];
-
     if (isLoading) {
-      return generatedOptions;
-    }
-
-    if (mode === "directory") {
-      generatedOptions.push([
-        `✔️ ${t("Select Current Directory")}`,
-        ACTION_SELECT_CURRENT_DIRECTORY,
-      ]);
+      return [];
     }
 
     const validEntries =
@@ -97,8 +81,42 @@ const FilePicker = ({
       return [`${icon} ${entry.name}`, entry.path];
     });
 
-    return [...generatedOptions, ...entryOptions];
-  }, [entries, mode, t, isLoading]);
+    return entryOptions;
+  }, [entries, mode, isLoading]);
+
+  const handleSelectCurrentDirectory = useCallback(() => {
+    if (mode === "directory" && currentPath) {
+      onSelect(currentPath);
+    }
+  }, [currentPath, mode, onSelect]);
+
+  const handleAction = useCallback(
+    (actionName) => {
+      if (actionName === "Y") {
+        handleSelectCurrentDirectory();
+      }
+    },
+    [handleSelectCurrentDirectory],
+  );
+
+  const extraLegendItems = useMemo(() => {
+    if (mode !== "directory" || !currentPath) {
+      return [];
+    }
+
+    return [
+      {
+        button: "Y",
+        label: t("Select Current Directory"),
+        onClick: handleSelectCurrentDirectory,
+      },
+    ];
+  }, [currentPath, handleSelectCurrentDirectory, mode, t]);
+
+  const emptyMessage =
+    mode === "directory"
+      ? t("No directories available.")
+      : t("No files available.");
 
   if (isLoading) {
     return (
@@ -115,6 +133,9 @@ const FilePicker = ({
       options={options}
       onSelect={handleSelect}
       onClose={onClose}
+      onAction={handleAction}
+      extraLegendItems={extraLegendItems}
+      emptyMessage={emptyMessage}
       showCheckmark={false}
     />
   );

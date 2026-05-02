@@ -88,6 +88,8 @@
     "Update": "Update"
   },
   "components/FilePicker.jsx": {
+    "No directories available.": "No directories available.",
+    "No files available.": "No files available.",
     "Select Current Directory": "Select Current Directory"
   },
   "components/GameCard.jsx": {
@@ -140,14 +142,7 @@
     "Select Runner": "Select Runner"
   },
   "components/LutrisSettingsMenu.jsx": {
-    "Close": "Close",
-    "Default": "Default",
-    "Disable": "Disable",
-    "Enable": "Enable",
     "Lutris Settings": "Lutris Settings",
-    "Next": "Next",
-    "Prev": "Prev",
-    "Select": "Select",
     "Settings: {{name}}": "Settings: {{name}}"
   },
   "components/OnScreenKeyboard.jsx": {
