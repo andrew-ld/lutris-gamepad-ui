@@ -9,6 +9,19 @@ import React, {
 const FOCUS_SCROLL_BUFFER = 15;
 const OVERSCAN_COUNT = 2;
 const MAX_INITIAL_RENDER_COUNT = 30;
+const EMPTY_ITEM_HEIGHTS = {};
+
+const getWheelDelta = (event, lineHeight, pageHeight) => {
+  if (event.deltaMode === 1) {
+    return event.deltaY * lineHeight;
+  }
+
+  if (event.deltaMode === 2) {
+    return event.deltaY * pageHeight;
+  }
+
+  return event.deltaY;
+};
 
 const VirtualizedList = ({
   items,
@@ -24,11 +37,24 @@ const VirtualizedList = ({
   const [itemHeights, setItemHeights] = useState({});
   const [baseHeight, setBaseHeight] = useState(64);
   const [currentScrollTop, setCurrentScrollTop] = useState(0);
+  const [scrollAnchor, setScrollAnchor] = useState(() => ({
+    items,
+    selectedIndex,
+    shouldAlignSelectedItem: true,
+  }));
 
   const safeSelectedIndex = useMemo(() => {
     if (!items || items.length === 0) return 0;
     return Math.max(0, Math.min(selectedIndex, items.length - 1));
   }, [items, selectedIndex]);
+
+  const itemsChanged = scrollAnchor.items !== items;
+
+  if (itemsChanged && Object.keys(itemHeights).length > 0) {
+    setItemHeights(EMPTY_ITEM_HEIGHTS);
+  }
+
+  const measuredItemHeights = itemsChanged ? EMPTY_ITEM_HEIGHTS : itemHeights;
 
   useLayoutEffect(() => {
     if (!containerRef.current) return;
@@ -81,11 +107,11 @@ const VirtualizedList = ({
     (targetIndex) => {
       let total = 0;
       for (let i = 0; i < targetIndex; i++) {
-        total += itemHeights[i] || baseHeight;
+        total += measuredItemHeights[i] || baseHeight;
       }
       return total;
     },
-    [itemHeights, baseHeight],
+    [measuredItemHeights, baseHeight],
   );
 
   const totalContentHeight = useMemo(
@@ -96,32 +122,89 @@ const VirtualizedList = ({
   const isVirtualizing =
     viewportHeight > 0 && totalContentHeight > viewportHeight + 2;
 
-  let targetScrollTop = currentScrollTop;
+  const maxScrollTop = useMemo(
+    () =>
+      isVirtualizing ? Math.max(0, totalContentHeight - viewportHeight) : 0,
+    [isVirtualizing, totalContentHeight, viewportHeight],
+  );
+
+  const scrollStateTop = itemsChanged ? 0 : currentScrollTop;
+  const clampedScrollTop = isVirtualizing
+    ? Math.max(0, Math.min(scrollStateTop, maxScrollTop))
+    : 0;
+
+  let targetScrollTop = clampedScrollTop;
+  let nextScrollAnchor = scrollAnchor;
 
   if (isVirtualizing) {
-    const itemTop = getCumulativeHeight(safeSelectedIndex);
-    const itemHeight = itemHeights[safeSelectedIndex] || baseHeight;
-    const itemBottom = itemTop + itemHeight;
+    const selectionChanged = scrollAnchor.selectedIndex !== safeSelectedIndex;
+    const shouldAlignSelectedItem =
+      itemsChanged || selectionChanged || scrollAnchor.shouldAlignSelectedItem;
 
-    const topBoundary = targetScrollTop + FOCUS_SCROLL_BUFFER;
-    const bottomBoundary =
-      targetScrollTop + viewportHeight - FOCUS_SCROLL_BUFFER;
+    if (shouldAlignSelectedItem) {
+      const itemTop = getCumulativeHeight(safeSelectedIndex);
+      const itemHeight = measuredItemHeights[safeSelectedIndex] || baseHeight;
+      const itemBottom = itemTop + itemHeight;
 
-    if (itemTop < topBoundary) {
-      targetScrollTop = itemTop - FOCUS_SCROLL_BUFFER;
-    } else if (itemBottom > bottomBoundary) {
-      targetScrollTop = itemBottom + FOCUS_SCROLL_BUFFER - viewportHeight;
+      const topBoundary = clampedScrollTop + FOCUS_SCROLL_BUFFER;
+      const bottomBoundary =
+        clampedScrollTop + viewportHeight - FOCUS_SCROLL_BUFFER;
+
+      if (itemTop < topBoundary) {
+        targetScrollTop = itemTop - FOCUS_SCROLL_BUFFER;
+      } else if (itemBottom > bottomBoundary) {
+        targetScrollTop = itemBottom + FOCUS_SCROLL_BUFFER - viewportHeight;
+      }
+
+      targetScrollTop = Math.max(0, Math.min(targetScrollTop, maxScrollTop));
     }
+    if (shouldAlignSelectedItem) {
+      nextScrollAnchor = {
+        items,
+        selectedIndex: safeSelectedIndex,
+        shouldAlignSelectedItem: false,
+      };
+    }
+  } else if (
+    itemsChanged ||
+    scrollAnchor.selectedIndex !== safeSelectedIndex ||
+    !scrollAnchor.shouldAlignSelectedItem
+  ) {
+    nextScrollAnchor = {
+      items,
+      selectedIndex: safeSelectedIndex,
+      shouldAlignSelectedItem: true,
+    };
+  }
 
-    const maxPossibleScroll = Math.max(0, totalContentHeight - viewportHeight);
-    targetScrollTop = Math.max(0, Math.min(targetScrollTop, maxPossibleScroll));
-  } else {
-    targetScrollTop = 0;
+  if (nextScrollAnchor !== scrollAnchor) {
+    setScrollAnchor(nextScrollAnchor);
   }
 
   if (Math.abs(targetScrollTop - currentScrollTop) > 0.5) {
     setCurrentScrollTop(targetScrollTop);
   }
+
+  const handleWheel = useCallback(
+    (event) => {
+      if (!isVirtualizing || maxScrollTop <= 0) {
+        return;
+      }
+
+      const pageHeight = viewportHeight || containerRef.current?.clientHeight;
+      const delta = getWheelDelta(event, baseHeight, pageHeight || baseHeight);
+
+      if (Math.abs(delta) < 0.5) {
+        return;
+      }
+
+      event.preventDefault();
+      setCurrentScrollTop((previousScrollTop) =>
+        Math.max(0, Math.min(previousScrollTop + delta, maxScrollTop)),
+      );
+    },
+    [baseHeight, isVirtualizing, maxScrollTop, viewportHeight],
+  );
 
   let renderStartIndex = 0;
   let renderEndIndex = items.length;
@@ -132,7 +215,8 @@ const VirtualizedList = ({
     let coreStartIndex = 0;
 
     while (coreStartIndex < items.length) {
-      const currentItemHeight = itemHeights[coreStartIndex] || baseHeight;
+      const currentItemHeight =
+        measuredItemHeights[coreStartIndex] || baseHeight;
       if (accumulatedHeight + currentItemHeight > targetScrollTop) {
         break;
       }
@@ -147,7 +231,7 @@ const VirtualizedList = ({
       coreEndIndex < items.length &&
       endAccumulatedHeight < targetScrollTop + viewportHeight
     ) {
-      endAccumulatedHeight += itemHeights[coreEndIndex] || baseHeight;
+      endAccumulatedHeight += measuredItemHeights[coreEndIndex] || baseHeight;
       coreEndIndex++;
     }
 
@@ -213,6 +297,7 @@ const VirtualizedList = ({
     <div
       ref={containerRef}
       className={className}
+      onWheel={handleWheel}
       style={{
         overflow: "hidden",
         position: "relative",
