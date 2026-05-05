@@ -16,18 +16,21 @@ export const useSpatialNavigation = (sections, numberColumns, options = {}) => {
     return initialItem ? itemKey(initialItem) : null;
   });
 
-  const [prevSections, setPrevSections] = useState(sections);
+  const [previousSections, setPreviousSections] = useState(sections);
 
-  if (sections !== prevSections) {
-    setPrevSections(sections);
+  if (sections !== previousSections) {
+    setPreviousSections(sections);
     if (selectedKey !== null) {
       let found = false;
-      for (const [sIdx, section] of sections.entries()) {
+      for (const [sectionIndex, section] of sections.entries()) {
         const items = section.items || [];
-        const iIdx = items.findIndex((item) => itemKey(item) === selectedKey);
-        if (iIdx !== -1) {
-          if (sIdx !== coords.sectionIndex || iIdx !== coords.itemIndex) {
-            setCoords({ sectionIndex: sIdx, itemIndex: iIdx });
+        const itemIndex = items.findIndex((item) => itemKey(item) === selectedKey);
+        if (itemIndex !== -1) {
+          if (
+            sectionIndex !== coords.sectionIndex ||
+            itemIndex !== coords.itemIndex
+          ) {
+            setCoords({ sectionIndex, itemIndex });
           }
           found = true;
           break;
@@ -181,5 +184,5 @@ export const useSpatialNavigation = (sections, numberColumns, options = {}) => {
     [sections, itemKey],
   );
 
-  return { coords, setCoords: setCoordsAndKey, move, moveSection };
+  return { coords, move, moveSection, setCoords: setCoordsAndKey };
 };

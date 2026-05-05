@@ -47,8 +47,8 @@ export const useGridLayout = (shelfCount) => {
   }, [shelfCount]);
 
   return {
+    gridRefs: gridReferences,
     numColumns: numberColumns,
     setGridRef: setGridReference,
-    gridRefs: gridReferences,
   };
 };

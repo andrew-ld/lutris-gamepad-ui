@@ -41,7 +41,6 @@ export const useFocusManager = (
       }
     }
 
-    // Scroll section into view if changed
     if (previousCoords.current?.sectionIndex !== sectionIndex) {
       const targetSection = sectionReferences.current[sectionIndex];
       targetSection?.scrollIntoView({
@@ -50,7 +49,6 @@ export const useFocusManager = (
       });
     }
 
-    // Handle top-level scrolling for the first row of the first section
     const currentRow =
       numberColumns > 0 ? Math.floor(itemIndex / numberColumns) : 0;
     if (sectionIndex === 0 && currentRow === 0) {
@@ -65,9 +63,9 @@ export const useFocusManager = (
 
   return {
     containerRef: containerReference,
-    setSectionRef: setSectionReference,
-    setItemRef: setItemReference,
     itemRefs: itemReferences,
     sectionRefs: sectionReferences,
+    setItemRef: setItemReference,
+    setSectionRef: setSectionReference,
   };
 };

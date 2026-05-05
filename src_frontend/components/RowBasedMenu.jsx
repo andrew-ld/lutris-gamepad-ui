@@ -10,8 +10,7 @@ import { useInput } from "../contexts/InputContext";
 import { useTranslation } from "../contexts/TranslationContext";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import { useScopedInput } from "../hooks/useScopedInput";
-
-import VirtualizedList from "./VirtualizedList";
+import VirtualizedList from "../navigation/virtualized_list/VirtualizedList";
 
 import "../styles/RowBasedMenu.css";
 

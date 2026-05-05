@@ -8,12 +8,12 @@ import { useGameShelves } from "../hooks/useGameShelves";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import { useScopedInput } from "../hooks/useScopedInput";
+import GridMenu from "../navigation/grid_menu/GridMenu";
 import { toggleWindowShow, toggleGamePause } from "../utils/ipc";
 
 import ConfirmationDialog from "./ConfirmationDialog";
 import ControlsOverlay from "./ControlsOverlay";
 import GameCard from "./GameCard";
-import GridMenu from "./GridMenu";
 import LoadingIndicator from "./LoadingIndicator";
 import LutrisSettingsMenu from "./LutrisSettingsMenu";
 import OnScreenKeyboard from "./OnScreenKeyboard";

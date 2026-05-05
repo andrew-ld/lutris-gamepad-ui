@@ -1,12 +1,14 @@
 import React, { useCallback, useMemo, useEffect } from "react";
 
-import { useInput } from "../contexts/InputContext";
-import { useFocusManager } from "../hooks/useFocusManager";
-import { useGridLayout } from "../hooks/useGridLayout";
-import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
-import { useScopedInput } from "../hooks/useScopedInput";
-import { useSpatialNavigation } from "../hooks/useSpatialNavigation";
-import "../styles/GridMenu.css";
+import { useInput } from "../../contexts/InputContext";
+import { usePlayButtonActionSound } from "../../hooks/usePlayButtonActionSound";
+import { useScopedInput } from "../../hooks/useScopedInput";
+
+import { useFocusManager } from "./useFocusManager";
+import { useGridLayout } from "./useGridLayout";
+import { useSpatialNavigation } from "./useSpatialNavigation";
+
+import "../../styles/GridMenu.css";
 
 const GridMenu = ({
   sections,
