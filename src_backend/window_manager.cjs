@@ -134,6 +134,14 @@ function getHomePageUrl() {
   return "app://" + htmlPath + suffix;
 }
 
+function getRequestedAppPath(requestedUrl) {
+  const rawPath = requestedUrl.host
+    ? `${path.sep}${requestedUrl.host}${requestedUrl.pathname}`
+    : requestedUrl.pathname;
+
+  return path.resolve(path.normalize(decodeURIComponent(rawPath)));
+}
+
 function createWindow(onWindowClosedCallback) {
   powerSaveBlocker.start("prevent-display-sleep");
   powerSaveBlocker.start("prevent-app-suspension");
@@ -155,11 +163,12 @@ function createWindow(onWindowClosedCallback) {
 
   protocol.handle("app", (request) => {
     const requestedUrl = new URL(request.url);
-    const requestedPath = path.resolve(path.normalize(requestedUrl.pathname));
+    const requestedPath = getRequestedAppPath(requestedUrl);
     const whitelistedFiles = getWhitelistedFiles();
     const mainAppDir = path.join(__dirname, "..");
 
     const authorized =
+      requestedPath === mainAppDir ||
       requestedPath.startsWith(mainAppDir + "/") ||
       whitelistedFiles.has(requestedPath);
 

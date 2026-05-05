@@ -1,4 +1,4 @@
-const { app, Menu } = require("electron");
+const { app, Menu, protocol } = require("electron");
 
 const { getAppConfig } = require("./src_backend/config_manager.cjs");
 const {
@@ -18,6 +18,18 @@ const { createWindow } = require("./src_backend/window_manager.cjs");
 process.on("unhandledRejection", (reason, promise) => {
   logError("Caught a global rejection:", reason, promise);
 });
+
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: "app",
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      corsEnabled: true,
+    },
+  },
+]);
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
