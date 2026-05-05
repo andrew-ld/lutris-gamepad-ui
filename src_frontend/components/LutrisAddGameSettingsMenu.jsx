@@ -39,18 +39,21 @@ const LutrisAddGameSettingsMenu = ({
   });
   const [loading, setLoading] = useState(true);
 
-  useAsyncEffect(async (isCancelled) => {
-    try {
-      const data = await api.getNewGameLutrisSettings(runnerSlug);
-      if (!isCancelled() && data && data.settings) {
-        setSettings(data.settings);
+  useAsyncEffect(
+    async (isCancelled) => {
+      try {
+        const data = await api.getNewGameLutrisSettings(runnerSlug);
+        if (!isCancelled() && data && data.settings) {
+          setSettings(data.settings);
+        }
+      } finally {
+        if (!isCancelled()) {
+          setLoading(false);
+        }
       }
-    } finally {
-      if (!isCancelled()) {
-        setLoading(false);
-      }
-    }
-  }, [runnerSlug]);
+    },
+    [runnerSlug],
+  );
 
   const infoSettings = useMemo(
     () => [

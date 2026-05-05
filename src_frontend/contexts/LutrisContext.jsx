@@ -25,10 +25,7 @@ export const LutrisProvider = ({ children }) => {
   const isCancelled = useAsyncGuard();
 
   const fetchGames = useCallback(
-    async ({
-      showLoading = true,
-      isCancelledCheck = isCancelled,
-    } = {}) => {
+    async ({ showLoading = true, isCancelledCheck = isCancelled } = {}) => {
       if (showLoading) {
         setLoading(true);
       }
@@ -62,12 +59,15 @@ export const LutrisProvider = ({ children }) => {
     [isCancelled],
   );
 
-  useAsyncEffect(async (isCancelledCheck) => {
-    await fetchGames({
-      showLoading: false,
-      isCancelledCheck,
-    });
-  }, [fetchGames]);
+  useAsyncEffect(
+    async (isCancelledCheck) => {
+      await fetchGames({
+        showLoading: false,
+        isCancelledCheck,
+      });
+    },
+    [fetchGames],
+  );
 
   useEffect(() => {
     const handleGameStarted = (gameId) => {

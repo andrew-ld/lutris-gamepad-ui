@@ -326,12 +326,18 @@ function registerIpcHandlers() {
   });
 
   // File Manager
-  ipcHandleWithError("list-directory", async (_event, dirPath) => {
-    if (typeof dirPath !== "string" && dirPath !== null) {
-      throw new TypeError("Invalid dirPath: not a string");
-    }
-    return await listDirectory(dirPath);
-  });
+  ipcHandleWithError(
+    "list-directory",
+    async (_event, dirPath, allowFallback) => {
+      if (typeof dirPath !== "string" && dirPath !== null) {
+        throw new TypeError("Invalid dirPath: not a string");
+      }
+      if (typeof allowFallback !== "boolean" && allowFallback !== undefined) {
+        throw new TypeError("Invalid allowFallback: not a boolean");
+      }
+      return await listDirectory(dirPath, { allowFallback: !!allowFallback });
+    },
+  );
 }
 
 module.exports = { registerIpcHandlers };

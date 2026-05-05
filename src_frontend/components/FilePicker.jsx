@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 
+import { useToastActions } from "../contexts/ToastContext";
 import { useTranslation } from "../contexts/TranslationContext";
 import { useAsyncEffect } from "../hooks/useAsyncEffect";
 import { useAsyncGuard } from "../hooks/useAsyncGuard";
@@ -17,6 +18,7 @@ const FilePicker = ({
   initialPath = null,
 }) => {
   const { t } = useTranslation();
+  const { showToast } = useToastActions();
   const isCancelled = useAsyncGuard();
 
   const [isLoading, setIsLoading] = useState(true);
@@ -29,6 +31,8 @@ const FilePicker = ({
     async (
       directoryPath = null,
       {
+        allowFallback = false,
+        showFallbackToast = false,
         showLoading = true,
         isCancelledCheck = isCancelled,
       } = {},
@@ -37,27 +41,45 @@ const FilePicker = ({
         setIsLoading(true);
       }
       try {
-        const response = await api.listDirectory(directoryPath);
+        const response = await api.listDirectory(directoryPath, allowFallback);
         if (!isCancelledCheck()) {
           setDirectoryData(response);
+          if (showFallbackToast && response.fallbackFrom) {
+            showToast({
+              title: t("Initial folder unavailable"),
+              description: t(
+                'Showing "{{currentPath}}" instead of "{{fallbackFrom}}".',
+                {
+                  currentPath: response.currentPath,
+                  fallbackFrom: response.fallbackFrom,
+                },
+              ),
+              type: "warning",
+            });
+          }
         }
       } catch (error) {
-        api.logError("Failed to list directory", error);
+        api.logError("Failed to list directory", directoryPath, error);
       } finally {
         if (!isCancelledCheck()) {
           setIsLoading(false);
         }
       }
     },
-    [isCancelled],
+    [isCancelled, showToast, t],
   );
 
-  useAsyncEffect(async (isCancelledCheck) => {
-    await loadDirectory(initialPath, {
-      showLoading: false,
-      isCancelledCheck,
-    });
-  }, [initialPath, loadDirectory]);
+  useAsyncEffect(
+    async (isCancelledCheck) => {
+      await loadDirectory(initialPath, {
+        allowFallback: true,
+        showFallbackToast: true,
+        showLoading: false,
+        isCancelledCheck,
+      });
+    },
+    [initialPath, loadDirectory],
+  );
 
   const handleSelect = useCallback(
     (selectedValue) => {

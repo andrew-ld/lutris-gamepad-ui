@@ -30,10 +30,7 @@ const DisplaySettings = ({ onClose }) => {
   const [nightLightError, setNightLightError] = useState(true);
 
   const fetchSettings = useCallback(
-    async ({
-      showLoading = true,
-      isCancelledCheck = isCancelled,
-    } = {}) => {
+    async ({ showLoading = true, isCancelledCheck = isCancelled } = {}) => {
       if (showLoading) {
         setIsLoading(true);
       }
@@ -69,12 +66,15 @@ const DisplaySettings = ({ onClose }) => {
     [isCancelled],
   );
 
-  useAsyncEffect(async (isCancelledCheck) => {
-    await fetchSettings({
-      showLoading: false,
-      isCancelledCheck,
-    });
-  }, [fetchSettings]);
+  useAsyncEffect(
+    async (isCancelledCheck) => {
+      await fetchSettings({
+        showLoading: false,
+        isCancelledCheck,
+      });
+    },
+    [fetchSettings],
+  );
 
   const updateBrightness = useCallback(async () => {
     if (brightnessError) return;

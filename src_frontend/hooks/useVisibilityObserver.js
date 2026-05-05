@@ -34,11 +34,14 @@ export const useVisibilityObserver = ({
   const [isVisible, setIsVisible] = useState(false);
   const [node, setNode] = useState(null);
 
-  const setReference = useCallback((element) => {
-    if (element !== node) {
-      setNode(element);
-    }
-  }, [node]);
+  const setReference = useCallback(
+    (element) => {
+      if (element !== node) {
+        setNode(element);
+      }
+    },
+    [node],
+  );
 
   useEffect(() => {
     if (typeof externalReference === "function") {

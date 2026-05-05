@@ -13,7 +13,7 @@ export default [
     ignores: ["dist/**", "node_modules/**", "release/**", "index.html"],
   },
 
-  ...[eslintReact.configs.recommended].flat().map(config => ({
+  ...[eslintReact.configs.recommended].flat().map((config) => ({
     ...config,
     files: ["src_frontend/**/*.{js,jsx}"],
   })),

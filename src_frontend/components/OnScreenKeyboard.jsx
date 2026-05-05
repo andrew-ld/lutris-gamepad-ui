@@ -191,7 +191,9 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
           {keyLayout.map((row, y) => (
             <div
               className="osk-row"
-              key={row.map((item) => (typeof item === "string" ? item : item.id)).join("-")}
+              key={row
+                .map((item) => (typeof item === "string" ? item : item.id))
+                .join("-")}
             >
               {row.map((keyObject, x) => {
                 const isFocused = focusCoords.x === x && focusCoords.y === y;

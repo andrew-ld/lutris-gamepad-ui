@@ -4,12 +4,97 @@ const path = require("node:path");
 
 const { logWarn } = require("./utils.cjs");
 
-async function listDirectory(directoryPath) {
-  if (directoryPath === null) {
-    directoryPath = homedir() || "/";
+const getFallbackDirectories = (directoryPath) => {
+  const candidates = [];
+  const homeDirectory = homedir();
+  const defaultRootDirectory = path.parse(process.cwd()).root;
+  let currentCandidate =
+    directoryPath === null
+      ? homeDirectory || defaultRootDirectory
+      : path.resolve(directoryPath);
+
+  while (
+    typeof currentCandidate === "string" &&
+    currentCandidate.length > 0 &&
+    !candidates.includes(currentCandidate)
+  ) {
+    candidates.push(currentCandidate);
+
+    const parentDirectory = path.dirname(currentCandidate);
+    if (parentDirectory === currentCandidate) {
+      break;
+    }
+
+    currentCandidate = parentDirectory;
   }
 
-  const targetDirectory = path.resolve(directoryPath);
+  if (homeDirectory && !candidates.includes(homeDirectory)) {
+    candidates.push(homeDirectory);
+  }
+
+  const rootDirectory = path.parse(
+    currentCandidate || defaultRootDirectory,
+  ).root;
+  if (rootDirectory && !candidates.includes(rootDirectory)) {
+    candidates.push(rootDirectory);
+  }
+
+  return candidates;
+};
+
+async function resolveReadableDirectory(directoryPath) {
+  let lastError = null;
+  const visitedRealPaths = new Set();
+
+  for (const candidate of getFallbackDirectories(directoryPath)) {
+    try {
+      const realCandidate = await fs.realpath(candidate).catch(() => candidate);
+      if (visitedRealPaths.has(realCandidate)) {
+        continue;
+      }
+      visitedRealPaths.add(realCandidate);
+
+      const stats = await fs.stat(candidate);
+      if (!stats.isDirectory()) {
+        continue;
+      }
+
+      await fs.access(candidate, fs.constants.R_OK);
+
+      if (candidate !== directoryPath && directoryPath !== null) {
+        logWarn(
+          "falling back directory listing from",
+          directoryPath,
+          "to",
+          candidate,
+        );
+      }
+
+      return candidate;
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw (
+    lastError || new Error(`No readable directory found for ${directoryPath}`)
+  );
+}
+
+async function listDirectory(directoryPath, { allowFallback = false } = {}) {
+  let targetDirectory;
+  let fallbackFrom = null;
+
+  if (allowFallback && typeof directoryPath === "string") {
+    targetDirectory = await resolveReadableDirectory(directoryPath);
+    if (targetDirectory !== directoryPath) {
+      fallbackFrom = directoryPath;
+    }
+  } else if (directoryPath === null) {
+    targetDirectory = homedir() || path.parse(process.cwd()).root;
+  } else {
+    targetDirectory = path.resolve(directoryPath);
+  }
 
   const entries = await fs.readdir(targetDirectory, { withFileTypes: true });
 
@@ -43,7 +128,11 @@ async function listDirectory(directoryPath) {
     });
   }
 
-  return { currentPath: targetDirectory, entries: result };
+  return {
+    currentPath: targetDirectory,
+    entries: result,
+    fallbackFrom,
+  };
 }
 
 module.exports = { listDirectory };

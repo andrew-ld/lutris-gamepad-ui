@@ -19,10 +19,7 @@ const LutrisSettingsMenu = ({
   const [loading, setLoading] = useState(true);
 
   const fetchSettings = useCallback(
-    async ({
-      showLoading = true,
-      isCancelledCheck = isCancelled,
-    } = {}) => {
+    async ({ showLoading = true, isCancelledCheck = isCancelled } = {}) => {
       if (showLoading) {
         setLoading(true);
       }
@@ -43,12 +40,15 @@ const LutrisSettingsMenu = ({
     [gameSlug, isCancelled, runnerSlug],
   );
 
-  useAsyncEffect(async (isCancelledCheck) => {
-    await fetchSettings({
-      showLoading: false,
-      isCancelledCheck,
-    });
-  }, [fetchSettings]);
+  useAsyncEffect(
+    async (isCancelledCheck) => {
+      await fetchSettings({
+        showLoading: false,
+        isCancelledCheck,
+      });
+    },
+    [fetchSettings],
+  );
 
   const updateSetting = useCallback(
     async (section, key, value, type) => {

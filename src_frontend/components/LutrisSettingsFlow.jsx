@@ -20,26 +20,29 @@ const LutrisSettingsFlow = ({ onClose }) => {
   const [selectedRunner, setSelectedRunner] = useState(null);
   const [isRunnerSelected, setIsRunnerSelected] = useState(false);
 
-  useAsyncEffect(async (isCancelled) => {
-    try {
-      const data = await api.getLutrisRunners();
-      if (!isCancelled()) {
-        setRunners(data.runners || []);
+  useAsyncEffect(
+    async (isCancelled) => {
+      try {
+        const data = await api.getLutrisRunners();
+        if (!isCancelled()) {
+          setRunners(data.runners || []);
+        }
+      } catch {
+        if (!isCancelled()) {
+          showToast({
+            title: t("Failed to fetch Lutris runners"),
+            type: "error",
+          });
+          onClose();
+        }
+      } finally {
+        if (!isCancelled()) {
+          setLoading(false);
+        }
       }
-    } catch {
-      if (!isCancelled()) {
-        showToast({
-          title: t("Failed to fetch Lutris runners"),
-          type: "error",
-        });
-        onClose();
-      }
-    } finally {
-      if (!isCancelled()) {
-        setLoading(false);
-      }
-    }
-  }, [onClose, showToast, t]);
+    },
+    [onClose, showToast, t],
+  );
 
   const runnerOptions = useMemo(() => {
     return [[t("Global"), null], ...runners.map((r) => [r.human_name, r.name])];

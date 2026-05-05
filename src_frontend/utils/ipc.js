@@ -112,5 +112,5 @@ export function encodeAppProtocolPath(filePath) {
   return `app://${sanitizedFilePath}`;
 }
 
-export const listDirectory = (dirPath) =>
-  globalThis.electronAPI.listDirectory(dirPath);
+export const listDirectory = (dirPath, allowFallback = false) =>
+  globalThis.electronAPI.listDirectory(dirPath, allowFallback);
