@@ -32,7 +32,6 @@ const FilePicker = ({
       directoryPath = null,
       {
         allowFallback = false,
-        showFallbackToast = false,
         showLoading = true,
         isCancelledCheck = isCancelled,
       } = {},
@@ -44,7 +43,7 @@ const FilePicker = ({
         const response = await api.listDirectory(directoryPath, allowFallback);
         if (!isCancelledCheck()) {
           setDirectoryData(response);
-          if (showFallbackToast && response.fallbackFrom) {
+          if (allowFallback && response.fallbackFrom) {
             showToast({
               title: t("Initial folder unavailable"),
               description: t(
@@ -73,7 +72,6 @@ const FilePicker = ({
     async (isCancelledCheck) => {
       await loadDirectory(initialPath, {
         allowFallback: true,
-        showFallbackToast: true,
         showLoading: false,
         isCancelledCheck,
       });
