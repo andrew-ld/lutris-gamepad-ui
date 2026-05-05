@@ -113,6 +113,17 @@ function fillSearchParams(searchParams, envPrefix, searchParamPrefix) {
   }
 }
 
+function encodeAppProtocolPath(filePath) {
+  const normalizedPath = path.normalize(filePath);
+
+  const encodedPath = normalizedPath
+    .split(path.sep)
+    .map((pathSegment) => encodeURIComponent(pathSegment))
+    .join("/");
+
+  return `app://${encodedPath}`;
+}
+
 function getHomePageUrl() {
   const searchParams = new URLSearchParams();
   fillSearchParams(searchParams, "LUTRIS_GAMEPAD_UI_ENABLE_", "ENABLE");
@@ -131,7 +142,7 @@ function getHomePageUrl() {
     ? path.join(mainAppDir, "index.html")
     : path.join(mainAppDir, "dist/index.html");
 
-  return "app://" + htmlPath + suffix;
+  return encodeAppProtocolPath(htmlPath) + suffix;
 }
 
 function getRequestedAppPath(requestedUrl) {

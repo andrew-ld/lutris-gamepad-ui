@@ -19,6 +19,8 @@ const CONTROL_TYPES = {
   NIGHT_LIGHT: "NIGHT_LIGHT",
 };
 
+const clampBrightness = (value) => Math.max(0, Math.min(100, value));
+
 const DisplaySettings = ({ onClose }) => {
   const { t } = useTranslation();
   const isMounted = useIsMounted();
@@ -76,9 +78,9 @@ const DisplaySettings = ({ onClose }) => {
     [fetchSettings],
   );
 
-  const updateBrightness = useCallback(async () => {
+  const updateBrightness = useCallback(async (nextBrightness = brightness) => {
     if (brightnessError) return;
-    const clamped = Math.max(0, Math.min(100, brightness));
+    const clamped = clampBrightness(nextBrightness);
     setIsLoading(true);
     try {
       await api.setBrightness(clamped);
@@ -123,9 +125,10 @@ const DisplaySettings = ({ onClose }) => {
 
       switch (item.type) {
         case CONTROL_TYPES.BRIGHTNESS: {
-          if (actionName === "LEFT") setBrightness(Math.max(brightness - 5, 0));
+          if (actionName === "LEFT")
+            setBrightness(clampBrightness(brightness - 5));
           if (actionName === "RIGHT")
-            setBrightness(Math.min(brightness + 5, 100));
+            setBrightness(clampBrightness(brightness + 5));
           if (actionName === "A") updateBrightness();
           break;
         }

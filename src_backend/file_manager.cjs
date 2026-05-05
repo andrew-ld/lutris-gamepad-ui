@@ -8,6 +8,7 @@ const getFallbackDirectories = (directoryPath) => {
   const candidates = [];
   const homeDirectory = homedir();
   const defaultRootDirectory = path.parse(process.cwd()).root;
+
   let currentCandidate =
     directoryPath === null
       ? homeDirectory || defaultRootDirectory
@@ -35,6 +36,7 @@ const getFallbackDirectories = (directoryPath) => {
   const rootDirectory = path.parse(
     currentCandidate || defaultRootDirectory,
   ).root;
+
   if (rootDirectory && !candidates.includes(rootDirectory)) {
     candidates.push(rootDirectory);
   }

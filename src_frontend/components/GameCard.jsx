@@ -45,7 +45,7 @@ const GameCard = React.forwardRef(
 
         {isVisible && settings.showRunnerIcon && game.runtimeIconPath && (
           <img
-            src={`app://${game.runtimeIconPath}`}
+            src={encodeAppProtocolPath(game.runtimeIconPath)}
             alt="Runner Icon"
             className="game-card-runner-icon"
             decoding="async"
