@@ -78,16 +78,19 @@ const DisplaySettings = ({ onClose }) => {
     [fetchSettings],
   );
 
-  const updateBrightness = useCallback(async (nextBrightness = brightness) => {
-    if (brightnessError) return;
-    const clamped = clampBrightness(nextBrightness);
-    setIsLoading(true);
-    try {
-      await api.setBrightness(clamped);
-    } finally {
-      await fetchSettings();
-    }
-  }, [brightnessError, fetchSettings, brightness]);
+  const updateBrightness = useCallback(
+    async (nextBrightness = brightness) => {
+      if (brightnessError) return;
+      const clamped = clampBrightness(nextBrightness);
+      setIsLoading(true);
+      try {
+        await api.setBrightness(clamped);
+      } finally {
+        await fetchSettings();
+      }
+    },
+    [brightnessError, fetchSettings, brightness],
+  );
 
   const toggleNightLight = useCallback(async () => {
     if (nightLightError) return;
