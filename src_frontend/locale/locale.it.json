@@ -88,9 +88,11 @@
     "Update": "Update"
   },
   "components/FilePicker.jsx": {
+    "Initial folder unavailable": "Initial folder unavailable",
     "No directories available.": "No directories available.",
     "No files available.": "No files available.",
-    "Select Current Directory": "Select Current Directory"
+    "Select Current Directory": "Select Current Directory",
+    "Showing \"{{currentPath}}\" instead of \"{{fallbackFrom}}\".": "Showing \"{{currentPath}}\" instead of \"{{fallbackFrom}}\"."
   },
   "components/GameCard.jsx": {
     "Last played: {{date}}": "Ultimo avvio: {{date}}",
