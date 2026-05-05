@@ -53,7 +53,7 @@ export const useSpatialNavigation = (sections, numberColumns, options = {}) => {
         const currentRow = Math.floor(itemIndex / numberColumns);
         const currentCol = itemIndex % numberColumns;
 
-        let next = { ...current, preventScroll: false };
+        let next;
 
         switch (direction) {
           case "UP": {

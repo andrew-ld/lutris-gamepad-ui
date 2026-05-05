@@ -1,5 +1,6 @@
 import {
   createContext,
+  useReducer,
   useContext,
   useState,
   useEffect,
@@ -117,7 +118,7 @@ export const InputProvider = ({ children }) => {
   const inputTypeSubscribers = useRef(new Set());
   const lastDetectedInputSourceReference = useRef("keyboard");
 
-  const [, setFocusIteration] = useState(0);
+  const [, setFocusIteration] = useReducer((iteration) => iteration + 1, 0);
   const [connectedGamepadCount, setConnectedGamepadCount] = useState(0);
   const [isMouseActive, setIsMouseActive] = useState(false);
   const mouseTimeoutReference = useRef(null);

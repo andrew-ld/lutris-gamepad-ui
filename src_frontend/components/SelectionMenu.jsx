@@ -36,9 +36,9 @@ const SelectionMenu = ({
   );
 
   const renderItem = useCallback(
-    (item, isFocused, onMouseEnter) => (
+    (item, isFocused, onMouseEnter, ref) => (
       <FocusableRow
-        key={item.value}
+        ref={ref}
         isFocused={isFocused}
         onMouseEnter={onMouseEnter}
         onClick={() => onSelect(item.value)}

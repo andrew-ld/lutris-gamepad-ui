@@ -45,7 +45,7 @@ const About = ({ onClose }) => {
     setFocusedItem(item);
   }, []);
 
-  const renderItem = useCallback((item, isFocused, onMouseEnter) => {
+  const renderItem = useCallback((item, isFocused, onMouseEnter, ref) => {
     const valueContent = item.isLink ? (
       <a
         href={item.value}
@@ -61,7 +61,7 @@ const About = ({ onClose }) => {
 
     return (
       <FocusableRow
-        key={item.label}
+        ref={ref}
         isFocused={isFocused}
         onMouseEnter={onMouseEnter}
         onClick={() => {

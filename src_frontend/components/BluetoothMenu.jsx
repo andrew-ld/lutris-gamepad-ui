@@ -122,7 +122,7 @@ const BluetoothMenu = ({ onClose }) => {
   }, [devices, adapters, handleDeviceAction, powerOnAdapter, t]);
 
   const renderItem = useCallback(
-    (item, isFocused, onMouseEnter) => {
+    (item, isFocused, onMouseEnter, ref) => {
       let actionButtonLabel;
 
       if (item.isAdapter) {
@@ -135,7 +135,7 @@ const BluetoothMenu = ({ onClose }) => {
 
       return (
         <FocusableRow
-          key={item.id}
+          ref={ref}
           isFocused={isFocused}
           onMouseEnter={onMouseEnter}
           onClick={item.action}

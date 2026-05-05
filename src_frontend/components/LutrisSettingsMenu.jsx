@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { useTranslation } from "../contexts/TranslationContext";
-import { useIsMounted } from "../hooks/useIsMounted";
+import { useAsyncEffect } from "../hooks/useAsyncEffect";
+import { useAsyncGuard } from "../hooks/useAsyncGuard";
 import * as api from "../utils/ipc";
 
 import AbstractLutrisSettingsMenu from "./AbstractLutrisSettingsMenu";
@@ -12,30 +13,41 @@ const LutrisSettingsMenu = ({
   onClose,
 }) => {
   const { t } = useTranslation();
-  const isMounted = useIsMounted();
+  const isCancelled = useAsyncGuard();
   const [settings, setSettings] = useState(null);
   const [gameName, setGameName] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchSettings = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await api.getLutrisSettings(gameSlug, runnerSlug);
-      if (isMounted() && data && data.settings) {
-        setSettings(data.settings);
-        if (data.game_name) {
-          setGameName(data.game_name);
+  const fetchSettings = useCallback(
+    async ({
+      showLoading = true,
+      isCancelledCheck = isCancelled,
+    } = {}) => {
+      if (showLoading) {
+        setLoading(true);
+      }
+      try {
+        const data = await api.getLutrisSettings(gameSlug, runnerSlug);
+        if (!isCancelledCheck() && data && data.settings) {
+          setSettings(data.settings);
+          if (data.game_name) {
+            setGameName(data.game_name);
+          }
+        }
+      } finally {
+        if (!isCancelledCheck()) {
+          setLoading(false);
         }
       }
-    } finally {
-      if (isMounted()) {
-        setLoading(false);
-      }
-    }
-  }, [gameSlug, runnerSlug, isMounted]);
+    },
+    [gameSlug, isCancelled, runnerSlug],
+  );
 
-  useEffect(() => {
-    fetchSettings();
+  useAsyncEffect(async (isCancelledCheck) => {
+    await fetchSettings({
+      showLoading: false,
+      isCancelledCheck,
+    });
   }, [fetchSettings]);
 
   const updateSetting = useCallback(
@@ -50,16 +62,14 @@ const LutrisSettingsMenu = ({
           gameSlug,
           runnerSlug,
         );
-        if (isMounted()) {
-          await fetchSettings();
-        }
+        await fetchSettings({ showLoading: false });
       } finally {
-        if (isMounted()) {
+        if (!isCancelled()) {
           setLoading(false);
         }
       }
     },
-    [gameSlug, runnerSlug, fetchSettings, isMounted],
+    [gameSlug, runnerSlug, fetchSettings, isCancelled],
   );
 
   const currentTitle = useMemo(() => {

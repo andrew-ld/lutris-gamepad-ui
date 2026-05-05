@@ -216,8 +216,8 @@ const AbstractLutrisSettingsMenu = ({
   );
 
   const renderItem = useCallback(
-    (item, isFocused, onMouseEnter) => {
-      let control = null;
+    (item, isFocused, onMouseEnter, ref) => {
+      let control;
 
       if (item.type === "bool") {
         control = (
@@ -246,7 +246,7 @@ const AbstractLutrisSettingsMenu = ({
 
       return (
         <FocusableRow
-          key={`${item.section}-${item.key}`}
+          ref={ref}
           isFocused={isFocused}
           onMouseEnter={onMouseEnter}
           onClick={() => handleAction("A", item)}

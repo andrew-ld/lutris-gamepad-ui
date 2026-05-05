@@ -50,6 +50,10 @@ export default [
       "promise/always-return": "off",
       "unicorn/prefer-ternary": "off",
       "unicorn/number-literal-case": "off",
+      "@eslint-react/naming-convention-ref-name": "off",
+      "@eslint-react/no-context-provider": "off",
+      "@eslint-react/no-forward-ref": "off",
+      "@eslint-react/no-use-context": "off",
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },

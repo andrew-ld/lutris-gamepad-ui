@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 
 import { useTranslation } from "../contexts/TranslationContext";
-import { useIsMounted } from "../hooks/useIsMounted";
+import { useAsyncEffect } from "../hooks/useAsyncEffect";
+import { useAsyncGuard } from "../hooks/useAsyncGuard";
 import * as api from "../utils/ipc";
 
 import DialogLayout from "./DialogLayout";
@@ -16,7 +17,7 @@ const FilePicker = ({
   initialPath = null,
 }) => {
   const { t } = useTranslation();
-  const isMounted = useIsMounted();
+  const isCancelled = useAsyncGuard();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -25,27 +26,38 @@ const FilePicker = ({
   const { currentPath, entries = [] } = directoryData;
 
   const loadDirectory = useCallback(
-    async (directoryPath = null) => {
-      setIsLoading(true);
+    async (
+      directoryPath = null,
+      {
+        showLoading = true,
+        isCancelledCheck = isCancelled,
+      } = {},
+    ) => {
+      if (showLoading) {
+        setIsLoading(true);
+      }
       try {
         const response = await api.listDirectory(directoryPath);
-        if (isMounted()) {
+        if (!isCancelledCheck()) {
           setDirectoryData(response);
         }
       } catch (error) {
         api.logError("Failed to list directory", error);
       } finally {
-        if (isMounted()) {
+        if (!isCancelledCheck()) {
           setIsLoading(false);
         }
       }
     },
-    [isMounted],
+    [isCancelled],
   );
 
-  useEffect(() => {
-    loadDirectory(initialPath);
-  }, [loadDirectory, initialPath]);
+  useAsyncEffect(async (isCancelledCheck) => {
+    await loadDirectory(initialPath, {
+      showLoading: false,
+      isCancelledCheck,
+    });
+  }, [initialPath, loadDirectory]);
 
   const handleSelect = useCallback(
     (selectedValue) => {
@@ -58,7 +70,7 @@ const FilePicker = ({
       }
 
       if (selectedEntry.isDirectory) {
-        loadDirectory(selectedEntry.path);
+        void loadDirectory(selectedEntry.path);
       } else if (mode === "file") {
         onSelect(selectedEntry.path);
       }

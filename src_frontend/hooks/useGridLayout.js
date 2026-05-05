@@ -32,18 +32,17 @@ export const useGridLayout = (shelfCount) => {
       });
     };
 
-    calculateAndUpdateColumns();
+    const animationFrameId = requestAnimationFrame(calculateAndUpdateColumns);
 
-    const observers = [];
+    const resizeObserver = new ResizeObserver(calculateAndUpdateColumns);
     for (const gridElement of gridReferences.current) {
       if (!gridElement) continue;
-      const observer = new ResizeObserver(calculateAndUpdateColumns);
-      observer.observe(gridElement);
-      observers.push(observer);
+      resizeObserver.observe(gridElement);
     }
 
     return () => {
-      for (const observer of observers) observer.disconnect();
+      cancelAnimationFrame(animationFrameId);
+      resizeObserver.disconnect();
     };
   }, [shelfCount]);
 

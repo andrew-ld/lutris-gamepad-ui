@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { useToastActions } from "../contexts/ToastContext";
 import { useTranslation } from "../contexts/TranslationContext";
+import { useAsyncEffect } from "../hooks/useAsyncEffect";
 import { useIsMounted } from "../hooks/useIsMounted";
 import * as api from "../utils/ipc";
 
@@ -38,23 +39,18 @@ const LutrisAddGameSettingsMenu = ({
   });
   const [loading, setLoading] = useState(true);
 
-  const fetchSettings = useCallback(async () => {
-    setLoading(true);
+  useAsyncEffect(async (isCancelled) => {
     try {
       const data = await api.getNewGameLutrisSettings(runnerSlug);
-      if (isMounted() && data && data.settings) {
+      if (!isCancelled() && data && data.settings) {
         setSettings(data.settings);
       }
     } finally {
-      if (isMounted()) {
+      if (!isCancelled()) {
         setLoading(false);
       }
     }
-  }, [runnerSlug, isMounted]);
-
-  useEffect(() => {
-    fetchSettings();
-  }, [fetchSettings]);
+  }, [runnerSlug]);
 
   const infoSettings = useMemo(
     () => [

@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { useCallback, useState, useMemo } from "react";
 
 import { useToastActions } from "../contexts/ToastContext";
 import { useTranslation } from "../contexts/TranslationContext";
 import { useViewActions } from "../contexts/ViewContext";
-import { useIsMounted } from "../hooks/useIsMounted";
+import { useAsyncEffect } from "../hooks/useAsyncEffect";
 import * as api from "../utils/ipc";
 
 import DialogLayout from "./DialogLayout";
@@ -15,21 +15,19 @@ const LutrisSettingsFlow = ({ onClose }) => {
   const { t } = useTranslation();
   const { showToast } = useToastActions();
   const { resetSize } = useViewActions();
-  const isMounted = useIsMounted();
   const [loading, setLoading] = useState(true);
   const [runners, setRunners] = useState([]);
   const [selectedRunner, setSelectedRunner] = useState(null);
   const [isRunnerSelected, setIsRunnerSelected] = useState(false);
 
-  const fetchRunners = useCallback(async () => {
-    setLoading(true);
+  useAsyncEffect(async (isCancelled) => {
     try {
       const data = await api.getLutrisRunners();
-      if (isMounted()) {
+      if (!isCancelled()) {
         setRunners(data.runners || []);
       }
     } catch {
-      if (isMounted()) {
+      if (!isCancelled()) {
         showToast({
           title: t("Failed to fetch Lutris runners"),
           type: "error",
@@ -37,15 +35,11 @@ const LutrisSettingsFlow = ({ onClose }) => {
         onClose();
       }
     } finally {
-      if (isMounted()) {
+      if (!isCancelled()) {
         setLoading(false);
       }
     }
-  }, [onClose, showToast, t, isMounted]);
-
-  useEffect(() => {
-    fetchRunners();
-  }, [fetchRunners]);
+  }, [onClose, showToast, t]);
 
   const runnerOptions = useMemo(() => {
     return [[t("Global"), null], ...runners.map((r) => [r.human_name, r.name])];

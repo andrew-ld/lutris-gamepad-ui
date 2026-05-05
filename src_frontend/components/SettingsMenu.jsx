@@ -248,12 +248,12 @@ const SettingsMenu = ({ onClose }) => {
   );
 
   const renderItem = useCallback(
-    (item, isFocused, onMouseEnter) => {
+    (item, isFocused, onMouseEnter, ref) => {
       switch (item.type) {
         case "ZOOM": {
           return (
             <FocusableRow
-              key={item.type}
+              ref={ref}
               isFocused={isFocused}
               onMouseEnter={onMouseEnter}
             >
@@ -271,7 +271,7 @@ const SettingsMenu = ({ onClose }) => {
         case "GAMEPAD_AUTOREPEAT": {
           return (
             <FocusableRow
-              key={item.type}
+              ref={ref}
               isFocused={isFocused}
               onMouseEnter={onMouseEnter}
             >
@@ -290,7 +290,7 @@ const SettingsMenu = ({ onClose }) => {
         case "RECENTLY_PLAYED": {
           return (
             <FocusableRow
-              key={item.type}
+              ref={ref}
               isFocused={isFocused}
               onMouseEnter={onMouseEnter}
               onClick={toggleShowRecentlyPlayed}
@@ -308,7 +308,7 @@ const SettingsMenu = ({ onClose }) => {
         case "DOUBLE_CONFIRM_POWER_MANAGEMENT": {
           return (
             <FocusableRow
-              key={item.type}
+              ref={ref}
               isFocused={isFocused}
               onMouseEnter={onMouseEnter}
               onClick={toggleDoubleConfirmPowerManagement}
@@ -326,7 +326,7 @@ const SettingsMenu = ({ onClose }) => {
         case "SDL_INPUT": {
           return (
             <FocusableRow
-              key={item.type}
+              ref={ref}
               isFocused={isFocused}
               onMouseEnter={onMouseEnter}
               onClick={toggleUseSdlInput}
@@ -344,7 +344,7 @@ const SettingsMenu = ({ onClose }) => {
         case "SHOW_HIDDEN": {
           return (
             <FocusableRow
-              key={item.type}
+              ref={ref}
               isFocused={isFocused}
               onMouseEnter={onMouseEnter}
               onClick={toggleShowHiddenGames}
@@ -362,7 +362,7 @@ const SettingsMenu = ({ onClose }) => {
         case "SHOW_RUNNER_ICON": {
           return (
             <FocusableRow
-              key={item.type}
+              ref={ref}
               isFocused={isFocused}
               onMouseEnter={onMouseEnter}
               onClick={toggleShowRunnerIcon}
@@ -380,7 +380,7 @@ const SettingsMenu = ({ onClose }) => {
         case "USE_REMOTE_DESKTOP_PORTAL": {
           return (
             <FocusableRow
-              key={item.type}
+              ref={ref}
               isFocused={isFocused}
               onMouseEnter={onMouseEnter}
               onClick={toggleUseRemoteDesktopPortal}
@@ -398,7 +398,7 @@ const SettingsMenu = ({ onClose }) => {
         case "KEEP_GAMES_RUNNING": {
           return (
             <FocusableRow
-              key={item.type}
+              ref={ref}
               isFocused={isFocused}
               onMouseEnter={onMouseEnter}
               onClick={toggleKeepGamesRunningOnQuit}
@@ -416,7 +416,7 @@ const SettingsMenu = ({ onClose }) => {
         case "ENABLE_UI_ACTION_SOUND_FEEDBACKS": {
           return (
             <FocusableRow
-              key={item.type}
+              ref={ref}
               isFocused={isFocused}
               onMouseEnter={onMouseEnter}
               onClick={toggleEnableUiActionSoundFeedbacks}

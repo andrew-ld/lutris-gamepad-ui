@@ -78,12 +78,15 @@ const VirtualizedList = ({
       }
     };
 
-    measureContainer();
+    const animationFrameId = requestAnimationFrame(measureContainer);
 
     const resizeObserver = new ResizeObserver(measureContainer);
     resizeObserver.observe(containerRef.current);
 
-    return () => resizeObserver.disconnect();
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      resizeObserver.disconnect();
+    };
   }, []);
 
   const measureRef = useCallback((node, index) => {
@@ -316,16 +319,20 @@ const VirtualizedList = ({
 
         {visibleItems.map(({ item, originalIndex }) => {
           const isSelected = originalIndex === safeSelectedIndex;
-          const element = renderItem(item, isSelected, () =>
-            onItemClick(originalIndex),
+          const element = renderItem(
+            item,
+            isSelected,
+            () => onItemClick(originalIndex),
+            (node) => measureRef(node, originalIndex),
           );
 
           if (!element) return null;
 
-          return React.cloneElement(element, {
-            key: itemKey(item, originalIndex) ?? originalIndex,
-            ref: (node) => measureRef(node, originalIndex),
-          });
+          return (
+            <React.Fragment key={itemKey(item, originalIndex) ?? originalIndex}>
+              {element}
+            </React.Fragment>
+          );
         })}
 
         {isActuallyVirtualizing && (

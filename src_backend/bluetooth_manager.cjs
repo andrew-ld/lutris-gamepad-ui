@@ -159,7 +159,7 @@ async function setAdapterBooleanProperty(adapterPath, propertyName, value) {
   } catch (error) {
     const errorMessage = `Error setting property ${propertyName} on ${adapterPath}`;
     logError(errorMessage, error.message);
-    throw new Error(errorMessage);
+    throw new Error(errorMessage, { cause: error });
   }
 }
 

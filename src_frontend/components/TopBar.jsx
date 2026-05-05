@@ -36,7 +36,13 @@ const TopBar = () => {
   const { staticSettings } = useStaticSettings();
 
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [time, setTime] = useState("");
+  const [time, setTime] = useState(() => {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}`;
+  });
 
   useEffect(() => {
     const updateClock = () => {
@@ -47,7 +53,6 @@ const TopBar = () => {
       setTime(`${hours}:${minutes}:${seconds}`);
     };
 
-    updateClock();
     const timerId = setInterval(updateClock, 1000);
 
     const updateOnlineStatus = () => {

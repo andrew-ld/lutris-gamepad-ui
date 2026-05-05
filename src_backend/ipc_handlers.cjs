@@ -137,7 +137,7 @@ function registerIpcHandlers() {
       await shell.openExternal(url);
     } catch (error) {
       logError("Invalid URL for open-external-link:", url, error);
-      throw new Error(`Could not open invalid URL: ${url}`);
+      throw new Error(`Could not open invalid URL: ${url}`, { cause: error });
     }
   });
 

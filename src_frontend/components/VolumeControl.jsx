@@ -157,7 +157,7 @@ const VolumeControl = ({ onClose }) => {
   }, []);
 
   const renderItem = useCallback(
-    (item, isFocused, onMouseEnter) => {
+    (item, isFocused, onMouseEnter, ref) => {
       let handleRowClick;
 
       if (item.type === CONTROL_TYPES.MUTE) {
@@ -168,7 +168,7 @@ const VolumeControl = ({ onClose }) => {
 
       return (
         <FocusableRow
-          key={item.type}
+          ref={ref}
           isFocused={isFocused}
           onMouseEnter={onMouseEnter}
           onClick={handleRowClick}

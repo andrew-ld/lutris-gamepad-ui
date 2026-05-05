@@ -189,7 +189,10 @@ const OnScreenKeyboard = ({ initialValue, onConfirm, onClose, label }) => {
         </div>
         <div className="osk-layout">
           {keyLayout.map((row, y) => (
-            <div className="osk-row" key={`row-${y}`}>
+            <div
+              className="osk-row"
+              key={row.map((item) => (typeof item === "string" ? item : item.id)).join("-")}
+            >
               {row.map((keyObject, x) => {
                 const isFocused = focusCoords.x === x && focusCoords.y === y;
                 const isSpecial = typeof keyObject !== "string";

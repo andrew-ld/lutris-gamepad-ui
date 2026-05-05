@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 
 import { useTranslation } from "../contexts/TranslationContext";
-import { useIsMounted } from "../hooks/useIsMounted";
+import { useAsyncEffect } from "../hooks/useAsyncEffect";
+import { useAsyncGuard } from "../hooks/useAsyncGuard";
 import * as api from "../utils/ipc";
 
 import DialogLayout from "./DialogLayout";
@@ -20,7 +21,7 @@ const CONTROL_TYPES = {
 
 const DisplaySettings = ({ onClose }) => {
   const { t } = useTranslation();
-  const isMounted = useIsMounted();
+  const isCancelled = useAsyncGuard();
   const [nightLight, setNightLight] = useState(null);
   const [brightness, setBrightness] = useState(null);
   const [focusedItem, setFocusedItem] = useState(null);
@@ -28,40 +29,51 @@ const DisplaySettings = ({ onClose }) => {
   const [brightnessError, setBrightnessError] = useState(true);
   const [nightLightError, setNightLightError] = useState(true);
 
-  const fetchSettings = useCallback(async () => {
-    setIsLoading(true);
-
-    try {
-      const b = await api.getBrightness();
-      if (isMounted()) {
-        setBrightness(b);
-        setBrightnessError(false);
+  const fetchSettings = useCallback(
+    async ({
+      showLoading = true,
+      isCancelledCheck = isCancelled,
+    } = {}) => {
+      if (showLoading) {
+        setIsLoading(true);
       }
-    } catch {
-      if (isMounted()) {
-        setBrightnessError(true);
-      }
-    }
 
-    try {
-      const nl = await api.getNightLight();
-      if (isMounted()) {
-        setNightLight(nl);
-        setNightLightError(false);
+      try {
+        const b = await api.getBrightness();
+        if (!isCancelledCheck()) {
+          setBrightness(b);
+          setBrightnessError(false);
+        }
+      } catch {
+        if (!isCancelledCheck()) {
+          setBrightnessError(true);
+        }
       }
-    } catch {
-      if (isMounted()) {
-        setNightLightError(true);
+
+      try {
+        const nl = await api.getNightLight();
+        if (!isCancelledCheck()) {
+          setNightLight(nl);
+          setNightLightError(false);
+        }
+      } catch {
+        if (!isCancelledCheck()) {
+          setNightLightError(true);
+        }
       }
-    }
 
-    if (isMounted()) {
-      setIsLoading(false);
-    }
-  }, [isMounted]);
+      if (!isCancelledCheck()) {
+        setIsLoading(false);
+      }
+    },
+    [isCancelled],
+  );
 
-  useEffect(() => {
-    fetchSettings();
+  useAsyncEffect(async (isCancelledCheck) => {
+    await fetchSettings({
+      showLoading: false,
+      isCancelledCheck,
+    });
   }, [fetchSettings]);
 
   const updateBrightness = useCallback(async () => {
@@ -71,11 +83,9 @@ const DisplaySettings = ({ onClose }) => {
     try {
       await api.setBrightness(clamped);
     } finally {
-      if (isMounted()) {
-        await fetchSettings();
-      }
+      await fetchSettings();
     }
-  }, [brightnessError, fetchSettings, isMounted, brightness]);
+  }, [brightnessError, fetchSettings, brightness]);
 
   const toggleNightLight = useCallback(async () => {
     if (nightLightError) return;
@@ -84,11 +94,9 @@ const DisplaySettings = ({ onClose }) => {
     try {
       await api.setNightLight(newValue);
     } finally {
-      if (isMounted()) {
-        await fetchSettings();
-      }
+      await fetchSettings();
     }
-  }, [nightLight, nightLightError, fetchSettings, isMounted]);
+  }, [nightLight, nightLightError, fetchSettings]);
 
   const menuItems = useMemo(() => {
     const items = [];
@@ -131,10 +139,10 @@ const DisplaySettings = ({ onClose }) => {
   );
 
   const renderItem = useCallback(
-    (item, isFocused, onMouseEnter) => {
+    (item, isFocused, onMouseEnter, ref) => {
       return (
         <FocusableRow
-          key={item.type}
+          ref={ref}
           isFocused={isFocused}
           onMouseEnter={onMouseEnter}
           onClick={

@@ -7,7 +7,8 @@ import {
   useState,
 } from "react";
 
-import { useIsMounted } from "../hooks/useIsMounted";
+import { useAsyncEffect } from "../hooks/useAsyncEffect";
+import { useAsyncGuard } from "../hooks/useAsyncGuard";
 import * as ipc from "../utils/ipc";
 
 const LutrisStateContext = createContext(null);
@@ -21,40 +22,51 @@ export const LutrisProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [runningGame, setRunningGame] = useState(null);
   const [isGamePaused, setIsGamePaused] = useState(false);
-  const isMounted = useIsMounted();
+  const isCancelled = useAsyncGuard();
 
-  const fetchGames = useCallback(async () => {
-    setLoading(true);
-    try {
-      const allGames = await ipc.getGames();
-
-      const mappedGames = allGames.map((game) => ({
-        id: game.id,
-        slug: game.slug,
-        runner: game.runner,
-        title: game.name || game.slug,
-        playtimeSeconds: (game.playtime || 0) * 3600,
-        lastPlayed: game.lastplayed ? new Date(game.lastplayed * 1000) : null,
-        coverPath: game.coverPath,
-        runtimeIconPath: game.runtimeIconPath || null,
-        categories: game.categories || [],
-        hidden: game.hidden || false,
-      }));
-
-      if (isMounted()) {
-        setGames(mappedGames);
+  const fetchGames = useCallback(
+    async ({
+      showLoading = true,
+      isCancelledCheck = isCancelled,
+    } = {}) => {
+      if (showLoading) {
+        setLoading(true);
       }
-    } catch (error) {
-      ipc.logError("Error fetching games in context:", error);
-    } finally {
-      if (isMounted()) {
-        setLoading(false);
-      }
-    }
-  }, [isMounted]);
+      try {
+        const allGames = await ipc.getGames();
 
-  useEffect(() => {
-    fetchGames();
+        const mappedGames = allGames.map((game) => ({
+          id: game.id,
+          slug: game.slug,
+          runner: game.runner,
+          title: game.name || game.slug,
+          playtimeSeconds: (game.playtime || 0) * 3600,
+          lastPlayed: game.lastplayed ? new Date(game.lastplayed * 1000) : null,
+          coverPath: game.coverPath,
+          runtimeIconPath: game.runtimeIconPath || null,
+          categories: game.categories || [],
+          hidden: game.hidden || false,
+        }));
+
+        if (!isCancelledCheck()) {
+          setGames(mappedGames);
+        }
+      } catch (error) {
+        ipc.logError("Error fetching games in context:", error);
+      } finally {
+        if (!isCancelledCheck()) {
+          setLoading(false);
+        }
+      }
+    },
+    [isCancelled],
+  );
+
+  useAsyncEffect(async (isCancelledCheck) => {
+    await fetchGames({
+      showLoading: false,
+      isCancelledCheck,
+    });
   }, [fetchGames]);
 
   useEffect(() => {

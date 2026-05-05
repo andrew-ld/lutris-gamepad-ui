@@ -321,9 +321,9 @@ const SystemMenu = () => {
   );
 
   const renderMenuItem = useCallback(
-    (item, isFocused, onMouseEnter) => (
+    (item, isFocused, onMouseEnter, ref) => (
       <div
-        key={item.label}
+        ref={ref}
         className={`system-menu-item ${isFocused ? "focused" : ""}`}
         onClick={() => handleAction(item)}
         onMouseEnter={onMouseEnter}
