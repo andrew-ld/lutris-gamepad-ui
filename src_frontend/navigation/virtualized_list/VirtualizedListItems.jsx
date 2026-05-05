@@ -38,7 +38,9 @@ const VirtualizedListItems = ({
       })}
 
       {visibleRange.isVirtualized && (
-        <div style={{ height: Math.round(bottomSpacerHeight), flexShrink: 0 }} />
+        <div
+          style={{ height: Math.round(bottomSpacerHeight), flexShrink: 0 }}
+        />
       )}
     </>
   );

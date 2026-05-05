@@ -109,7 +109,11 @@ export const getVisibleRange = ({
   let accumulatedHeight = 0;
 
   while (startIndex < itemCount) {
-    const currentItemHeight = getItemHeight(heights, startIndex, fallbackHeight);
+    const currentItemHeight = getItemHeight(
+      heights,
+      startIndex,
+      fallbackHeight,
+    );
     if (accumulatedHeight + currentItemHeight > scrollTop) {
       break;
     }
@@ -120,7 +124,10 @@ export const getVisibleRange = ({
   let endIndex = startIndex;
   let endAccumulatedHeight = accumulatedHeight;
 
-  while (endIndex < itemCount && endAccumulatedHeight < scrollTop + viewportHeight) {
+  while (
+    endIndex < itemCount &&
+    endAccumulatedHeight < scrollTop + viewportHeight
+  ) {
     endAccumulatedHeight += getItemHeight(heights, endIndex, fallbackHeight);
     endIndex += 1;
   }
@@ -151,7 +158,8 @@ export const getScrollBarInfo = ({
   );
   const scrollableRange = totalContentHeight - viewportHeight;
   const thumbScrollableRange = viewportHeight - thumbHeight;
-  const scrollPercentage = scrollableRange > 0 ? scrollTop / scrollableRange : 0;
+  const scrollPercentage =
+    scrollableRange > 0 ? scrollTop / scrollableRange : 0;
 
   return {
     top: containerPaddingTop + scrollPercentage * thumbScrollableRange,
@@ -160,7 +168,9 @@ export const getScrollBarInfo = ({
 };
 
 export const getInnerListStyle = (isVirtualized, scrollTop) => ({
-  transform: isVirtualized ? `translate3d(0, ${-Math.round(scrollTop)}px, 0)` : "none",
+  transform: isVirtualized
+    ? `translate3d(0, ${-Math.round(scrollTop)}px, 0)`
+    : "none",
   transition: isVirtualized ? "transform 0.2s ease-out" : "none",
   willChange: isVirtualized ? "transform" : "auto",
   display: "flex",

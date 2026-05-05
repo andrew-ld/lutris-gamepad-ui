@@ -24,7 +24,9 @@ export const useSpatialNavigation = (sections, numberColumns, options = {}) => {
       let found = false;
       for (const [sectionIndex, section] of sections.entries()) {
         const items = section.items || [];
-        const itemIndex = items.findIndex((item) => itemKey(item) === selectedKey);
+        const itemIndex = items.findIndex(
+          (item) => itemKey(item) === selectedKey,
+        );
         if (itemIndex !== -1) {
           if (
             sectionIndex !== coords.sectionIndex ||

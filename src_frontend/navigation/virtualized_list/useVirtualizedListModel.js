@@ -5,19 +5,14 @@ import { useScrollModel } from "./useScrollModel";
 import { useViewportMetrics } from "./useViewportMetrics";
 import { useVisibleWindow } from "./useVisibleWindow";
 
-export const useVirtualizedListModel = ({
-  items,
-  selectedIndex,
-  itemKey,
-}) => {
+export const useVirtualizedListModel = ({ items, selectedIndex, itemKey }) => {
   const containerRef = useRef(null);
   const { containerPaddingTop, viewportHeight } =
     useViewportMetrics(containerRef);
-  const { baseHeight, measureRef, measuredItemHeights } =
-    useItemMeasurements({
-      items,
-      itemKey,
-    });
+  const { baseHeight, measureRef, measuredItemHeights } = useItemMeasurements({
+    items,
+    itemKey,
+  });
   const {
     displayedScrollTop,
     getCumulativeHeight,
