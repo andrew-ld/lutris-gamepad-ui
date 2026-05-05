@@ -8,7 +8,7 @@ import {
 } from "react";
 
 import { useAsyncEffect } from "../hooks/useAsyncEffect";
-import { useAsyncGuard } from "../hooks/useAsyncGuard";
+import { useIsMounted } from "../hooks/useIsMounted";
 import * as ipc from "../utils/ipc";
 
 const LutrisStateContext = createContext(null);
@@ -22,10 +22,10 @@ export const LutrisProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [runningGame, setRunningGame] = useState(null);
   const [isGamePaused, setIsGamePaused] = useState(false);
-  const isCancelled = useAsyncGuard();
+  const isMounted = useIsMounted();
 
   const fetchGames = useCallback(
-    async ({ showLoading = true, isCancelledCheck = isCancelled } = {}) => {
+    async ({ showLoading = true, isMountedCheck = isMounted } = {}) => {
       if (showLoading) {
         setLoading(true);
       }
@@ -45,25 +45,25 @@ export const LutrisProvider = ({ children }) => {
           hidden: game.hidden || false,
         }));
 
-        if (!isCancelledCheck()) {
+        if (isMountedCheck()) {
           setGames(mappedGames);
         }
       } catch (error) {
         ipc.logError("Error fetching games in context:", error);
       } finally {
-        if (!isCancelledCheck()) {
+        if (isMountedCheck()) {
           setLoading(false);
         }
       }
     },
-    [isCancelled],
+    [isMounted],
   );
 
   useAsyncEffect(
-    async (isCancelledCheck) => {
+    async (isMountedCheck) => {
       await fetchGames({
         showLoading: false,
-        isCancelledCheck,
+        isMountedCheck,
       });
     },
     [fetchGames],

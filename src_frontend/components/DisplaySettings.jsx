@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo } from "react";
 
 import { useTranslation } from "../contexts/TranslationContext";
 import { useAsyncEffect } from "../hooks/useAsyncEffect";
-import { useAsyncGuard } from "../hooks/useAsyncGuard";
+import { useIsMounted } from "../hooks/useIsMounted";
 import * as api from "../utils/ipc";
 
 import DialogLayout from "./DialogLayout";
@@ -21,7 +21,7 @@ const CONTROL_TYPES = {
 
 const DisplaySettings = ({ onClose }) => {
   const { t } = useTranslation();
-  const isCancelled = useAsyncGuard();
+  const isMounted = useIsMounted();
   const [nightLight, setNightLight] = useState(null);
   const [brightness, setBrightness] = useState(null);
   const [focusedItem, setFocusedItem] = useState(null);
@@ -30,47 +30,47 @@ const DisplaySettings = ({ onClose }) => {
   const [nightLightError, setNightLightError] = useState(true);
 
   const fetchSettings = useCallback(
-    async ({ showLoading = true, isCancelledCheck = isCancelled } = {}) => {
+    async ({ showLoading = true, isMountedCheck = isMounted } = {}) => {
       if (showLoading) {
         setIsLoading(true);
       }
 
       try {
         const b = await api.getBrightness();
-        if (!isCancelledCheck()) {
+        if (isMountedCheck()) {
           setBrightness(b);
           setBrightnessError(false);
         }
       } catch {
-        if (!isCancelledCheck()) {
+        if (isMountedCheck()) {
           setBrightnessError(true);
         }
       }
 
       try {
         const nl = await api.getNightLight();
-        if (!isCancelledCheck()) {
+        if (isMountedCheck()) {
           setNightLight(nl);
           setNightLightError(false);
         }
       } catch {
-        if (!isCancelledCheck()) {
+        if (isMountedCheck()) {
           setNightLightError(true);
         }
       }
 
-      if (!isCancelledCheck()) {
+      if (isMountedCheck()) {
         setIsLoading(false);
       }
     },
-    [isCancelled],
+    [isMounted],
   );
 
   useAsyncEffect(
-    async (isCancelledCheck) => {
+    async (isMountedCheck) => {
       await fetchSettings({
         showLoading: false,
-        isCancelledCheck,
+        isMountedCheck,
       });
     },
     [fetchSettings],

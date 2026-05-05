@@ -40,14 +40,14 @@ const LutrisAddGameSettingsMenu = ({
   const [loading, setLoading] = useState(true);
 
   useAsyncEffect(
-    async (isCancelled) => {
+    async (isMountedCheck) => {
       try {
         const data = await api.getNewGameLutrisSettings(runnerSlug);
-        if (!isCancelled() && data && data.settings) {
+        if (isMountedCheck() && data && data.settings) {
           setSettings(data.settings);
         }
       } finally {
-        if (!isCancelled()) {
+        if (isMountedCheck()) {
           setLoading(false);
         }
       }

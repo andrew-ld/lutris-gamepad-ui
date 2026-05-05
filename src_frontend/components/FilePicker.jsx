@@ -3,7 +3,7 @@ import { useState, useCallback, useMemo } from "react";
 import { useToastActions } from "../contexts/ToastContext";
 import { useTranslation } from "../contexts/TranslationContext";
 import { useAsyncEffect } from "../hooks/useAsyncEffect";
-import { useAsyncGuard } from "../hooks/useAsyncGuard";
+import { useIsMounted } from "../hooks/useIsMounted";
 import * as api from "../utils/ipc";
 
 import DialogLayout from "./DialogLayout";
@@ -19,7 +19,7 @@ const FilePicker = ({
 }) => {
   const { t } = useTranslation();
   const { showToast } = useToastActions();
-  const isCancelled = useAsyncGuard();
+  const isMounted = useIsMounted();
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -33,7 +33,7 @@ const FilePicker = ({
       {
         allowFallback = false,
         showLoading = true,
-        isCancelledCheck = isCancelled,
+        isMountedCheck = isMounted,
       } = {},
     ) => {
       if (showLoading) {
@@ -41,7 +41,7 @@ const FilePicker = ({
       }
       try {
         const response = await api.listDirectory(directoryPath, allowFallback);
-        if (!isCancelledCheck()) {
+        if (isMountedCheck()) {
           setDirectoryData(response);
           if (allowFallback && response.fallbackFrom) {
             showToast({
@@ -60,20 +60,20 @@ const FilePicker = ({
       } catch (error) {
         api.logError("Failed to list directory", directoryPath, error);
       } finally {
-        if (!isCancelledCheck()) {
+        if (isMountedCheck()) {
           setIsLoading(false);
         }
       }
     },
-    [isCancelled, showToast, t],
+    [isMounted, showToast, t],
   );
 
   useAsyncEffect(
-    async (isCancelledCheck) => {
+    async (isMountedCheck) => {
       await loadDirectory(initialPath, {
         allowFallback: true,
         showLoading: false,
-        isCancelledCheck,
+        isMountedCheck,
       });
     },
     [initialPath, loadDirectory],

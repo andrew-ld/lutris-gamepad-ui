@@ -20,14 +20,14 @@ const LutrisAddGameFlow = ({ onClose, onSaved }) => {
   const [selectedRunner, setSelectedRunner] = useState(null);
 
   useAsyncEffect(
-    async (isCancelled) => {
+    async (isMounted) => {
       try {
         const data = await api.getLutrisRunners();
-        if (!isCancelled()) {
+        if (isMounted()) {
           setRunners(data.runners || []);
         }
       } catch {
-        if (!isCancelled()) {
+        if (isMounted()) {
           showToast({
             title: t("Failed to fetch Lutris runners"),
             type: "error",
@@ -35,7 +35,7 @@ const LutrisAddGameFlow = ({ onClose, onSaved }) => {
           onClose();
         }
       } finally {
-        if (!isCancelled()) {
+        if (isMounted()) {
           setLoading(false);
         }
       }

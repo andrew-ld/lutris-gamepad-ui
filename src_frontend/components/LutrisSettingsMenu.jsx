@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 
 import { useTranslation } from "../contexts/TranslationContext";
 import { useAsyncEffect } from "../hooks/useAsyncEffect";
-import { useAsyncGuard } from "../hooks/useAsyncGuard";
+import { useIsMounted } from "../hooks/useIsMounted";
 import * as api from "../utils/ipc";
 
 import AbstractLutrisSettingsMenu from "./AbstractLutrisSettingsMenu";
@@ -13,38 +13,38 @@ const LutrisSettingsMenu = ({
   onClose,
 }) => {
   const { t } = useTranslation();
-  const isCancelled = useAsyncGuard();
+  const isMounted = useIsMounted();
   const [settings, setSettings] = useState(null);
   const [gameName, setGameName] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const fetchSettings = useCallback(
-    async ({ showLoading = true, isCancelledCheck = isCancelled } = {}) => {
+    async ({ showLoading = true, isMountedCheck = isMounted } = {}) => {
       if (showLoading) {
         setLoading(true);
       }
       try {
         const data = await api.getLutrisSettings(gameSlug, runnerSlug);
-        if (!isCancelledCheck() && data && data.settings) {
+        if (isMountedCheck() && data && data.settings) {
           setSettings(data.settings);
           if (data.game_name) {
             setGameName(data.game_name);
           }
         }
       } finally {
-        if (!isCancelledCheck()) {
+        if (isMountedCheck()) {
           setLoading(false);
         }
       }
     },
-    [gameSlug, isCancelled, runnerSlug],
+    [gameSlug, isMounted, runnerSlug],
   );
 
   useAsyncEffect(
-    async (isCancelledCheck) => {
+    async (isMountedCheck) => {
       await fetchSettings({
         showLoading: false,
-        isCancelledCheck,
+        isMountedCheck,
       });
     },
     [fetchSettings],
@@ -64,12 +64,12 @@ const LutrisSettingsMenu = ({
         );
         await fetchSettings({ showLoading: false });
       } finally {
-        if (!isCancelled()) {
+        if (isMounted()) {
           setLoading(false);
         }
       }
     },
-    [gameSlug, runnerSlug, fetchSettings, isCancelled],
+    [gameSlug, runnerSlug, fetchSettings, isMounted],
   );
 
   const currentTitle = useMemo(() => {
