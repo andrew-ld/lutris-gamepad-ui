@@ -22,7 +22,6 @@ export default [
       ...css.configs.recommended.rules,
       "css/no-important": "off",
       "css/no-invalid-properties": "off",
-      "css/use-baseline": "off",
     },
   },
 

@@ -65,14 +65,14 @@
   font-size: 1rem;
   font-weight: bold;
   white-space: pre-wrap;
-  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .toast-description {
   font-size: 0.9rem;
   color: var(--text-secondary);
   white-space: pre-wrap;
-  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .toast-close-button {
