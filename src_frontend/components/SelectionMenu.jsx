@@ -8,6 +8,9 @@ import RowBasedMenu from "./RowBasedMenu";
 
 const EMPTY_LEGEND_ITEMS = [];
 
+const selectionItemKey = (item, index) =>
+  item.value === undefined ? (item.label ?? index) : item.value;
+
 const SelectionMenu = ({
   title,
   description,
@@ -109,6 +112,7 @@ const SelectionMenu = ({
         onAction={handleAction}
         focusId="SelectionMenu"
         initialSelectedIndex={initialIndex}
+        itemKey={selectionItemKey}
         emptyMessage={emptyMessage}
       />
     </DialogLayout>
