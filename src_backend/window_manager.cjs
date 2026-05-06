@@ -173,8 +173,16 @@ function createWindow(onWindowClosedCallback) {
   });
 
   protocol.handle("app", (request) => {
-    const requestedUrl = new URL(request.url);
-    const requestedPath = getRequestedAppPath(requestedUrl);
+    let requestedPath;
+
+    try {
+      const requestedUrl = new URL(request.url);
+      requestedPath = getRequestedAppPath(requestedUrl);
+    } catch (error) {
+      logError("Invalid app protocol request:", request.url, error);
+      return new Response(null, { status: 400 });
+    }
+
     const whitelistedFiles = getWhitelistedFiles();
     const mainAppDir = path.join(__dirname, "..");
 

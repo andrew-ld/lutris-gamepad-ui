@@ -128,6 +128,7 @@ export const InputProvider = ({ children }) => {
   const gamepadPollingRafId = useRef(null);
   const gamepadPollingIntervalId = useRef(null);
   const isGamepadPollingActive = useRef(false);
+  const gamepadPollingGeneration = useRef(0);
 
   const gamepadAutorepeatMs = useRef();
   const gamepadAutorepeatState = useRef({});
@@ -283,11 +284,13 @@ export const InputProvider = ({ children }) => {
   }, [dispatchInputEvent]);
 
   useEffect(() => {
-    const executeGamepadPoll = async () => {
+    const executeGamepadPoll = async (shouldContinuePolling) => {
       const currentTimestamp = performance.now();
       const activeActionsSet = new Set();
       const rawPressedIndices = new Set();
       const gamepads = await pollGamepads();
+
+      if (!shouldContinuePolling()) return;
 
       setConnectedGamepadCount((prevCount) => {
         if (prevCount !== gamepads.length) {
@@ -388,6 +391,9 @@ export const InputProvider = ({ children }) => {
     };
 
     const stopGamepadLoop = () => {
+      gamepadPollingGeneration.current += 1;
+      isGamepadPollingActive.current = false;
+
       if (gamepadPollingRafId.current) {
         cancelAnimationFrame(gamepadPollingRafId.current);
         gamepadPollingRafId.current = null;
@@ -401,11 +407,18 @@ export const InputProvider = ({ children }) => {
     const startGamepadLoop = () => {
       stopGamepadLoop();
       isGamepadPollingActive.current = true;
+      const loopGeneration = gamepadPollingGeneration.current;
+
+      const shouldContinuePolling = () =>
+        isGamepadPollingActive.current &&
+        gamepadPollingGeneration.current === loopGeneration;
 
       const loop = async () => {
-        if (!isGamepadPollingActive.current) return;
+        if (!shouldContinuePolling()) return;
 
-        await executeGamepadPoll();
+        await executeGamepadPoll(shouldContinuePolling);
+
+        if (!shouldContinuePolling()) return;
 
         if (document.hasFocus()) {
           gamepadPollingRafId.current = requestAnimationFrame(loop);

@@ -28,6 +28,14 @@ export const useGridLayout = (shelfCount) => {
     });
   }, []);
 
+  const scheduleColumnCalculation = useCallback(() => {
+    queueMicrotask(() => {
+      if (resizeObserverReference.current) {
+        calculateAndUpdateColumns();
+      }
+    });
+  }, [calculateAndUpdateColumns]);
+
   const setGridReference = useCallback(
     (element, shelfIndex) => {
       const previousElement = gridReferences.current[shelfIndex];
@@ -39,22 +47,17 @@ export const useGridLayout = (shelfCount) => {
 
       if (element && resizeObserverReference.current) {
         resizeObserverReference.current.observe(element);
-        queueMicrotask(calculateAndUpdateColumns);
+        scheduleColumnCalculation();
       }
     },
-    [calculateAndUpdateColumns],
+    [scheduleColumnCalculation],
   );
 
   useEffect(() => {
     const resizeObserver = new ResizeObserver(calculateAndUpdateColumns);
     resizeObserverReference.current = resizeObserver;
 
-    let isDisposed = false;
-    queueMicrotask(() => {
-      if (!isDisposed) {
-        calculateAndUpdateColumns();
-      }
-    });
+    scheduleColumnCalculation();
 
     for (const gridElement of gridReferences.current) {
       if (!gridElement) continue;
@@ -62,13 +65,12 @@ export const useGridLayout = (shelfCount) => {
     }
 
     return () => {
-      isDisposed = true;
       resizeObserver.disconnect();
       if (resizeObserverReference.current === resizeObserver) {
         resizeObserverReference.current = null;
       }
     };
-  }, [calculateAndUpdateColumns, shelfCount]);
+  }, [calculateAndUpdateColumns, scheduleColumnCalculation, shelfCount]);
 
   return {
     numColumns: numberColumns,
