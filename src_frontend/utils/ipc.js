@@ -49,8 +49,8 @@ export const logError = (...arguments_) =>
 
 export const getUserTheme = () => globalThis.electronAPI.getUserTheme();
 
-export const getLutrisSettings = (gameSlug, runnerSlug) =>
-  globalThis.electronAPI.getLutrisSettings(gameSlug, runnerSlug);
+export const getLutrisSettings = (gameIdentifier, runnerSlug) =>
+  globalThis.electronAPI.getLutrisSettings(gameIdentifier, runnerSlug);
 export const getLutrisRunners = () => globalThis.electronAPI.getLutrisRunners();
 export const getNewGameLutrisSettings = (runnerSlug) =>
   globalThis.electronAPI.getNewGameLutrisSettings(runnerSlug);
@@ -59,7 +59,7 @@ export const updateLutrisSetting = (
   key,
   value,
   type,
-  gameSlug,
+  gameIdentifier,
   runnerSlug,
 ) =>
   globalThis.electronAPI.updateLutrisSetting(
@@ -67,7 +67,7 @@ export const updateLutrisSetting = (
     key,
     value,
     type,
-    gameSlug,
+    gameIdentifier,
     runnerSlug,
   );
 export const addLutrisGame = (gameData) =>

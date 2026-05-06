@@ -1,12 +1,23 @@
 import { useEffect } from "react";
 
+import * as ipc from "../utils/ipc";
+
 export const useAsyncEffect = (effect, deps) => {
   useEffect(() => {
     let mounted = true;
 
     const isMounted = () => mounted;
 
-    void effect(isMounted);
+    try {
+      const result = effect(isMounted);
+      if (result && typeof result.catch === "function") {
+        void result.catch((error) => {
+          ipc.logError("Unhandled async effect error:", error);
+        });
+      }
+    } catch (error) {
+      ipc.logError("Unhandled async effect error:", error);
+    }
 
     return () => {
       mounted = false;

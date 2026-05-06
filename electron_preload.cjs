@@ -74,19 +74,19 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getUserTheme: () => ipcRenderer.invoke("get-user-theme"),
 
   // Lutris Settings
-  getLutrisSettings: (gameSlug, runnerSlug) =>
-    ipcRenderer.invoke("get-lutris-settings", gameSlug, runnerSlug),
+  getLutrisSettings: (gameIdentifier, runnerSlug) =>
+    ipcRenderer.invoke("get-lutris-settings", gameIdentifier, runnerSlug),
   getLutrisRunners: () => ipcRenderer.invoke("get-lutris-runners"),
   getNewGameLutrisSettings: (runnerSlug) =>
     ipcRenderer.invoke("get-new-game-lutris-settings", runnerSlug),
-  updateLutrisSetting: (section, key, value, type, gameSlug, runnerSlug) =>
+  updateLutrisSetting: (section, key, value, type, gameIdentifier, runnerSlug) =>
     ipcRenderer.invoke(
       "update-lutris-setting",
       section,
       key,
       value,
       type,
-      gameSlug,
+      gameIdentifier,
       runnerSlug,
     ),
   addLutrisGame: (gameData) => ipcRenderer.invoke("add-lutris-game", gameData),

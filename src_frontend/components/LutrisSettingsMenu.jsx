@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 
+import { useToastActions } from "../contexts/ToastContext";
 import { useTranslation } from "../contexts/TranslationContext";
 import { useAsyncEffect } from "../hooks/useAsyncEffect";
 import { useIsMounted } from "../hooks/useIsMounted";
@@ -8,11 +9,12 @@ import * as api from "../utils/ipc";
 import AbstractLutrisSettingsMenu from "./AbstractLutrisSettingsMenu";
 
 const LutrisSettingsMenu = ({
-  gameSlug = null,
+  gameIdentifier = null,
   runnerSlug = null,
   onClose,
 }) => {
   const { t } = useTranslation();
+  const { showToast } = useToastActions();
   const isMounted = useIsMounted();
   const [settings, setSettings] = useState(null);
   const [gameName, setGameName] = useState(null);
@@ -24,12 +26,20 @@ const LutrisSettingsMenu = ({
         setLoading(true);
       }
       try {
-        const data = await api.getLutrisSettings(gameSlug, runnerSlug);
+        const data = await api.getLutrisSettings(gameIdentifier, runnerSlug);
         if (isMountedCheck() && data && data.settings) {
           setSettings(data.settings);
           if (data.game_name) {
             setGameName(data.game_name);
           }
+        }
+      } catch (error) {
+        api.logError("Failed to fetch Lutris settings", error);
+        if (isMountedCheck()) {
+          showToast({
+            title: t("Failed to fetch Lutris settings"),
+            type: "error",
+          });
         }
       } finally {
         if (isMountedCheck()) {
@@ -37,7 +47,7 @@ const LutrisSettingsMenu = ({
         }
       }
     },
-    [gameSlug, isMounted, runnerSlug],
+    [gameIdentifier, isMounted, runnerSlug, showToast, t],
   );
 
   useAsyncEffect(
@@ -59,17 +69,25 @@ const LutrisSettingsMenu = ({
           key,
           value,
           type,
-          gameSlug,
+          gameIdentifier,
           runnerSlug,
         );
         await fetchSettings({ showLoading: false });
+      } catch (error) {
+        api.logError("Failed to update Lutris setting", error);
+        if (isMounted()) {
+          showToast({
+            title: t("Failed to update Lutris setting"),
+            type: "error",
+          });
+        }
       } finally {
         if (isMounted()) {
           setLoading(false);
         }
       }
     },
-    [gameSlug, runnerSlug, fetchSettings, isMounted],
+    [gameIdentifier, runnerSlug, fetchSettings, isMounted, showToast, t],
   );
 
   const currentTitle = useMemo(() => {

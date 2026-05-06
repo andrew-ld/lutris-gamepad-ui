@@ -124,6 +124,8 @@
   "components/LutrisAddGameSettingsMenu.jsx": {
     "Add Game: {{runner}}": "Add Game: {{runner}}",
     "Added {{name}}": "Added {{name}}",
+    "Failed to add game": "Failed to add game",
+    "Failed to fetch Lutris settings": "Failed to fetch Lutris settings",
     "Game": "Game",
     "Game name is required": "Game name is required",
     "Info": "Info",
@@ -144,6 +146,8 @@
     "Select Runner": "Select Runner"
   },
   "components/LutrisSettingsMenu.jsx": {
+    "Failed to fetch Lutris settings": "Failed to fetch Lutris settings",
+    "Failed to update Lutris setting": "Failed to update Lutris setting",
     "Lutris Settings": "Lutris Settings",
     "Settings: {{name}}": "Settings: {{name}}"
   },

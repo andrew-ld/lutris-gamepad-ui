@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useReducer, useState, useEffect, useCallback } from "react";
 
 const observers = new Map();
 const visibilityCallbacks = new WeakMap();
@@ -32,16 +32,15 @@ export const useVisibilityObserver = ({
   externalRef: externalReference = null,
 } = {}) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [node, setNode] = useState(null);
-
-  const setReference = useCallback(
-    (element) => {
-      if (element !== node) {
-        setNode(element);
-      }
-    },
-    [node],
+  const [node, setNode] = useReducer(
+    (currentNode, nextNode) =>
+      currentNode === nextNode ? currentNode : nextNode,
+    null,
   );
+
+  const setReference = useCallback((element) => {
+    setNode(element);
+  }, []);
 
   useEffect(() => {
     if (typeof externalReference === "function") {

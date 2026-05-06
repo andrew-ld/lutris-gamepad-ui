@@ -79,10 +79,10 @@ def list_games_main():
     _print_subcommand_output(games.get_games(filters={"installed": 1}))
 
 
-def get_config(game_slug=None, runner_slug=None, config_level=None):
-    if game_slug:
-        game = get_game_by_field(game_slug, "slug") or get_game_by_field(
-            game_slug, "id"
+def get_config(game_identifier=None, runner_slug=None, config_level=None):
+    if game_identifier:
+        game = get_game_by_field(game_identifier, "slug") or get_game_by_field(
+            game_identifier, "id"
         )
         if not game:
             return None, None
@@ -146,17 +146,17 @@ def format_option(opt, values):
     }
 
 
-def get_settings_main(game_slug=None, runner_slug=None, config_level=None):
+def get_settings_main(game_identifier=None, runner_slug=None, config_level=None):
     init_lutris()
     game_name = None
-    if game_slug:
-        game = get_game_by_field(game_slug, "slug") or get_game_by_field(
-            game_slug, "id"
+    if game_identifier:
+        game = get_game_by_field(game_identifier, "slug") or get_game_by_field(
+            game_identifier, "id"
         )
         if game:
             game_name = game["name"]
 
-    config, r_slug = get_config(game_slug, runner_slug, config_level)
+    config, r_slug = get_config(game_identifier, runner_slug, config_level)
     if not config:
         _print_subcommand_output({})
         return
@@ -196,10 +196,10 @@ def get_settings_main(game_slug=None, runner_slug=None, config_level=None):
 
 
 def update_setting_main(
-    section, key, value, value_type=None, game_slug=None, runner_slug=None
+    section, key, value, value_type=None, game_identifier=None, runner_slug=None
 ):
     init_lutris()
-    config, _ = get_config(game_slug, runner_slug)
+    config, _ = get_config(game_identifier, runner_slug)
     if not config:
         sys.exit(1)
 
@@ -328,13 +328,13 @@ def main():
         list_games_main()
 
     elif "--get-settings" in sys.argv:
-        game_slug = None
+        game_identifier = None
         runner_slug = None
         if "--game" in sys.argv:
-            game_slug = sys.argv[sys.argv.index("--game") + 1]
+            game_identifier = sys.argv[sys.argv.index("--game") + 1]
         if "--runner" in sys.argv:
             runner_slug = sys.argv[sys.argv.index("--runner") + 1]
-        get_settings_main(game_slug=game_slug, runner_slug=runner_slug)
+        get_settings_main(game_identifier=game_identifier, runner_slug=runner_slug)
 
     elif "--get-new-game-settings" in sys.argv:
         runner_slug = None
@@ -347,11 +347,11 @@ def main():
         section = sys.argv[idx + 1]
         key = sys.argv[idx + 2]
         value = sys.argv[idx + 3]
-        game_slug = None
+        game_identifier = None
         runner_slug = None
         value_type = None
         if "--game" in sys.argv:
-            game_slug = sys.argv[sys.argv.index("--game") + 1]
+            game_identifier = sys.argv[sys.argv.index("--game") + 1]
         if "--runner" in sys.argv:
             runner_slug = sys.argv[sys.argv.index("--runner") + 1]
         if "--type" in sys.argv:
@@ -361,7 +361,7 @@ def main():
             key,
             value,
             value_type=value_type,
-            game_slug=game_slug,
+            game_identifier=game_identifier,
             runner_slug=runner_slug,
         )
 

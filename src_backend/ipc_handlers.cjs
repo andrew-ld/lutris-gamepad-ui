@@ -275,8 +275,8 @@ function registerIpcHandlers() {
   // Lutris Settings
   ipcHandleWithError(
     "get-lutris-settings",
-    async (_event, gameSlug, runnerSlug) => {
-      return await getLutrisSettings(gameSlug, runnerSlug);
+    async (_event, gameIdentifier, runnerSlug) => {
+      return await getLutrisSettings(gameIdentifier, runnerSlug);
     },
   );
 
@@ -296,13 +296,13 @@ function registerIpcHandlers() {
 
   ipcHandleWithError(
     "update-lutris-setting",
-    async (_event, section, key, value, type, gameSlug, runnerSlug) => {
+    async (_event, section, key, value, type, gameIdentifier, runnerSlug) => {
       return await updateLutrisSetting(
         section,
         key,
         value,
         type,
-        gameSlug,
+        gameIdentifier,
         runnerSlug,
       );
     },

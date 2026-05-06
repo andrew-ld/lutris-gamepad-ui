@@ -73,7 +73,7 @@ const LibraryContainer = () => {
       if (game) {
         showModal((hideThisModal) => (
           <LutrisSettingsMenu
-            gameSlug={game.slug}
+            gameIdentifier={game.id}
             runnerSlug={game.runner}
             onClose={hideThisModal}
           />

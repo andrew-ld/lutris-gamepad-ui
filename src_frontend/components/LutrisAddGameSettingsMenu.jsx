@@ -9,6 +9,7 @@ import * as api from "../utils/ipc";
 import AbstractLutrisSettingsMenu from "./AbstractLutrisSettingsMenu";
 
 const ADD_GAME_SECTION_ORDER = ["info", "game", "runner", "system"];
+const isReleaseYear = (value) => /^\d+$/.test(value);
 
 const updateOptionValue = (settings, section, key, value) => {
   if (!settings) return settings;
@@ -46,13 +47,21 @@ const LutrisAddGameSettingsMenu = ({
         if (isMountedCheck() && data && data.settings) {
           setSettings(data.settings);
         }
+      } catch (error) {
+        api.logError("Failed to fetch new game Lutris settings", error);
+        if (isMountedCheck()) {
+          showToast({
+            title: t("Failed to fetch Lutris settings"),
+            type: "error",
+          });
+        }
       } finally {
         if (isMountedCheck()) {
           setLoading(false);
         }
       }
     },
-    [runnerSlug],
+    [runnerSlug, showToast, t],
   );
 
   const infoSettings = useMemo(
@@ -128,7 +137,7 @@ const LutrisAddGameSettingsMenu = ({
       return;
     }
 
-    if (year && !Number.isInteger(Number(year))) {
+    if (year && !isReleaseYear(year)) {
       showToast({
         title: t("Release year must be a number"),
         type: "error",
@@ -138,19 +147,36 @@ const LutrisAddGameSettingsMenu = ({
 
     setLoading(true);
     try {
-      const result = await api.addLutrisGame({
-        name,
-        sortname: gameInfo.sortname.trim(),
-        year,
-        runner: runnerSlug,
-        settings: changedSettings,
-      });
+      let result;
+      try {
+        result = await api.addLutrisGame({
+          name,
+          sortname: gameInfo.sortname.trim(),
+          year,
+          runner: runnerSlug,
+          settings: changedSettings,
+        });
+      } catch (error) {
+        api.logError("Failed to add Lutris game", error);
+        if (isMounted()) {
+          showToast({
+            title: t("Failed to add game"),
+            type: "error",
+          });
+        }
+        return;
+      }
+
       if (isMounted()) {
         showToast({
           title: t("Added {{name}}", { name }),
           type: "success",
         });
-        await onSaved?.(result);
+        try {
+          await onSaved?.(result);
+        } catch (error) {
+          api.logError("Failed to refresh library after adding game", error);
+        }
         onDone();
       }
     } finally {

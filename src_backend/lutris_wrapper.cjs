@@ -60,9 +60,9 @@ async function getLutrisGames() {
   return await invokeLutrisSubcommand("list-games");
 }
 
-async function getLutrisSettings(gameSlug = null, runnerSlug = null) {
+async function getLutrisSettings(gameIdentifier = null, runnerSlug = null) {
   const arguments_ = [];
-  if (gameSlug) arguments_.push("--game", gameSlug);
+  if (gameIdentifier) arguments_.push("--game", gameIdentifier);
   if (runnerSlug) arguments_.push("--runner", runnerSlug);
   return settingsRunExclusive(async () => {
     return await invokeLutrisSubcommand("get-settings", arguments_);
@@ -83,12 +83,12 @@ async function updateLutrisSetting(
   key,
   value,
   type = null,
-  gameSlug = null,
+  gameIdentifier = null,
   runnerSlug = null,
 ) {
   const arguments_ = [section, key, String(value)];
   if (type) arguments_.push("--type", type);
-  if (gameSlug) arguments_.push("--game", gameSlug);
+  if (gameIdentifier) arguments_.push("--game", gameIdentifier);
   if (runnerSlug) arguments_.push("--runner", runnerSlug);
   return settingsRunExclusive(async () => {
     return await invokeLutrisSubcommand("update-setting", arguments_);

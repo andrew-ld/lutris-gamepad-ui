@@ -33,7 +33,7 @@ const DisplaySettings = ({ onClose }) => {
 
   const fetchSettings = useCallback(
     async ({ showLoading = true, isMountedCheck = isMounted } = {}) => {
-      if (showLoading) {
+      if (showLoading && isMountedCheck()) {
         setIsLoading(true);
       }
 
@@ -82,26 +82,30 @@ const DisplaySettings = ({ onClose }) => {
     async (nextBrightness = brightness) => {
       if (brightnessError) return;
       const clamped = clampBrightness(nextBrightness);
-      setIsLoading(true);
+      if (isMounted()) {
+        setIsLoading(true);
+      }
       try {
         await api.setBrightness(clamped);
       } finally {
         await fetchSettings();
       }
     },
-    [brightnessError, fetchSettings, brightness],
+    [brightnessError, fetchSettings, brightness, isMounted],
   );
 
   const toggleNightLight = useCallback(async () => {
     if (nightLightError) return;
     const newValue = !nightLight;
-    setIsLoading(true);
+    if (isMounted()) {
+      setIsLoading(true);
+    }
     try {
       await api.setNightLight(newValue);
     } finally {
       await fetchSettings();
     }
-  }, [nightLight, nightLightError, fetchSettings]);
+  }, [isMounted, nightLight, nightLightError, fetchSettings]);
 
   const menuItems = useMemo(() => {
     const items = [];
@@ -125,6 +129,8 @@ const DisplaySettings = ({ onClose }) => {
         fetchSettings();
         return;
       }
+
+      if (!item) return;
 
       switch (item.type) {
         case CONTROL_TYPES.BRIGHTNESS: {
