@@ -10,6 +10,53 @@ import { useSpatialNavigation } from "./useSpatialNavigation";
 
 import "../../styles/GridMenu.css";
 
+const getItemKey = (item, itemIndex) =>
+  item?.id ?? item?.slug ?? item?.label ?? itemIndex;
+
+const GridMenuItem = React.memo(
+  ({
+    item,
+    itemIndex,
+    sectionIndex,
+    isFocused,
+    renderItem,
+    onAction,
+    onItemFocus,
+    setItemRef,
+  }) => {
+    const handleFocus = useCallback(() => {
+      onItemFocus(sectionIndex, itemIndex);
+    }, [itemIndex, onItemFocus, sectionIndex]);
+
+    const handleClick = useCallback(() => {
+      onAction?.("A", item);
+    }, [item, onAction]);
+
+    const setReference = useCallback(
+      (element) => {
+        setItemRef(element, sectionIndex, itemIndex);
+      },
+      [itemIndex, sectionIndex, setItemRef],
+    );
+
+    return renderItem(
+      item,
+      {
+        sectionIndex,
+        itemIndex,
+        isFocused,
+      },
+      {
+        onFocus: handleFocus,
+        onClick: handleClick,
+        ref: setReference,
+      },
+    );
+  },
+);
+
+GridMenuItem.displayName = "GridMenuItem";
+
 const GridMenu = ({
   sections,
   renderItem,
@@ -114,24 +161,22 @@ const GridMenu = ({
             ref={(element) => setGridRef(element, sectionIndex)}
             className="grid-menu-grid"
           >
-            {section.items.map((item, itemIndex) =>
-              renderItem(
-                item,
-                {
-                  sectionIndex,
-                  itemIndex,
-                  isFocused:
-                    coords.sectionIndex === sectionIndex &&
-                    coords.itemIndex === itemIndex,
-                },
-                {
-                  onFocus: () => handleItemFocus(sectionIndex, itemIndex),
-                  onClick: () => onAction("A", item),
-                  ref: (element) =>
-                    setItemRef(element, sectionIndex, itemIndex),
-                },
-              ),
-            )}
+            {section.items.map((item, itemIndex) => (
+              <GridMenuItem
+                key={getItemKey(item, itemIndex)}
+                item={item}
+                itemIndex={itemIndex}
+                sectionIndex={sectionIndex}
+                isFocused={
+                  coords.sectionIndex === sectionIndex &&
+                  coords.itemIndex === itemIndex
+                }
+                renderItem={renderItem}
+                onAction={onAction}
+                onItemFocus={handleItemFocus}
+                setItemRef={setItemRef}
+              />
+            ))}
           </div>
         </section>
       ))}

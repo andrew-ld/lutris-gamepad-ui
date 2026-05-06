@@ -10,10 +10,11 @@
     box-shadow 0.3s ease;
   background-color: var(--secondary-background);
   contain: layout style;
+  scroll-margin-block: 2rem 5rem;
 }
 
 .game-card:hover,
-.game-card:focus-within .game-card:focus {
+.game-card:focus {
   transform: scale(1.1);
   z-index: 10;
   box-shadow: 0 0.625rem 0.9375rem rgba(0, 0, 0, 0.7);
@@ -45,7 +46,7 @@
 }
 
 .game-card:hover .game-card-overlay,
-.game-card:focus-within .game-card-overlay .game-card:focus .game-card-overlay {
+.game-card:focus .game-card-overlay {
   opacity: 1;
 }
 
@@ -54,6 +55,10 @@
   color: var(--text-primary);
   transform: translateY(1.25rem);
   transition: transform 0.3s ease;
+}
+
+.game-card[data-has-runner-icon="true"] .game-card-info {
+  padding-right: 2.75rem;
 }
 
 .game-card:hover .game-card-info,
@@ -67,6 +72,11 @@
   font-weight: bold;
   margin: 0 0 0.5rem 0;
   text-shadow: 0.0625rem 0.0625rem 0.1875rem rgba(0, 0, 0, 0.8);
+  display: -webkit-box;
+  line-height: 1.15;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .game-card-info p {
@@ -74,6 +84,9 @@
   margin: 0.2rem 0;
   color: var(--text-secondary);
   text-shadow: 0.0625rem 0.0625rem 0.1875rem rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .game-card:focus {
@@ -95,6 +108,7 @@
 
 .game-card.focused .game-card-info {
   transform: translateY(0);
+  transition: none;
 }
 
 .game-card-runner-icon {

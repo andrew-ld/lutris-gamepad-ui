@@ -6,6 +6,7 @@
 .grid-menu-section {
   margin-bottom: 2.5rem;
   contain: layout;
+  scroll-margin-block: 2rem 5rem;
 }
 
 .grid-menu-section-title {

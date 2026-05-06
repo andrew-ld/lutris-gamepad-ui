@@ -220,6 +220,46 @@ const LibraryContainer = () => {
     toggleSystemMenu();
   }, [toggleSystemMenu]);
 
+  const renderItem = useCallback(
+    (game, { isFocused }, { onFocus, onClick, ref }) => (
+      <GameCard
+        ref={ref}
+        game={game}
+        isFocused={isFocused}
+        onFocus={onFocus}
+        onClick={onClick}
+      />
+    ),
+    [],
+  );
+
+  const renderHeader = useCallback(
+    () => (
+      <header className="library-header">
+        <h1>{searchQuery ? t("Search") : t("My Library")}</h1>
+      </header>
+    ),
+    [searchQuery, t],
+  );
+
+  const renderEmpty = useCallback(
+    () => (
+      <div className="empty-library-message">
+        <h2>
+          {searchQuery
+            ? t('No results for "{{searchQuery}}"', { searchQuery })
+            : t("No games found")}
+        </h2>
+        <p>
+          {searchQuery
+            ? t("Try a different search term or press 'B' to clear.")
+            : t("Add games in Lutris and reload.")}
+        </p>
+      </div>
+    ),
+    [searchQuery, t],
+  );
+
   if (loading) {
     return <LoadingIndicator message={t("Loading library...")} />;
   }
@@ -263,38 +303,6 @@ const LibraryContainer = () => {
     }
     controlsOverlayProperties.onShowSearchModal = showSearchModalCallback;
   }
-
-  const renderItem = (game, { isFocused }, { onFocus, onClick, ref }) => (
-    <GameCard
-      key={game.id}
-      ref={ref}
-      game={game}
-      isFocused={isFocused}
-      onFocus={onFocus}
-      onClick={onClick}
-    />
-  );
-
-  const renderHeader = () => (
-    <header className="library-header">
-      <h1>{searchQuery ? t("Search") : t("My Library")}</h1>
-    </header>
-  );
-
-  const renderEmpty = () => (
-    <div className="empty-library-message">
-      <h2>
-        {searchQuery
-          ? t('No results for "{{searchQuery}}"', { searchQuery })
-          : t("No games found")}
-      </h2>
-      <p>
-        {searchQuery
-          ? t("Try a different search term or press 'B' to clear.")
-          : t("Add games in Lutris and reload.")}
-      </p>
-    </div>
-  );
 
   return (
     <ControlsOverlay

@@ -162,7 +162,11 @@ export const useSpatialNavigation = (sections, numberColumns, options = {}) => {
           setSelectedKey(itemKey(nextItem));
         }
         onMoveReference.current?.();
-        return { sectionIndex: nextSectionIndex, itemIndex: 0 };
+        return {
+          sectionIndex: nextSectionIndex,
+          itemIndex: 0,
+          sectionJump: true,
+        };
       });
     },
     [sections, itemKey],

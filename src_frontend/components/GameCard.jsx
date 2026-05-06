@@ -19,15 +19,23 @@ const GameCard = React.forwardRef(
       rootMargin: "20%",
     });
 
+    const shouldRenderMedia = isVisible || isFocused;
+
+    const shouldShowRunnerIcon =
+      shouldRenderMedia && settings.showRunnerIcon && game.runtimeIconPath;
+
+    const className = isFocused ? "game-card focused" : "game-card";
+
     return (
       <div
         ref={setRef}
-        className={`game-card ${isFocused ? "focused" : ""}`}
+        className={className}
+        data-has-runner-icon={shouldShowRunnerIcon ? "true" : undefined}
         tabIndex="-1"
         onClick={onClick}
         onMouseEnter={onFocus}
       >
-        {isVisible ? (
+        {shouldRenderMedia ? (
           game.coverPath ? (
             <img
               src={encodeAppProtocolPath(game.coverPath)}
@@ -43,7 +51,7 @@ const GameCard = React.forwardRef(
           <div className="game-card-cover placeholder" />
         )}
 
-        {isVisible && settings.showRunnerIcon && game.runtimeIconPath && (
+        {shouldShowRunnerIcon && (
           <img
             src={encodeAppProtocolPath(game.runtimeIconPath)}
             alt="Runner Icon"
