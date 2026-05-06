@@ -1,3 +1,4 @@
+import css from "@eslint/css";
 import js from "@eslint/js";
 import eslintReact from "@eslint-react/eslint-plugin";
 import importX from "eslint-plugin-import-x";
@@ -13,10 +14,22 @@ export default [
     ignores: ["dist/**", "node_modules/**", "release/**", "index.html"],
   },
 
-  ...[eslintReact.configs.recommended].flat().map((config) => ({
-    ...config,
+  {
+    files: ["src_frontend/styles/**/*.css"],
+    language: "css/css",
+    plugins: { css },
+    rules: {
+      ...css.configs.recommended.rules,
+      "css/no-important": "off",
+      "css/no-invalid-properties": "off",
+      "css/use-baseline": "off",
+    },
+  },
+
+  {
+    ...eslintReact.configs.recommended,
     files: ["src_frontend/**/*.{js,jsx}"],
-  })),
+  },
 
   {
     // Global settings for all JS/JSX files
