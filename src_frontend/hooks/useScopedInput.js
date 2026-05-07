@@ -6,7 +6,7 @@ import {
   useId,
 } from "react";
 
-import { useInput } from "../contexts/InputContext";
+import { useInput } from "../stores/inputStore";
 
 export const useScopedInput = (handler, focusId, isActive = true) => {
   const {

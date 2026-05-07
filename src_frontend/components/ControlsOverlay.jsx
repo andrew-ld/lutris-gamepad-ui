@@ -1,7 +1,7 @@
 import React from "react";
 
 import "../styles/ControlsOverlay.css";
-import { useTranslation } from "../contexts/TranslationContext";
+import { useTranslation } from "../stores/translationStore";
 
 import LegendaContainer from "./LegendaContainer";
 

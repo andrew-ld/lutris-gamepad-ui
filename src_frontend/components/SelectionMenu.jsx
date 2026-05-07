@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from "react";
 
-import { useTranslation } from "../contexts/TranslationContext";
+import { useTranslation } from "../stores/translationStore";
 
 import DialogLayout from "./DialogLayout";
 import FocusableRow from "./FocusableRow";

@@ -1,5 +1,5 @@
 import "../styles/RunningGame.css";
-import { useTranslation } from "../contexts/TranslationContext";
+import { useTranslation } from "../stores/translationStore";
 import { getDeterministicGradient } from "../utils/color";
 import { formatPlaytime } from "../utils/datetime";
 import { encodeAppProtocolPath } from "../utils/ipc";

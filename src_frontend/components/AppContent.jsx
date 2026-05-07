@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 
-import { useInput } from "../contexts/InputContext";
-import { useModalActions } from "../contexts/ModalContext";
-import { useToastActions } from "../contexts/ToastContext";
 import { useStaticSettings } from "../hooks/useStaticSettings";
+import { useInput } from "../stores/inputStore";
+import { useModalActions } from "../stores/modalStore";
+import { useToastActions } from "../stores/toastStore";
 import { onShowToast, onUpdateAvailable } from "../utils/ipc";
 
 import LibraryContainer from "./LibraryContainer";

@@ -1,9 +1,9 @@
 import React from "react";
 
 import "../styles/GameCard.css";
-import { useSettingsState } from "../contexts/SettingsContext";
-import { useTranslation } from "../contexts/TranslationContext";
 import { useVisibilityObserver } from "../hooks/useVisibilityObserver";
+import { useSettingsState } from "../stores/settingsStore";
+import { useTranslation } from "../stores/translationStore";
 import { formatDate, formatPlaytime } from "../utils/datetime";
 import { encodeAppProtocolPath } from "../utils/ipc";
 

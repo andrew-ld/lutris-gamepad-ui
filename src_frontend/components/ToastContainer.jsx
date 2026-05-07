@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { useToastState, useToastActions } from "../contexts/ToastContext";
+import { useToastState, useToastActions } from "../stores/toastStore";
 import "../styles/Toast.css";
 
 const CloseIcon = () => (
@@ -45,14 +45,8 @@ const Toast = ({ title, description, type, onDismiss }) => {
 };
 
 const ToastContainer = () => {
-  const { subscribe } = useToastState();
+  const { toasts } = useToastState();
   const { hideToast } = useToastActions();
-  const [toasts, setToasts] = useState([]);
-
-  useEffect(() => {
-    const unsubscribe = subscribe(setToasts);
-    return unsubscribe;
-  }, [subscribe]);
 
   if (toasts.length === 0) {
     return null;

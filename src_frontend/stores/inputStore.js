@@ -1,17 +1,11 @@
-import {
-  createContext,
-  useReducer,
-  useContext,
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-} from "react";
+import { useCallback, useEffect, useRef } from "react";
+
+import { create } from "zustand";
 
 import { useGamepadInputCompat } from "../hooks/useGamepadInputCompat";
 import { getMappedInput } from "../utils/gamepad_mapping";
 
-import { useSettingsState } from "./SettingsContext";
+import { useSettingsStore } from "./settingsStore";
 
 const KEYBOARD_ACTION_MAP = {
   ArrowUp: "UP",
@@ -47,6 +41,13 @@ const GAMEPAD_BUTTON_INDEX_TO_ACTION_MAP = {
 };
 
 const GAMEPAD_ANALOG_THRESHOLD = 0.5;
+
+const inputSubscribers = new Set();
+const inputTypeSubscribers = new Set();
+const focusSubscribers = new Set();
+
+let focusStack = [];
+let lastDetectedInputSource = "keyboard";
 
 const mapGamepadAnalogToDPad = (axes, activeActionsSet, threshold) => {
   const [axisX, axisY] = axes;
@@ -110,32 +111,109 @@ const determineGamepadType = (gamepad) => {
   return null;
 };
 
-const InputContext = createContext(null);
-export const useInput = () => useContext(InputContext);
+const subscribeToInputEvents = (callback) => {
+  inputSubscribers.add(callback);
+  return () => inputSubscribers.delete(callback);
+};
 
-export const InputProvider = ({ children }) => {
-  const inputSubscribers = useRef(new Set());
-  const inputTypeSubscribers = useRef(new Set());
-  const lastDetectedInputSourceReference = useRef("keyboard");
+const subscribeToInputType = (callback) => {
+  inputTypeSubscribers.add(callback);
+  return () => inputTypeSubscribers.delete(callback);
+};
 
-  const [, setFocusIteration] = useReducer((iteration) => iteration + 1, 0);
-  const [connectedGamepadCount, setConnectedGamepadCount] = useState(0);
-  const [isMouseActive, setIsMouseActive] = useState(false);
+const subscribeToFocusChanges = (callback) => {
+  focusSubscribers.add(callback);
+  return () => focusSubscribers.delete(callback);
+};
+
+const broadcastFocusChange = () => {
+  for (const callback of focusSubscribers) {
+    callback();
+  }
+};
+
+const broadcastInputTypeChange = () => {
+  for (const listener of inputTypeSubscribers) {
+    listener(lastDetectedInputSource);
+  }
+};
+
+const broadcastInputEvent = (inputEvent) => {
+  const eventObject = { ...inputEvent, isConsumed: false };
+  for (const callback of inputSubscribers) callback(eventObject);
+};
+
+const popFocus = (uniqueId) => {
+  focusStack = focusStack.filter((focus) => focus.uniqueId !== uniqueId);
+  broadcastFocusChange();
+};
+
+const getFocusSnapshot = () => focusStack.at(-1)?.uniqueId ?? null;
+
+const pushFocus = (claimantId, uniqueId) => {
+  const newFocus = { claimantId, uniqueId };
+  focusStack = [...focusStack, newFocus];
+  broadcastFocusChange();
+};
+
+const getLatestInputType = () => lastDetectedInputSource;
+
+export const useInputStore = create((set, get) => ({
+  gamepadCount: 0,
+  isMouseActive: false,
+  subscribe: subscribeToInputEvents,
+  pushFocus,
+  popFocus,
+  subscribeToInputType,
+  getLatestInputType,
+  subscribeToFocusChanges,
+  getFocusSnapshot,
+  setGamepadCount: (gamepadCount) => {
+    if (get().gamepadCount !== gamepadCount) {
+      set({ gamepadCount });
+    }
+  },
+  setMouseActive: (isMouseActive) => {
+    if (get().isMouseActive !== isMouseActive) {
+      set({ isMouseActive });
+    }
+  },
+}));
+
+export const useInput = () => ({
+  subscribe: useInputStore((state) => state.subscribe),
+  pushFocus: useInputStore((state) => state.pushFocus),
+  popFocus: useInputStore((state) => state.popFocus),
+  gamepadCount: useInputStore((state) => state.gamepadCount),
+  subscribeToInputType: useInputStore((state) => state.subscribeToInputType),
+  getLatestInputType: useInputStore((state) => state.getLatestInputType),
+  subscribeToFocusChanges: useInputStore(
+    (state) => state.subscribeToFocusChanges,
+  ),
+  getFocusSnapshot: useInputStore((state) => state.getFocusSnapshot),
+  isMouseActive: useInputStore((state) => state.isMouseActive),
+});
+
+export const useInitializeInputStore = () => {
+  const setGamepadCount = useInputStore((state) => state.setGamepadCount);
+  const setMouseActive = useInputStore((state) => state.setMouseActive);
+  const gamepadAutorepeatMsSetting = useSettingsStore(
+    (state) => state.settings.gamepadAutorepeatMs,
+  );
+
   const mouseTimeoutReference = useRef(null);
-
-  const focusStackReference = useRef([]);
-
   const gamepadPollingRafId = useRef(null);
   const gamepadPollingIntervalId = useRef(null);
   const isGamepadPollingActive = useRef(false);
   const gamepadPollingGeneration = useRef(0);
-
-  const gamepadAutorepeatMs = useRef();
+  const gamepadAutorepeatMs = useRef(gamepadAutorepeatMsSetting);
   const gamepadAutorepeatState = useRef({});
 
-  const { settings } = useSettingsState();
-
   const { pollGamepads } = useGamepadInputCompat();
+
+  useEffect(() => {
+    gamepadAutorepeatMs.current = gamepadAutorepeatMsSetting;
+  }, [gamepadAutorepeatMsSetting]);
 
   useEffect(() => {
     const handleMouseMove = () => {
@@ -143,16 +221,16 @@ export const InputProvider = ({ children }) => {
         return;
       }
 
-      setIsMouseActive(true);
+      setMouseActive(true);
       clearTimeout(mouseTimeoutReference.current);
 
       mouseTimeoutReference.current = setTimeout(() => {
-        setIsMouseActive(false);
+        setMouseActive(false);
       }, 500);
     };
 
     const handleBlur = () => {
-      setIsMouseActive(false);
+      setMouseActive(false);
       clearTimeout(mouseTimeoutReference.current);
     };
 
@@ -164,62 +242,16 @@ export const InputProvider = ({ children }) => {
       window.removeEventListener("blur", handleBlur);
       clearTimeout(mouseTimeoutReference.current);
     };
-  }, []);
-
-  useEffect(() => {
-    gamepadAutorepeatMs.current = settings.gamepadAutorepeatMs;
-  }, [settings]);
-
-  const focusSubscribers = useRef(new Set());
-
-  const subscribeToFocusChanges = useCallback((callback) => {
-    focusSubscribers.current.add(callback);
-    return () => focusSubscribers.current.delete(callback);
-  }, []);
-
-  const broadcastFocusChange = useCallback(() => {
-    for (const callback of focusSubscribers.current) {
-      callback();
-    }
-  }, []);
-
-  const triggerFocusUpdate = useCallback(() => {
-    setFocusIteration((i) => i + 1);
-    broadcastFocusChange();
-  }, [broadcastFocusChange]);
-
-  const subscribeToInputEvents = useCallback((callback) => {
-    inputSubscribers.current.add(callback);
-    return () => inputSubscribers.current.delete(callback);
-  }, []);
-
-  const subscribeToInputType = useCallback((callback) => {
-    inputTypeSubscribers.current.add(callback);
-    return () => inputTypeSubscribers.current.delete(callback);
-  }, []);
-
-  const broadcastInputTypeChange = useCallback(() => {
-    for (const listener of inputTypeSubscribers.current) {
-      listener(lastDetectedInputSourceReference.current);
-    }
-  }, []);
-
-  const broadcastInputEvent = useCallback((inputEvent) => {
-    const eventObject = { ...inputEvent, isConsumed: false };
-    for (const callback of inputSubscribers.current) callback(eventObject);
-  }, []);
+  }, [setMouseActive]);
 
   const dispatchInputEvent = useCallback(
     (inputEvent, inputSource) => {
-      if (
-        inputSource &&
-        inputSource !== lastDetectedInputSourceReference.current
-      ) {
-        lastDetectedInputSourceReference.current = inputSource;
+      if (inputSource && inputSource !== lastDetectedInputSource) {
+        lastDetectedInputSource = inputSource;
         broadcastInputTypeChange();
 
         if (inputSource !== "mouse") {
-          setIsMouseActive(false);
+          setMouseActive(false);
           clearTimeout(mouseTimeoutReference.current);
         }
       }
@@ -229,30 +261,7 @@ export const InputProvider = ({ children }) => {
       }
       return false;
     },
-    [broadcastInputTypeChange, broadcastInputEvent],
-  );
-
-  const popFocus = useCallback(
-    (uniqueId) => {
-      focusStackReference.current = focusStackReference.current.filter(
-        (f) => f.uniqueId !== uniqueId,
-      );
-      triggerFocusUpdate();
-    },
-    [triggerFocusUpdate],
-  );
-
-  const getFocusSnapshot = useCallback(() => {
-    return focusStackReference.current.at(-1)?.uniqueId ?? null;
-  }, []);
-
-  const pushFocus = useCallback(
-    (claimantId, uniqueId) => {
-      const newFocus = { claimantId, uniqueId };
-      focusStackReference.current = [...focusStackReference.current, newFocus];
-      triggerFocusUpdate();
-    },
-    [triggerFocusUpdate],
+    [setMouseActive],
   );
 
   useEffect(() => {
@@ -292,12 +301,7 @@ export const InputProvider = ({ children }) => {
 
       if (!shouldContinuePolling()) return;
 
-      setConnectedGamepadCount((prevCount) => {
-        if (prevCount !== gamepads.length) {
-          return gamepads.length;
-        }
-        return prevCount;
-      });
+      setGamepadCount(gamepads.length);
 
       let activeGamepad = null;
 
@@ -368,9 +372,9 @@ export const InputProvider = ({ children }) => {
 
       if (!gamepadType) {
         gamepadType =
-          lastDetectedInputSourceReference.current === "keyboard"
+          lastDetectedInputSource === "keyboard"
             ? "xbox"
-            : lastDetectedInputSourceReference.current;
+            : lastDetectedInputSource;
       }
 
       for (const actionName of Object.keys(gamepadAutorepeatState.current)) {
@@ -427,7 +431,7 @@ export const InputProvider = ({ children }) => {
         }
       };
 
-      loop();
+      void loop();
     };
 
     const handleWindowFocusChange = () => {
@@ -446,21 +450,5 @@ export const InputProvider = ({ children }) => {
       window.removeEventListener("focus", handleWindowFocusChange);
       window.removeEventListener("blur", handleWindowFocusChange);
     };
-  }, [dispatchInputEvent, pollGamepads]);
-
-  const value = {
-    subscribe: subscribeToInputEvents,
-    pushFocus,
-    popFocus,
-    gamepadCount: connectedGamepadCount,
-    subscribeToInputType,
-    getLatestInputType: () => lastDetectedInputSourceReference.current,
-    subscribeToFocusChanges,
-    getFocusSnapshot,
-    isMouseActive,
-  };
-
-  return (
-    <InputContext.Provider value={value}>{children}</InputContext.Provider>
-  );
+  }, [dispatchInputEvent, pollGamepads, setGamepadCount]);
 };

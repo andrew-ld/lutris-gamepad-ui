@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 
 import packageJson from "../../package.json";
-import { useAudio } from "../contexts/AudioContext";
-import { useInput } from "../contexts/InputContext";
-import { useTranslation } from "../contexts/TranslationContext";
-import "../styles/TopBar.css";
 import { useStaticSettings } from "../hooks/useStaticSettings";
+import { useAudio } from "../stores/audioStore";
+import { useInput } from "../stores/inputStore";
+import { useTranslation } from "../stores/translationStore";
+import "../styles/TopBar.css";
 
 const AudioIndicator = () => {
   const { t } = useTranslation();

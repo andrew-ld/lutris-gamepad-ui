@@ -6,11 +6,11 @@ import React, {
   useRef,
 } from "react";
 
-import { useInput } from "../contexts/InputContext";
-import { useTranslation } from "../contexts/TranslationContext";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import { useScopedInput } from "../hooks/useScopedInput";
 import VirtualizedList from "../navigation/virtualized_list/VirtualizedList";
+import { useInput } from "../stores/inputStore";
+import { useTranslation } from "../stores/translationStore";
 
 import "../styles/RowBasedMenu.css";
 

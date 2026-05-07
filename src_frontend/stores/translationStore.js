@@ -1,20 +1,9 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useEffect } from "react";
 
-import { useIsMounted } from "../hooks/useIsMounted";
+import { create } from "zustand";
+
 import * as ipc from "../utils/ipc";
 import { applyReplacements } from "../utils/string";
-
-const TranslationContext = createContext({
-  t: (key, replacements) => applyReplacements(key, replacements),
-});
-
-export const useTranslation = () => useContext(TranslationContext);
 
 const packagedLocaleImporters = import.meta.glob("../locale/*.json");
 
@@ -52,11 +41,35 @@ function mergeLocales(base, target) {
   return result;
 }
 
-export const TranslationProvider = ({ children }) => {
-  const [translations, setTranslations] = useState(null);
-  const isMounted = useIsMounted();
+export const useTranslationStore = create((set) => ({
+  translations: null,
+  setTranslations: (translations) => set({ translations }),
+}));
+
+export const useTranslation = () => {
+  const translations = useTranslationStore((state) => state.translations);
+
+  const t = useCallback(
+    (key, replacements, filename) => {
+      const result =
+        filename && translations && translations[filename]
+          ? translations[filename][key] || key
+          : key;
+
+      return applyReplacements(result, replacements);
+    },
+    [translations],
+  );
+
+  return { t };
+};
+
+export const useInitializeTranslationStore = () => {
+  const setTranslations = useTranslationStore((state) => state.setTranslations);
 
   useEffect(() => {
+    let isActive = true;
+
     const loadTranslations = async () => {
       try {
         const packagedLocales = await loadPackagedLocales();
@@ -68,7 +81,7 @@ export const TranslationProvider = ({ children }) => {
         }
         const bestFitLocale = selectBestLocale(packagedLocales, preferredLangs);
 
-        if (isMounted()) {
+        if (isActive) {
           if (defaultLocale !== bestFitLocale && bestFitLocale !== null) {
             setTranslations(mergeLocales(defaultLocale, bestFitLocale));
           } else {
@@ -83,25 +96,9 @@ export const TranslationProvider = ({ children }) => {
     loadTranslations().catch((error) => {
       ipc.logError("unable to load translations", error);
     });
-  }, [isMounted]);
 
-  const t = useCallback(
-    (key, replacements, filename) => {
-      let result;
-
-      result =
-        filename && translations && translations[filename]
-          ? translations[filename][key] || key
-          : key;
-
-      return applyReplacements(result, replacements);
-    },
-    [translations],
-  );
-
-  return (
-    <TranslationContext.Provider value={{ t }}>
-      {children}
-    </TranslationContext.Provider>
-  );
+    return () => {
+      isActive = false;
+    };
+  }, [setTranslations]);
 };

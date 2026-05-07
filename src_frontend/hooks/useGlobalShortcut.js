@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-import { useInput } from "../contexts/InputContext";
+import { useInput } from "../stores/inputStore";
 
 export const useGlobalShortcut = (shortcuts) => {
   const { subscribe } = useInput();

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
-import { useSettingsState } from "../contexts/SettingsContext";
-import { useTranslation } from "../contexts/TranslationContext";
+import { useSettingsState } from "../stores/settingsStore";
+import { useTranslation } from "../stores/translationStore";
 
 export const useGameShelves = (games, searchQuery) => {
   const { t } = useTranslation();

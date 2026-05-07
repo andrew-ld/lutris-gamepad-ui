@@ -1,10 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 
-import {
-  useSettingsActions,
-  useSettingsState,
-} from "../contexts/SettingsContext";
-import { useTranslation } from "../contexts/TranslationContext";
+import { useSettingsActions, useSettingsState } from "../stores/settingsStore";
+import { useTranslation } from "../stores/translationStore";
 
 import DialogLayout from "./DialogLayout";
 import FocusableRow from "./FocusableRow";

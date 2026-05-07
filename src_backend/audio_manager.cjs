@@ -66,7 +66,10 @@ async function getPulseCookie() {
     possiblePaths.push(path.join(process.env.XDG_CONFIG_HOME, "pulse/cookie"));
   }
 
-  possiblePaths.push(path.join(homedir(), ".config/pulse/cookie"), path.join(homedir(), ".pulse-cookie"));
+  possiblePaths.push(
+    path.join(homedir(), ".config/pulse/cookie"),
+    path.join(homedir(), ".pulse-cookie"),
+  );
 
   for (const possiblePath of possiblePaths) {
     try {

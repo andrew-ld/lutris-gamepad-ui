@@ -1,8 +1,8 @@
 import { useMemo, useCallback } from "react";
 
-import { useTranslation } from "../contexts/TranslationContext";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import { useScopedInput } from "../hooks/useScopedInput";
+import { useTranslation } from "../stores/translationStore";
 import { openExternalLink } from "../utils/ipc";
 
 import DialogLayout from "./DialogLayout";

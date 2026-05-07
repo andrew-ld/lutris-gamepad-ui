@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 
-import { useTranslation } from "../contexts/TranslationContext";
-import { useViewActions } from "../contexts/ViewContext";
+import { useTranslation } from "../stores/translationStore";
+import { useViewActions } from "../stores/viewStore";
 
 import DialogLayout from "./DialogLayout";
 import FilePicker from "./FilePicker";

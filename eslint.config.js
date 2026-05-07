@@ -139,7 +139,7 @@ export default [
     },
   },
   {
-    files: ["src_frontend/contexts/**/*.{js,jsx}"],
+    files: ["src_frontend/stores/**/*.{js,jsx}"],
     rules: {
       "react-refresh/only-export-components": "off",
     },

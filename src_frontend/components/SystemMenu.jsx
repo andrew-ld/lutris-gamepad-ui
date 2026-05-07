@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { useLutrisActions } from "../contexts/LutrisContext";
-import { useModalActions, useModalState } from "../contexts/ModalContext";
-import { useSettingsState } from "../contexts/SettingsContext";
-import { useToastActions } from "../contexts/ToastContext";
-import { useTranslation } from "../contexts/TranslationContext";
-import { useUI } from "../contexts/UIContext";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import { useStaticSettings } from "../hooks/useStaticSettings";
+import { useLutrisActions } from "../stores/lutrisStore";
+import { useModalActions, useModalState } from "../stores/modalStore";
+import { useSettingsState } from "../stores/settingsStore";
+import { useToastActions } from "../stores/toastStore";
+import { useTranslation } from "../stores/translationStore";
+import { useUI } from "../stores/uiStore";
 import * as api from "../utils/ipc";
 
 import About from "./About";

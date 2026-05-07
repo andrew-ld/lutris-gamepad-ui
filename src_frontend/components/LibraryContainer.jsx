@@ -1,14 +1,14 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 
-import { useLutris, useLutrisActions } from "../contexts/LutrisContext";
-import { useModalActions, useModalState } from "../contexts/ModalContext";
-import { useTranslation } from "../contexts/TranslationContext";
-import { useUI } from "../contexts/UIContext";
 import { useGameShelves } from "../hooks/useGameShelves";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import { useScopedInput } from "../hooks/useScopedInput";
 import GridMenu from "../navigation/grid_menu/GridMenu";
+import { useLutris, useLutrisActions } from "../stores/lutrisStore";
+import { useModalActions, useModalState } from "../stores/modalStore";
+import { useTranslation } from "../stores/translationStore";
+import { useUI } from "../stores/uiStore";
 import { toggleWindowShow, toggleGamePause } from "../utils/ipc";
 
 import ConfirmationDialog from "./ConfirmationDialog";

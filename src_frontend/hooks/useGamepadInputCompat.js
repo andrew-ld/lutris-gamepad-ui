@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-import { useSettingsState } from "../contexts/SettingsContext";
+import { useSettingsState } from "../stores/settingsStore";
 import { pollGamepadsSdl } from "../utils/ipc";
 
 import { useStaticSettings } from "./useStaticSettings";

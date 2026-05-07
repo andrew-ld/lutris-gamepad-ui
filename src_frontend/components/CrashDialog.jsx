@@ -1,9 +1,9 @@
 import { useCallback, useMemo, useState } from "react";
 
-import { useInput } from "../contexts/InputContext";
-import { useTranslation } from "../contexts/TranslationContext";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import { useScopedInput } from "../hooks/useScopedInput";
+import { useInput } from "../stores/inputStore";
+import { useTranslation } from "../stores/translationStore";
 import { applyReplacements } from "../utils/string";
 
 import DialogLayout from "./DialogLayout";

@@ -1,7 +1,7 @@
 import { useMemo, useCallback, useState } from "react";
 
 import packageJson from "../../package.json";
-import { useTranslation } from "../contexts/TranslationContext";
+import { useTranslation } from "../stores/translationStore";
 import { openExternalLink } from "../utils/ipc";
 
 import DialogLayout from "./DialogLayout";

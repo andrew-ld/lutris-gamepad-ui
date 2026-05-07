@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { readdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -22,11 +22,17 @@ function sortLocaleObject(localeObject) {
   return sortedObject;
 }
 
+let localeWriteCounter = 0;
+
 function writeLocaleFile(localeObject, filename) {
+  const temporaryFilename = `${filename}.tmp-${process.pid}-${localeWriteCounter++}`;
+
   writeFileSync(
-    filename,
+    temporaryFilename,
     JSON.stringify(sortLocaleObject(localeObject), null, 2) + "\n",
   );
+
+  renameSync(temporaryFilename, filename);
 }
 
 const areSetsEqual = (a, b) =>

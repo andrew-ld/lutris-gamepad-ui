@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 
-import { useModalState, useModalActions } from "../contexts/ModalContext";
-import { ViewProvider } from "../contexts/ViewContext";
+import { useModalState, useModalActions } from "../stores/modalStore";
+import { ViewStoreBinder } from "../stores/viewStore";
 import "../styles/Modal.css";
 
 const handleContentClick = (e) => {
@@ -79,7 +79,9 @@ const ModalRenderer = () => {
         style={contentStyle}
         key={topModal.id}
       >
-        <ViewProvider onResetSize={resetSize}>{topModal.content}</ViewProvider>
+        <ViewStoreBinder onResetSize={resetSize}>
+          {topModal.content}
+        </ViewStoreBinder>
       </div>
     </div>
   );

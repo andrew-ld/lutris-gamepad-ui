@@ -1,4 +1,4 @@
-import { useTranslation } from "../contexts/TranslationContext";
+import { useTranslation } from "../stores/translationStore";
 import "../styles/LoadingIndicator.css";
 
 const LoadingIndicator = ({ message }) => {

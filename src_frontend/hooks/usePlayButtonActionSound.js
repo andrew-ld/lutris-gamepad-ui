@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { useSettingsState } from "../contexts/SettingsContext";
+import { useSettingsState } from "../stores/settingsStore";
 import { playButtonActionSoundThrottled } from "../utils/sound";
 
 export function usePlayButtonActionSound() {

@@ -1,9 +1,9 @@
 import { useCallback, useMemo, useState } from "react";
 
-import { useToastActions } from "../contexts/ToastContext";
-import { useTranslation } from "../contexts/TranslationContext";
 import { useAsyncEffect } from "../hooks/useAsyncEffect";
 import { useIsMounted } from "../hooks/useIsMounted";
+import { useToastActions } from "../stores/toastStore";
+import { useTranslation } from "../stores/translationStore";
 import * as api from "../utils/ipc";
 
 import AbstractLutrisSettingsMenu from "./AbstractLutrisSettingsMenu";

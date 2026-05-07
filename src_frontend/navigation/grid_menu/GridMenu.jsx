@@ -1,8 +1,8 @@
 import React, { useCallback, useMemo, useEffect } from "react";
 
-import { useInput } from "../../contexts/InputContext";
 import { usePlayButtonActionSound } from "../../hooks/usePlayButtonActionSound";
 import { useScopedInput } from "../../hooks/useScopedInput";
+import { useInput } from "../../stores/inputStore";
 
 import { useFocusManager } from "./useFocusManager";
 import { useGridLayout } from "./useGridLayout";

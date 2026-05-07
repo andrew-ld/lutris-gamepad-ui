@@ -1,9 +1,9 @@
 import { useCallback, useState, useMemo } from "react";
 
-import { useToastActions } from "../contexts/ToastContext";
-import { useTranslation } from "../contexts/TranslationContext";
-import { useViewActions } from "../contexts/ViewContext";
 import { useAsyncEffect } from "../hooks/useAsyncEffect";
+import { useToastActions } from "../stores/toastStore";
+import { useTranslation } from "../stores/translationStore";
+import { useViewActions } from "../stores/viewStore";
 import * as api from "../utils/ipc";
 
 import DialogLayout from "./DialogLayout";
