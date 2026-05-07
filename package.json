@@ -28,10 +28,10 @@
     "@futpib/paclient": "github:andrew-ld/paclient#450fc5046e2bb6b3ce7920211ec89bc3748d0463",
     "@homebridge/dbus-native": "github:andrew-ld/dbus-native#b1e7adc7daf54a3c1d23912cb020832085322109",
     "koffi": "^2.16.1",
-    "modern-tar": "^0.7.6",
-    "zustand": "^5.0.13"
+    "modern-tar": "^0.7.6"
   },
   "devDependencies": {
+    "zustand": "^5.0.13",
     "@babel/parser": "^7.29.3",
     "@babel/plugin-syntax-jsx": "^7.28.6",
     "@babel/traverse": "^7.29.0",
