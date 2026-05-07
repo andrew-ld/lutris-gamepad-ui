@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 
 const TOAST_TIMEOUT = 5000;
 const MAX_TOASTS = 5;
@@ -36,11 +37,17 @@ export const useToastStore = create((set, get) => ({
   },
 }));
 
-export const useToastActions = () => ({
-  showToast: useToastStore((state) => state.showToast),
-  hideToast: useToastStore((state) => state.hideToast),
-});
+export const useToastActions = () =>
+  useToastStore(
+    useShallow((state) => ({
+      showToast: state.showToast,
+      hideToast: state.hideToast,
+    })),
+  );
 
-export const useToastState = () => ({
-  toasts: useToastStore((state) => state.toasts),
-});
+export const useToastState = () =>
+  useToastStore(
+    useShallow((state) => ({
+      toasts: state.toasts,
+    })),
+  );

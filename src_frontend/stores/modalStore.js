@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 
 let modalIdCounter = 0;
 
@@ -30,17 +31,19 @@ export const useModalStore = create((set, get) => ({
   },
 }));
 
-export const useModalActions = () => ({
-  showModal: useModalStore((state) => state.showModal),
-  hideModal: useModalStore((state) => state.hideModal),
-});
+export const useModalActions = () =>
+  useModalStore(
+    useShallow((state) => ({
+      showModal: state.showModal,
+      hideModal: state.hideModal,
+    })),
+  );
 
-export const useModalState = () => {
-  const modals = useModalStore((state) => state.modals);
-
-  return {
-    modals,
-    isModalOpen: modals.length > 0,
-    topModal: modals.length > 0 ? modals.at(-1) : null,
-  };
-};
+export const useModalState = () =>
+  useModalStore(
+    useShallow((state) => ({
+      modals: state.modals,
+      isModalOpen: state.modals.length > 0,
+      topModal: state.modals.length > 0 ? state.modals.at(-1) : null,
+    })),
+  );

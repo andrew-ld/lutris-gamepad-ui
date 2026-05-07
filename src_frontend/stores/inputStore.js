@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 
 import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 
 import { useGamepadInputCompat } from "../hooks/useGamepadInputCompat";
 import { getMappedInput } from "../utils/gamepad_mapping";
@@ -180,19 +181,20 @@ export const useInputStore = create((set, get) => ({
   },
 }));
 
-export const useInput = () => ({
-  subscribe: useInputStore((state) => state.subscribe),
-  pushFocus: useInputStore((state) => state.pushFocus),
-  popFocus: useInputStore((state) => state.popFocus),
-  gamepadCount: useInputStore((state) => state.gamepadCount),
-  subscribeToInputType: useInputStore((state) => state.subscribeToInputType),
-  getLatestInputType: useInputStore((state) => state.getLatestInputType),
-  subscribeToFocusChanges: useInputStore(
-    (state) => state.subscribeToFocusChanges,
-  ),
-  getFocusSnapshot: useInputStore((state) => state.getFocusSnapshot),
-  isMouseActive: useInputStore((state) => state.isMouseActive),
-});
+export const useInput = () =>
+  useInputStore(
+    useShallow((state) => ({
+      subscribe: state.subscribe,
+      pushFocus: state.pushFocus,
+      popFocus: state.popFocus,
+      gamepadCount: state.gamepadCount,
+      subscribeToInputType: state.subscribeToInputType,
+      getLatestInputType: state.getLatestInputType,
+      subscribeToFocusChanges: state.subscribeToFocusChanges,
+      getFocusSnapshot: state.getFocusSnapshot,
+      isMouseActive: state.isMouseActive,
+    })),
+  );
 
 export const useInitializeInputStore = () => {
   const setGamepadCount = useInputStore((state) => state.setGamepadCount);

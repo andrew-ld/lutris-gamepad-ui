@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 
 import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 
 import * as ipc from "../utils/ipc";
 
@@ -12,13 +13,19 @@ export const useSettingsStore = create((set) => ({
   },
 }));
 
-export const useSettingsState = () => ({
-  settings: useSettingsStore((state) => state.settings),
-});
+export const useSettingsState = () =>
+  useSettingsStore(
+    useShallow((state) => ({
+      settings: state.settings,
+    })),
+  );
 
-export const useSettingsActions = () => ({
-  updateSetting: useSettingsStore((state) => state.updateSetting),
-});
+export const useSettingsActions = () =>
+  useSettingsStore(
+    useShallow((state) => ({
+      updateSetting: state.updateSetting,
+    })),
+  );
 
 export const useInitializeSettingsStore = () => {
   const setSettings = useSettingsStore((state) => state.setSettings);

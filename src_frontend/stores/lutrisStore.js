@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 
 import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 
 import * as ipc from "../utils/ipc";
 
@@ -51,25 +52,41 @@ export const useLutrisStore = create((set, get) => ({
     if (!runningGame) return;
     ipc.closeGame(runningGame);
   },
+  setRunningGameById: (gameId) => {
+    const game = get().games.find((candidate) => candidate.id === gameId);
+
+    if (game) {
+      set({ runningGame: game, isGamePaused: false });
+    }
+  },
   setRunningGame: (runningGame) => set({ runningGame }),
   setGamePaused: (isGamePaused) => set({ isGamePaused }),
 }));
 
-export const useLutris = () => ({
-  games: useLutrisStore((state) => state.games),
-  loading: useLutrisStore((state) => state.loading),
-  runningGame: useLutrisStore((state) => state.runningGame),
-  isGamePaused: useLutrisStore((state) => state.isGamePaused),
-});
+export const useLutris = () =>
+  useLutrisStore(
+    useShallow((state) => ({
+      games: state.games,
+      loading: state.loading,
+      runningGame: state.runningGame,
+      isGamePaused: state.isGamePaused,
+    })),
+  );
 
-export const useLutrisActions = () => ({
-  fetchGames: useLutrisStore((state) => state.fetchGames),
-  launchGame: useLutrisStore((state) => state.launchGame),
-  closeRunningGame: useLutrisStore((state) => state.closeRunningGame),
-});
+export const useLutrisActions = () =>
+  useLutrisStore(
+    useShallow((state) => ({
+      fetchGames: state.fetchGames,
+      launchGame: state.launchGame,
+      closeRunningGame: state.closeRunningGame,
+    })),
+  );
 
 export const useInitializeLutrisStore = () => {
   const fetchGames = useLutrisStore((state) => state.fetchGames);
+  const setRunningGameById = useLutrisStore(
+    (state) => state.setRunningGameById,
+  );
   const setRunningGame = useLutrisStore((state) => state.setRunningGame);
   const setGamePaused = useLutrisStore((state) => state.setGamePaused);
 
@@ -89,14 +106,7 @@ export const useInitializeLutrisStore = () => {
   useEffect(() => {
     const handleGameStarted = (gameId) => {
       ipc.logInfo(`[IPC] Received game-started for ID: ${gameId}`);
-      const game = useLutrisStore
-        .getState()
-        .games.find((candidate) => candidate.id === gameId);
-
-      if (game) {
-        setRunningGame(game);
-        setGamePaused(false);
-      }
+      setRunningGameById(gameId);
     };
 
     const handleGameClosed = () => {
@@ -116,5 +126,5 @@ export const useInitializeLutrisStore = () => {
       unsubscribeOnGameClosed();
       unsubscribeOnGamePauseStateChanged();
     };
-  }, [fetchGames, setRunningGame, setGamePaused]);
+  }, [fetchGames, setRunningGameById, setRunningGame, setGamePaused]);
 };

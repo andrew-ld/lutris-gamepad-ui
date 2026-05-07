@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 
 export const useUIStore = create((set) => ({
   isSystemMenuOpen: false,
@@ -17,8 +18,11 @@ export const useUIStore = create((set) => ({
   },
 }));
 
-export const useUI = () => ({
-  isSystemMenuOpen: useUIStore((state) => Boolean(state.isSystemMenuOpen)),
-  toggleSystemMenu: useUIStore((state) => state.toggleSystemMenu),
-  setSystemMenuOpen: useUIStore((state) => state.setSystemMenuOpen),
-});
+export const useUI = () =>
+  useUIStore(
+    useShallow((state) => ({
+      isSystemMenuOpen: Boolean(state.isSystemMenuOpen),
+      toggleSystemMenu: state.toggleSystemMenu,
+      setSystemMenuOpen: state.setSystemMenuOpen,
+    })),
+  );

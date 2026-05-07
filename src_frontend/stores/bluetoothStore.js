@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 
 import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 
 import * as ipc from "../utils/ipc";
 
 const hasDiscoveringAdapter = (adapters) =>
   Boolean(adapters?.some((adapter) => adapter.discovering));
 
-export const useBluetoothStore = create((set) => ({
+export const useBluetoothStore = create((set, get) => ({
   devices: [],
   adapters: [],
   isLoading: true,
@@ -41,7 +42,7 @@ export const useBluetoothStore = create((set) => ({
     void ipc
       .bluetoothGetState()
       .then((state) => {
-        useBluetoothStore.getState().setBluetoothState(state);
+        get().setBluetoothState(state);
       })
       .catch((error) =>
         ipc.logError("Failed to force refresh BT devices:", error),
@@ -52,21 +53,27 @@ export const useBluetoothStore = create((set) => ({
   },
 }));
 
-export const useBluetoothState = () => ({
-  devices: useBluetoothStore((state) => state.devices),
-  adapters: useBluetoothStore((state) => state.adapters),
-  isLoading: useBluetoothStore((state) => state.isLoading),
-  isDiscovering: useBluetoothStore((state) => state.isDiscovering),
-});
+export const useBluetoothState = () =>
+  useBluetoothStore(
+    useShallow((state) => ({
+      devices: state.devices,
+      adapters: state.adapters,
+      isLoading: state.isLoading,
+      isDiscovering: state.isDiscovering,
+    })),
+  );
 
-export const useBluetoothActions = () => ({
-  powerOnAdapter: useBluetoothStore((state) => state.powerOnAdapter),
-  startDiscovery: useBluetoothStore((state) => state.startDiscovery),
-  stopDiscovery: useBluetoothStore((state) => state.stopDiscovery),
-  connectDevice: useBluetoothStore((state) => state.connectDevice),
-  disconnectDevice: useBluetoothStore((state) => state.disconnectDevice),
-  forceRefresh: useBluetoothStore((state) => state.forceRefresh),
-});
+export const useBluetoothActions = () =>
+  useBluetoothStore(
+    useShallow((state) => ({
+      powerOnAdapter: state.powerOnAdapter,
+      startDiscovery: state.startDiscovery,
+      stopDiscovery: state.stopDiscovery,
+      connectDevice: state.connectDevice,
+      disconnectDevice: state.disconnectDevice,
+      forceRefresh: state.forceRefresh,
+    })),
+  );
 
 export const useInitializeBluetoothStore = () => {
   const setBluetoothState = useBluetoothStore(

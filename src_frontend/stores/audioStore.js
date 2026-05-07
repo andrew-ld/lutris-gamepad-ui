@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 
 import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 
 import * as ipc from "../utils/ipc";
 
@@ -55,18 +56,21 @@ export const useAudioStore = create((set, get) => ({
   },
 }));
 
-export const useAudio = () => ({
-  volume: useAudioStore((state) => state.volume),
-  isMuted: useAudioStore((state) => state.isMuted),
-  isLoading: useAudioStore((state) => state.isLoading),
-  defaultSinkName: useAudioStore((state) => state.defaultSinkName),
-  availableSinks: useAudioStore((state) => state.availableSinks),
-  setVolume: useAudioStore((state) => state.setVolume),
-  increaseVolume: useAudioStore((state) => state.increaseVolume),
-  decreaseVolume: useAudioStore((state) => state.decreaseVolume),
-  toggleMute: useAudioStore((state) => state.toggleMute),
-  setDefaultSink: useAudioStore((state) => state.setDefaultSink),
-});
+export const useAudio = () =>
+  useAudioStore(
+    useShallow((state) => ({
+      volume: state.volume,
+      isMuted: state.isMuted,
+      isLoading: state.isLoading,
+      defaultSinkName: state.defaultSinkName,
+      availableSinks: state.availableSinks,
+      setVolume: state.setVolume,
+      increaseVolume: state.increaseVolume,
+      decreaseVolume: state.decreaseVolume,
+      toggleMute: state.toggleMute,
+      setDefaultSink: state.setDefaultSink,
+    })),
+  );
 
 export const useInitializeAudioStore = () => {
   const processAudioInfo = useAudioStore((state) => state.processAudioInfo);

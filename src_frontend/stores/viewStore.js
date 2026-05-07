@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 
 import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 
 const noop = () => {};
 
@@ -11,9 +12,12 @@ export const useViewStore = create((set) => ({
   },
 }));
 
-export const useViewActions = () => ({
-  resetSize: useViewStore((state) => state.resetSize),
-});
+export const useViewActions = () =>
+  useViewStore(
+    useShallow((state) => ({
+      resetSize: state.resetSize,
+    })),
+  );
 
 export const ViewStoreBinder = ({ children, onResetSize }) => {
   const setResetSize = useViewStore((state) => state.setResetSize);
