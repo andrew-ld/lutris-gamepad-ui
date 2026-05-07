@@ -4,14 +4,15 @@ import { useAsyncEffect } from "../hooks/useAsyncEffect";
 import { useIsMounted } from "../hooks/useIsMounted";
 import RowBasedMenu from "../navigation/row_based_menu/RowBasedMenu";
 import { useTranslation } from "../stores/translationStore";
+import { useViewActions } from "../stores/viewStore";
 import * as api from "../utils/ipc";
 
 import DialogLayout from "./DialogLayout";
 import FocusableRow from "./FocusableRow";
 import PercentageBar from "./PercentageBar";
 import ToggleButton from "./ToggleButton";
+
 import "../styles/DisplaySettings.css";
-import { useViewActions } from "../stores/viewStore";
 
 export const DisplaySettingsFocusID = "DisplaySettings";
 
