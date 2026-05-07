@@ -13,7 +13,7 @@ export const useUIStore = create((set) => ({
           ? nextIsSystemMenuOpen(state.isSystemMenuOpen)
           : nextIsSystemMenuOpen;
 
-      return { isSystemMenuOpen: Boolean(resolvedIsSystemMenuOpen) };
+      return { isSystemMenuOpen: resolvedIsSystemMenuOpen };
     });
   },
 }));
@@ -21,7 +21,7 @@ export const useUIStore = create((set) => ({
 export const useUI = () =>
   useUIStore(
     useShallow((state) => ({
-      isSystemMenuOpen: Boolean(state.isSystemMenuOpen),
+      isSystemMenuOpen: state.isSystemMenuOpen,
       toggleSystemMenu: state.toggleSystemMenu,
       setSystemMenuOpen: state.setSystemMenuOpen,
     })),

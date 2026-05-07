@@ -1,12 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
 
+import RowBasedMenu from "../navigation/row_based_menu/RowBasedMenu";
 import { useSettingsActions, useSettingsState } from "../stores/settingsStore";
 import { useTranslation } from "../stores/translationStore";
 
 import DialogLayout from "./DialogLayout";
 import FocusableRow from "./FocusableRow";
 import PercentageBar from "./PercentageBar";
-import RowBasedMenu from "./RowBasedMenu";
 import ToggleButton from "./ToggleButton";
 
 import "../styles/SettingsMenu.css";

@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 
+import RowBasedMenu from "../navigation/row_based_menu/RowBasedMenu";
 import { useTranslation } from "../stores/translationStore";
 import { useViewActions } from "../stores/viewStore";
 
@@ -8,7 +9,6 @@ import FilePicker from "./FilePicker";
 import FocusableRow from "./FocusableRow";
 import LoadingIndicator from "./LoadingIndicator";
 import OnScreenKeyboard from "./OnScreenKeyboard";
-import RowBasedMenu from "./RowBasedMenu";
 import SelectionMenu from "./SelectionMenu";
 import ToggleButton from "./ToggleButton";
 

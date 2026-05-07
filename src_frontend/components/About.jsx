@@ -1,12 +1,12 @@
 import { useMemo, useCallback, useState } from "react";
 
 import packageJson from "../../package.json";
+import RowBasedMenu from "../navigation/row_based_menu/RowBasedMenu";
 import { useTranslation } from "../stores/translationStore";
 import { openExternalLink } from "../utils/ipc";
 
 import DialogLayout from "./DialogLayout";
 import FocusableRow from "./FocusableRow";
-import RowBasedMenu from "./RowBasedMenu";
 import "../styles/About.css";
 
 export const AboutFocusId = "About";

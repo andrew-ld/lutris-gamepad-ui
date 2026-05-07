@@ -6,7 +6,7 @@ import { useShallow } from "zustand/react/shallow";
 import * as ipc from "../utils/ipc";
 
 const hasDiscoveringAdapter = (adapters) =>
-  Boolean(adapters?.some((adapter) => adapter.discovering));
+  adapters?.some((adapter) => adapter.discovering) ?? false;
 
 export const useBluetoothStore = create((set, get) => ({
   devices: [],

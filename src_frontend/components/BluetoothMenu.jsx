@@ -1,5 +1,6 @@
 import { useMemo, useCallback, useEffect, useRef } from "react";
 
+import RowBasedMenu from "../navigation/row_based_menu/RowBasedMenu";
 import {
   useBluetoothState,
   useBluetoothActions,
@@ -11,7 +12,6 @@ import ConfirmationDialog from "./ConfirmationDialog";
 import DialogLayout from "./DialogLayout";
 import FocusableRow from "./FocusableRow";
 import LoadingIndicator from "./LoadingIndicator";
-import RowBasedMenu from "./RowBasedMenu";
 
 import "../styles/BluetoothMenu.css";
 

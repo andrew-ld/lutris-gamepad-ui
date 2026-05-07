@@ -159,9 +159,6 @@
     "Space": "Space",
     "Submit": "Submit"
   },
-  "components/RowBasedMenu.jsx": {
-    "No items available.": "No items available."
-  },
   "components/RunningGame.jsx": {
     "Now Playing": "Now Playing",
     "Paused": "Paused",
@@ -253,5 +250,8 @@
     "All Games": "All Games",
     "Recently Played": "Recently Played",
     "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\""
+  },
+  "navigation/row_based_menu/RowBasedMenuContent.jsx": {
+    "No items available.": "No items available."
   }
 }

@@ -159,9 +159,6 @@
     "Space": "Mellanslag",
     "Submit": "Skicka"
   },
-  "components/RowBasedMenu.jsx": {
-    "No items available.": "Inga objekt tillgängliga."
-  },
   "components/RunningGame.jsx": {
     "Now Playing": "Spelas nu",
     "Paused": "Paused",
@@ -253,5 +250,8 @@
     "All Games": "All Games",
     "Recently Played": "Recently Played",
     "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\""
+  },
+  "navigation/row_based_menu/RowBasedMenuContent.jsx": {
+    "No items available.": "Inga objekt tillgängliga."
   }
 }

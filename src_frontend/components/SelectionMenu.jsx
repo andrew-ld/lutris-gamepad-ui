@@ -1,10 +1,10 @@
 import { useMemo, useCallback } from "react";
 
+import RowBasedMenu from "../navigation/row_based_menu/RowBasedMenu";
 import { useTranslation } from "../stores/translationStore";
 
 import DialogLayout from "./DialogLayout";
 import FocusableRow from "./FocusableRow";
-import RowBasedMenu from "./RowBasedMenu";
 
 const EMPTY_LEGEND_ITEMS = [];
 

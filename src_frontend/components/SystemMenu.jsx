@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useGlobalShortcut } from "../hooks/useGlobalShortcut";
 import { usePlayButtonActionSound } from "../hooks/usePlayButtonActionSound";
 import { useStaticSettings } from "../hooks/useStaticSettings";
+import RowBasedMenu from "../navigation/row_based_menu/RowBasedMenu";
 import { useLutrisActions } from "../stores/lutrisStore";
 import { useModalActions, useModalState } from "../stores/modalStore";
 import { useSettingsState } from "../stores/settingsStore";
@@ -18,7 +19,6 @@ import DisplaySettings from "./DisplaySettings";
 import LegendaContainer from "./LegendaContainer";
 import LutrisAddGameFlow from "./LutrisAddGameFlow";
 import LutrisSettingsFlow from "./LutrisSettingsFlow";
-import RowBasedMenu from "./RowBasedMenu";
 import SettingsMenu from "./SettingsMenu";
 import VolumeControl from "./VolumeControl";
 

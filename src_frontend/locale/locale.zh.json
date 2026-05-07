@@ -159,9 +159,6 @@
     "Space": "空格",
     "Submit": "提交"
   },
-  "components/RowBasedMenu.jsx": {
-    "No items available.": "没有可用项。"
-  },
   "components/RunningGame.jsx": {
     "Now Playing": "正在游玩",
     "Paused": "已暂停",
@@ -253,5 +250,8 @@
     "All Games": "All Games",
     "Recently Played": "Recently Played",
     "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\""
+  },
+  "navigation/row_based_menu/RowBasedMenuContent.jsx": {
+    "No items available.": "没有可用项。"
   }
 }

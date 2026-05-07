@@ -159,9 +159,6 @@
     "Space": "Spazio",
     "Submit": "Conferma"
   },
-  "components/RowBasedMenu.jsx": {
-    "No items available.": "Nessun elemento disponibile."
-  },
   "components/RunningGame.jsx": {
     "Now Playing": "In gioco",
     "Paused": "In pausa",
@@ -253,5 +250,8 @@
     "All Games": "All Games",
     "Recently Played": "Recently Played",
     "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\""
+  },
+  "navigation/row_based_menu/RowBasedMenuContent.jsx": {
+    "No items available.": "Nessun elemento disponibile."
   }
 }

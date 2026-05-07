@@ -159,9 +159,6 @@
     "Space": "فاصله",
     "Submit": "تائید"
   },
-  "components/RowBasedMenu.jsx": {
-    "No items available.": "هیچ موردی در دسترس نیست."
-  },
   "components/RunningGame.jsx": {
     "Now Playing": "در حال بازی",
     "Paused": "Paused",
@@ -253,5 +250,8 @@
     "All Games": "All Games",
     "Recently Played": "Recently Played",
     "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\""
+  },
+  "navigation/row_based_menu/RowBasedMenuContent.jsx": {
+    "No items available.": "هیچ موردی در دسترس نیست."
   }
 }
