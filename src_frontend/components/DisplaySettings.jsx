@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 
 import { useAsyncEffect } from "../hooks/useAsyncEffect";
 import { useIsMounted } from "../hooks/useIsMounted";
@@ -11,6 +11,7 @@ import FocusableRow from "./FocusableRow";
 import PercentageBar from "./PercentageBar";
 import ToggleButton from "./ToggleButton";
 import "../styles/DisplaySettings.css";
+import { useViewActions } from "../stores/viewStore";
 
 export const DisplaySettingsFocusID = "DisplaySettings";
 
@@ -30,6 +31,7 @@ const DisplaySettings = ({ onClose }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [brightnessError, setBrightnessError] = useState(true);
   const [nightLightError, setNightLightError] = useState(true);
+  const { resetSize } = useViewActions();
 
   const fetchSettings = useCallback(
     async ({ showLoading = true, isMountedCheck = isMounted } = {}) => {
@@ -228,6 +230,10 @@ const DisplaySettings = ({ onClose }) => {
     onClose,
     t,
   ]);
+
+  useEffect(() => {
+    resetSize();
+  }, [isLoading, resetSize]);
 
   if (isLoading) {
     return (
