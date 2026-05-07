@@ -1,5 +1,6 @@
-const { writeFileSync } = require("node:fs");
 const path = require("node:path");
+
+const { writeJsonFileAtomic } = require("./write-json-file-atomic.cjs");
 
 const hoverWrapperPlugin = () => {
   return {
@@ -65,9 +66,9 @@ const defaultThemeGenerator = () => {
       };
     },
     OnceExit() {
-      writeFileSync(
+      writeJsonFileAtomic(
         path.join(__dirname, "src_backend/generated/theme.default.json"),
-        JSON.stringify(result, null, 2),
+        result,
       );
     },
   };

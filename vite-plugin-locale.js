@@ -1,8 +1,12 @@
-import { readdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import * as babel from "@babel/core";
+
+import jsonFileWriter from "./write-json-file-atomic.cjs";
+
+const { writeJsonFileAtomic } = jsonFileWriter;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,19 +24,6 @@ function sortLocaleObject(localeObject) {
     sortedObject[namespace] = sortedKeys;
   }
   return sortedObject;
-}
-
-let localeWriteCounter = 0;
-
-function writeLocaleFile(localeObject, filename) {
-  const temporaryFilename = `${filename}.tmp-${process.pid}-${localeWriteCounter++}`;
-
-  writeFileSync(
-    temporaryFilename,
-    JSON.stringify(sortLocaleObject(localeObject), null, 2) + "\n",
-  );
-
-  renameSync(temporaryFilename, filename);
 }
 
 const areSetsEqual = (a, b) =>
@@ -77,7 +68,11 @@ export function createLocalePlugins() {
 
   function updateAllLocaleFiles() {
     const masterLocaleObject = generateMasterLocaleObject();
-    writeLocaleFile(masterLocaleObject, pluginState.masterLocaleFile);
+    writeJsonFileAtomic(
+      pluginState.masterLocaleFile,
+      sortLocaleObject(masterLocaleObject),
+      { trailingNewline: true },
+    );
 
     const shouldCleanup = process.env.LUTRIS_GAMEPAD_UI_LOCALE_CLEANUP === "1";
 
@@ -123,7 +118,9 @@ export function createLocalePlugins() {
         }
       }
 
-      writeLocaleFile(combinedContent, localeFilePath);
+      writeJsonFileAtomic(localeFilePath, sortLocaleObject(combinedContent), {
+        trailingNewline: true,
+      });
     }
 
     if (pluginState.viteServer) {
