@@ -19,7 +19,7 @@ const RowBasedMenuSectionTabs = ({
           }`}
           onClick={() => onSectionClick(index)}
         >
-          {section.label}
+          <span className="row-based-menu-section-label">{section.label}</span>
         </div>
       ))}
     </div>
