@@ -24,6 +24,8 @@ const DEVICE_TYPE = { KEYBOARD: 1, POINTER: 2 };
 const KEY_STATE = { RELEASE: 0, PRESS: 1 };
 const PERSIST_MODE = { UNTIL_REVOKED: 2 };
 const ALT_TAB_TIMEOUT_MS = 1000;
+const DBUS_INVOKE_TIMEOUT_MS = 10_000;
+const PORTAL_RESPONSE_TIMEOUT_MS = 60_000;
 
 const KV_STORAGE_TOKEN_KEY = "remote_desktop_manager.token";
 
@@ -46,6 +48,27 @@ function _getBus() {
 
 function invoke(bus, parameters) {
   return new Promise((resolve, reject) => {
+    let settled = false;
+    let timeoutId = null;
+
+    const settle = (callback, value) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeoutId);
+      callback(value);
+    };
+
+    timeoutId = setTimeout(() => {
+      settle(
+        reject,
+        new Error(
+          `${parameters.member} call timed out after ${DBUS_INVOKE_TIMEOUT_MS}ms.`,
+        ),
+      );
+    }, DBUS_INVOKE_TIMEOUT_MS);
+
+    timeoutId.unref?.();
+
     bus.invoke(parameters, (error, result) => {
       if (error) {
         logError(
@@ -53,13 +76,14 @@ function invoke(bus, parameters) {
           parameters.member,
           error,
         );
-        return reject(
+        return settle(
+          reject,
           new Error(
             `${parameters.member} call failed: ${JSON.stringify(error)}`,
           ),
         );
       }
-      resolve(result);
+      settle(resolve, result);
     });
   });
 }
@@ -82,11 +106,16 @@ async function _portalRequest(bus, parameters) {
   const signalMatchRule = `type='signal',interface='${REQUEST_IFACE}',path='${requestHandle}'`;
 
   let onResponse = null;
+  let timeoutId = null;
+  let settled = false;
 
   const cleanup = () => {
+    clearTimeout(timeoutId);
+
     if (onResponse) {
       bus.connection.removeListener("message", onResponse);
     }
+
     bus.removeMatch(signalMatchRule, (error) => {
       if (error) {
         logWarn(
@@ -97,11 +126,29 @@ async function _portalRequest(bus, parameters) {
     });
   };
 
-  return new Promise((resolve, reject) => {
-    onResponse = (message) => {
-      if (message.path === requestHandle && message.member === "Response") {
-        cleanup();
+  const settle = (callback, value) => {
+    if (settled) return;
+    settled = true;
+    cleanup();
+    callback(value);
+  };
 
+  return new Promise((resolve, reject) => {
+    timeoutId = setTimeout(() => {
+      settle(
+        reject,
+        new Error(
+          `${parameters.member} portal response timed out after ${PORTAL_RESPONSE_TIMEOUT_MS}ms.`,
+        ),
+      );
+    }, PORTAL_RESPONSE_TIMEOUT_MS);
+
+    timeoutId.unref?.();
+
+    onResponse = (message) => {
+      if (settled) return;
+
+      if (message.path === requestHandle && message.member === "Response") {
         const [responseCode, results] = message.body;
 
         logInfo(
@@ -114,16 +161,18 @@ async function _portalRequest(bus, parameters) {
         if (responseCode !== 0) {
           const errorMessage = `${parameters.member} request failed with code ${responseCode}.`;
           logError(errorMessage);
-          return reject(new Error(errorMessage));
+          return settle(reject, new Error(errorMessage));
         }
-        resolve(results);
+        settle(resolve, results);
       }
     };
 
     bus.addMatch(signalMatchRule, (error) => {
+      if (settled) return;
+
       if (error) {
-        cleanup();
-        return reject(
+        return settle(
+          reject,
           new Error(
             `Failed to add signal match for ${requestHandle}: ${error}`,
           ),

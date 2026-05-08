@@ -191,16 +191,14 @@ const SystemMenu = () => {
   );
 
   const openConfirmation = useCallback(
-    ({ title, description }, onConfirmAction, closeOnConfirm = true) => {
+    ({ title, description }, onConfirmAction) => {
       showModal((hideThisModal) => (
         <ConfirmationDialog
           message={title}
           description={description}
           onConfirm={() => {
+            hideThisModal();
             onConfirmAction();
-            if (closeOnConfirm) {
-              hideThisModal();
-            }
           }}
           onDeny={hideThisModal}
         />
@@ -224,11 +222,7 @@ const SystemMenu = () => {
           );
         };
 
-        openConfirmation(
-          { title: item.firstConfirm },
-          secondConfirmAction,
-          false,
-        );
+        openConfirmation({ title: item.firstConfirm }, secondConfirmAction);
       } else if (item.firstConfirm) {
         openConfirmation({ title: item.firstConfirm }, item.action);
       } else {

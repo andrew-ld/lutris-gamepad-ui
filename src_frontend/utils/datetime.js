@@ -3,8 +3,9 @@ export function formatPlaytime(seconds) {
     return "0m";
   }
 
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.round((seconds % 3600) / 60);
+  const totalMinutes = Math.round(seconds / 60);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
 
   if (hours > 0 && minutes > 0) {
     return `${hours}h ${minutes}m`;
@@ -22,7 +23,7 @@ export function formatPlaytime(seconds) {
 }
 
 export function formatDate(date) {
-  if (!date) return "Never";
+  if (!date) return null;
   return date.toLocaleDateString("en-US", {
     day: "2-digit",
     month: "long",
