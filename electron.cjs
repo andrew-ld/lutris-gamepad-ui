@@ -68,7 +68,6 @@ app.commandLine.appendSwitch("renderer-process-limit", "1");
 // unused features flags
 app.commandLine.appendSwitch("disable-site-isolation-trials");
 app.commandLine.appendSwitch("disable-http-cache");
-app.commandLine.appendSwitch("disable-web-bluetooth");
 app.commandLine.appendSwitch("disable-midi");
 app.commandLine.appendSwitch("disable-speech-api");
 app.commandLine.appendSwitch("disable-speech-synthesis-api");

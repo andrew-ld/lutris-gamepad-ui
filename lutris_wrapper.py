@@ -1,3 +1,4 @@
+import argparse
 import os.path
 import json
 import runpy
@@ -39,10 +40,48 @@ except ImportError:
 
 SUBCOMMAND_OUTPUT_HEADER = "lutris-subcommand-output:"
 
+INTERNAL_COMMAND_ARGUMENTS = (
+    "--get-coverart-path",
+    "--get-runtime-icon-path",
+    "--get-all-games-categories",
+    "--list-games",
+    "--get-settings",
+    "--get-new-game-settings",
+    "--update-setting",
+    "--list-runners",
+    "--add-game",
+)
+
 
 def _print_subcommand_output(json_serializable: typing.Any):
     data = json.dumps(json_serializable, ensure_ascii=True)
     print("\r\n" + SUBCOMMAND_OUTPUT_HEADER + data, end="\r\n")
+
+
+def _has_internal_command(argv: typing.List[str]) -> bool:
+    return any(argument in INTERNAL_COMMAND_ARGUMENTS for argument in argv)
+
+
+def _build_internal_argument_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
+    command_group = parser.add_mutually_exclusive_group(required=True)
+    command_group.add_argument("--get-coverart-path", action="store_true")
+    command_group.add_argument("--get-runtime-icon-path", metavar="ICON")
+    command_group.add_argument("--get-all-games-categories", action="store_true")
+    command_group.add_argument("--list-games", action="store_true")
+    command_group.add_argument("--get-settings", action="store_true")
+    command_group.add_argument("--get-new-game-settings", action="store_true")
+    command_group.add_argument(
+        "--update-setting",
+        nargs=3,
+        metavar=("SECTION", "KEY", "VALUE"),
+    )
+    command_group.add_argument("--list-runners", action="store_true")
+    command_group.add_argument("--add-game", metavar="PAYLOAD_JSON")
+    parser.add_argument("--game", dest="game_identifier")
+    parser.add_argument("--runner", dest="runner_slug")
+    parser.add_argument("--type", dest="value_type")
+    return parser
 
 
 def get_coverart_path_main():
@@ -227,9 +266,7 @@ def apply_settings_payload(config, settings_payload):
     target = getattr(config, target_attr)
 
     for section, options in settings_payload.items():
-        if section not in ["system", "runner", "game"] or not isinstance(
-            options, dict
-        ):
+        if section not in ["system", "runner", "game"] or not isinstance(options, dict):
             continue
 
         target_section = config.runner_slug if section == "runner" else section
@@ -313,66 +350,51 @@ def lutris_main():
 
 
 def main():
-    if "--get-coverart-path" in sys.argv:
+    argv = sys.argv[1:]
+    if not _has_internal_command(argv):
+        lutris_main()
+        sys.exit(0)
+
+    parser = _build_internal_argument_parser()
+    arguments, _ = parser.parse_known_args(argv)
+
+    if arguments.get_coverart_path:
         get_coverart_path_main()
 
-    elif "--get-runtime-icon-path" in sys.argv:
-        get_runtime_icon_path_main(
-            sys.argv[sys.argv.index("--get-runtime-icon-path") + 1]
-        )
+    elif arguments.get_runtime_icon_path is not None:
+        get_runtime_icon_path_main(arguments.get_runtime_icon_path)
 
-    elif "--get-all-games-categories" in sys.argv:
+    elif arguments.get_all_games_categories:
         get_all_games_categories_main()
 
-    elif "--list-games" in sys.argv:
+    elif arguments.list_games:
         list_games_main()
 
-    elif "--get-settings" in sys.argv:
-        game_identifier = None
-        runner_slug = None
-        if "--game" in sys.argv:
-            game_identifier = sys.argv[sys.argv.index("--game") + 1]
-        if "--runner" in sys.argv:
-            runner_slug = sys.argv[sys.argv.index("--runner") + 1]
-        get_settings_main(game_identifier=game_identifier, runner_slug=runner_slug)
+    elif arguments.get_settings:
+        get_settings_main(
+            game_identifier=arguments.game_identifier,
+            runner_slug=arguments.runner_slug,
+        )
 
-    elif "--get-new-game-settings" in sys.argv:
-        runner_slug = None
-        if "--runner" in sys.argv:
-            runner_slug = sys.argv[sys.argv.index("--runner") + 1]
-        get_settings_main(runner_slug=runner_slug, config_level="game")
+    elif arguments.get_new_game_settings:
+        get_settings_main(runner_slug=arguments.runner_slug, config_level="game")
 
-    elif "--update-setting" in sys.argv:
-        idx = sys.argv.index("--update-setting")
-        section = sys.argv[idx + 1]
-        key = sys.argv[idx + 2]
-        value = sys.argv[idx + 3]
-        game_identifier = None
-        runner_slug = None
-        value_type = None
-        if "--game" in sys.argv:
-            game_identifier = sys.argv[sys.argv.index("--game") + 1]
-        if "--runner" in sys.argv:
-            runner_slug = sys.argv[sys.argv.index("--runner") + 1]
-        if "--type" in sys.argv:
-            value_type = sys.argv[sys.argv.index("--type") + 1]
+    elif arguments.update_setting:
+        section, key, value = arguments.update_setting
         update_setting_main(
             section,
             key,
             value,
-            value_type=value_type,
-            game_identifier=game_identifier,
-            runner_slug=runner_slug,
+            value_type=arguments.value_type,
+            game_identifier=arguments.game_identifier,
+            runner_slug=arguments.runner_slug,
         )
 
-    elif "--list-runners" in sys.argv:
+    elif arguments.list_runners:
         list_runners_main()
 
-    elif "--add-game" in sys.argv:
-        add_game_main(sys.argv[sys.argv.index("--add-game") + 1])
-
-    else:
-        lutris_main()
+    elif arguments.add_game is not None:
+        add_game_main(arguments.add_game)
 
     sys.exit(0)
 

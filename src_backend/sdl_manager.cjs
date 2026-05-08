@@ -5,67 +5,64 @@ const {
 } = require("./sdl_bindings.cjs");
 const { logError, logInfo, localeAppFile, logWarn } = require("./utils.cjs");
 
-const SDL_HANDLE = { promise: null };
+const SDL_HANDLE = { value: null, loadError: null };
 
 function getSdlHandle() {
-  if (SDL_HANDLE.promise) return SDL_HANDLE.promise;
+  if (SDL_HANDLE.value) return SDL_HANDLE.value;
+  if (SDL_HANDLE.loadError) return null;
 
-  SDL_HANDLE.promise = new Promise((resolve, reject) => {
-    try {
-      const koffi = require("koffi");
-      configureKoffiSdl(koffi);
+  try {
+    const koffi = require("koffi");
+    configureKoffiSdl(koffi);
 
-      for (const libraryName of SDL3_LIBRARY_NAME) {
-        try {
-          const lib = koffi.load(libraryName);
-          const sdl = bindSDL3(lib);
+    for (const libraryName of SDL3_LIBRARY_NAME) {
+      try {
+        const lib = koffi.load(libraryName);
+        const sdl = bindSDL3(lib);
 
-          if (!sdl.SDL_Init(sdl.SDL_INIT_GAMEPAD)) {
-            throw new Error("Failed to initialize SDL3 Gamepad subsystem");
-          }
-
-          const mappingPath = localeAppFile(
-            "./src_backend/resources/gamecontrollerdb.txt",
-          );
-
-          if (sdl.SDL_AddGamepadMappingsFromFile(mappingPath) < 0) {
-            logWarn("SDL3 unable to load gamepad mapping", mappingPath);
-          }
-
-          logInfo("SDL3 initialized!", libraryName);
-
-          const activeControllers = new Map();
-
-          const cleanup = () => {
-            for (const ptr of activeControllers.values()) {
-              if (ptr) sdl.SDL_CloseGamepad(ptr);
-            }
-            activeControllers.clear();
-            sdl.SDL_Quit();
-          };
-
-          process.on("exit", cleanup);
-
-          resolve({ sdl, activeControllers, koffi });
-          return;
-        } catch (error) {
-          logError("Unable to load", libraryName, error);
+        if (!sdl.SDL_Init(sdl.SDL_INIT_GAMEPAD)) {
+          throw new Error("Failed to initialize SDL3 Gamepad subsystem");
         }
+
+        const mappingPath = localeAppFile(
+          "./src_backend/resources/gamecontrollerdb.txt",
+        );
+
+        if (sdl.SDL_AddGamepadMappingsFromFile(mappingPath) < 0) {
+          logWarn("SDL3 unable to load gamepad mapping", mappingPath);
+        }
+
+        logInfo("SDL3 initialized!", libraryName);
+
+        const activeControllers = new Map();
+
+        const cleanup = () => {
+          for (const ptr of activeControllers.values()) {
+            if (ptr) sdl.SDL_CloseGamepad(ptr);
+          }
+          activeControllers.clear();
+          sdl.SDL_Quit();
+        };
+
+        process.on("exit", cleanup);
+
+        SDL_HANDLE.value = { sdl, activeControllers, koffi };
+        return SDL_HANDLE.value;
+      } catch (error) {
+        logError("Unable to load", libraryName, error);
       }
-
-      reject(new Error("Unable to load SDL3"));
-    } catch (error) {
-      logError("Fatal error while load SDL3:", error);
-      reject(error);
     }
-  });
 
-  return SDL_HANDLE.promise;
+    SDL_HANDLE.loadError = new Error("Unable to load SDL3");
+    return null;
+  } catch (error) {
+    logError("Fatal error while load SDL3:", error);
+    SDL_HANDLE.loadError = error;
+    return null;
+  }
 }
 
-async function pollGamepads() {
-  const { sdl, activeControllers, koffi } = await getSdlHandle();
-
+function pollGamepadsWithHandle({ sdl, activeControllers, koffi }) {
   sdl.SDL_PumpEvents();
   sdl.SDL_UpdateGamepads();
 
@@ -132,6 +129,11 @@ async function pollGamepads() {
   }
 
   return gamepads;
+}
+
+function pollGamepads() {
+  const sdlHandle = getSdlHandle();
+  return sdlHandle ? pollGamepadsWithHandle(sdlHandle) : null;
 }
 
 // Mapping definitions based on SDL3 Gamepad Enums and W3C Standard Gamepad layout.

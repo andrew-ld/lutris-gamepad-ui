@@ -20,19 +20,6 @@ export const setAudioMute = (isMuted) =>
 export const setDefaultSink = (sinkName) =>
   globalThis.electronAPI.setDefaultSink(sinkName);
 
-export const bluetoothGetState = () =>
-  globalThis.electronAPI.bluetoothGetState();
-export const bluetoothPowerOnAdapter = (path) =>
-  globalThis.electronAPI.bluetoothPowerOnAdapter(path);
-export const bluetoothStartDiscovery = () =>
-  globalThis.electronAPI.bluetoothStartDiscovery();
-export const bluetoothStopDiscovery = () =>
-  globalThis.electronAPI.bluetoothStopDiscovery();
-export const bluetoothConnect = (path) =>
-  globalThis.electronAPI.bluetoothConnect(path);
-export const bluetoothDisconnect = (path) =>
-  globalThis.electronAPI.bluetoothDisconnect(path);
-
 export const getBrightness = () => globalThis.electronAPI.getBrightness();
 export const setBrightness = (brightness) =>
   globalThis.electronAPI.setBrightness(brightness);
@@ -89,9 +76,6 @@ export const onGamePauseStateChanged = createSubscriber(
   "game-pause-state-changed",
 );
 export const onAudioInfoChanged = createSubscriber("audio-info-changed");
-export const onBluetoothStateChanged = createSubscriber(
-  "bluetooth-state-changed",
-);
 export const onThemeUpdated = createSubscriber("user-theme-updated");
 export const onShowToast = createSubscriber("show-toast");
 export const onUpdateAvailable = createSubscriber("update-available");
@@ -100,8 +84,10 @@ export const onAppConfigChanged = createSubscriber("app-config-changed");
 export const createBugReportFile = () =>
   globalThis.electronAPI.createBugReportFile();
 
-export const pollGamepadsSdl = async () =>
-  deserializeGamepads(await globalThis.electronAPI.pollGamepadsSdl());
+export const pollGamepadsSdl = () => {
+  const data = globalThis.electronAPI.pollGamepadsSdl();
+  return data ? deserializeGamepads(data) : null;
+};
 
 export function encodeAppProtocolPath(filePath) {
   const sanitizedFilePath = filePath

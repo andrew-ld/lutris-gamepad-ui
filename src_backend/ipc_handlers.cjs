@@ -6,14 +6,6 @@ const {
   setDefaultSink,
   setAudioMute,
 } = require("./audio_manager.cjs");
-const {
-  getBluetoothState,
-  powerOnAdapter,
-  startDiscovery: bluetoothStartDiscovery,
-  stopDiscovery: bluetoothStopDiscovery,
-  connectToDevice: bluetoothConnect,
-  disconnectFromDevice: bluetoothDisconnect,
-} = require("./bluetooth_manager.cjs");
 const { createBugReportFile } = require("./bugreport.cjs");
 const { getAppConfig, setAppConfig } = require("./config_manager.cjs");
 const {
@@ -55,10 +47,6 @@ const logLevelToLogger = {
   error: logError,
   warn: logWarn,
   info: logInfo,
-};
-
-const isValidDBusPath = (path, prefix) => {
-  return typeof path === "string" && path.startsWith(prefix);
 };
 
 const ipcHandleWithError = (channel, listener) => {
@@ -134,10 +122,15 @@ function registerIpcHandlers() {
       if (parsedUrl.protocol !== "https:") {
         throw new Error("Attempted to open a non-HTTPS URL.");
       }
-      await shell.openExternal(url);
     } catch (error) {
       logError("Invalid URL for open-external-link:", url, error);
-      throw new Error(`Could not open invalid URL: ${url}`, { cause: error });
+      throw new Error(`Invalid external URL: ${url}`, { cause: error });
+    }
+    try {
+      await shell.openExternal(url);
+    } catch (error) {
+      logError("Could not open external URL:", url, error);
+      throw new Error(`Could not open external URL: ${url}`, { cause: error });
     }
   });
 
@@ -187,48 +180,6 @@ function registerIpcHandlers() {
       throw new TypeError(`Invalid mute value: ${mute}. Must be a boolean.`);
     }
     await setAudioMute(mute);
-  });
-
-  // Bluetooth Management
-  ipcHandleWithError("bluetooth-get-state", async () => {
-    return await getBluetoothState();
-  });
-
-  ipcOnWithError("bluetooth-power-on-adapter", async (_event, adapterPath) => {
-    if (!isValidDBusPath(adapterPath, "/org/bluez/")) {
-      throw new Error(
-        `Invalid adapterPath for bluetooth-power-on-adapter: ${adapterPath}`,
-      );
-    }
-    await powerOnAdapter(adapterPath);
-  });
-
-  ipcOnWithError(
-    "bluetooth-start-discovery",
-    async () => await bluetoothStartDiscovery(),
-  );
-
-  ipcOnWithError(
-    "bluetooth-stop-discovery",
-    async () => await bluetoothStopDiscovery(),
-  );
-
-  ipcOnWithError("bluetooth-connect", async (_event, devicePath) => {
-    if (!isValidDBusPath(devicePath, "/org/bluez/")) {
-      throw new Error(
-        `Invalid devicePath for bluetooth-connect: ${devicePath}`,
-      );
-    }
-    await bluetoothConnect(devicePath);
-  });
-
-  ipcOnWithError("bluetooth-disconnect", async (_event, devicePath) => {
-    if (!isValidDBusPath(devicePath, "/org/bluez/")) {
-      throw new Error(
-        `Invalid devicePath for bluetooth-disconnect: ${devicePath}`,
-      );
-    }
-    await bluetoothDisconnect(devicePath);
   });
 
   // Display Management
@@ -321,8 +272,15 @@ function registerIpcHandlers() {
   });
 
   // Sdl
-  ipcHandleWithError("poll-gamepads-sdl", async () => {
-    return serializeGamepads(mapSdlGamepadsToWebApi(await pollGamepads()));
+  ipcMain.on("poll-gamepads-sdl", (event) => {
+    try {
+      const gamepads = pollGamepads();
+      event.returnValue = gamepads
+        ? serializeGamepads(mapSdlGamepadsToWebApi(gamepads))
+        : null;
+    } catch {
+      event.returnValue = null;
+    }
   });
 
   // File Manager

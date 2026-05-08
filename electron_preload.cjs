@@ -5,7 +5,6 @@ const ALLOWED_RECEIVE_CHANNELS = new Set([
   "game-closed",
   "game-pause-state-changed",
   "audio-info-changed",
-  "bluetooth-state-changed",
   "user-theme-updated",
   "show-toast",
   "update-available",
@@ -37,17 +36,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.send("set-audio-volume", volumePercent),
   setAudioMute: (isMuted) => ipcRenderer.send("set-audio-mute", isMuted),
   setDefaultSink: (sinkName) => ipcRenderer.send("set-default-sink", sinkName),
-
-  // Bluetooth
-  bluetoothGetState: () => ipcRenderer.invoke("bluetooth-get-state"),
-  bluetoothPowerOnAdapter: (adapterPath) =>
-    ipcRenderer.send("bluetooth-power-on-adapter", adapterPath),
-  bluetoothStartDiscovery: () => ipcRenderer.send("bluetooth-start-discovery"),
-  bluetoothStopDiscovery: () => ipcRenderer.send("bluetooth-stop-discovery"),
-  bluetoothConnect: (devicePath) =>
-    ipcRenderer.send("bluetooth-connect", devicePath),
-  bluetoothDisconnect: (devicePath) =>
-    ipcRenderer.send("bluetooth-disconnect", devicePath),
 
   // Display & Brightness
   getBrightness: () => ipcRenderer.invoke("get-brightness"),
@@ -105,7 +93,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   createBugReportFile: () => ipcRenderer.send("create-bug-report"),
 
   // Sdl
-  pollGamepadsSdl: () => ipcRenderer.invoke("poll-gamepads-sdl"),
+  pollGamepadsSdl: () => ipcRenderer.sendSync("poll-gamepads-sdl"),
 
   // File Manager
   listDirectory: (dirPath, allowFallback = false) =>

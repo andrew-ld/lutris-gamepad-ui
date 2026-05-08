@@ -1,7 +1,6 @@
 import BootSplash from "../components/BootSplash";
 
 import { useInitializeAudioStore } from "./audioStore";
-import { useInitializeBluetoothStore } from "./bluetoothStore";
 import { useInitializeInputStore } from "./inputStore";
 import { useInitializeLutrisStore } from "./lutrisStore";
 import { useInitializeSettingsStore, useSettingsStore } from "./settingsStore";
@@ -12,11 +11,6 @@ const AudioStoreRuntime = () => {
   return null;
 };
 
-const BluetoothStoreRuntime = () => {
-  useInitializeBluetoothStore();
-  return null;
-};
-
 const StoreRuntime = ({ children, staticSettings }) => {
   useInitializeInputStore();
   useInitializeTranslationStore();
@@ -24,7 +18,6 @@ const StoreRuntime = ({ children, staticSettings }) => {
 
   return (
     <>
-      {!staticSettings.DISABLE_BLUETOOTH_SETTINGS && <BluetoothStoreRuntime />}
       {!staticSettings.DISABLE_AUDIO_SETTINGS && <AudioStoreRuntime />}
       {children}
     </>

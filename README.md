@@ -23,7 +23,6 @@ A simple, TV-friendly, gamepad-navigable frontend for the [Lutris](https://lutri
 - [Lutris](https://lutris.net/downloads) installed and configured with your games.
 - For full functionality, a standard desktop environment with:
   - **PulseAudio** or **PipeWire** (optional, for audio control).
-  - **BlueZ** (optional, for Bluetooth management).
   - **GNOME** or **KDE** (optional, for native display management).
   - **ddcutil** (optional, for external monitor brightness control).
   - **SDL3** (optional, for LUTRIS_GAMEPAD_UI_ENABLE_SDL_INPUT).
@@ -56,7 +55,6 @@ Arch Linux users (and users of Arch-based distributions) can install [`lutris-ga
 
 - **Integrated System Controls:** Access a comprehensive system menu to manage your device:
   - **Audio Settings:** Manage volume and switch between output devices.
-  - **Bluetooth Management:** Connect and disconnect devices (controllers, headsets, etc.).
   - **Display Settings:** Control **Brightness** and toggle **Night Light** (supports GNOME, KDE, and external monitors via `ddcutil`).
   - **Power Options:** Reboot or shutdown the system directly from the UI.
 
@@ -153,7 +151,6 @@ You can customize the application's behavior using the following environment var
 | `LUTRIS_GAMEPAD_UI_DISABLE_LUTRIS_SETTINGS`    | Hide the "Lutris settings" from the system menu.                     |
 | `LUTRIS_GAMEPAD_UI_DISABLE_AUDIO_SETTINGS`     | Hide the "Audio settings" from the system menu.                      |
 | `LUTRIS_GAMEPAD_UI_DISABLE_DISPLAY_SETTINGS`   | Hide the "Display settings" from the system menu.                    |
-| `LUTRIS_GAMEPAD_UI_DISABLE_BLUETOOTH_SETTINGS` | Hide the "Bluetooth settings" from the system menu.                  |
 | `LUTRIS_GAMEPAD_UI_DISABLE_OPEN_LUTRIS`        | Hide the "Open Lutris" option from the system menu.                  |
 | `LUTRIS_GAMEPAD_UI_DISABLE_REBOOT_SYSTEM`      | Hide the "Reboot System" option from the system menu.                |
 | `LUTRIS_GAMEPAD_UI_DISABLE_POWER_OFF_SYSTEM`   | Hide the "Power Off System" option from the system menu.             |

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 
 import { useAsyncEffect } from "../hooks/useAsyncEffect";
 import { useIsMounted } from "../hooks/useIsMounted";
@@ -20,6 +20,7 @@ const FilePicker = ({
   const { t } = useTranslation();
   const { showToast } = useToastActions();
   const isMounted = useIsMounted();
+  const directoryRequestId = useRef(0);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -36,12 +37,19 @@ const FilePicker = ({
         isMountedCheck = isMounted,
       } = {},
     ) => {
-      if (showLoading) {
+      const requestId = directoryRequestId.current + 1;
+      directoryRequestId.current = requestId;
+
+      const isCurrentRequest = () =>
+        isMountedCheck() && directoryRequestId.current === requestId;
+
+      if (showLoading && isCurrentRequest()) {
         setIsLoading(true);
       }
+
       try {
         const response = await api.listDirectory(directoryPath, allowFallback);
-        if (isMountedCheck()) {
+        if (isCurrentRequest()) {
           setDirectoryData(response);
           if (allowFallback && response.fallbackFrom) {
             showToast({
@@ -58,9 +66,11 @@ const FilePicker = ({
           }
         }
       } catch (error) {
-        api.logError("Failed to list directory", directoryPath, error);
+        if (isCurrentRequest()) {
+          api.logError("Failed to list directory", directoryPath, error);
+        }
       } finally {
-        if (isMountedCheck()) {
+        if (isCurrentRequest()) {
           setIsLoading(false);
         }
       }

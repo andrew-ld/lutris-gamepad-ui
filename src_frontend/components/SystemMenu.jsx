@@ -13,7 +13,6 @@ import { useUI } from "../stores/uiStore";
 import * as api from "../utils/ipc";
 
 import About from "./About";
-import BluetoothMenu from "./BluetoothMenu";
 import ConfirmationDialog from "./ConfirmationDialog";
 import DisplaySettings from "./DisplaySettings";
 import LegendaContainer from "./LegendaContainer";
@@ -62,11 +61,6 @@ const SystemMenu = () => {
 
   const openAudioSettingsModal = useCallback(() => {
     showModal((hideThisModal) => <VolumeControl onClose={hideThisModal} />);
-    setIsOpen(false);
-  }, [showModal, setIsOpen]);
-
-  const openBluetoothSettingsModal = useCallback(() => {
-    showModal((hideThisModal) => <BluetoothMenu onClose={hideThisModal} />);
     setIsOpen(false);
   }, [showModal, setIsOpen]);
 
@@ -140,11 +134,6 @@ const SystemMenu = () => {
           disabled: staticSettings.DISABLE_DISPLAY_SETTINGS,
         },
         {
-          label: t("Bluetooth Settings"),
-          action: openBluetoothSettingsModal,
-          disabled: staticSettings.DISABLE_BLUETOOTH_SETTINGS,
-        },
-        {
           label: t("Open Lutris"),
           action: () => api.openLutris(),
           disabled: staticSettings.DISABLE_OPEN_LUTRIS,
@@ -190,12 +179,10 @@ const SystemMenu = () => {
       openLutrisAddGameModal,
       openAudioSettingsModal,
       openDisplaySettingsModal,
-      openBluetoothSettingsModal,
       settings.doubleConfirmPowerManagement,
       staticSettings.DISABLE_LUTRIS_SETTINGS,
       staticSettings.DISABLE_AUDIO_SETTINGS,
       staticSettings.DISABLE_DISPLAY_SETTINGS,
-      staticSettings.DISABLE_BLUETOOTH_SETTINGS,
       staticSettings.DISABLE_OPEN_LUTRIS,
       staticSettings.DISABLE_REBOOT_SYSTEM,
       staticSettings.DISABLE_POWER_OFF_SYSTEM,

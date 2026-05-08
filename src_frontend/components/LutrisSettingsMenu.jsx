@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import { useAsyncEffect } from "../hooks/useAsyncEffect";
 import { useIsMounted } from "../hooks/useIsMounted";
@@ -16,18 +16,26 @@ const LutrisSettingsMenu = ({
   const { t } = useTranslation();
   const { showToast } = useToastActions();
   const isMounted = useIsMounted();
+  const fetchRequestId = useRef(0);
   const [settings, setSettings] = useState(null);
   const [gameName, setGameName] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const fetchSettings = useCallback(
     async ({ showLoading = true, isMountedCheck = isMounted } = {}) => {
-      if (showLoading) {
+      const requestId = fetchRequestId.current + 1;
+      fetchRequestId.current = requestId;
+
+      const isCurrentRequest = () =>
+        isMountedCheck() && fetchRequestId.current === requestId;
+
+      if (showLoading && isCurrentRequest()) {
         setLoading(true);
       }
+
       try {
         const data = await api.getLutrisSettings(gameIdentifier, runnerSlug);
-        if (isMountedCheck() && data && data.settings) {
+        if (isCurrentRequest() && data && data.settings) {
           setSettings(data.settings);
           if (data.game_name) {
             setGameName(data.game_name);
@@ -35,14 +43,14 @@ const LutrisSettingsMenu = ({
         }
       } catch (error) {
         api.logError("Failed to fetch Lutris settings", error);
-        if (isMountedCheck()) {
+        if (isCurrentRequest()) {
           showToast({
             title: t("Failed to fetch Lutris settings"),
             type: "error",
           });
         }
       } finally {
-        if (isMountedCheck()) {
+        if (isCurrentRequest()) {
           setLoading(false);
         }
       }

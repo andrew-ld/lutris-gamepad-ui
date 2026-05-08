@@ -10,11 +10,9 @@ const {
   app,
 } = require("electron");
 
-const { subscribeToBluetoothChanges } = require("./bluetooth_manager.cjs");
 const {
   getAppConfig,
   subscribeConfigValueChange,
-  IS_BLUETOOTH_MANAGER_DISABLED,
 } = require("./config_manager.cjs");
 const {
   startRemoteDesktopSession,
@@ -278,10 +276,6 @@ function createWindow(onWindowClosedCallback) {
 
   win.webContents.once("did-stop-loading", () => {
     initializeThemeManager();
-
-    if (!IS_BLUETOOTH_MANAGER_DISABLED) {
-      subscribeToBluetoothChanges();
-    }
 
     win.webContents.setZoomFactor(getWindowZoomFactor());
 
