@@ -93,6 +93,17 @@ function getVariantValue(resultsArray, key) {
   return pair?.[1]?.[1]?.[0];
 }
 
+function closePortalRequest(bus, requestHandle, reason) {
+  invoke(bus, {
+    destination: PORTAL_DESTINATION,
+    path: requestHandle,
+    interface: REQUEST_IFACE,
+    member: "Close",
+  }).catch((error) => {
+    logWarn("Failed to close portal request:", requestHandle, reason, error);
+  });
+}
+
 async function _portalRequest(bus, parameters) {
   logInfo("Initiating portal request for:", parameters.member);
   const requestHandle = await invoke(bus, parameters);
@@ -135,6 +146,7 @@ async function _portalRequest(bus, parameters) {
 
   return new Promise((resolve, reject) => {
     timeoutId = setTimeout(() => {
+      closePortalRequest(bus, requestHandle, `${parameters.member} timeout`);
       settle(
         reject,
         new Error(
@@ -171,6 +183,7 @@ async function _portalRequest(bus, parameters) {
       if (settled) return;
 
       if (error) {
+        closePortalRequest(bus, requestHandle, `${parameters.member} addMatch`);
         return settle(
           reject,
           new Error(
