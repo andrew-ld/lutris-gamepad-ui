@@ -3,6 +3,56 @@ import { useMemo } from "react";
 import { useSettingsState } from "../stores/settingsStore";
 import { useTranslation } from "../stores/translationStore";
 
+const LIBRARY_SORT_MODES = {
+  GAME_NAME: "gameName",
+  RUNNER_NAME: "runnerName",
+  LAST_PLAYED: "lastPlayed",
+  RUNNER_LAST_PLAYED: "runnerLastPlayed",
+};
+
+const compareByGameName = (a, b) => a.title.localeCompare(b.title);
+
+const compareByLastPlayed = (a, b) => {
+  const result =
+    (b.lastPlayed?.getTime() || 0) - (a.lastPlayed?.getTime() || 0);
+
+  return result || compareByGameName(a, b);
+};
+
+const getRunnerName = (game) =>
+  typeof game.runner === "string" ? game.runner.trim() : "";
+
+const compareByRunner = (a, b) => {
+  const runnerA = getRunnerName(a);
+  const runnerB = getRunnerName(b);
+
+  if (!runnerA && runnerB) return 1;
+  if (runnerA && !runnerB) return -1;
+
+  return runnerA.localeCompare(runnerB);
+};
+
+const sortGames = (gameList, sortMode) => {
+  const compareGames = (() => {
+    switch (sortMode) {
+      case LIBRARY_SORT_MODES.LAST_PLAYED: {
+        return compareByLastPlayed;
+      }
+      case LIBRARY_SORT_MODES.RUNNER_LAST_PLAYED: {
+        return (a, b) => compareByRunner(a, b) || compareByLastPlayed(a, b);
+      }
+      case LIBRARY_SORT_MODES.RUNNER_NAME: {
+        return (a, b) => compareByRunner(a, b) || compareByGameName(a, b);
+      }
+      default: {
+        return compareByGameName;
+      }
+    }
+  })();
+
+  return [...gameList].toSorted(compareGames);
+};
+
 export const useGameShelves = (games, searchQuery) => {
   const { t } = useTranslation();
   const { settings } = useSettingsState();
@@ -29,23 +79,18 @@ export const useGameShelves = (games, searchQuery) => {
       return [
         {
           title: t('Results for "{{searchQuery}}"', { searchQuery }),
-          games: currentGames.toSorted((a, b) =>
-            a.title.localeCompare(b.title),
-          ),
+          games: sortGames(currentGames, settings.librarySortMode),
         },
       ];
     }
 
-    const sortByLastPlayed = (gameList) =>
-      [...gameList].toSorted(
-        (a, b) =>
-          (b.lastPlayed?.getTime() || 0) - (a.lastPlayed?.getTime() || 0),
-      );
-
     const newShelves = [];
 
     if (settings.showRecentlyPlayed) {
-      const recentlyPlayedGames = sortByLastPlayed(currentGames).slice(0, 10);
+      const recentlyPlayedGames = sortGames(
+        currentGames,
+        LIBRARY_SORT_MODES.LAST_PLAYED,
+      ).slice(0, 10);
       if (recentlyPlayedGames.length > 0) {
         newShelves.push({
           title: t("Recently Played"),
@@ -54,9 +99,7 @@ export const useGameShelves = (games, searchQuery) => {
       }
     }
 
-    const allGamesSorted = [...currentGames].toSorted((a, b) =>
-      a.title.localeCompare(b.title),
-    );
+    const allGamesSorted = sortGames(currentGames, settings.librarySortMode);
     newShelves.push({ title: t("All Games"), games: allGamesSorted });
 
     const categoriesMap = new Map();
@@ -77,12 +120,18 @@ export const useGameShelves = (games, searchQuery) => {
       const categoryGames = categoriesMap.get(categoryName);
       newShelves.push({
         title: categoryName.charAt(0).toUpperCase() + categoryName.slice(1),
-        games: sortByLastPlayed(categoryGames),
+        games: sortGames(categoryGames, settings.librarySortMode),
       });
     }
 
     return newShelves;
-  }, [currentGames, searchQuery, t, settings.showRecentlyPlayed]);
+  }, [
+    currentGames,
+    searchQuery,
+    t,
+    settings.showRecentlyPlayed,
+    settings.librarySortMode,
+  ]);
 
   return { currentGames, shelves };
 };

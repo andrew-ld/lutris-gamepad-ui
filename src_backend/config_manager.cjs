@@ -14,6 +14,7 @@ const defaultConfig = {
   keepGamesRunningOnQuit: false,
   enableUiActionSoundFeedbacks: true,
   enableSdlInput: false,
+  librarySortMode: "lastPlayed",
 };
 
 const SUBSCRIPTIONS = {};

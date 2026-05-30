@@ -21,6 +21,19 @@ const MIN_AUTOREPEAT = 100; // 100ms
 const MAX_AUTOREPEAT = 500; // 500ms
 const AUTOREPEAT_STEP = 25; // 25ms
 
+const LIBRARY_SORT_MODE_OPTIONS = [
+  "gameName",
+  "runnerName",
+  "lastPlayed",
+  "runnerLastPlayed",
+];
+
+const getLibrarySortModeIndex = (sortMode) => {
+  const index = LIBRARY_SORT_MODE_OPTIONS.indexOf(sortMode);
+
+  return index === -1 ? 0 : index;
+};
+
 const SettingsMenu = ({ onClose }) => {
   const { t } = useTranslation();
   const [focusedItem, setFocusedItem] = useState(null);
@@ -63,6 +76,46 @@ const SettingsMenu = ({ onClose }) => {
   const increaseAutorepeat = useCallback(() => {
     handleAutorepeatChange(settings.gamepadAutorepeatMs + AUTOREPEAT_STEP);
   }, [settings, handleAutorepeatChange]);
+
+  const updateLibrarySortMode = useCallback(
+    (offset) => {
+      const currentIndex = getLibrarySortModeIndex(settings.librarySortMode);
+      const nextIndex =
+        (currentIndex + offset + LIBRARY_SORT_MODE_OPTIONS.length) %
+        LIBRARY_SORT_MODE_OPTIONS.length;
+
+      updateSetting(
+        "librarySortMode",
+        LIBRARY_SORT_MODE_OPTIONS[nextIndex],
+      );
+    },
+    [settings.librarySortMode, updateSetting],
+  );
+
+  const previousLibrarySortMode = useCallback(() => {
+    updateLibrarySortMode(-1);
+  }, [updateLibrarySortMode]);
+
+  const nextLibrarySortMode = useCallback(() => {
+    updateLibrarySortMode(1);
+  }, [updateLibrarySortMode]);
+
+  const librarySortModeLabel = useMemo(() => {
+    switch (settings.librarySortMode) {
+      case "lastPlayed": {
+        return t("Game Last Start Date");
+      }
+      case "runnerLastPlayed": {
+        return t("Runner Name + Game Last Start Date");
+      }
+      case "runnerName": {
+        return t("Runner Name + Game Name")
+      }
+      default: {
+        return t("Game Name");
+      }
+    }
+  }, [settings.librarySortMode, t]);
 
   const toggleShowRecentlyPlayed = useCallback(() => {
     updateSetting("showRecentlyPlayed", !settings.showRecentlyPlayed);
@@ -121,6 +174,12 @@ const SettingsMenu = ({ onClose }) => {
     }
 
     const libraryItems = [];
+    if (settings.librarySortMode !== undefined) {
+      libraryItems.push({
+        type: "LIBRARY_SORT_MODE",
+        label: t("Library Sort Order"),
+      });
+    }
     if (settings.showRecentlyPlayed !== undefined) {
       libraryItems.push({
         type: "RECENTLY_PLAYED",
@@ -215,6 +274,12 @@ const SettingsMenu = ({ onClose }) => {
           if (actionName === "A") toggleShowRunnerIcon();
           break;
         }
+        case "LIBRARY_SORT_MODE": {
+          if (actionName === "LEFT") previousLibrarySortMode();
+          else if (actionName === "RIGHT" || actionName === "A")
+            nextLibrarySortMode();
+          break;
+        }
         case "ZOOM": {
           if (actionName === "LEFT") decreaseZoom();
           else if (actionName === "RIGHT") increaseZoom();
@@ -236,6 +301,8 @@ const SettingsMenu = ({ onClose }) => {
       toggleShowRecentlyPlayed,
       toggleShowHiddenGames,
       toggleShowRunnerIcon,
+      previousLibrarySortMode,
+      nextLibrarySortMode,
       toggleDoubleConfirmPowerManagement,
       toggleUseRemoteDesktopPortal,
       toggleKeepGamesRunningOnQuit,
@@ -281,6 +348,19 @@ const SettingsMenu = ({ onClose }) => {
                 }
                 label={`${settings.gamepadAutorepeatMs}ms`}
               />
+            </FocusableRow>
+          );
+        }
+        case "LIBRARY_SORT_MODE": {
+          return (
+            <FocusableRow
+              ref={ref}
+              isFocused={isFocused}
+              onMouseEnter={onMouseEnter}
+              onClick={nextLibrarySortMode}
+            >
+              <span className="settings-menu-label">{item.label}</span>
+              <div className="settings-menu-value">{librarySortModeLabel}</div>
             </FocusableRow>
           );
         }
@@ -439,6 +519,8 @@ const SettingsMenu = ({ onClose }) => {
       toggleShowRecentlyPlayed,
       toggleShowHiddenGames,
       toggleShowRunnerIcon,
+      nextLibrarySortMode,
+      librarySortModeLabel,
       toggleDoubleConfirmPowerManagement,
       toggleUseRemoteDesktopPortal,
       toggleKeepGamesRunningOnQuit,
@@ -485,6 +567,27 @@ const SettingsMenu = ({ onClose }) => {
             button: "RIGHT",
             label: t("Increase"),
             onClick: increaseAutorepeat,
+          },
+        );
+
+        break;
+      }
+      case "LIBRARY_SORT_MODE": {
+        buttons.push(
+          {
+            button: "LEFT",
+            label: t("Prev"),
+            onClick: previousLibrarySortMode,
+          },
+          {
+            button: "RIGHT",
+            label: t("Next"),
+            onClick: nextLibrarySortMode,
+          },
+          {
+            button: "A",
+            label: t("Next"),
+            onClick: nextLibrarySortMode,
           },
         );
 
@@ -583,6 +686,8 @@ const SettingsMenu = ({ onClose }) => {
     toggleShowRecentlyPlayed,
     toggleShowHiddenGames,
     toggleShowRunnerIcon,
+    previousLibrarySortMode,
+    nextLibrarySortMode,
     toggleDoubleConfirmPowerManagement,
     toggleUseRemoteDesktopPortal,
     toggleKeepGamesRunningOnQuit,
