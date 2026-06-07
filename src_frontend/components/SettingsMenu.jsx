@@ -84,10 +84,7 @@ const SettingsMenu = ({ onClose }) => {
         (currentIndex + offset + LIBRARY_SORT_MODE_OPTIONS.length) %
         LIBRARY_SORT_MODE_OPTIONS.length;
 
-      updateSetting(
-        "librarySortMode",
-        LIBRARY_SORT_MODE_OPTIONS[nextIndex],
-      );
+      updateSetting("librarySortMode", LIBRARY_SORT_MODE_OPTIONS[nextIndex]);
     },
     [settings.librarySortMode, updateSetting],
   );
@@ -109,7 +106,7 @@ const SettingsMenu = ({ onClose }) => {
         return t("Runner Name + Game Last Start Date");
       }
       case "runnerName": {
-        return t("Runner Name + Game Name")
+        return t("Runner Name + Game Name");
       }
       default: {
         return t("Game Name");

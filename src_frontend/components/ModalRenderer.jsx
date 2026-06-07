@@ -4,10 +4,6 @@ import { useModalState, useModalActions } from "../stores/modalStore";
 import { ViewStoreBinder } from "../stores/viewStore";
 import "../styles/Modal.css";
 
-const handleContentClick = (e) => {
-  e.stopPropagation();
-};
-
 const ModalRenderer = () => {
   const { topModal, isModalOpen } = useModalState();
   const { hideModal } = useModalActions();
@@ -61,8 +57,10 @@ const ModalRenderer = () => {
     return null;
   }
 
-  const handleOverlayClick = () => {
-    hideModal();
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      hideModal();
+    }
   };
 
   const contentStyle = {
@@ -74,7 +72,6 @@ const ModalRenderer = () => {
     <div className="modal-overlay" onClick={handleOverlayClick}>
       <div
         className="modal-content"
-        onClick={handleContentClick}
         ref={contentReference}
         style={contentStyle}
         key={topModal.id}
