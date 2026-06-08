@@ -155,6 +155,16 @@ const SystemMenu = () => {
           disabled: staticSettings.DISABLE_POWER_OFF_SYSTEM,
         },
         {
+          label: t("Suspend System"),
+          action: () => api.suspendPC(),
+          doubleConfirm: settings.doubleConfirmPowerManagement,
+          firstConfirm: t("Are you sure you want to suspend the system?"),
+          secondConfirm: t("Continue with suspend system?"),
+          disabled:
+            settings.systemPowerSuspendMode === "none" ||
+            staticSettings.DISABLE_SUSPEND_SYSTEM,
+        },
+        {
           label: t("Generate Bug Report"),
           action: () => api.createBugReportFile(),
           firstConfirm: t(
@@ -176,10 +186,6 @@ const SystemMenu = () => {
       openAboutModal,
       openSettingsModal,
       openLutrisSettingsModal,
-      openLutrisAddGameModal,
-      openAudioSettingsModal,
-      openDisplaySettingsModal,
-      settings.doubleConfirmPowerManagement,
       staticSettings.DISABLE_LUTRIS_SETTINGS,
       staticSettings.DISABLE_AUDIO_SETTINGS,
       staticSettings.DISABLE_DISPLAY_SETTINGS,
@@ -187,6 +193,12 @@ const SystemMenu = () => {
       staticSettings.DISABLE_REBOOT_SYSTEM,
       staticSettings.DISABLE_POWER_OFF_SYSTEM,
       staticSettings.DISABLE_BUG_REPORT,
+      staticSettings.DISABLE_SUSPEND_SYSTEM,
+      openLutrisAddGameModal,
+      openAudioSettingsModal,
+      openDisplaySettingsModal,
+      settings.doubleConfirmPowerManagement,
+      settings.systemPowerSuspendMode,
     ],
   );
 

@@ -29,18 +29,12 @@ const {
   addLutrisGame,
   getLutrisRunners,
 } = require("./lutris_wrapper.cjs");
+const { rebootPc, powerOffPc, suspendPc } = require("./power_utils.cjs");
 const { serializeGamepads } = require("./sdl_gamepad_serialize.cjs");
 const { mapSdlGamepadsToWebApi, pollGamepads } = require("./sdl_manager.cjs");
 const { getMainWindow } = require("./state.cjs");
 const { getUserTheme } = require("./theme_manager.cjs");
-const {
-  logError,
-  logInfo,
-  logWarn,
-  toastError,
-  powerOffPc,
-  rebootPc,
-} = require("./utils.cjs");
+const { logError, logInfo, logWarn, toastError } = require("./utils.cjs");
 const { toggleWindowShow } = require("./window_manager.cjs");
 
 const logLevelToLogger = {
@@ -150,6 +144,10 @@ function registerIpcHandlers() {
   ipcOnWithError("poweroff-pc", async () => {
     logInfo("Requesting PC power off...");
     await powerOffPc();
+  });
+
+  ipcOnWithError("suspend-pc", async () => {
+    await suspendPc();
   });
 
   // Audio Management

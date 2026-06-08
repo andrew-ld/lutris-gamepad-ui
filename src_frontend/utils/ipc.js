@@ -8,6 +8,7 @@ export const toggleGamePause = () => globalThis.electronAPI.toggleGamePause();
 
 export const rebootPC = () => globalThis.electronAPI.rebootPC();
 export const powerOffPC = () => globalThis.electronAPI.powerOffPC();
+export const suspendPC = () => globalThis.electronAPI.suspendPC();
 export const toggleWindowShow = () => globalThis.electronAPI.toggleWindowShow();
 export const openExternalLink = (url) =>
   globalThis.electronAPI.openExternalLink(url);

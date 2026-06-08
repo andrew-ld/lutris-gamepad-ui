@@ -155,6 +155,7 @@ You can customize the application's behavior using the following environment var
 | `LUTRIS_GAMEPAD_UI_DISABLE_REBOOT_SYSTEM`    | Hide the "Reboot System" option from the system menu.                |
 | `LUTRIS_GAMEPAD_UI_DISABLE_POWER_OFF_SYSTEM` | Hide the "Power Off System" option from the system menu.             |
 | `LUTRIS_GAMEPAD_UI_DISABLE_BUG_REPORT`       | Hide the "Generate Bug Report" option from the system menu.          |
+| `LUTRIS_GAMEPAD_UI_DISABLE_SUSPEND_SYSTEM`   | Hide the "Suspend System" option from the system menu.               |
 
 ## License
 

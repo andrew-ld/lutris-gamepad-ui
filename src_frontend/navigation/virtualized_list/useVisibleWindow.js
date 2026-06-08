@@ -20,13 +20,14 @@ export const useVisibleWindow = ({
 }) => {
   const visibleRange = useMemo(() => {
     if (isVirtualizing) {
-      return getVisibleRange({
+      const range = getVisibleRange({
         itemCount: items.length,
         scrollTop: displayedScrollTop,
         viewportHeight,
         heights: measuredItemHeights,
         fallbackHeight: baseHeight,
       });
+      return { ...range, isVirtualized: true };
     }
 
     if (viewportHeight === 0 && items.length > MAX_INITIAL_RENDER_COUNT) {

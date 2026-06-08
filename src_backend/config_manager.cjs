@@ -1,5 +1,6 @@
 const { getMainWindow } = require("./state.cjs");
 const { setKvStoreValue, getKvStoreValue } = require("./storage_kv.cjs");
+const { logInfo } = require("./utils.cjs");
 
 const CONFIG_KEY = "app_config";
 
@@ -15,6 +16,7 @@ const defaultConfig = {
   enableUiActionSoundFeedbacks: true,
   enableSdlInput: false,
   librarySortMode: "lastPlayed",
+  systemPowerSuspendMode: "none",
 };
 
 const SUBSCRIPTIONS = {};
@@ -30,6 +32,8 @@ function subscribeConfigValueChange(key, callback) {
 }
 
 function setAppConfig(key, value) {
+  logInfo("setAppConfig key:", key, "value:", value);
+
   const currentConfig = getAppConfig();
   const newConfig = { ...currentConfig, [key]: value };
   setKvStoreValue(CONFIG_KEY, newConfig);

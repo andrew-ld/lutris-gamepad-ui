@@ -155,40 +155,6 @@ function toastError(title, error) {
   });
 }
 
-async function rebootPc() {
-  const commands = ["systemctl reboot", "loginctl reboot", "reboot"];
-  const errors = [];
-
-  for (const command of commands) {
-    try {
-      await execPromise(command);
-      return;
-    } catch (error) {
-      logError("unable to reboot pc using", command, error);
-      errors.push(error);
-    }
-  }
-
-  throw errors;
-}
-
-async function powerOffPc() {
-  const commands = ["systemctl poweroff", "loginctl poweroff", "poweroff"];
-  const errors = [];
-
-  for (const command of commands) {
-    try {
-      await execPromise(command);
-      return;
-    } catch (error) {
-      logError("unable to poweroff pc using", command, error);
-      errors.push(error);
-    }
-  }
-
-  throw errors;
-}
-
 function isProcessPaused(pid) {
   const statusFile = readFileSync(`/proc/${pid}/status`, "utf8");
 
@@ -266,8 +232,6 @@ module.exports = {
   showToastOnUi,
   toastError,
   isRunningInsideGamescope,
-  rebootPc,
-  powerOffPc,
   getProcessDescendants,
   isProcessPaused,
   getRunExclusive,

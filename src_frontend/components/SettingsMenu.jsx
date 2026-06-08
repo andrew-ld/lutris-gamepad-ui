@@ -28,8 +28,22 @@ const LIBRARY_SORT_MODE_OPTIONS = [
   "runnerLastPlayed",
 ];
 
+const SUSPEND_MODE_OPTIONS = [
+  "none",
+  "sleep",
+  "hybrid-sleep",
+  "suspend-then-hibernate",
+  "hibernate",
+];
+
 const getLibrarySortModeIndex = (sortMode) => {
   const index = LIBRARY_SORT_MODE_OPTIONS.indexOf(sortMode);
+
+  return index === -1 ? 0 : index;
+};
+
+const getSuspendModeIndex = (suspendMode) => {
+  const index = SUSPEND_MODE_OPTIONS.indexOf(suspendMode);
 
   return index === -1 ? 0 : index;
 };
@@ -76,6 +90,49 @@ const SettingsMenu = ({ onClose }) => {
   const increaseAutorepeat = useCallback(() => {
     handleAutorepeatChange(settings.gamepadAutorepeatMs + AUTOREPEAT_STEP);
   }, [settings, handleAutorepeatChange]);
+
+  const updateSuspendMode = useCallback(
+    (offset) => {
+      const currentIndex = getSuspendModeIndex(settings.systemPowerSuspendMode);
+      const nextIndex =
+        (currentIndex + offset + SUSPEND_MODE_OPTIONS.length) %
+        SUSPEND_MODE_OPTIONS.length;
+
+      updateSetting("systemPowerSuspendMode", SUSPEND_MODE_OPTIONS[nextIndex]);
+    },
+    [settings.systemPowerSuspendMode, updateSetting],
+  );
+
+  const previousSuspendMode = useCallback(() => {
+    updateSuspendMode(-1);
+  }, [updateSuspendMode]);
+
+  const nextSuspendMode = useCallback(() => {
+    updateSuspendMode(1);
+  }, [updateSuspendMode]);
+
+  const suspendModeLabel = useMemo(() => {
+    switch (settings.systemPowerSuspendMode) {
+      case "none": {
+        return t("None");
+      }
+      case "sleep": {
+        return t("Sleep");
+      }
+      case "hybrid-sleep": {
+        return t("Hybrid sleep");
+      }
+      case "suspend-then-hibernate": {
+        return t("Suspend then hibernate");
+      }
+      case "hibernate": {
+        return t("Hibernate");
+      }
+      default: {
+        return t("Unknown");
+      }
+    }
+  }, [settings.systemPowerSuspendMode, t]);
 
   const updateLibrarySortMode = useCallback(
     (offset) => {
@@ -221,6 +278,12 @@ const SettingsMenu = ({ onClose }) => {
         label: t("UI Action Sound Feedbacks"),
       });
     }
+    if (settings.systemPowerSuspendMode !== undefined) {
+      inputPowerItems.push({
+        type: "SYSTEM_POWER_SUSPEND_MODE",
+        label: t("System Power Suspend Mode"),
+      });
+    }
 
     return [
       { id: "general", label: t("General"), items: generalItems },
@@ -239,6 +302,11 @@ const SettingsMenu = ({ onClose }) => {
       }
 
       switch (item.type) {
+        case "SYSTEM_POWER_SUSPEND_MODE": {
+          if (actionName === "LEFT") previousSuspendMode();
+          else if (actionName === "RIGHT") nextSuspendMode();
+          break;
+        }
         case "ENABLE_UI_ACTION_SOUND_FEEDBACKS": {
           if (actionName === "A") toggleEnableUiActionSoundFeedbacks();
           break;
@@ -291,20 +359,22 @@ const SettingsMenu = ({ onClose }) => {
     },
     [
       onClose,
-      decreaseZoom,
-      increaseZoom,
-      decreaseAutorepeat,
-      increaseAutorepeat,
+      previousSuspendMode,
+      nextSuspendMode,
+      toggleEnableUiActionSoundFeedbacks,
+      toggleKeepGamesRunningOnQuit,
+      toggleUseRemoteDesktopPortal,
+      toggleDoubleConfirmPowerManagement,
+      toggleUseSdlInput,
       toggleShowRecentlyPlayed,
       toggleShowHiddenGames,
       toggleShowRunnerIcon,
       previousLibrarySortMode,
       nextLibrarySortMode,
-      toggleDoubleConfirmPowerManagement,
-      toggleUseRemoteDesktopPortal,
-      toggleKeepGamesRunningOnQuit,
-      toggleEnableUiActionSoundFeedbacks,
-      toggleUseSdlInput,
+      decreaseZoom,
+      increaseZoom,
+      decreaseAutorepeat,
+      increaseAutorepeat,
     ],
   );
 
@@ -345,6 +415,19 @@ const SettingsMenu = ({ onClose }) => {
                 }
                 label={`${settings.gamepadAutorepeatMs}ms`}
               />
+            </FocusableRow>
+          );
+        }
+        case "SYSTEM_POWER_SUSPEND_MODE": {
+          return (
+            <FocusableRow
+              ref={ref}
+              isFocused={isFocused}
+              onMouseEnter={onMouseEnter}
+              onClick={nextSuspendMode}
+            >
+              <span className="settings-menu-label">{item.label}</span>
+              <div className="settings-menu-value">{suspendModeLabel}</div>
             </FocusableRow>
           );
         }
@@ -511,18 +594,29 @@ const SettingsMenu = ({ onClose }) => {
       }
     },
     [
-      settings,
-      t,
-      toggleShowRecentlyPlayed,
-      toggleShowHiddenGames,
-      toggleShowRunnerIcon,
+      settings.zoomFactor,
+      settings.gamepadAutorepeatMs,
+      settings.showRecentlyPlayed,
+      settings.doubleConfirmPowerManagement,
+      settings.enableSdlInput,
+      settings.showHiddenGames,
+      settings.showRunnerIcon,
+      settings.useRemoteDesktopPortal,
+      settings.keepGamesRunningOnQuit,
+      settings.enableUiActionSoundFeedbacks,
+      nextSuspendMode,
+      suspendModeLabel,
       nextLibrarySortMode,
       librarySortModeLabel,
+      toggleShowRecentlyPlayed,
+      t,
       toggleDoubleConfirmPowerManagement,
+      toggleUseSdlInput,
+      toggleShowHiddenGames,
+      toggleShowRunnerIcon,
       toggleUseRemoteDesktopPortal,
       toggleKeepGamesRunningOnQuit,
       toggleEnableUiActionSoundFeedbacks,
-      toggleUseSdlInput,
     ],
   );
 
@@ -564,6 +658,27 @@ const SettingsMenu = ({ onClose }) => {
             button: "RIGHT",
             label: t("Increase"),
             onClick: increaseAutorepeat,
+          },
+        );
+
+        break;
+      }
+      case "SYSTEM_POWER_SUSPEND_MODE": {
+        buttons.push(
+          {
+            button: "LEFT",
+            label: t("Prev"),
+            onClick: previousSuspendMode,
+          },
+          {
+            button: "RIGHT",
+            label: t("Next"),
+            onClick: nextSuspendMode,
+          },
+          {
+            button: "A",
+            label: t("Next"),
+            onClick: nextSuspendMode,
           },
         );
 
@@ -673,25 +788,34 @@ const SettingsMenu = ({ onClose }) => {
 
     return buttons;
   }, [
-    focusedItem,
-    settings,
     menuSections.length,
+    focusedItem?.type,
+    t,
+    onClose,
     decreaseZoom,
     increaseZoom,
     decreaseAutorepeat,
     increaseAutorepeat,
+    previousSuspendMode,
+    nextSuspendMode,
+    previousLibrarySortMode,
+    nextLibrarySortMode,
+    settings.showRecentlyPlayed,
+    settings.showHiddenGames,
+    settings.showRunnerIcon,
+    settings.doubleConfirmPowerManagement,
+    settings.enableSdlInput,
+    settings.useRemoteDesktopPortal,
+    settings.keepGamesRunningOnQuit,
+    settings.enableUiActionSoundFeedbacks,
     toggleShowRecentlyPlayed,
     toggleShowHiddenGames,
     toggleShowRunnerIcon,
-    previousLibrarySortMode,
-    nextLibrarySortMode,
     toggleDoubleConfirmPowerManagement,
+    toggleUseSdlInput,
     toggleUseRemoteDesktopPortal,
     toggleKeepGamesRunningOnQuit,
     toggleEnableUiActionSoundFeedbacks,
-    toggleUseSdlInput,
-    onClose,
-    t,
   ]);
 
   return (
