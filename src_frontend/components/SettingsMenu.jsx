@@ -675,11 +675,6 @@ const SettingsMenu = ({ onClose }) => {
             label: t("Next"),
             onClick: nextSuspendMode,
           },
-          {
-            button: "A",
-            label: t("Next"),
-            onClick: nextSuspendMode,
-          },
         );
 
         break;
