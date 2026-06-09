@@ -4,6 +4,7 @@ const { getAppConfig } = require("./src_backend/config_manager.cjs");
 const {
   closeRunningGameProcess,
   toggleGamePause,
+  startFirstAccountSync,
 } = require("./src_backend/game_manager.cjs");
 const { registerIpcHandlers } = require("./src_backend/ipc_handlers.cjs");
 const { getMainWindow } = require("./src_backend/state.cjs");
@@ -99,6 +100,7 @@ app
 
     try {
       registerIpcHandlers();
+      startFirstAccountSync();
       createWindow(() => {
         logInfo("Main window closed!");
         if (!getAppConfig().keepGamesRunningOnQuit) {
