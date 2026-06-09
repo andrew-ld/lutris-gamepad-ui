@@ -1,17 +1,10 @@
 const { spawn } = require("node:child_process");
 const { readFileSync } = require("node:fs");
-const { readdir } = require("node:fs/promises");
-const path = require("node:path");
 
 const { globalShortcut } = require("electron");
 
 const { getAppConfig } = require("./config_manager.cjs");
-const {
-  getCoverartPath,
-  getRuntimeIconPath,
-  getAllGamesCategories,
-  getLutrisGames,
-} = require("./lutris_wrapper.cjs");
+const { getLutrisGames } = require("./lutris_wrapper.cjs");
 const {
   getMainWindow,
   getRunningGameProcess,
@@ -24,14 +17,11 @@ const {
   getLutrisWrapperPath,
   logError,
   logInfo,
-  logWarn,
   toastError,
   getProcessDescendants,
   isProcessPaused,
 } = require("./utils.cjs");
 const { toggleWindowShow } = require("./window_manager.cjs");
-
-const runtimeIconCache = new Map();
 
 function findLutrisWrapperChildren(pid) {
   const allSubprocesses = getProcessDescendants(pid, new Set());
@@ -103,10 +93,7 @@ function closeRunningGameProcess() {
 }
 
 async function getGames() {
-  const [games, gamesCategories] = await Promise.all([
-    getLutrisGames(),
-    getAllGamesCategories(),
-  ]);
+  const games = await getLutrisGames();
 
   if (games.length === 0) return games;
 
@@ -114,97 +101,16 @@ async function getGames() {
     g.id = Number.parseInt(g.id);
   }
 
-  try {
-    const {
-      categories: allCategories,
-      all_games_categories: gameCategoriesMap,
-    } = gamesCategories;
-
-    const hiddenGamesCategory = allCategories.find((c) => c.name === ".hidden");
-
-    const categoryIdToNameMap = new Map(
-      allCategories
-        .filter((c) => c !== hiddenGamesCategory)
-        .map((cat) => [cat.id, cat.name]),
-    );
-
-    for (const game of games) {
-      const categoryIds = gameCategoriesMap[String(game.id)] || [];
-
-      const categories = categoryIds
-        .map((id) => categoryIdToNameMap.get(id))
-        .filter(Boolean);
-
-      if (hiddenGamesCategory && !game.hidden) {
-        game.hidden = categoryIds.includes(hiddenGamesCategory.id);
-      }
-
-      game.categories = categories;
+  for (const game of games) {
+    if (game.runtimeIconPath) {
+      addWhitelistedFile(game.runtimeIconPath);
     }
-  } catch (error) {
-    logError("Could not process game categories:", error);
   }
 
-  try {
-    const uniqueRunners = [
-      ...new Set(games.map((g) => g.runner).filter(Boolean)),
-    ];
-    const runnersToFetch = uniqueRunners.filter(
-      (runner) => !runtimeIconCache.has(runner),
-    );
-
-    if (runnersToFetch.length > 0) {
-      const iconPromises = runnersToFetch.map(async (runner) => {
-        try {
-          const path = await getRuntimeIconPath(runner);
-          if (path) {
-            runtimeIconCache.set(runner, path);
-            addWhitelistedFile(path);
-          } else {
-            runtimeIconCache.set(runner, null);
-          }
-        } catch (error) {
-          logWarn(`Could not get runtime icon for '${runner}':`, error);
-          runtimeIconCache.set(runner, null);
-        }
-      });
-      await Promise.all(iconPromises);
+  for (const game of games) {
+    if (game.coverPath) {
+      addWhitelistedFile(game.coverPath);
     }
-
-    for (const game of games) {
-      if (game.runner && runtimeIconCache.has(game.runner)) {
-        const runtimeIconPath = runtimeIconCache.get(game.runner);
-        if (runtimeIconPath) {
-          game.runtimeIconPath = runtimeIconPath;
-        }
-      }
-    }
-  } catch (error) {
-    logError("Could not process runtime icons:", error);
-  }
-
-  try {
-    const lutrisCoverDir = await getCoverartPath();
-    const lutrisCoverDirFiles = await readdir(lutrisCoverDir);
-
-    for (const game of games) {
-      if (game.coverPath) {
-        addWhitelistedFile(game.coverPath);
-        continue;
-      }
-      if (game.slug) {
-        const coverFilename = lutrisCoverDirFiles.find((f) =>
-          f.startsWith(`${game.slug}.`),
-        );
-        if (coverFilename) {
-          const coverPath = path.join(lutrisCoverDir, coverFilename);
-          game.coverPath = coverPath;
-          addWhitelistedFile(coverPath);
-        }
-      }
-    }
-  } catch (error) {
-    logError("Could not process game cover art:", error);
   }
 
   for (const g of games) {

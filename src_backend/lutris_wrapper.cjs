@@ -44,18 +44,6 @@ async function invokeLutris(arguments_ = []) {
   return await execFilePromise("bash", [getLutrisWrapperPath(), ...arguments_]);
 }
 
-async function getCoverartPath() {
-  return await invokeLutrisSubcommand("get-coverart-path");
-}
-
-async function getRuntimeIconPath(iconName) {
-  return await invokeLutrisSubcommand("get-runtime-icon-path", [iconName]);
-}
-
-async function getAllGamesCategories() {
-  return await invokeLutrisSubcommand("get-all-games-categories");
-}
-
 async function getLutrisGames() {
   return await invokeLutrisSubcommand("list-games");
 }
@@ -106,9 +94,6 @@ async function getLutrisRunners() {
 }
 
 module.exports = {
-  getCoverartPath,
-  getRuntimeIconPath,
-  getAllGamesCategories,
   getLutrisGames,
   getLutrisSettings,
   getNewGameLutrisSettings,

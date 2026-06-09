@@ -26,7 +26,11 @@ from lutris.game import Game
 from lutris.runners import import_runner
 from lutris.startup import init_lutris
 from lutris.runners import get_installed as get_installed_runners
+from lutris.services import get_services
+from lutris.services.service_media import resolve_media_path
 from lutris.util.strings import slugify
+
+IMAGE_EXTENSIONS = ("jpg", "png", "jpeg", "webp")
 
 try:
     from lutris.gui.widgets.utils import get_runtime_icon_path
@@ -41,9 +45,6 @@ except ImportError:
 SUBCOMMAND_OUTPUT_HEADER = "lutris-subcommand-output:"
 
 INTERNAL_COMMAND_ARGUMENTS = (
-    "--get-coverart-path",
-    "--get-runtime-icon-path",
-    "--get-all-games-categories",
     "--list-games",
     "--get-settings",
     "--get-new-game-settings",
@@ -65,9 +66,6 @@ def _has_internal_command(argv: typing.List[str]) -> bool:
 def _build_internal_argument_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
     command_group = parser.add_mutually_exclusive_group(required=True)
-    command_group.add_argument("--get-coverart-path", action="store_true")
-    command_group.add_argument("--get-runtime-icon-path", metavar="ICON")
-    command_group.add_argument("--get-all-games-categories", action="store_true")
     command_group.add_argument("--list-games", action="store_true")
     command_group.add_argument("--get-settings", action="store_true")
     command_group.add_argument("--get-new-game-settings", action="store_true")
@@ -84,38 +82,132 @@ def _build_internal_argument_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def get_coverart_path_main():
-    _print_subcommand_output(settings.COVERART_PATH)
+def get_runtime_icons_for_runners(runners: list[str]) -> dict:
+    if not runners:
+        return {}
+
+    result = {}
+
+    for runner in runners:
+        if runner:
+            icon_path = None
+            if get_runtime_icon_path is not None:
+                icon_path = get_runtime_icon_path(runner)
+            if icon_path:
+                result[runner] = icon_path
+
+    return result
 
 
-def get_runtime_icon_path_main(icon_name: str):
-    if get_runtime_icon_path is None:
-        sys.exit(1)
+def get_service_cover_path(service: str, service_id: str) -> str | None:
+    if not service or not service_id:
+        return None
 
-    icon_path = get_runtime_icon_path(icon_name)
+    services = get_services()
+    if service not in services:
+        return None
 
-    if icon_path is not None:
-        _print_subcommand_output(icon_path)
-    else:
-        sys.exit(1)
+    service_class = services[service]()
+    if not hasattr(service_class, "medias") or not service_class.medias:
+        return None
+
+    media_name = getattr(service_class, "default_format", None) or next(
+        iter(service_class.medias)
+    )
+    media_class = service_class.medias[media_name]
+    media_instance = media_class()
+
+    media_path = resolve_media_path(media_instance.get_possible_media_paths(service_id))
+    if media_path.exists:
+        return media_path.path
+
+    return None
 
 
-def get_all_games_categories_main():
-    try:
-        all_games_categories = categories.get_all_games_categories()
-    except AttributeError:
-        all_games_categories = {}
+def get_local_cover_path(slug: str) -> str | None:
+    if not slug:
+        return None
 
-    result = {
-        "categories": categories.get_categories(),
-        "all_games_categories": all_games_categories,
+    for ext in IMAGE_EXTENSIONS:
+        path = os.path.join(settings.COVERART_PATH, f"{slug}.{ext}")
+        if os.path.exists(path):
+            return path
+
+    return None
+
+
+def get_game_cover_path(game: dict) -> str | None:
+    if not isinstance(game, dict):
+        return None
+
+    cover_path = get_service_cover_path(game.get("service"), game.get("service_id"))
+    if cover_path:
+        return cover_path
+
+    return get_local_cover_path(game.get("slug"))
+
+
+def _get_games_categories() -> tuple:
+    all_categories = categories.get_categories()
+    all_games_categories = categories.get_all_games_categories()
+    hidden_category = next(
+        (c for c in all_categories if c.get("name") == ".hidden"), None
+    )
+    category_id_to_name = {
+        c["id"]: c["name"] for c in all_categories if c.get("name") != ".hidden"
     }
+    return all_games_categories, hidden_category, category_id_to_name
 
-    _print_subcommand_output(result)
+
+def _enrich_game_data(game: dict, runtime_icons: dict, categories_data: tuple) -> None:
+    cover_path = get_game_cover_path(game)
+    if cover_path:
+        game["coverPath"] = cover_path
+
+    runner = game.get("runner")
+    if runner and runner in runtime_icons:
+        game["runtimeIconPath"] = runtime_icons[runner]
+
+    all_games_categories, hidden_category, category_id_to_name = categories_data
+
+    game_id = str(game.get("id"))
+    category_ids = all_games_categories.get(game_id, [])
+
+    game_categories = [
+        category_id_to_name[cid] for cid in category_ids if cid in category_id_to_name
+    ]
+
+    if hidden_category and not game.get("hidden"):
+        game["hidden"] = game_id in [
+            str(gid)
+            for gid in all_games_categories
+            if hidden_category["id"] in all_games_categories.get(str(gid), [])
+        ]
+
+    game["categories"] = game_categories
 
 
 def list_games_main():
-    _print_subcommand_output(games.get_games(filters={"installed": 1}))
+    result = games.get_games(filters={"installed": 1})
+    unique_runners = list({game.get("runner") for game in result if game.get("runner")})
+
+    try:
+        runtime_icons = get_runtime_icons_for_runners(unique_runners)
+    except:
+        runtime_icons = {}
+
+    try:
+        categories_data = _get_games_categories()
+    except:
+        categories_data = ({}, None, {})
+
+    for game in result:
+        try:
+            _enrich_game_data(game, runtime_icons, categories_data)
+        except:
+            pass
+
+    _print_subcommand_output(result)
 
 
 def get_config(game_identifier=None, runner_slug=None, config_level=None):
@@ -358,16 +450,7 @@ def main():
     parser = _build_internal_argument_parser()
     arguments, _ = parser.parse_known_args(argv)
 
-    if arguments.get_coverart_path:
-        get_coverart_path_main()
-
-    elif arguments.get_runtime_icon_path is not None:
-        get_runtime_icon_path_main(arguments.get_runtime_icon_path)
-
-    elif arguments.get_all_games_categories:
-        get_all_games_categories_main()
-
-    elif arguments.list_games:
+    if arguments.list_games:
         list_games_main()
 
     elif arguments.get_settings:
