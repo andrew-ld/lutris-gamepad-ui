@@ -12,9 +12,10 @@ A simple, TV-friendly, gamepad-navigable frontend for the [Lutris](https://lutri
   - [Arch User Repository (AUR)](#arch-user-repository-aur)
 - [Features](#features)
 - [Custom Theming Guide](#custom-theming-guide)
-- [Building from Source](#building-from-source)
 - [Configuration](#configuration)
   - [Environment Variables](#environment-variables)
+- [First Contribution](#first-contribution)
+- [Building from Source](#building-from-source)
 - [License](#license)
 
 ## Requirements
@@ -107,6 +108,27 @@ To change the main accent color from red to blue:
     }
     ```
 3.  Save the file. The UI will immediately update with the new color.
+
+## First Contribution
+
+Here are the steps you need to follow before submitting changes to this repository
+
+1. **Format the changes**
+
+   ```bash
+   npm run prettier
+   ```
+
+2. **Lint the changes**
+
+   ```bash
+   npm run lint
+   ```
+
+3. **Cleanup locale files**
+   ```bash
+   LUTRIS_GAMEPAD_UI_LOCALE_CLEANUP=1 npm run build:vite
+   ```
 
 ## Building from Source
 
