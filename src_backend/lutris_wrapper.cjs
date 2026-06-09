@@ -105,6 +105,10 @@ async function getLutrisRunners() {
   return await invokeLutrisSubcommand("list-runners");
 }
 
+async function syncLutrisAccount() {
+  return await invokeLutrisSubcommand("sync-account");
+}
+
 module.exports = {
   getCoverartPath,
   getRuntimeIconPath,
@@ -115,5 +119,6 @@ module.exports = {
   updateLutrisSetting,
   addLutrisGame,
   getLutrisRunners,
+  syncLutrisAccount,
   invokeLutris,
 };

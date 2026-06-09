@@ -11,6 +11,7 @@ const {
   getRuntimeIconPath,
   getAllGamesCategories,
   getLutrisGames,
+  syncLutrisAccount,
 } = require("./lutris_wrapper.cjs");
 const {
   getMainWindow,
@@ -323,6 +324,10 @@ function launchGame(gameId) {
     }
 
     globalShortcut.unregister("CommandOrControl+X");
+
+    syncLutrisAccount().catch((error) => {
+      logError("Lutris account sync failed after game close:", error);
+    });
   };
 
   newGameProcess.on("close", onGameClosed);
