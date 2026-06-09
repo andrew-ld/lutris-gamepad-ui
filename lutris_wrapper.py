@@ -30,8 +30,6 @@ from lutris.services import get_services
 from lutris.services.service_media import resolve_media_path
 from lutris.util.strings import slugify
 
-IMAGE_EXTENSIONS = ("jpg", "png", "jpeg", "webp")
-
 try:
     from lutris.gui.widgets.utils import get_runtime_icon_path
 except ImportError:
@@ -43,6 +41,8 @@ except ImportError:
     from lutris.runners import InvalidRunner as InvalidRunnerError
 
 SUBCOMMAND_OUTPUT_HEADER = "lutris-subcommand-output:"
+
+IMAGE_EXTENSIONS = ("jpg", "png", "jpeg", "webp")
 
 INTERNAL_COMMAND_ARGUMENTS = (
     "--list-games",
