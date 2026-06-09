@@ -201,8 +201,11 @@
     "Continue with system reboot?": "Continue with system reboot?",
     "Display Settings": "Display Settings",
     "Exit Application": "Exit Application",
+    "Failed to sync Lutris account": "Failed to sync Lutris account",
     "Generate Bug Report": "Generate Bug Report",
     "Lutris Settings": "Lutris Settings",
+    "Lutris account synced": "Lutris account synced",
+    "No Lutris account connected": "No Lutris account connected",
     "Open Lutris": "Open Lutris",
     "Power Off System": "Power Off System",
     "Reboot System": "Reboot System",
@@ -210,7 +213,10 @@
     "Reloading library...": "Reloading library...",
     "Select": "Select",
     "Settings": "Settings",
+    "Sign in to Lutris.net from the Lutris app first.": "Sign in to Lutris.net from the Lutris app first.",
     "Suspend System": "Suspend System",
+    "Sync Lutris Account": "Sync Lutris Account",
+    "Syncing Lutris account...": "Syncing Lutris account...",
     "This action is final and cannot be undone.": "This action is final and cannot be undone."
   },
   "components/TopBar.jsx": {

@@ -66,6 +66,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getLutrisSettings: (gameIdentifier, runnerSlug) =>
     ipcRenderer.invoke("get-lutris-settings", gameIdentifier, runnerSlug),
   getLutrisRunners: () => ipcRenderer.invoke("get-lutris-runners"),
+  syncLutrisAccount: () => ipcRenderer.invoke("sync-lutris-account"),
   getNewGameLutrisSettings: (runnerSlug) =>
     ipcRenderer.invoke("get-new-game-lutris-settings", runnerSlug),
   updateLutrisSetting: (

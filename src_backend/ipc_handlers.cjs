@@ -28,6 +28,7 @@ const {
   updateLutrisSetting,
   addLutrisGame,
   getLutrisRunners,
+  syncLutrisAccount,
 } = require("./lutris_wrapper.cjs");
 const { rebootPc, powerOffPc, suspendPc } = require("./power_utils.cjs");
 const { serializeGamepads } = require("./sdl_gamepad_serialize.cjs");
@@ -231,6 +232,10 @@ function registerIpcHandlers() {
 
   ipcHandleWithError("get-lutris-runners", async () => {
     return await getLutrisRunners();
+  });
+
+  ipcHandleWithError("sync-lutris-account", async () => {
+    return await syncLutrisAccount();
   });
 
   ipcHandleWithError(

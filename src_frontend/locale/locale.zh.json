@@ -203,8 +203,11 @@
     "Continue with system reboot?": "继续重启系统吗？",
     "Display Settings": "显示设置",
     "Exit Application": "退出应用",
+    "Failed to sync Lutris account": "Failed to sync Lutris account",
     "Generate Bug Report": "生成错误报告",
     "Lutris Settings": "Lutris 设置",
+    "Lutris account synced": "Lutris account synced",
+    "No Lutris account connected": "No Lutris account connected",
     "Open Lutris": "打开 Lutris",
     "Power Off System": "关机",
     "Reboot System": "重启系统",
@@ -212,7 +215,10 @@
     "Reloading library...": "正在重载库...",
     "Select": "选择",
     "Settings": "设置",
+    "Sign in to Lutris.net from the Lutris app first.": "Sign in to Lutris.net from the Lutris app first.",
     "Suspend System": "Suspend System",
+    "Sync Lutris Account": "Sync Lutris Account",
+    "Syncing Lutris account...": "Syncing Lutris account...",
     "This action is final and cannot be undone.": "此操作不可撤销。"
   },
   "components/TopBar.jsx": {

@@ -4,7 +4,7 @@ const { readFileSync } = require("node:fs");
 const { globalShortcut } = require("electron");
 
 const { getAppConfig } = require("./config_manager.cjs");
-const { getLutrisGames } = require("./lutris_wrapper.cjs");
+const { getLutrisGames, syncLutrisAccount } = require("./lutris_wrapper.cjs");
 const {
   getMainWindow,
   getRunningGameProcess,
@@ -229,6 +229,10 @@ function launchGame(gameId) {
     }
 
     globalShortcut.unregister("CommandOrControl+X");
+
+    syncLutrisAccount().catch((error) => {
+      logError("Lutris account sync failed after game close:", error);
+    });
   };
 
   newGameProcess.on("close", onGameClosed);
