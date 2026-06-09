@@ -203,8 +203,11 @@
     "Continue with system reboot?": "Fortsätt med att starta om systemet?",
     "Display Settings": "Display Settings",
     "Exit Application": "Avsluta programmet",
+    "Failed to sync Lutris account": "Failed to sync Lutris account",
     "Generate Bug Report": "Generate Bug Report",
     "Lutris Settings": "Lutris Settings",
+    "Lutris account synced": "Lutris account synced",
+    "No Lutris account connected": "No Lutris account connected",
     "Open Lutris": "Öppna Lutris",
     "Power Off System": "Stäng av systemet",
     "Reboot System": "Starta om systemet",
@@ -212,7 +215,10 @@
     "Reloading library...": "Laddar om biblioteket...",
     "Select": "Välj",
     "Settings": "Inställningar",
+    "Sign in to Lutris.net from the Lutris app first.": "Sign in to Lutris.net from the Lutris app first.",
     "Suspend System": "Suspend System",
+    "Sync Lutris Account": "Sync Lutris Account",
+    "Syncing Lutris account...": "Syncing Lutris account...",
     "This action is final and cannot be undone.": "Denna åtgärd är slutgiltig och kan inte ångras."
   },
   "components/TopBar.jsx": {

@@ -51,6 +51,7 @@ INTERNAL_COMMAND_ARGUMENTS = (
     "--update-setting",
     "--list-runners",
     "--add-game",
+    "--sync-account",
 )
 
 
@@ -76,6 +77,7 @@ def _build_internal_argument_parser() -> argparse.ArgumentParser:
     )
     command_group.add_argument("--list-runners", action="store_true")
     command_group.add_argument("--add-game", metavar="PAYLOAD_JSON")
+    command_group.add_argument("--sync-account", action="store_true")
     parser.add_argument("--game", dest="game_identifier")
     parser.add_argument("--runner", dest="runner_slug")
     parser.add_argument("--type", dest="value_type")
@@ -420,6 +422,36 @@ def list_runners_main():
     _print_subcommand_output({"runners": result})
 
 
+def sync_account_main():
+    init_lutris()
+    try:
+        from lutris.api import read_api_key
+        credentials = read_api_key()
+        if not credentials:
+            _print_subcommand_output({"status": "not_connected"})
+            return
+
+        # Push local library changes (playtime, lastplayed, newly added games,
+        # categories) up to Lutris.net and reconcile remote changes back down.
+        # This is the operation that actually syncs the account *to* the server;
+        # LutrisService.load() below only pulls the remote library down.
+        # Request methods (http.Request.post) are synchronous, so the upload is
+        # guaranteed to complete before this subprocess exits.
+        from lutris.util.library_sync import LibrarySyncer
+        LibrarySyncer().sync_local_library()
+
+        # Refresh the Lutris online service games / media for the library view.
+        from lutris.services.lutris import LutrisService
+        service = LutrisService()
+        lutris_games = service.load()
+        _print_subcommand_output({
+            "status": "success",
+            "synced_count": len(lutris_games) if lutris_games else 0,
+        })
+    except Exception as e:
+        _print_subcommand_output({"status": "error", "message": str(e)})
+
+
 def patch_gtk_dbus_singleton():
     """
     Prevents the Gtk.Application from registering a unique application ID
@@ -478,6 +510,9 @@ def main():
 
     elif arguments.add_game is not None:
         add_game_main(arguments.add_game)
+
+    elif arguments.sync_account:
+        sync_account_main()
 
     sys.exit(0)
 

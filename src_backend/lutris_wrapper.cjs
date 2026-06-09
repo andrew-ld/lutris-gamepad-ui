@@ -97,6 +97,10 @@ async function getLutrisRunners() {
   return await invokeLutrisSubcommand("list-runners");
 }
 
+async function syncLutrisAccount() {
+  return await invokeLutrisSubcommand("sync-account");
+}
+
 module.exports = {
   getLutrisGames,
   getLutrisSettings,
@@ -104,5 +108,6 @@ module.exports = {
   updateLutrisSetting,
   addLutrisGame,
   getLutrisRunners,
+  syncLutrisAccount,
   invokeLutris,
 };

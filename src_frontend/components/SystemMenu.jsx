@@ -82,6 +82,40 @@ const SystemMenu = () => {
     await fetchGames();
   }, [fetchGames, showToast, t]);
 
+  const syncLutrisAccountAction = useCallback(async () => {
+    showToast({
+      title: t("Syncing Lutris account..."),
+      type: "info",
+    });
+    try {
+      const result = await api.syncLutrisAccount();
+      if (result?.status === "success") {
+        showToast({
+          title: t("Lutris account synced"),
+          type: "info",
+        });
+        await fetchGames();
+      } else if (result?.status === "not_connected") {
+        showToast({
+          title: t("No Lutris account connected"),
+          description: t("Sign in to Lutris.net from the Lutris app first."),
+          type: "error",
+        });
+      } else {
+        showToast({
+          title: t("Failed to sync Lutris account"),
+          description: result?.message,
+          type: "error",
+        });
+      }
+    } catch {
+      showToast({
+        title: t("Failed to sync Lutris account"),
+        type: "error",
+      });
+    }
+  }, [fetchGames, showToast, t]);
+
   const openSettingsModal = useCallback(() => {
     showModal((hideThisModal) => <SettingsMenu onClose={hideThisModal} />);
     setIsOpen(false);
@@ -122,6 +156,11 @@ const SystemMenu = () => {
           label: t("Add Game"),
           action: openLutrisAddGameModal,
           disabled: staticSettings.DISABLE_LUTRIS_SETTINGS,
+        },
+        {
+          label: t("Sync Lutris Account"),
+          action: syncLutrisAccountAction,
+          disabled: staticSettings.DISABLE_SYNC_ACCOUNT,
         },
         {
           label: t("Audio Settings"),
@@ -187,6 +226,7 @@ const SystemMenu = () => {
       openSettingsModal,
       openLutrisSettingsModal,
       staticSettings.DISABLE_LUTRIS_SETTINGS,
+      staticSettings.DISABLE_SYNC_ACCOUNT,
       staticSettings.DISABLE_AUDIO_SETTINGS,
       staticSettings.DISABLE_DISPLAY_SETTINGS,
       staticSettings.DISABLE_OPEN_LUTRIS,
@@ -195,6 +235,7 @@ const SystemMenu = () => {
       staticSettings.DISABLE_BUG_REPORT,
       staticSettings.DISABLE_SUSPEND_SYSTEM,
       openLutrisAddGameModal,
+      syncLutrisAccountAction,
       openAudioSettingsModal,
       openDisplaySettingsModal,
       settings.doubleConfirmPowerManagement,

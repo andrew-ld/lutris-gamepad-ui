@@ -40,6 +40,8 @@ export const getUserTheme = () => globalThis.electronAPI.getUserTheme();
 export const getLutrisSettings = (gameIdentifier, runnerSlug) =>
   globalThis.electronAPI.getLutrisSettings(gameIdentifier, runnerSlug);
 export const getLutrisRunners = () => globalThis.electronAPI.getLutrisRunners();
+export const syncLutrisAccount = () =>
+  globalThis.electronAPI.syncLutrisAccount();
 export const getNewGameLutrisSettings = (runnerSlug) =>
   globalThis.electronAPI.getNewGameLutrisSettings(runnerSlug);
 export const updateLutrisSetting = (
