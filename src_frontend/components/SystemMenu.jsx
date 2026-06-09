@@ -87,34 +87,22 @@ const SystemMenu = () => {
       title: t("Syncing Lutris account..."),
       type: "info",
     });
-    try {
-      const result = await api.syncLutrisAccount();
+    void api.syncLutrisAccount().then((result) => {
       if (result?.status === "success") {
         showToast({
           title: t("Lutris account synced"),
           type: "info",
         });
-        await fetchGames();
+        reloadLibraryAction();
       } else if (result?.status === "not_connected") {
         showToast({
           title: t("No Lutris account connected"),
           description: t("Sign in to Lutris.net from the Lutris app first."),
           type: "error",
         });
-      } else {
-        showToast({
-          title: t("Failed to sync Lutris account"),
-          description: result?.message,
-          type: "error",
-        });
       }
-    } catch {
-      showToast({
-        title: t("Failed to sync Lutris account"),
-        type: "error",
-      });
-    }
-  }, [fetchGames, showToast, t]);
+    });
+  }, [showToast, t, reloadLibraryAction]);
 
   const openSettingsModal = useCallback(() => {
     showModal((hideThisModal) => <SettingsMenu onClose={hideThisModal} />);

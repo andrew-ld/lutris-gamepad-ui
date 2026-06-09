@@ -92,10 +92,37 @@ function closeRunningGameProcess() {
   runningGameProcess.stdin.end();
 }
 
-async function getGames() {
-  const games = await getLutrisGames();
+let __firstAccountSyncPromise = null;
 
-  if (games.length === 0) return games;
+function startFirstAccountSync() {
+  if (__firstAccountSyncPromise) {
+    return __firstAccountSyncPromise;
+  }
+
+  let timeoutId;
+
+  const timeoutPromise = new Promise((resolve) => {
+    timeoutId = setTimeout(() => {
+      logError("first account sync timed out after 5s");
+      resolve();
+    }, 5000);
+  });
+
+  __firstAccountSyncPromise = Promise.race([
+    syncLutrisAccount().catch((error) => {
+      logError("first account sync failed:", error);
+    }),
+    timeoutPromise,
+  ]).finally(() => {
+    clearTimeout(timeoutId);
+  });
+
+  return __firstAccountSyncPromise;
+}
+
+async function getGames() {
+  await startFirstAccountSync();
+  const games = await getLutrisGames();
 
   for (const g of games) {
     g.id = Number.parseInt(g.id);
@@ -254,6 +281,7 @@ function launchGame(gameId) {
 }
 
 module.exports = {
+  startFirstAccountSync,
   getGames,
   launchGame,
   closeRunningGameProcess,

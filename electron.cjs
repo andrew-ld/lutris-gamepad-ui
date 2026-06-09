@@ -6,7 +6,6 @@ const {
   toggleGamePause,
 } = require("./src_backend/game_manager.cjs");
 const { registerIpcHandlers } = require("./src_backend/ipc_handlers.cjs");
-const { syncLutrisAccount } = require("./src_backend/lutris_wrapper.cjs");
 const { getMainWindow } = require("./src_backend/state.cjs");
 const {
   logInfo,
@@ -105,9 +104,6 @@ app
         if (!getAppConfig().keepGamesRunningOnQuit) {
           closeRunningGameProcess();
         }
-      });
-      syncLutrisAccount().catch((error) => {
-        logError("Lutris account sync failed on startup:", error);
       });
     } catch (error) {
       logError("Failed to initialize the application:", error);

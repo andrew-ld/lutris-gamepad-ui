@@ -29,7 +29,9 @@ from lutris.runners import get_installed as get_installed_runners
 from lutris.services import get_services
 from lutris.services.service_media import resolve_media_path
 from lutris.util.strings import slugify
-
+from lutris.api import read_api_key
+from lutris.services.lutris import LutrisService
+        
 try:
     from lutris.gui.widgets.utils import get_runtime_icon_path
 except ImportError:
@@ -424,21 +426,19 @@ def list_runners_main():
 
 def sync_account_main():
     init_lutris()
-    try:
-        from lutris.api import read_api_key
-        credentials = read_api_key()
-        if not credentials:
-            _print_subcommand_output({"status": "not_connected"})
-            return
-        from lutris.services.lutris import LutrisService
-        service = LutrisService()
-        lutris_games = service.load()
-        _print_subcommand_output({
-            "status": "success",
-            "synced_count": len(lutris_games) if lutris_games else 0,
-        })
-    except Exception as e:
-        _print_subcommand_output({"status": "error", "message": str(e)})
+    credentials = read_api_key()
+
+    if not credentials:
+        _print_subcommand_output({"status": "not_connected"})
+        return
+
+    service = LutrisService()
+    lutris_games = service.load()
+
+    _print_subcommand_output({
+        "status": "success",
+        "synced_count": len(lutris_games) if lutris_games else 0,
+    })
 
 
 def patch_gtk_dbus_singleton():
