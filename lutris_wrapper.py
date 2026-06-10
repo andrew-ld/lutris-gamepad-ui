@@ -31,7 +31,8 @@ from lutris.services.service_media import resolve_media_path
 from lutris.util.strings import slugify
 from lutris.api import read_api_key
 from lutris.services.lutris import LutrisService
-        
+from lutris.util.library_sync import LibrarySyncer
+
 try:
     from lutris.gui.widgets.utils import get_runtime_icon_path
 except ImportError:
@@ -432,13 +433,17 @@ def sync_account_main():
         _print_subcommand_output({"status": "not_connected"})
         return
 
+    LibrarySyncer().sync_local_library()
+
     service = LutrisService()
     lutris_games = service.load()
 
-    _print_subcommand_output({
-        "status": "success",
-        "synced_count": len(lutris_games) if lutris_games else 0,
-    })
+    _print_subcommand_output(
+        {
+            "status": "success",
+            "synced_count": len(lutris_games) if lutris_games else 0,
+        }
+    )
 
 
 def patch_gtk_dbus_singleton():
