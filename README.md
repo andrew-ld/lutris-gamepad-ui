@@ -138,9 +138,9 @@ Here are the steps you need to follow before submitting Python changes to this r
    black lutris_wrapper.py
    ```
 
-2. **Ensure compatibility with Ubuntu 24 and older Lutris releases**
+2. **Ensure compatibility with Ubuntu 24.04 and older Lutris releases**
 
-   Many users are still running Ubuntu 24 with the Lutris version provided by the default APT repositories, which can be significantly older than the latest upstream release. Before submitting changes, verify that any Lutris APIs, modules, or functions you use are available in these older versions as well, and add appropriate compatibility handling when necessary to avoid import or runtime errors.
+   Many users are still running Ubuntu 24.04 with the Lutris version provided by the default APT repositories, which can be significantly older than the latest upstream release. Before submitting changes, verify that any Lutris APIs, modules, or functions you use are available in these older versions as well, and add appropriate compatibility handling when necessary to avoid import or runtime errors.
 
 ## Building from Source
 
