@@ -210,6 +210,8 @@ export const useInitializeInputStore = () => {
   const gamepadPollingGeneration = useRef(0);
   const gamepadAutorepeatMs = useRef(gamepadAutorepeatMsSetting);
   const gamepadAutorepeatState = useRef({});
+  const mouseLastXRef = useRef(null);
+  const mouseLastYRef = useRef(null);
 
   const { pollGamepads } = useGamepadInputCompat();
 
@@ -218,12 +220,31 @@ export const useInitializeInputStore = () => {
   }, [gamepadAutorepeatMsSetting]);
 
   useEffect(() => {
-    const handleMouseMove = () => {
+    const handleMouseMove = (event) => {
       if (!document.hasFocus()) {
         return;
       }
 
+      const { clientX, clientY } = event;
+
+      if (mouseLastXRef.current === null || mouseLastYRef.current === null) {
+        mouseLastXRef.current = clientX;
+        mouseLastYRef.current = clientY;
+        return;
+      }
+
+      if (
+        mouseLastXRef.current === clientX &&
+        mouseLastYRef.current === clientY
+      ) {
+        return;
+      }
+
+      mouseLastXRef.current = clientX;
+      mouseLastYRef.current = clientY;
+
       setMouseActive(true);
+
       clearTimeout(mouseTimeoutReference.current);
 
       mouseTimeoutReference.current = setTimeout(() => {
@@ -234,6 +255,8 @@ export const useInitializeInputStore = () => {
     const handleBlur = () => {
       setMouseActive(false);
       clearTimeout(mouseTimeoutReference.current);
+      mouseLastXRef.current = null;
+      mouseLastYRef.current = null;
     };
 
     document.addEventListener("mousemove", handleMouseMove);
