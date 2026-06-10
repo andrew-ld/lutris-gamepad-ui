@@ -27,11 +27,19 @@ from lutris.runners import import_runner
 from lutris.startup import init_lutris
 from lutris.runners import get_installed as get_installed_runners
 from lutris.services import get_services
-from lutris.services.service_media import resolve_media_path
 from lutris.util.strings import slugify
 from lutris.api import read_api_key
 from lutris.services.lutris import LutrisService
-from lutris.util.library_sync import LibrarySyncer
+
+try:
+    from lutris.util.library_sync import LibrarySyncer
+except ImportError:
+    LibrarySyncer = None
+
+try:
+    from lutris.services.service_media import resolve_media_path
+except ImportError:
+    resolve_media_path = None
 
 try:
     from lutris.gui.widgets.utils import get_runtime_icon_path
@@ -105,6 +113,9 @@ def get_runtime_icons_for_runners(runners: list[str]) -> dict:
 
 
 def get_service_cover_path(service: str, service_id: str) -> str | None:
+    if resolve_media_path is None:
+        return None
+
     if not service or not service_id:
         return None
 
@@ -433,7 +444,8 @@ def sync_account_main():
         _print_subcommand_output({"status": "not_connected"})
         return
 
-    LibrarySyncer().sync_local_library()
+    if LibrarySyncer is not None:
+        LibrarySyncer().sync_local_library()
 
     service = LutrisService()
     lutris_games = service.load()
