@@ -1,12 +1,13 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 SCRIPT_PATH="$SCRIPT_DIR/$(basename "$0")"
 WRAPPER_PATH="$SCRIPT_DIR/lutris_wrapper.py"
 
 export PYTHONDONTWRITEBYTECODE=1
+export PYTHON_COLORS=0
 
 validate_python() {
     local executable=$1

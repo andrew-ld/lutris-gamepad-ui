@@ -36,12 +36,16 @@ async function invokeLutrisSubcommand(subcommandName, arguments_ = []) {
       arguments_,
       error,
     );
-    throw error;
+    throw error.stderr ?? error;
   }
 }
 
 async function invokeLutris(arguments_ = []) {
-  return await execFilePromise("bash", [getLutrisWrapperPath(), ...arguments_]);
+  return await execFilePromise(
+    "bash",
+    [getLutrisWrapperPath(), ...arguments_],
+    { encoding: "utf8" },
+  );
 }
 
 async function getLutrisGames() {

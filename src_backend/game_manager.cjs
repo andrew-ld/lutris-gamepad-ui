@@ -1,8 +1,6 @@
 const { spawn } = require("node:child_process");
 const { readFileSync } = require("node:fs");
 
-const { globalShortcut } = require("electron");
-
 const { getAppConfig } = require("./config_manager.cjs");
 const { getLutrisGames, syncLutrisAccount } = require("./lutris_wrapper.cjs");
 const {
@@ -21,7 +19,6 @@ const {
   getProcessDescendants,
   isProcessPaused,
 } = require("./utils.cjs");
-const { toggleWindowShow } = require("./window_manager.cjs");
 
 function findLutrisWrapperChildren(pid) {
   const allSubprocesses = getProcessDescendants(pid, new Set());
@@ -240,8 +237,6 @@ function launchGame(gameId) {
     mainWindow.webContents.send("game-started", gameId);
   }
 
-  globalShortcut.register("CommandOrControl+X", toggleWindowShow);
-
   let onGameClosedDispatched = false;
 
   const onGameClosed = () => {
@@ -254,8 +249,6 @@ function launchGame(gameId) {
       mainWindow.webContents.send("game-closed");
       mainWindow.show();
     }
-
-    globalShortcut.unregister("CommandOrControl+X");
 
     syncLutrisAccount().catch((error) => {
       logError("Lutris account sync failed after game close:", error);
