@@ -1,8 +1,6 @@
 const { spawn } = require("node:child_process");
 const { readFileSync } = require("node:fs");
 
-const { globalShortcut } = require("electron");
-
 const { getAppConfig } = require("./config_manager.cjs");
 const { getLutrisGames } = require("./lutris_wrapper.cjs");
 const {
@@ -213,8 +211,6 @@ function launchGame(gameId) {
     mainWindow.webContents.send("game-started", gameId);
   }
 
-  globalShortcut.register("CommandOrControl+X", toggleWindowShow);
-
   let onGameClosedDispatched = false;
 
   const onGameClosed = () => {
@@ -227,8 +223,6 @@ function launchGame(gameId) {
       mainWindow.webContents.send("game-closed");
       mainWindow.show();
     }
-
-    globalShortcut.unregister("CommandOrControl+X");
   };
 
   newGameProcess.on("close", onGameClosed);
