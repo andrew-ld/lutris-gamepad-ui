@@ -263,8 +263,8 @@ const AbstractLutrisSettingsMenu = ({
     const buttons = [];
     if (menuSections.length > 1) {
       buttons.push(
-        { button: "L1", label: t("Prev") },
-        { button: "R1", label: t("Next") },
+        { button: "L1", label: t("Prev Tab") },
+        { button: "R1", label: t("Next Tab") },
       );
     }
 
