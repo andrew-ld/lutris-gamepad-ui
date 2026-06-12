@@ -6,6 +6,7 @@ import shutil
 import sys
 import typing
 import inspect
+import traceback
 
 lutris_bin_path = shutil.which("lutris")
 lutris_dir_path = os.path.join(os.path.dirname(lutris_bin_path), os.pardir)
@@ -35,11 +36,6 @@ try:
     from lutris.util.library_sync import LibrarySyncer
 except ImportError:
     LibrarySyncer = None
-
-try:
-    from lutris.services.service_media import resolve_media_path
-except ImportError:
-    resolve_media_path = None
 
 try:
     from lutris.gui.widgets.utils import get_runtime_icon_path
@@ -112,30 +108,43 @@ def get_runtime_icons_for_runners(runners: list[str]) -> dict:
     return result
 
 
-def get_service_cover_path(service: str, service_id: str) -> str | None:
-    if resolve_media_path is None:
-        return None
-
-    if not service or not service_id:
+def get_service_cover_path(service: str, slug: str) -> str | None:
+    if not service or not slug:
         return None
 
     services = get_services()
+
     if service not in services:
         return None
 
     service_class = services[service]()
-    if not hasattr(service_class, "medias") or not service_class.medias:
-        return None
 
-    media_name = getattr(service_class, "default_format", None) or next(
-        iter(service_class.medias)
-    )
-    media_class = service_class.medias[media_name]
-    media_instance = media_class()
+    possible_medias = []
 
-    media_path = resolve_media_path(media_instance.get_possible_media_paths(service_id))
-    if media_path.exists:
-        return media_path.path
+    for service_media_class in service_class.medias.values():
+        service_media = service_media_class()
+
+        if not service_media.size:
+            continue
+
+        width, height = service_media.size
+
+        if height < width:
+            continue
+
+        tall_ratio = height / width
+        service_media_paths = service_media.get_possible_media_paths(slug)
+
+        if not service_media_paths:
+            continue
+
+        possible_medias.extend([(p, tall_ratio) for p in service_media_paths])
+
+    possible_medias.sort(key=lambda m: m[1], reverse=True)
+
+    for possible_media, _ in possible_medias:
+        if possible_media and possible_media.exists:
+            return possible_media.path
 
     return None
 
@@ -156,11 +165,11 @@ def get_game_cover_path(game: dict) -> str | None:
     if not isinstance(game, dict):
         return None
 
-    cover_path = get_service_cover_path(game.get("service"), game.get("service_id"))
-    if cover_path:
-        return cover_path
-
-    return get_local_cover_path(game.get("slug"))
+    try:
+        return get_service_cover_path(game.get("service"), game.get("slug"))
+    except:
+        traceback.print_exc()
+        return get_local_cover_path(game.get("slug"))
 
 
 def _get_games_categories() -> tuple:
@@ -210,18 +219,20 @@ def list_games_main():
     try:
         runtime_icons = get_runtime_icons_for_runners(unique_runners)
     except:
+        traceback.print_exc()
         runtime_icons = {}
 
     try:
         categories_data = _get_games_categories()
     except:
+        traceback.print_exc()
         categories_data = ({}, None, {})
 
     for game in result:
         try:
             _enrich_game_data(game, runtime_icons, categories_data)
         except:
-            pass
+            traceback.print_exc()
 
     _print_subcommand_output(result)
 
