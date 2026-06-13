@@ -166,10 +166,13 @@ def get_game_cover_path(game: dict) -> str | None:
         return None
 
     try:
-        return get_service_cover_path(game.get("service"), game.get("slug"))
+        cover_by_service = get_service_cover_path(game.get("service"), game.get("slug"))
+        if cover_by_service:
+            return cover_by_service
     except:
         traceback.print_exc()
-        return get_local_cover_path(game.get("slug"))
+
+    return get_local_cover_path(game.get("slug"))
 
 
 def _get_games_categories() -> tuple:
