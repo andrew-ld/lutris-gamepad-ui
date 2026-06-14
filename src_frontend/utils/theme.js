@@ -1,6 +1,6 @@
 import { getUserTheme, logError, logInfo, logWarn } from "./ipc";
 
-async function applyTheme(theme) {
+function applyTheme(theme) {
   const styleEl = document.querySelector("#user-theme-overrides");
 
   if (!styleEl || !styleEl.sheet) {
