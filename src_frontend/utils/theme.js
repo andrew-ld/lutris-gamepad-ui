@@ -1,33 +1,49 @@
-import { getUserTheme, logError, logInfo } from "./ipc";
+import { getUserTheme, logError, logInfo, logWarn } from "./ipc";
 
-export async function reloadApplicationTheme() {
-  try {
-    const theme = await getUserTheme();
+async function applyTheme(theme) {
+  const styleEl = document.querySelector("#user-theme-overrides");
 
-    if (!theme) {
-      return;
-    }
+  if (!styleEl || !styleEl.sheet) {
+    logError("Theme override style element or stylesheet not found.");
+    return;
+  }
 
-    for (const styleSheet of document.styleSheets) {
-      for (const rule of styleSheet.cssRules) {
-        if (!rule.style) {
-          continue;
-        }
+  const sheet = styleEl.sheet;
 
-        const themeRules = theme[rule.selectorText];
+  while (sheet.cssRules.length > 0) {
+    sheet.deleteRule(0);
+  }
 
-        if (!themeRules) {
-          continue;
-        }
+  if (!theme || Object.keys(theme).length === 0) {
+    return;
+  }
 
-        for (const [k, v] of Object.entries(themeRules)) {
-          rule.style.setProperty(k, v);
+  for (const [selector, properties] of Object.entries(theme)) {
+    try {
+      const ruleIndex = sheet.insertRule(
+        `${selector} {}`,
+        sheet.cssRules.length,
+      );
+      const rule = sheet.cssRules[ruleIndex];
+
+      for (const [key, value] of Object.entries(properties)) {
+        if (value != null) {
+          rule.style.setProperty(key, String(value), "important");
         }
       }
+    } catch (error) {
+      logWarn(`Skipped invalid CSS selector "${selector}":`, error);
     }
+  }
+}
 
-    logInfo("Sucessfully loaded user theme");
+export async function reloadApplicationTheme() {
+  const theme = await getUserTheme();
+
+  try {
+    applyTheme(theme);
+    logInfo("Successfully loaded user theme");
   } catch (error) {
-    logError("unable to apply user theme:", error);
+    logError("Unable to apply user theme:", error);
   }
 }

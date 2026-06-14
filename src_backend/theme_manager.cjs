@@ -37,8 +37,8 @@ function readUserThemeFile() {
   }
 }
 
-function mergeThemes(baseTheme, userOverrides) {
-  const computedTheme = structuredClone(baseTheme);
+function getThemeOverrides(baseTheme, userOverrides) {
+  const overrides = {};
 
   for (const [selector, userProperties] of Object.entries(userOverrides)) {
     const defaultProps = baseTheme[selector];
@@ -57,11 +57,15 @@ function mergeThemes(baseTheme, userOverrides) {
         );
         continue;
       }
-      computedTheme[selector][property] = value;
+
+      if (defaultProps[property] !== value) {
+        overrides[selector] ??= {};
+        overrides[selector][property] = value;
+      }
     }
   }
 
-  return computedTheme;
+  return overrides;
 }
 
 function initializeThemeManager() {
@@ -87,7 +91,7 @@ function initializeThemeManager() {
 
 function getUserTheme() {
   const userThemeOverrides = readUserThemeFile();
-  return mergeThemes(defaultTheme, userThemeOverrides);
+  return getThemeOverrides(defaultTheme, userThemeOverrides);
 }
 
 module.exports = {
