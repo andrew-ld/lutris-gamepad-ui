@@ -172,17 +172,14 @@ def get_local_cover_path(slug: str) -> str | None:
 
 
 def get_game_cover_path(game: dict[str, typing.Any]) -> str | None:
-    if not isinstance(game, dict):
-        return None
-
     try:
-        cover_by_service = get_service_cover_path(game.get("service"), game.get("slug"))
-        if cover_by_service:
-            return cover_by_service
+        local_cover_path = get_local_cover_path(game.get("slug"))
+        if local_cover_path:
+            return local_cover_path
     except:
         traceback.print_exc()
 
-    return get_local_cover_path(game.get("slug"))
+    return get_service_cover_path(game.get("service"), game.get("slug"))
 
 
 def _get_games_categories() -> GamesCategoriesData:
