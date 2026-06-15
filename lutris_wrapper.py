@@ -7,6 +7,7 @@ import sys
 import typing
 import inspect
 import traceback
+import dataclasses
 
 lutris_bin_path = shutil.which("lutris")
 lutris_dir_path = os.path.join(os.path.dirname(lutris_bin_path), os.pardir)
@@ -62,12 +63,21 @@ INTERNAL_COMMAND_ARGUMENTS = (
 )
 
 
+@dataclasses.dataclass
+class GamesCategoriesData:
+    all_games_categories: dict[str | int, list[int]] = dataclasses.field(
+        default_factory=dict
+    )
+    hidden_category_id: int | None = None
+    category_id_to_name: dict[int, str] = dataclasses.field(default_factory=dict)
+
+
 def _print_subcommand_output(json_serializable: typing.Any):
     data = json.dumps(json_serializable, ensure_ascii=True)
     print("\r\n" + SUBCOMMAND_OUTPUT_HEADER + data, end="\r\n")
 
 
-def _has_internal_command(argv: typing.List[str]) -> bool:
+def _has_internal_command(argv: list[str]) -> bool:
     return any(argument in INTERNAL_COMMAND_ARGUMENTS for argument in argv)
 
 
@@ -91,7 +101,7 @@ def _build_internal_argument_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def get_runtime_icons_for_runners(runners: list[str]) -> dict:
+def get_runtime_icons_for_runners(runners: list[str]) -> dict[str, str]:
     if not runners:
         return {}
 
@@ -161,7 +171,7 @@ def get_local_cover_path(slug: str) -> str | None:
     return None
 
 
-def get_game_cover_path(game: dict) -> str | None:
+def get_game_cover_path(game: dict[str, typing.Any]) -> str | None:
     if not isinstance(game, dict):
         return None
 
@@ -175,44 +185,85 @@ def get_game_cover_path(game: dict) -> str | None:
     return get_local_cover_path(game.get("slug"))
 
 
-def _get_games_categories() -> tuple:
+def _get_games_categories() -> GamesCategoriesData:
     all_categories = categories.get_categories()
-    all_games_categories = categories.get_all_games_categories()
-    hidden_category = next(
-        (c for c in all_categories if c.get("name") == ".hidden"), None
+
+    try:
+        all_games_categories = categories.get_all_games_categories()
+    except AttributeError:
+        all_games_categories = {}
+
+    hidden_category_id = next(
+        (c.get("id") for c in all_categories if c.get("name") == ".hidden"), None
     )
+
     category_id_to_name = {
-        c["id"]: c["name"] for c in all_categories if c.get("name") != ".hidden"
+        c["id"]: c["name"]
+        for c in all_categories
+        if c.get("name") != ".hidden" and "id" in c
     }
-    return all_games_categories, hidden_category, category_id_to_name
+
+    return GamesCategoriesData(
+        all_games_categories=all_games_categories,
+        hidden_category_id=hidden_category_id,
+        category_id_to_name=category_id_to_name,
+    )
 
 
-def _enrich_game_data(game: dict, runtime_icons: dict, categories_data: tuple) -> None:
+def _enrich_game_cover_path(game: dict[str, typing.Any]) -> None:
     cover_path = get_game_cover_path(game)
     if cover_path:
         game["coverPath"] = cover_path
 
+
+def _enrich_game_runtime_icon(
+    game: dict[str, typing.Any], runtime_icons: dict[str, str]
+) -> None:
     runner = game.get("runner")
     if runner and runner in runtime_icons:
         game["runtimeIconPath"] = runtime_icons[runner]
 
-    all_games_categories, hidden_category, category_id_to_name = categories_data
 
+def _enrich_game_categories_and_hidden(
+    game: dict[str, typing.Any], categories_data: GamesCategoriesData
+) -> None:
     game_id = str(game.get("id"))
-    category_ids = all_games_categories.get(game_id, [])
+
+    category_ids = categories_data.all_games_categories.get(
+        str(game_id), categories_data.all_games_categories.get(game_id, [])
+    )
 
     game_categories = [
-        category_id_to_name[cid] for cid in category_ids if cid in category_id_to_name
+        categories_data.category_id_to_name[cid]
+        for cid in category_ids
+        if cid in categories_data.category_id_to_name
     ]
 
-    if hidden_category and not game.get("hidden"):
-        game["hidden"] = game_id in [
-            str(gid)
-            for gid in all_games_categories
-            if hidden_category["id"] in all_games_categories.get(str(gid), [])
-        ]
-
     game["categories"] = game_categories
+
+    if categories_data.hidden_category_id is not None:
+        game["hidden"] = categories_data.hidden_category_id in category_ids
+
+
+def _enrich_game_data(
+    game: dict[str, typing.Any],
+    runtime_icons: dict[str, str],
+    categories_data: GamesCategoriesData,
+) -> None:
+    try:
+        _enrich_game_cover_path(game)
+    except:
+        traceback.print_exc()
+
+    try:
+        _enrich_game_runtime_icon(game, runtime_icons)
+    except:
+        traceback.print_exc()
+
+    try:
+        _enrich_game_categories_and_hidden(game, categories_data)
+    except:
+        traceback.print_exc()
 
 
 def list_games_main():
@@ -229,13 +280,10 @@ def list_games_main():
         categories_data = _get_games_categories()
     except:
         traceback.print_exc()
-        categories_data = ({}, None, {})
+        categories_data = GamesCategoriesData()
 
     for game in result:
-        try:
-            _enrich_game_data(game, runtime_icons, categories_data)
-        except:
-            traceback.print_exc()
+        _enrich_game_data(game, runtime_icons, categories_data)
 
     _print_subcommand_output(result)
 
