@@ -3,6 +3,10 @@ const path = require("node:path");
 
 const { app } = require("electron");
 
+const customSessionDataPath = path.join(app.getPath("home"), ".cache", "lutris-gamepad-ui");
+fs.mkdirSync(customSessionDataPath, { recursive: true });
+app.setPath('sessionData', customSessionDataPath);
+
 function getAppHomeDir() {
   const result = path.join(app.getPath("appData"), "lutris-gamepad-ui");
   fs.mkdirSync(result, { recursive: true });
