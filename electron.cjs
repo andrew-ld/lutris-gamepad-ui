@@ -1,11 +1,5 @@
 const { app, Menu, protocol } = require("electron");
 
-const fs = require("node:fs");
-const path = require("node:path");
-const customSessionDataPath = path.join(app.getPath("home"), ".cache", "lutris-gamepad-ui");
-fs.mkdirSync(customSessionDataPath, { recursive: true });
-app.setPath('sessionData', customSessionDataPath);
-
 const { getAppConfig } = require("./src_backend/config_manager.cjs");
 const {
   closeRunningGameProcess,
