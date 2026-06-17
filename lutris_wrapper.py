@@ -224,7 +224,7 @@ def _enrich_game_runtime_icon(
 def _enrich_game_categories_and_hidden(
     game: dict[str, typing.Any], categories_data: GamesCategoriesData
 ) -> None:
-    game_id = str(game.get("id"))
+    game_id = game.get("id")
 
     category_ids = categories_data.all_games_categories.get(
         str(game_id), categories_data.all_games_categories.get(game_id, [])
