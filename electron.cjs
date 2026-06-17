@@ -1,5 +1,5 @@
 const { app, Menu, protocol } = require("electron");
-const { initializeSessionData } = require('./storage.cjs');
+const { initializeSessionData } = require('./src_backend/storage.cjs');
 
 const path = require('path');
 const cachePath = path.join(app.getPath("home"), ".cache", "lutris-gamepad-ui");
