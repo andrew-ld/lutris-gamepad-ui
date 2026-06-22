@@ -1,4 +1,15 @@
 const { app, Menu, protocol } = require("electron");
+const { initializeSessionData } = require('./src_backend/storage.cjs');
+
+const path = require('path');
+const cachePath = path.join(app.getPath("home"), ".cache", "lutris-gamepad-ui");
+try {
+  initializeSessionData(cachePath);
+} catch (error) {
+  console.error("Failed to initialize session data:", error.message);
+  // Handle the error
+}
+
 
 const { getAppConfig } = require("./src_backend/config_manager.cjs");
 const {

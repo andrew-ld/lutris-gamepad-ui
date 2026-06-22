@@ -3,13 +3,20 @@ const path = require("node:path");
 
 const { app } = require("electron");
 
+function initializeSessionData(customSessionDataPath) {
+  fs.mkdirSync(customSessionDataPath, { recursive: true });
+  app.setPath('sessionData', customSessionDataPath);
+}
+
 function getAppHomeDir() {
-  const result = path.join(app.getPath("home"), ".local", "lutris-gamepad-ui");
+  const result = path.join(app.getPath("appData"), "lutris-gamepad-ui");
   fs.mkdirSync(result, { recursive: true });
   return result;
 }
 
 module.exports = {
+  initializeSessionData,
+  
   getThemeFilePath: () => {
     return path.join(getAppHomeDir(), "theme.json");
   },
