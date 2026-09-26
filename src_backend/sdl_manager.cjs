@@ -1,3 +1,5 @@
+const { existsSync } = require("node:original-fs");
+
 const {
   SDL3_LIBRARY_NAME,
   bindSDL3,
@@ -24,9 +26,15 @@ function getSdlHandle() {
           throw new Error("Failed to initialize SDL3 Gamepad subsystem");
         }
 
-        const mappingPath = localeAppFile(
+        let mappingPath = localeAppFile(
           "./src_backend/resources/gamecontrollerdb.txt",
         );
+
+        const userMappingFile = process.env.SDL_GAMECONTROLLERCONFIG;
+
+        if (existsSync(userMappingFile)) {
+          mappingPath = userMappingFile;
+        }
 
         if (sdl.SDL_AddGamepadMappingsFromFile(mappingPath) < 0) {
           logWarn("SDL3 unable to load gamepad mapping", mappingPath);
