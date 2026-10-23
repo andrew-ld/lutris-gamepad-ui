@@ -11,6 +11,7 @@ import LoadingIndicator from "./LoadingIndicator";
 import OnScreenKeyboard from "./OnScreenKeyboard";
 import SelectionMenu from "./SelectionMenu";
 import ToggleButton from "./ToggleButton";
+import CheckMark from "./CheckMark";
 
 import "../styles/SettingsMenu.css";
 
@@ -251,7 +252,9 @@ const AbstractLutrisSettingsMenu = ({
           onMouseEnter={onMouseEnter}
           onClick={() => handleAction("A", item)}
         >
-          <span className="settings-menu-label">{item.label}</span>
+          {item.type === "bool"
+            ? (<CheckMark checked={item.value} label={item.label} />)
+            : (<span className="settings-menu-label">{item.label}</span>)}
           {control}
         </FocusableRow>
       );

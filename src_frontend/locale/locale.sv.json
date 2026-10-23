@@ -80,6 +80,7 @@
     "Playtime: {{playtime}}": "Speltid: {{playtime}}"
   },
   "components/LibraryContainer.jsx": {
+    "({{gameCount}} games)": "({{gameCount}} games)",
     "Add games in Lutris and reload.": "Add games in Lutris and reload.",
     "Are you sure you want to close\n{{title}}?": "Är du säker på att du vill stänga\n{{title}}?",
     "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
@@ -149,6 +150,7 @@
     "Select": "Select"
   },
   "components/SettingsMenu.jsx": {
+    "All Games Shelf": "All Games Shelf",
     "Close": "Stäng",
     "Decrease": "Minska",
     "Disable": "Inaktivera",
@@ -160,6 +162,7 @@
     "Gamepad SDL Input": "Gamepad SDL Input",
     "General": "General",
     "Hibernate": "Hibernate",
+    "Highlight Disabled Settings": "Highlight Disabled Settings",
     "Hybrid sleep": "Hybrid sleep",
     "Increase": "Öka",
     "Input & Power": "Input & Power",
@@ -169,6 +172,7 @@
     "Next": "Next",
     "Next Tab": "Next Tab",
     "None": "None",
+    "Other Games Shelf": "Other Games Shelf",
     "Prev": "Prev",
     "Prev Tab": "Prev Tab",
     "Recently Played Shelf": "Nyligen spelade",
@@ -249,6 +253,7 @@
   },
   "hooks/useGameShelves.js": {
     "All Games": "All Games",
+    "Other Games": "Other Games",
     "Recently Played": "Recently Played",
     "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\""
   },

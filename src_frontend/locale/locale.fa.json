@@ -80,6 +80,7 @@
     "Playtime: {{playtime}}": "زمان بازی: {{playtime}}"
   },
   "components/LibraryContainer.jsx": {
+    "({{gameCount}} games)": "({{gameCount}} games)",
     "Add games in Lutris and reload.": "بازی‌ها را در لوتریس بیفزایید و بارگذاری دوباره کنید.",
     "Are you sure you want to close\n{{title}}?": "آیا مطمئنید که می‌خواهید\n{{title}} را ببندید؟",
     "Are you sure you want to pause\n{{title}}?": "آیا مطمئنید که می‌خواهید\n{{title}} را مکث کنید؟",
@@ -149,6 +150,7 @@
     "Select": "انتخاب"
   },
   "components/SettingsMenu.jsx": {
+    "All Games Shelf": "All Games Shelf",
     "Close": "بستن",
     "Decrease": "کاهش",
     "Disable": "غیرفعال کردن",
@@ -160,6 +162,7 @@
     "Gamepad SDL Input": "ورودی SDL دسته بازی",
     "General": "عمومی",
     "Hibernate": "خواب عمیق",
+    "Highlight Disabled Settings": "Highlight Disabled Settings",
     "Hybrid sleep": "خواب ترکیبی",
     "Increase": "افزایش",
     "Input & Power": "ورودی و نیرو",
@@ -169,6 +172,7 @@
     "Next": "بعدی",
     "Next Tab": "زبانه بعدی",
     "None": "هیچ",
+    "Other Games Shelf": "Other Games Shelf",
     "Prev": "پیشین",
     "Prev Tab": "زبانه پیشین",
     "Recently Played Shelf": "قفسه اخیرا بازی شده",
@@ -249,6 +253,7 @@
   },
   "hooks/useGameShelves.js": {
     "All Games": "همه بازی‌ها",
+    "Other Games": "Other Games",
     "Recently Played": "اخیرا بازی شده",
     "Results for \"{{searchQuery}}\"": "یافته‌ها برای «{{searchQuery}}»"
   },

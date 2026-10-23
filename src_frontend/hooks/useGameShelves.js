@@ -99,8 +99,11 @@ export const useGameShelves = (games, searchQuery) => {
       }
     }
 
-    const allGamesSorted = sortGames(currentGames, settings.librarySortMode);
-    newShelves.push({ title: t("All Games"), games: allGamesSorted });
+    // show all games only when configured to show (could contain redundant games from other shelves)
+    if (settings.showAllGames) {
+      const allGamesSorted = sortGames(currentGames, settings.librarySortMode);
+      newShelves.push({ title: t("All Games"), games: allGamesSorted });
+    }
 
     const categoriesMap = new Map();
     for (const game of currentGames) {
@@ -124,12 +127,21 @@ export const useGameShelves = (games, searchQuery) => {
       });
     }
 
+    // show games without category at the end (category is more important to user - otherwise he would not have them categorized)
+    if (settings.showOtherGames) {
+      const otherGames = currentGames.filter(g => (g.categories || []).length == 0);
+      const otherGamesSorted = sortGames(otherGames, settings.librarySortMode);
+      newShelves.push({ title: t("Other Games"), games: otherGamesSorted });
+    }
+
     return newShelves;
   }, [
     currentGames,
     searchQuery,
     t,
     settings.showRecentlyPlayed,
+    settings.showAllGames,
+    settings.showOtherGames,
     settings.librarySortMode,
   ]);
 

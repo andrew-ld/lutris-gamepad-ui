@@ -7,16 +7,19 @@ const CONFIG_KEY = "app_config";
 const defaultConfig = {
   zoomFactor: 1,
   showRecentlyPlayed: true,
+  showAllGames: true,
+  showOtherGames: false,
   showHiddenGames: false,
   doubleConfirmPowerManagement: true,
   gamepadAutorepeatMs: 225,
-  useRemoteDesktopPortal: true,
+  useRemoteDesktopPortal: false, // this should not be active by default - lets the app look like malware on first launch
   showRunnerIcon: true,
   keepGamesRunningOnQuit: false,
   enableUiActionSoundFeedbacks: true,
   enableSdlInput: false,
   librarySortMode: "lastPlayed",
   systemPowerSuspendMode: "none",
+  highlightDisabledSettings: false,
 };
 
 const SUBSCRIPTIONS = {};

@@ -80,6 +80,7 @@
     "Playtime: {{playtime}}": "游玩时长：{{playtime}}"
   },
   "components/LibraryContainer.jsx": {
+    "({{gameCount}} games)": "({{gameCount}} games)",
     "Add games in Lutris and reload.": "在 Lutris 中添加游戏并重载。",
     "Are you sure you want to close\n{{title}}?": "确定要关闭\n{{title}} 吗？",
     "Are you sure you want to pause\n{{title}}?": "确定要暂停\n{{title}} 吗？",
@@ -149,6 +150,7 @@
     "Select": "选择"
   },
   "components/SettingsMenu.jsx": {
+    "All Games Shelf": "All Games Shelf",
     "Close": "关闭",
     "Decrease": "减少",
     "Disable": "禁用",
@@ -160,6 +162,7 @@
     "Gamepad SDL Input": "Gamepad SDL Input",
     "General": "常规",
     "Hibernate": "Hibernate",
+    "Highlight Disabled Settings": "Highlight Disabled Settings",
     "Hybrid sleep": "Hybrid sleep",
     "Increase": "增加",
     "Input & Power": "输入与电源",
@@ -169,6 +172,7 @@
     "Next": "下一个",
     "Next Tab": "Next Tab",
     "None": "None",
+    "Other Games Shelf": "Other Games Shelf",
     "Prev": "上一个",
     "Prev Tab": "Prev Tab",
     "Recently Played Shelf": "最近游玩展架",
@@ -249,6 +253,7 @@
   },
   "hooks/useGameShelves.js": {
     "All Games": "All Games",
+    "Other Games": "Other Games",
     "Recently Played": "Recently Played",
     "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\""
   },

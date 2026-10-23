@@ -1,0 +1,64 @@
+.checkmark-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: start;
+  align-items: center;
+}
+
+.checkmark-wrapper > .checkmark-label {
+  flex-basis: auto;
+}
+
+.checkmark-wrapper > .checkmark {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
+.checkmark-wrapper > .checkmark > div {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.checkmark-wrapper > .checkmark > .check-icon {
+  width: 12px;
+  height: 24px;
+  border-width: 0 4px 4px 0;
+  border-style: solid;
+  transform: rotate(45deg);
+  transform-origin: 21px -3px;
+}
+.checkmark-wrapper > .checkmark > .check-icon.checked {
+  border-color: green;
+}
+.checkmark-wrapper > .checkmark > .check-icon.unchecked {
+  border-color: rgba(255,255,255,0.05);
+}
+
+.checkmark-wrapper > .checkmark > .cross-icon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+.checkmark-wrapper > .checkmark > .cross-icon::before,
+.checkmark-wrapper > .checkmark > .cross-icon::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 1px;
+  width: 22px;
+  height: 2px;
+  background: red;
+}
+.checkmark-wrapper > .checkmark > .cross-icon::before {
+  transform: rotate(45deg);
+}
+.checkmark-wrapper > .checkmark > .cross-icon::after {
+  transform: rotate(-45deg);
+}
