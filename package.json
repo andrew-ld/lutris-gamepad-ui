@@ -22,6 +22,7 @@
     "build": "npm run build:vite && npm run electron:build",
     "electron:dev": "wait-on http://localhost:5173 && electron .",
     "lint": "eslint .",
+    "preparePR": "npm run prettier && npm run lint && LUTRIS_GAMEPAD_UI_LOCALE_CLEANUP=1 npm run build:vite",
     "prettier": "prettier -w ."
   },
   "dependencies": {
