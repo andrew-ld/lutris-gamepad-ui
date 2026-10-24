@@ -1,0 +1,258 @@
+{
+  "components/About.jsx": {
+    "Author": "Autor",
+    "Close": "Schließen",
+    "Homepage": "Webseite",
+    "License": "Lizenz",
+    "Open Link": "Open Link",
+    "Version": "Version"
+  },
+  "components/AbstractLutrisSettingsMenu.jsx": {
+    "Browse": "Durchsuchen",
+    "Close": "Schließen",
+    "Default": "Standard",
+    "Disable": "Deaktivieren",
+    "Edit": "Bearbeiten",
+    "Enable": "Aktivieren",
+    "Next Tab": "Weiter",
+    "Prev Tab": "Zurück",
+    "Save": "Speichern",
+    "Select": "Auswählen"
+  },
+  "components/ConfirmationDialog.jsx": {
+    "Cancel": "Zurück",
+    "Confirm": "Bestätigen",
+    "Select": "Auswählen"
+  },
+  "components/ControlsOverlay.jsx": {
+    "Clear Search": "Neue Suche",
+    "Force close": "Schließen erzwingen",
+    "Launch Game": "Spiel starten",
+    "Next Shelf": "Nächste Kategorie",
+    "Options": "Einstellungen",
+    "Pause Game": "Spiel pausieren",
+    "Power": "Menü",
+    "Prev Shelf": "Vorige Kategorie",
+    "Resume Game": "Spiel fortsetzen",
+    "Search": "Suche",
+    "Toggle Overlay": "Overlay umschalten"
+  },
+  "components/CrashDialog.jsx": {
+    "Close Application": "Anwendung beenden",
+    "Hide Error Details": "Fehlerdetails verbergen",
+    "Navigate": "Auswählen",
+    "No component stack available.": "Keine Komponenten verfügbar.",
+    "No error message provided.": "Keine Fehlermeldung erhalten.",
+    "Oops! Something went wrong.": "Hupsi! Irgendwas lief schief.",
+    "Reload Application": "Anwendung neu laden",
+    "Scroll Down": "Runter",
+    "Scroll Up": "Hoch",
+    "Select": "Auswählen",
+    "Show Error Details": "Fehlerdetails anzeigen",
+    "The application has encountered an unexpected error.": "Es gab einen Anwendungsfehler."
+  },
+  "components/DisplaySettings.jsx": {
+    "Brightness": "Helligkeit",
+    "Close": "Schließen",
+    "Decrease": "Reduzieren",
+    "Disable": "Deaktivieren",
+    "Display Settings": "Anzeigeeinstellungen",
+    "Enable": "Aktivieren",
+    "Failed to load brightness. Check your desktop environment compatibility.": "Helligkeit konnte nicht geladen werden. Überprüfe die Kompatibität Deiner Desktopumgebung.",
+    "Failed to load night light. Check your desktop environment compatibility.": "\"Night Light\" konnte nicht geladen werden. Überprüfe die Kompatibität Deiner Desktopumgebung.",
+    "Increase": "Erhöhen",
+    "Loading Display Settings...": "Lade Anzeigeeinstellungen...",
+    "Night Light": "Night Light",
+    "No display settings available.": "Keine Anzeigeeinstellungen verfügbar.",
+    "Reload": "Neu laden",
+    "Update": "Aktualisieren"
+  },
+  "components/FilePicker.jsx": {
+    "Initial folder unavailable": "Startverzeichnis nicht verfügbar.",
+    "No directories available.": "Keine Verzeichnisse verfügbar.",
+    "No files available.": "Keine Dateien verfügbar.",
+    "Select Current Directory": "Aktuelles Verzeichnis auswählen",
+    "Showing \"{{currentPath}}\" instead of \"{{fallbackFrom}}\".": "Zeige \"{{currentPath}}\" anstelle von \"{{fallbackFrom}}\"."
+  },
+  "components/GameCard.jsx": {
+    "Last played: {{date}}": "Zuletzt gespielt: {{date}}",
+    "Never": "Noch nie",
+    "Playtime: {{playtime}}": "Spielzeit: {{playtime}}"
+  },
+  "components/LibraryContainer.jsx": {
+    "Add games in Lutris and reload.": "Füge ein Spiel in Lutris hinzu und lade die Spieleliste übers Menü neu.",
+    "Are you sure you want to close\n{{title}}?": "Bist Du sicher, dass Du\n{{title}}\nschließen willst?",
+    "Are you sure you want to pause\n{{title}}?": "Bist Du sicher, dass Du \n{{title}}\npausieren willst?",
+    "Loading library...": "Lade Spielesammlung...",
+    "My Library": "Meine Spielesammlung",
+    "No games found": "Keine Spiele gefunden",
+    "No results for \"{{searchQuery}}\"": "Kein Suchergebnis für \"{{searchQuery}}\"",
+    "Search": "Suche",
+    "Search Library": "Spielesammlung durchsuchen",
+    "This action will force-quit the game. Any unsaved progress may be lost.": "Dies wird das Spiel beenden. Nicht gespeicherter Fortschritt geht verloren.",
+    "This feature is experimental. Pausing the game may cause issues.": "Dieses Feature ist noch experimentell. Das Spiel zu pausieren könnte Probleme verursachen.",
+    "Try a different search term or press 'B' to clear.": "Verändere den Suchbegriff oder drücke B für eine neue Suche."
+  },
+  "components/LoadingIndicator.jsx": {
+    "Loading...": "Bitte warten..."
+  },
+  "components/LutrisAddGameFlow.jsx": {
+    "Add Game": "Spiel hinzufügen",
+    "Failed to fetch Lutris runners": "Das Laden der Lutris Starter schlug fehl.",
+    "Select Runner": "Starter auswählen"
+  },
+  "components/LutrisAddGameSettingsMenu.jsx": {
+    "Add Game: {{runner}}": "Spiel hinzufügen: {{runner}}",
+    "Added {{name}}": "{{name}} hinzugefügt",
+    "Failed to add game": "Das Spiel konnte nicht hinzugefügt werden.",
+    "Failed to fetch Lutris settings": "Die Einstellungen von Lutris konnten nicht geladen werden.",
+    "Game": "Spiel",
+    "Game name is required": "Der Name des Spiels ist erforderlich",
+    "Info": "Info",
+    "Name": "Name",
+    "Optional": "Optional",
+    "Release year": "Jahr der Veröffentlichung",
+    "Release year must be a number": "Die Jahresangabe muss eine Zahl sein.",
+    "Required": "Erforderlich",
+    "Runner": "Starter",
+    "Save": "Speichern",
+    "Sort name": "Name für die Sortierung",
+    "System": "System"
+  },
+  "components/LutrisSettingsFlow.jsx": {
+    "Failed to fetch Lutris runners": "Die Starter von Lutris konnten nicht geladen werden",
+    "Global": "Global",
+    "Lutris Settings": "Lutris Einstellungen",
+    "Select Runner": "Starter auswählen"
+  },
+  "components/LutrisSettingsMenu.jsx": {
+    "Failed to fetch Lutris settings": "Die Einstellungen von Lutris konnten nicht geladen werden.",
+    "Failed to update Lutris setting": "Die Einstellungen von Lutris konnten nicht aktualisiert werden.",
+    "Lutris Settings": "Lutris Einstellungen",
+    "Settings: {{name}}": "Einstellung: {{name}}"
+  },
+  "components/OnScreenKeyboard.jsx": {
+    "Backspace": "Löschen",
+    "Close": "Schließen",
+    "Enter": "Eingabe",
+    "Select": "Auswahl",
+    "Space": "Leertaste",
+    "Submit": "Anwenden"
+  },
+  "components/RunningGame.jsx": {
+    "Now Playing": "Läuft gerade",
+    "Paused": "Pause",
+    "Playtime: {{playtime}}": "Spielzeit: {{playtime}}"
+  },
+  "components/SelectionMenu.jsx": {
+    "Back": "Zurück",
+    "Select": "Auswählen"
+  },
+  "components/SettingsMenu.jsx": {
+    "Close": "Schließen",
+    "Decrease": "Reduzieren",
+    "Disable": "Deaktivieren",
+    "Double Confirm Power Management": "Sicherheitsabfrage beim Beenden",
+    "Enable": "Aktivieren",
+    "Game Last Start Date": "Letzter Start des Spiels",
+    "Game Name": "Name des Spiels",
+    "Gamepad Autorepeat Delay": "Verzögerung der Gamepad Tastenwiederholung",
+    "Gamepad SDL Input": "Gamepad Eingaben über SDL",
+    "General": "Allgemein",
+    "Hibernate": "Bereitschaft",
+    "Hybrid sleep": "Ruhezustand",
+    "Increase": "Erhöhen",
+    "Input & Power": "Eingaben & Power",
+    "Keep Games Running On Quit": "Spiele beim Beenden weiter laufen lassen",
+    "Library": "Spielesammlung",
+    "Library Sort Order": "Sortierreihenfolge",
+    "Next": "Weiter",
+    "Next Tab": "Nächster Tab",
+    "None": "-",
+    "Prev": "Zurück",
+    "Prev Tab": "Voriger Tab",
+    "Recently Played Shelf": "Kategorie \"Zuletzt gespielt\" anzeigen",
+    "Runner Name + Game Last Start Date": "Starter + Letzter Spielstart",
+    "Runner Name + Game Name": "Starter + Spielename",
+    "Settings": "Einstellungen",
+    "Show Hidden Games": "Ausgeblendete Spiele anzeigen",
+    "Show Runner Icon": "Startersymbol anzeigen",
+    "Sleep": "Sleep",
+    "Suspend then hibernate": "Bereitschaft, dann Ruhezustand",
+    "System Power Suspend Mode": "Bereitschaftsmodus",
+    "UI Action Sound Feedbacks": "Tastentöne bei Bedienung der Anwendung",
+    "Unknown": "Unbekannt",
+    "Use Remote Desktop Portal": "\"Remote Desktop\" benutzen",
+    "Zoom Level": "Zoomstufe"
+  },
+  "components/SystemMenu.jsx": {
+    "About": "Über diese Anwendung",
+    "Add Game": "Spiel hinzufügen",
+    "Are you sure you want to exit the application?": "Bist Du sicher, dass Du die Anwendung beenden möchtest?",
+    "Are you sure you want to generate the bug report file?": "Bist Du sicher, dass Du einen Fehlerbericht erstellen möchtest?",
+    "Are you sure you want to power off the system?": "Bist Du sicher, dass Du Dein System herunterfahren möchtest?",
+    "Are you sure you want to reboot the system?": "Bist Du sicher, dass Du dein System neu starten möchtest?",
+    "Are you sure you want to suspend the system?": "Bist Du sicher, dass Du Dein System in Bereitschaft versetzen möchtest?",
+    "Audio Settings": "Audioeinstellungen",
+    "Back": "Zurück",
+    "Continue with exiting the application?": "Beenden der Anwendung fortsetzen?",
+    "Continue with suspend system?": "Wechsel zum Bereitschaftsmodus fortsetzen?",
+    "Continue with system power off?": "Herunterfahren fortsetzen?",
+    "Continue with system reboot?": "Neustart fortsetzen?",
+    "Display Settings": "Anzeigeeinstellungen",
+    "Exit Application": "Anwendung beenden",
+    "Generate Bug Report": "Fehlerbericht erstellen",
+    "Lutris Settings": "Lutris-Einstellungen",
+    "Lutris account synced": "Lutris-Account synchronisieren",
+    "No Lutris account connected": "Kein Lutris-Account verbunden",
+    "Open Lutris": "Lutris öffnen",
+    "Power Off System": "Herunterfahren",
+    "Reboot System": "Neustart",
+    "Reload Library": "Spielesammlung neu laden",
+    "Reloading library...": "Lade Spielesammlung neu...",
+    "Select": "Auswählen",
+    "Settings": "Einstellungen",
+    "Sign in to Lutris.net from the Lutris app first.": "Melde Dich zunächst über Lutris bei \"lutris.net\" an.",
+    "Suspend System": "Bereitschaftsmodus",
+    "Sync Lutris Account": "Lutris-Account synchronisieren",
+    "Syncing Lutris account...": "Synchronisierte Lutris-Account...",
+    "This action is final and cannot be undone.": "Diese Aktion ist endgültig."
+  },
+  "components/TopBar.jsx": {
+    "Muted": "Stumm",
+    "Offline": "Offline"
+  },
+  "components/UpdateDialog.jsx": {
+    "A new version, {{version}}, is available for download.": "Eine neue Version ({{version}}) ist zum Download verfügbar.",
+    "Go to Downloads": "Downloads anzeigen",
+    "Later": "Später",
+    "Update Available": "Aktualisierung verfügbar"
+  },
+  "components/VolumeControl.jsx": {
+    "Audio Settings": "Audioeinstellungen",
+    "Close": "Schließen",
+    "Current Output:": "Aktuelles Ausgabegerät:",
+    "Decrease": "Reduzieren",
+    "Disable": "Deaktivieren",
+    "Enable": "Aktivieren",
+    "Increase": "Erhöhen",
+    "Loading Audio Settings...": "Lade Audioeinstellungen...",
+    "Mute": "Stummschaltung",
+    "Next": "Weiter",
+    "No devices found": "Keine Ausgabegeräte gefunden",
+    "Prev": "Zurück",
+    "Select Output": "Ausgabegerät auswählen",
+    "Set Device": "Ausgabegerät aktivieren",
+    "UI Action Sound Feedbacks": "Tastentöne bei Bedienung der Anwendung",
+    "Unmute": "Stummschaltung beenden",
+    "Volume": "Lautstärke"
+  },
+  "hooks/useGameShelves.js": {
+    "All Games": "Alle Spiele",
+    "Recently Played": "Neulich gespielt",
+    "Results for \"{{searchQuery}}\"": "Suchergebnisse für \"{{searchQuery}}\""
+  },
+  "navigation/row_based_menu/RowBasedMenuContent.jsx": {
+    "No items available.": "Keine Einträge verfügbar."
+  }
+}
