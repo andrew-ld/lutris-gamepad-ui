@@ -154,7 +154,7 @@ Here are the steps you need to follow before submitting Python changes to this r
 2.  **Install dependencies:**
 
     ```bash
-    npm install
+    NPM_CONFIG_ALLOW_GIT=all npm install
     ```
 
 3.  **Run in development mode:**
