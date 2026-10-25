@@ -80,6 +80,7 @@
     "Playtime: {{playtime}}": "游玩时长：{{playtime}}"
   },
   "components/LibraryContainer.jsx": {
+    "({{gameCount}} games)": "({{gameCount}} games)",
     "Add games in Lutris and reload.": "在 Lutris 中添加游戏并重载。",
     "Are you sure you want to close\n{{title}}?": "确定要关闭\n{{title}} 吗？",
     "Are you sure you want to pause\n{{title}}?": "确定要暂停\n{{title}} 吗？",

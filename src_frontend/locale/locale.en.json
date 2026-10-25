@@ -80,6 +80,7 @@
     "Playtime: {{playtime}}": "Playtime: {{playtime}}"
   },
   "components/LibraryContainer.jsx": {
+    "({{gameCount}} games)": "({{gameCount}} games)",
     "Add games in Lutris and reload.": "Add games in Lutris and reload.",
     "Are you sure you want to close\n{{title}}?": "Are you sure you want to close\n{{title}}?",
     "Are you sure you want to pause\n{{title}}?": "Are you sure you want to pause\n{{title}}?",
