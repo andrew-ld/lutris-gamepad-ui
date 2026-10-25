@@ -4,7 +4,7 @@
     "Close": "Schließen",
     "Homepage": "Webseite",
     "License": "Lizenz",
-    "Open Link": "Open Link",
+    "Open Link": "Link öffnen",
     "Version": "Version"
   },
   "components/AbstractLutrisSettingsMenu.jsx": {
@@ -20,7 +20,7 @@
     "Select": "Auswählen"
   },
   "components/ConfirmationDialog.jsx": {
-    "Cancel": "Zurück",
+    "Cancel": "Abbrechen",
     "Confirm": "Bestätigen",
     "Select": "Auswählen"
   },
@@ -40,7 +40,7 @@
   "components/CrashDialog.jsx": {
     "Close Application": "Anwendung beenden",
     "Hide Error Details": "Fehlerdetails verbergen",
-    "Navigate": "Auswählen",
+    "Navigate": "Navigieren",
     "No component stack available.": "Keine Komponenten verfügbar.",
     "No error message provided.": "Keine Fehlermeldung erhalten.",
     "Oops! Something went wrong.": "Hupsi! Irgendwas lief schief.",
@@ -58,8 +58,8 @@
     "Disable": "Deaktivieren",
     "Display Settings": "Anzeigeeinstellungen",
     "Enable": "Aktivieren",
-    "Failed to load brightness. Check your desktop environment compatibility.": "Helligkeit konnte nicht geladen werden. Überprüfe die Kompatibität Deiner Desktopumgebung.",
-    "Failed to load night light. Check your desktop environment compatibility.": "\"Night Light\" konnte nicht geladen werden. Überprüfe die Kompatibität Deiner Desktopumgebung.",
+    "Failed to load brightness. Check your desktop environment compatibility.": "Helligkeit konnte nicht geladen werden. Überprüfe die Kompatibilität Deiner Desktopumgebung.",
+    "Failed to load night light. Check your desktop environment compatibility.": "\"Night Light\" konnte nicht geladen werden. Überprüfe die Kompatibilität Deiner Desktopumgebung.",
     "Increase": "Erhöhen",
     "Loading Display Settings...": "Lade Anzeigeeinstellungen...",
     "Night Light": "Night Light",
@@ -159,8 +159,8 @@
     "Gamepad Autorepeat Delay": "Verzögerung der Gamepad Tastenwiederholung",
     "Gamepad SDL Input": "Gamepad Eingaben über SDL",
     "General": "Allgemein",
-    "Hibernate": "Bereitschaft",
-    "Hybrid sleep": "Ruhezustand",
+    "Hibernate": "Ruhezustand",
+    "Hybrid sleep": "Standby",
     "Increase": "Erhöhen",
     "Input & Power": "Eingaben & Power",
     "Keep Games Running On Quit": "Spiele beim Beenden weiter laufen lassen",
@@ -177,7 +177,7 @@
     "Settings": "Einstellungen",
     "Show Hidden Games": "Ausgeblendete Spiele anzeigen",
     "Show Runner Icon": "Startersymbol anzeigen",
-    "Sleep": "Sleep",
+    "Sleep": "Standby",
     "Suspend then hibernate": "Bereitschaft, dann Ruhezustand",
     "System Power Suspend Mode": "Bereitschaftsmodus",
     "UI Action Sound Feedbacks": "Tastentöne bei Bedienung der Anwendung",
@@ -203,7 +203,7 @@
     "Exit Application": "Anwendung beenden",
     "Generate Bug Report": "Fehlerbericht erstellen",
     "Lutris Settings": "Lutris-Einstellungen",
-    "Lutris account synced": "Lutris-Account synchronisieren",
+    "Lutris account synced": "Lutris-Account synchronisiert",
     "No Lutris account connected": "Kein Lutris-Account verbunden",
     "Open Lutris": "Lutris öffnen",
     "Power Off System": "Herunterfahren",
