@@ -60,7 +60,7 @@ Arch Linux users (and users of Arch-based distributions) can install [`lutris-ga
   - **Power Options:** Reboot or shutdown the system directly from the UI.
 
 - **Customization & Localization:**
-  - **Multi-language Support:** Currently available in English, Italian, Persian, and Swedish.
+  - **Multi-language Support:** Currently available in English, Italian, Persian, Swedish and German.
   - **Advanced Settings:** Fine-tune your experience with settings for gamepad autorepeat delay, UI zoom level, and sound feedback.
   - **Theming:** Fully customizable appearance via `theme.json` (see the Custom Theming Guide below).
 
