@@ -201,7 +201,11 @@ export function createLocalePlugins() {
         });
 
         const filesToScan = allFiles
-          .filter((dirent) => dirent.isFile() && dirent.name.endsWith(".jsx"))
+          .filter(
+            (dirent) =>
+              (dirent.isFile() && dirent.name.endsWith(".jsx")) ||
+              dirent.name.endsWith(".js"),
+          )
           .map((dirent) => path.join(dirent.parentPath, dirent.name));
 
         for (const file of filesToScan) {
