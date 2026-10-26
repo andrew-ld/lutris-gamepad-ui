@@ -7,6 +7,7 @@ const CONFIG_KEY = "app_config";
 const defaultConfig = {
   zoomFactor: 1,
   showRecentlyPlayed: true,
+  showAllGames: true,
   showHiddenGames: false,
   doubleConfirmPowerManagement: true,
   gamepadAutorepeatMs: 225,

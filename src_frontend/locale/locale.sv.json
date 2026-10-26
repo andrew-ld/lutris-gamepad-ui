@@ -150,6 +150,7 @@
     "Select": "Select"
   },
   "components/SettingsMenu.jsx": {
+    "All Games Shelf": "All Games Shelf",
     "Close": "Stäng",
     "Decrease": "Minska",
     "Disable": "Inaktivera",

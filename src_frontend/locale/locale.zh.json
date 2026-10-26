@@ -150,6 +150,7 @@
     "Select": "选择"
   },
   "components/SettingsMenu.jsx": {
+    "All Games Shelf": "All Games Shelf",
     "Close": "关闭",
     "Decrease": "减少",
     "Disable": "禁用",
