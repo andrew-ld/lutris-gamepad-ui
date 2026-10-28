@@ -91,7 +91,8 @@
     "Search Library": "Spielesammlung durchsuchen",
     "This action will force-quit the game. Any unsaved progress may be lost.": "Dies wird das Spiel beenden. Nicht gespeicherter Fortschritt geht verloren.",
     "This feature is experimental. Pausing the game may cause issues.": "Dieses Feature ist noch experimentell. Das Spiel zu pausieren könnte Probleme verursachen.",
-    "Try a different search term or press 'B' to clear.": "Verändere den Suchbegriff oder drücke B für eine neue Suche."
+    "Try a different search term or press 'B' to clear.": "Verändere den Suchbegriff oder drücke B für eine neue Suche.",
+    "{{title}} ({{gameCount}} games)": "{{title}} ({{gameCount}} Spiele)"
   },
   "components/LoadingIndicator.jsx": {
     "Loading...": "Bitte warten..."
@@ -249,7 +250,7 @@
   },
   "hooks/useGameShelves.js": {
     "All Games": "Alle Spiele",
-    "Recently Played": "Neulich gespielt",
+    "Recently Played": "Zuletzt gespielt",
     "Results for \"{{searchQuery}}\"": "Suchergebnisse für \"{{searchQuery}}\""
   },
   "navigation/row_based_menu/RowBasedMenuContent.jsx": {

@@ -39,10 +39,13 @@ const LibraryContainer = () => {
   const sections = useMemo(
     () =>
       shelves.map((shelf) => ({
-        title: shelf.title,
+        title: t("{{title}} ({{gameCount}} games)", {
+          title: shelf.title,
+          gameCount: (shelf.games || []).length,
+        }),
         items: shelf.games,
       })),
-    [shelves],
+    [shelves, t],
   );
 
   useEffect(() => {

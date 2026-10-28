@@ -91,7 +91,8 @@
     "Search Library": "搜索库",
     "This action will force-quit the game. Any unsaved progress may be lost.": "此操作将强制退出游戏，未保存的进度可能会丢失。",
     "This feature is experimental. Pausing the game may cause issues.": "此功能为实验性。暂停游戏可能会导致问题。",
-    "Try a different search term or press 'B' to clear.": "请尝试不同的搜索词或按 'B' 清除。"
+    "Try a different search term or press 'B' to clear.": "请尝试不同的搜索词或按 'B' 清除。",
+    "{{title}} ({{gameCount}} games)": "{{title}} ({{gameCount}} games)"
   },
   "components/LoadingIndicator.jsx": {
     "Loading...": "加载中..."

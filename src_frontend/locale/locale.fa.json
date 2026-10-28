@@ -91,7 +91,8 @@
     "Search Library": "جستجوی کتابخانه",
     "This action will force-quit the game. Any unsaved progress may be lost.": "این کنش بازی را به‌صورت اجباری می‌بندد. هر پیشرفت ذخیره‌نشده‌ای ممکن است از دست برود.",
     "This feature is experimental. Pausing the game may cause issues.": "این ویژگی آزمایشی است. مکث بازی ممکن است مشکل‌ساز شود.",
-    "Try a different search term or press 'B' to clear.": "عبارت جستجوی دیگری بیازمایید یا «B» را برای پاک کردن فشار دهید."
+    "Try a different search term or press 'B' to clear.": "عبارت جستجوی دیگری بیازمایید یا «B» را برای پاک کردن فشار دهید.",
+    "{{title}} ({{gameCount}} games)": "{{title}} ({{gameCount}} games)"
   },
   "components/LoadingIndicator.jsx": {
     "Loading...": "در حال بارگذاری..."

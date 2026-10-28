@@ -91,7 +91,8 @@
     "Search Library": "Search Library",
     "This action will force-quit the game. Any unsaved progress may be lost.": "This action will force-quit the game. Any unsaved progress may be lost.",
     "This feature is experimental. Pausing the game may cause issues.": "This feature is experimental. Pausing the game may cause issues.",
-    "Try a different search term or press 'B' to clear.": "Try a different search term or press 'B' to clear."
+    "Try a different search term or press 'B' to clear.": "Try a different search term or press 'B' to clear.",
+    "{{title}} ({{gameCount}} games)": "{{title}} ({{gameCount}} games)"
   },
   "components/LoadingIndicator.jsx": {
     "Loading...": "Loading..."
