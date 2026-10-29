@@ -99,8 +99,10 @@ export const useGameShelves = (games, searchQuery) => {
       }
     }
 
-    const allGamesSorted = sortGames(currentGames, settings.librarySortMode);
-    newShelves.push({ title: t("All Games"), games: allGamesSorted });
+    if (settings.showAllGames) {
+      const allGamesSorted = sortGames(currentGames, settings.librarySortMode);
+      newShelves.push({ title: t("All Games"), games: allGamesSorted });
+    }
 
     const categoriesMap = new Map();
     for (const game of currentGames) {
@@ -130,6 +132,7 @@ export const useGameShelves = (games, searchQuery) => {
     searchQuery,
     t,
     settings.showRecentlyPlayed,
+    settings.showAllGames,
     settings.librarySortMode,
   ]);
 

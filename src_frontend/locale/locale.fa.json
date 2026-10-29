@@ -150,6 +150,7 @@
     "Select": "انتخاب"
   },
   "components/SettingsMenu.jsx": {
+    "All Games Shelf": "All Games Shelf",
     "Close": "بستن",
     "Decrease": "کاهش",
     "Disable": "غیرفعال کردن",

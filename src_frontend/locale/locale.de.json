@@ -150,6 +150,7 @@
     "Select": "Auswählen"
   },
   "components/SettingsMenu.jsx": {
+    "All Games Shelf": "Kategorie \"Alle Spiele\" anzeigen",
     "Close": "Schließen",
     "Decrease": "Reduzieren",
     "Disable": "Deaktivieren",
