@@ -126,6 +126,14 @@ export const useGameShelves = (games, searchQuery) => {
       });
     }
 
+    if (settings.showOtherGames) {
+      const otherGames = currentGames.filter(
+        (g) => (g.categories || []).length === 0,
+      );
+      const otherGamesSorted = sortGames(otherGames, settings.librarySortMode);
+      newShelves.push({ title: t("Other Games"), games: otherGamesSorted });
+    }
+
     return newShelves;
   }, [
     currentGames,
@@ -133,6 +141,7 @@ export const useGameShelves = (games, searchQuery) => {
     t,
     settings.showRecentlyPlayed,
     settings.showAllGames,
+    settings.showOtherGames,
     settings.librarySortMode,
   ]);
 

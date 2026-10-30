@@ -171,6 +171,7 @@
     "Next": "下一个",
     "Next Tab": "Next Tab",
     "None": "None",
+    "Other Games Shelf": "Other Games Shelf",
     "Prev": "上一个",
     "Prev Tab": "Prev Tab",
     "Recently Played Shelf": "最近游玩展架",
@@ -251,6 +252,7 @@
   },
   "hooks/useGameShelves.js": {
     "All Games": "All Games",
+    "Other Games": "Other Games",
     "Recently Played": "Recently Played",
     "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\""
   },

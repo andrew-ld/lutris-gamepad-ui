@@ -171,6 +171,7 @@
     "Next": "Weiter",
     "Next Tab": "Nächster Tab",
     "None": "-",
+    "Other Games Shelf": "Kategorie \"Sonstige Spiele\" anzeigen",
     "Prev": "Zurück",
     "Prev Tab": "Voriger Tab",
     "Recently Played Shelf": "Kategorie \"Zuletzt gespielt\" anzeigen",
@@ -251,6 +252,7 @@
   },
   "hooks/useGameShelves.js": {
     "All Games": "Alle Spiele",
+    "Other Games": "Sonstige Spiele",
     "Recently Played": "Zuletzt gespielt",
     "Results for \"{{searchQuery}}\"": "Suchergebnisse für \"{{searchQuery}}\""
   },

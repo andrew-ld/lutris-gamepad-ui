@@ -179,6 +179,10 @@ const SettingsMenu = ({ onClose }) => {
     updateSetting("showAllGames", !settings.showAllGames);
   }, [settings, updateSetting]);
 
+  const toggleShowOtherGames = useCallback(() => {
+    updateSetting("showOtherGames", !settings.showOtherGames);
+  }, [settings, updateSetting]);
+
   const toggleShowHiddenGames = useCallback(() => {
     updateSetting("showHiddenGames", !settings.showHiddenGames);
   }, [settings, updateSetting]);
@@ -248,6 +252,12 @@ const SettingsMenu = ({ onClose }) => {
       libraryItems.push({
         type: "SHOW_ALL",
         label: t("All Games Shelf"),
+      });
+    }
+    if (settings.showOtherGames !== undefined) {
+      libraryItems.push({
+        type: "SHOW_OTHER",
+        label: t("Other Games Shelf"),
       });
     }
     if (settings.showHiddenGames !== undefined) {
@@ -345,6 +355,10 @@ const SettingsMenu = ({ onClose }) => {
           if (actionName === "A") toggleShowAllGames();
           break;
         }
+        case "SHOW_OTHER": {
+          if (actionName === "A") toggleShowOtherGames();
+          break;
+        }
         case "SHOW_HIDDEN": {
           if (actionName === "A") toggleShowHiddenGames();
           break;
@@ -382,6 +396,7 @@ const SettingsMenu = ({ onClose }) => {
       toggleUseSdlInput,
       toggleShowRecentlyPlayed,
       toggleShowAllGames,
+      toggleShowOtherGames,
       toggleShowHiddenGames,
       toggleShowRunnerIcon,
       previousLibrarySortMode,
@@ -491,6 +506,24 @@ const SettingsMenu = ({ onClose }) => {
                 labelOn={t("Disable")}
                 labelOff={t("Enable")}
                 onClick={toggleShowAllGames}
+              />
+            </FocusableRow>
+          );
+        }
+        case "SHOW_OTHER": {
+          return (
+            <FocusableRow
+              ref={ref}
+              isFocused={isFocused}
+              onMouseEnter={onMouseEnter}
+              onClick={toggleShowOtherGames}
+            >
+              <span className="settings-menu-label">{item.label}</span>
+              <ToggleButton
+                isToggledOn={settings.showOtherGames}
+                labelOn={t("Disable")}
+                labelOff={t("Enable")}
+                onClick={toggleShowOtherGames}
               />
             </FocusableRow>
           );
@@ -631,6 +664,7 @@ const SettingsMenu = ({ onClose }) => {
       settings.gamepadAutorepeatMs,
       settings.showRecentlyPlayed,
       settings.showAllGames,
+      settings.showOtherGames,
       settings.doubleConfirmPowerManagement,
       settings.enableSdlInput,
       settings.showHiddenGames,
@@ -644,6 +678,7 @@ const SettingsMenu = ({ onClose }) => {
       librarySortModeLabel,
       toggleShowRecentlyPlayed,
       toggleShowAllGames,
+      toggleShowOtherGames,
       t,
       toggleDoubleConfirmPowerManagement,
       toggleUseSdlInput,
@@ -753,6 +788,15 @@ const SettingsMenu = ({ onClose }) => {
 
         break;
       }
+      case "SHOW_OTHER": {
+        buttons.push({
+          button: "A",
+          label: settings.showOtherGames ? t("Disable") : t("Enable"),
+          onClick: toggleShowOtherGames,
+        });
+
+        break;
+      }
       case "SHOW_HIDDEN": {
         buttons.push({
           button: "A",
@@ -841,6 +885,7 @@ const SettingsMenu = ({ onClose }) => {
     nextLibrarySortMode,
     settings.showRecentlyPlayed,
     settings.showAllGames,
+    settings.showOtherGames,
     settings.showHiddenGames,
     settings.showRunnerIcon,
     settings.doubleConfirmPowerManagement,
@@ -850,6 +895,7 @@ const SettingsMenu = ({ onClose }) => {
     settings.enableUiActionSoundFeedbacks,
     toggleShowRecentlyPlayed,
     toggleShowAllGames,
+    toggleShowOtherGames,
     toggleShowHiddenGames,
     toggleShowRunnerIcon,
     toggleDoubleConfirmPowerManagement,

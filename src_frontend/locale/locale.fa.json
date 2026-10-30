@@ -171,6 +171,7 @@
     "Next": "بعدی",
     "Next Tab": "زبانه بعدی",
     "None": "هیچ",
+    "Other Games Shelf": "Other Games Shelf",
     "Prev": "پیشین",
     "Prev Tab": "زبانه پیشین",
     "Recently Played Shelf": "قفسه اخیرا بازی شده",
@@ -251,6 +252,7 @@
   },
   "hooks/useGameShelves.js": {
     "All Games": "همه بازی‌ها",
+    "Other Games": "Other Games",
     "Recently Played": "اخیرا بازی شده",
     "Results for \"{{searchQuery}}\"": "یافته‌ها برای «{{searchQuery}}»"
   },

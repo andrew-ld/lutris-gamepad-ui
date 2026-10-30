@@ -171,6 +171,7 @@
     "Next": "Next",
     "Next Tab": "Next Tab",
     "None": "None",
+    "Other Games Shelf": "Other Games Shelf",
     "Prev": "Prev",
     "Prev Tab": "Prev Tab",
     "Recently Played Shelf": "Nyligen spelade",
@@ -251,6 +252,7 @@
   },
   "hooks/useGameShelves.js": {
     "All Games": "All Games",
+    "Other Games": "Other Games",
     "Recently Played": "Recently Played",
     "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\""
   },

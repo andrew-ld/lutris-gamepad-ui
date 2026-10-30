@@ -50,7 +50,7 @@ Arch Linux users (and users of Arch-based distributions) can install [`lutris-ga
 
 - **Gamepad-First Interface:** Navigate the entire application without a mouse or keyboard. The UI provides context-aware on-screen button prompts that adapt to your connected controller (Xbox, PlayStation, etc.) and offers audio feedback for interactions.
 
-- **Organized Game Library:** Games are automatically organized into shelves for "Recently Played," "All Games," and by categories defined in Lutris. Find games quickly using the universal search with an integrated **on-screen keyboard**. Game cards display cover art, playtime, and last played date, with dynamically generated gradients as fallbacks for missing art.
+- **Organized Game Library:** Games are automatically organized into shelves for "Recently Played", "All Games", by categories defined in Lutris and "Other Games" (games without category). Find games quickly using the universal search with an integrated **on-screen keyboard**. Game cards display cover art, playtime, and last played date, with dynamically generated gradients as fallbacks for missing art. For better overview you can enable or disable the non-category shelves.
 
 - **Seamless Gameplay:** Launch games directly from the library. While a game is running, a clean "Now Playing" screen is displayed. Features include an **experimental pause function** and the ability to open the main Lutris desktop app directly. A global shortcut (Gamepad Home/Guide button or `Ctrl+X`) allows you to toggle the UI's visibility without closing your game.
 
