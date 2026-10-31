@@ -130,14 +130,16 @@ export const useGameShelves = (games, searchQuery) => {
       const uncategorizedGames = currentGames.filter(
         (g) => (g.categories || []).length === 0,
       );
-      const uncategorizedGamesSorted = sortGames(
-        uncategorizedGames,
-        settings.librarySortMode,
-      );
-      newShelves.push({
-        title: t("Uncategorized Games"),
-        games: uncategorizedGamesSorted,
-      });
+      if (uncategorizedGames.length) {
+        const uncategorizedGamesSorted = sortGames(
+          uncategorizedGames,
+          settings.librarySortMode,
+        );
+        newShelves.push({
+          title: t("Uncategorized Games"),
+          games: uncategorizedGamesSorted,
+        });
+      }
     }
 
     return newShelves;
