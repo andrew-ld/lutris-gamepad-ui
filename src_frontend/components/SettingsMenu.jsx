@@ -256,7 +256,7 @@ const SettingsMenu = ({ onClose }) => {
     }
     if (settings.showUncategorizedGames !== undefined) {
       libraryItems.push({
-        type: "SHOW_OTHER",
+        type: "SHOW_UNCATEGORIZED",
         label: t("Uncategorized Games Shelf"),
       });
     }
@@ -355,7 +355,7 @@ const SettingsMenu = ({ onClose }) => {
           if (actionName === "A") toggleShowAllGames();
           break;
         }
-        case "SHOW_OTHER": {
+        case "SHOW_UNCATEGORIZED": {
           if (actionName === "A") toggleShowUncategorizedGames();
           break;
         }
@@ -510,7 +510,7 @@ const SettingsMenu = ({ onClose }) => {
             </FocusableRow>
           );
         }
-        case "SHOW_OTHER": {
+        case "SHOW_UNCATEGORIZED": {
           return (
             <FocusableRow
               ref={ref}
@@ -788,7 +788,7 @@ const SettingsMenu = ({ onClose }) => {
 
         break;
       }
-      case "SHOW_OTHER": {
+      case "SHOW_UNCATEGORIZED": {
         buttons.push({
           button: "A",
           label: settings.showUncategorizedGames ? t("Disable") : t("Enable"),
