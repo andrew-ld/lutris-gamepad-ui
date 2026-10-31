@@ -171,7 +171,6 @@
     "Next": "Weiter",
     "Next Tab": "Nächster Tab",
     "None": "-",
-    "Other Games Shelf": "Kategorie \"Sonstige Spiele\" anzeigen",
     "Prev": "Zurück",
     "Prev Tab": "Voriger Tab",
     "Recently Played Shelf": "Kategorie \"Zuletzt gespielt\" anzeigen",
@@ -184,6 +183,7 @@
     "Suspend then hibernate": "Bereitschaft, dann Ruhezustand",
     "System Power Suspend Mode": "Bereitschaftsmodus",
     "UI Action Sound Feedbacks": "Tastentöne bei Bedienung der Anwendung",
+    "Uncategorized Games Shelf": "Kategorie \"Spiele ohne Kategorie\" anzeigen",
     "Unknown": "Unbekannt",
     "Use Remote Desktop Portal": "\"Remote Desktop\" benutzen",
     "Zoom Level": "Zoomstufe"
@@ -252,9 +252,9 @@
   },
   "hooks/useGameShelves.js": {
     "All Games": "Alle Spiele",
-    "Other Games": "Sonstige Spiele",
     "Recently Played": "Zuletzt gespielt",
-    "Results for \"{{searchQuery}}\"": "Suchergebnisse für \"{{searchQuery}}\""
+    "Results for \"{{searchQuery}}\"": "Suchergebnisse für \"{{searchQuery}}\"",
+    "Uncategorized Games": "Spiele ohne Kategorie"
   },
   "navigation/row_based_menu/RowBasedMenuContent.jsx": {
     "No items available.": "Keine Einträge verfügbar."

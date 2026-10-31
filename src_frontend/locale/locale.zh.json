@@ -171,7 +171,6 @@
     "Next": "下一个",
     "Next Tab": "Next Tab",
     "None": "None",
-    "Other Games Shelf": "Other Games Shelf",
     "Prev": "上一个",
     "Prev Tab": "Prev Tab",
     "Recently Played Shelf": "最近游玩展架",
@@ -184,6 +183,7 @@
     "Suspend then hibernate": "Suspend then hibernate",
     "System Power Suspend Mode": "System Power Suspend Mode",
     "UI Action Sound Feedbacks": "界面操作音效",
+    "Uncategorized Games Shelf": "Uncategorized Games Shelf",
     "Unknown": "Unknown",
     "Use Remote Desktop Portal": "使用远程桌面协议",
     "Zoom Level": "缩放级别"
@@ -252,9 +252,9 @@
   },
   "hooks/useGameShelves.js": {
     "All Games": "All Games",
-    "Other Games": "Other Games",
     "Recently Played": "Recently Played",
-    "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\""
+    "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\"",
+    "Uncategorized Games": "Uncategorized Games"
   },
   "navigation/row_based_menu/RowBasedMenuContent.jsx": {
     "No items available.": "没有可用项。"

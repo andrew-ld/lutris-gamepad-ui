@@ -126,12 +126,18 @@ export const useGameShelves = (games, searchQuery) => {
       });
     }
 
-    if (settings.showOtherGames) {
-      const otherGames = currentGames.filter(
+    if (settings.showUncategorizedGames) {
+      const uncategorizedGames = currentGames.filter(
         (g) => (g.categories || []).length === 0,
       );
-      const otherGamesSorted = sortGames(otherGames, settings.librarySortMode);
-      newShelves.push({ title: t("Other Games"), games: otherGamesSorted });
+      const uncategorizedGamesSorted = sortGames(
+        uncategorizedGames,
+        settings.librarySortMode,
+      );
+      newShelves.push({
+        title: t("Uncategorized Games"),
+        games: uncategorizedGamesSorted,
+      });
     }
 
     return newShelves;
@@ -141,7 +147,7 @@ export const useGameShelves = (games, searchQuery) => {
     t,
     settings.showRecentlyPlayed,
     settings.showAllGames,
-    settings.showOtherGames,
+    settings.showUncategorizedGames,
     settings.librarySortMode,
   ]);
 
