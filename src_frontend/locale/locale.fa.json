@@ -183,6 +183,7 @@
     "Suspend then hibernate": "تعلیق سپس خواب عمیق",
     "System Power Suspend Mode": "حالت تعلیق نیروی سامانه",
     "UI Action Sound Feedbacks": "بازخوردهای صوتی کنش‌های رابط کاربری",
+    "Uncategorized Games Shelf": "Uncategorized Games Shelf",
     "Unknown": "ناشناخته",
     "Use Remote Desktop Portal": "به‌کارگیری گذرگاه میزکار دور",
     "Zoom Level": "میزان بزرگ‌نمایی"
@@ -252,7 +253,8 @@
   "hooks/useGameShelves.js": {
     "All Games": "همه بازی‌ها",
     "Recently Played": "اخیرا بازی شده",
-    "Results for \"{{searchQuery}}\"": "یافته‌ها برای «{{searchQuery}}»"
+    "Results for \"{{searchQuery}}\"": "یافته‌ها برای «{{searchQuery}}»",
+    "Uncategorized Games": "Uncategorized Games"
   },
   "navigation/row_based_menu/RowBasedMenuContent.jsx": {
     "No items available.": "هیچ موردی در دسترس نیست."

@@ -183,6 +183,7 @@
     "Suspend then hibernate": "Suspend then hibernate",
     "System Power Suspend Mode": "System Power Suspend Mode",
     "UI Action Sound Feedbacks": "UI Action Sound Feedbacks",
+    "Uncategorized Games Shelf": "Uncategorized Games Shelf",
     "Unknown": "Unknown",
     "Use Remote Desktop Portal": "Use Remote Desktop Portal",
     "Zoom Level": "Zoomnivå"
@@ -252,7 +253,8 @@
   "hooks/useGameShelves.js": {
     "All Games": "All Games",
     "Recently Played": "Recently Played",
-    "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\""
+    "Results for \"{{searchQuery}}\"": "Results for \"{{searchQuery}}\"",
+    "Uncategorized Games": "Uncategorized Games"
   },
   "navigation/row_based_menu/RowBasedMenuContent.jsx": {
     "No items available.": "Inga objekt tillgängliga."
