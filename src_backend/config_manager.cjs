@@ -19,6 +19,7 @@ const defaultConfig = {
   enableSdlInput: false,
   librarySortMode: "lastPlayed",
   systemPowerSuspendMode: "none",
+  highlightDisabledSettings: false,
 };
 
 const SUBSCRIPTIONS = {};
