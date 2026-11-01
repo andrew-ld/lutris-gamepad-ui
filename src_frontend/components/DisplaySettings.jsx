@@ -7,7 +7,7 @@ import { useTranslation } from "../stores/translationStore";
 import { useViewActions } from "../stores/viewStore";
 import * as api from "../utils/ipc";
 
-import CheckMark from "./CheckMark";
+import CurrentSettingStatus4Boolean from "./CurrentSettingStatus4Boolean";
 import DialogLayout from "./DialogLayout";
 import FocusableRow from "./FocusableRow";
 import PercentageBar from "./PercentageBar";
@@ -168,7 +168,9 @@ const DisplaySettings = ({ onClose }) => {
           }
         >
           {item.type === CONTROL_TYPES.NIGHT_LIGHT ? (
-            <CheckMark checked={item.value} label={item.label} />
+            <CurrentSettingStatus4Boolean checked={item.value}>
+              <span className="settings-menu-label">{item.label}</span>
+            </CurrentSettingStatus4Boolean>
           ) : (
             <span className="settings-menu-label">{item.label}</span>
           )}

@@ -6,14 +6,10 @@
   align-items: center;
 }
 
-.checkmark-wrapper > .checkmark-label {
-  flex-basis: auto;
-}
-
 .checkmark-wrapper > .checkmark {
   position: relative;
-  width: 32px;
-  height: 32px;
+  width: 2rem;
+  height: 2rem;
   margin-right: 0.75rem;
   flex-shrink: 0;
   flex-grow: 0;
@@ -35,10 +31,10 @@
   transform-origin: 21px -3px;
 }
 .checkmark-wrapper > .checkmark > .check-icon.checked {
-  border-color: green;
+  border-color: var(--enabled);
 }
 .checkmark-wrapper > .checkmark > .check-icon.unchecked {
-  border-color: rgba(255, 255, 255, 0.05);
+  border-color: var(--disabled);
 }
 
 .checkmark-wrapper > .checkmark > .cross-icon {
@@ -54,7 +50,7 @@
   left: 1px;
   width: 22px;
   height: 2px;
-  background: red;
+  background: var(--disabled-highlighted);
 }
 .checkmark-wrapper > .checkmark > .cross-icon::before {
   transform: rotate(45deg);

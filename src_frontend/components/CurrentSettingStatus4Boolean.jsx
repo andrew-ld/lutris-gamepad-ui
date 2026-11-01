@@ -1,7 +1,8 @@
 import { useSettingsState } from "../stores/settingsStore";
-import "../styles/CheckMark.css";
 
-const CheckMark = ({ checked, label }) => {
+import "../styles/CurrentSettingStatus4Boolean.css";
+
+const CurrentSettingStatus4Boolean = ({ children, checked }) => {
   const { settings } = useSettingsState();
   const uncheckedClass = settings.highlightDisabledSettings
     ? "cross-icon"
@@ -11,9 +12,9 @@ const CheckMark = ({ checked, label }) => {
       <div class="checkmark">
         <div class={checked ? "check-icon checked" : uncheckedClass}></div>
       </div>
-      <div class="checkmark-label">{label}</div>
+      <div>{children}</div>
     </div>
   );
 };
 
-export default CheckMark;
+export default CurrentSettingStatus4Boolean;
