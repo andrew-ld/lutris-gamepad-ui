@@ -8,6 +8,7 @@ const defaultConfig = {
   zoomFactor: 1,
   showRecentlyPlayed: true,
   showAllGames: true,
+  showUncategorizedGames: false,
   showHiddenGames: false,
   doubleConfirmPowerManagement: true,
   gamepadAutorepeatMs: 225,
