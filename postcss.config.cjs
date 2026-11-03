@@ -26,7 +26,6 @@ const defaultThemeGenerator = () => {
     "--accent-color",
     "--enabled",
     "--disabled",
-    "--disabled-highlighted",
     "--secondary-background",
     "--text-primary",
     "--text-secondary",

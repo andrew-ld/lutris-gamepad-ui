@@ -4,7 +4,7 @@ import RowBasedMenu from "../navigation/row_based_menu/RowBasedMenu";
 import { useTranslation } from "../stores/translationStore";
 import { useViewActions } from "../stores/viewStore";
 
-import CurrentSettingStatus4Boolean from "./CurrentSettingStatus4Boolean";
+import BooleanIcon from "./BooleanIcon";
 import DialogLayout from "./DialogLayout";
 import FilePicker from "./FilePicker";
 import FocusableRow from "./FocusableRow";
@@ -253,9 +253,9 @@ const AbstractLutrisSettingsMenu = ({
           onClick={() => handleAction("A", item)}
         >
           {item.type === "bool" ? (
-            <CurrentSettingStatus4Boolean checked={item.value}>
+            <BooleanIcon checked={item.value}>
               <span className="settings-menu-label">{item.label}</span>
-            </CurrentSettingStatus4Boolean>
+            </BooleanIcon>
           ) : (
             <span className="settings-menu-label">{item.label}</span>
           )}

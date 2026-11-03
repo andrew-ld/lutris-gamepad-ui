@@ -5,7 +5,7 @@ import { useAudio } from "../stores/audioStore";
 import { useSettingsActions, useSettingsState } from "../stores/settingsStore";
 import { useTranslation } from "../stores/translationStore";
 
-import CurrentSettingStatus4Boolean from "./CurrentSettingStatus4Boolean";
+import BooleanIcon from "./BooleanIcon";
 import DialogLayout from "./DialogLayout";
 import FocusableRow from "./FocusableRow";
 import PercentageBar from "./PercentageBar";
@@ -177,9 +177,9 @@ const VolumeControl = ({ onClose }) => {
           {isChecked === undefined ? (
             <span className="settings-menu-label">{item.label}</span>
           ) : (
-            <CurrentSettingStatus4Boolean checked={isChecked}>
+            <BooleanIcon checked={isChecked}>
               <span className="settings-menu-label">{item.label}</span>
-            </CurrentSettingStatus4Boolean>
+            </BooleanIcon>
           )}
           {item.type === CONTROL_TYPES.MUTE && (
             <ToggleButton

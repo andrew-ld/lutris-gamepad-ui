@@ -4,7 +4,7 @@ import RowBasedMenu from "../navigation/row_based_menu/RowBasedMenu";
 import { useSettingsActions, useSettingsState } from "../stores/settingsStore";
 import { useTranslation } from "../stores/translationStore";
 
-import CurrentSettingStatus4Boolean from "./CurrentSettingStatus4Boolean";
+import BooleanIcon from "./BooleanIcon";
 import DialogLayout from "./DialogLayout";
 import FocusableRow from "./FocusableRow";
 import PercentageBar from "./PercentageBar";
@@ -211,13 +211,6 @@ const SettingsMenu = ({ onClose }) => {
     updateSetting("keepGamesRunningOnQuit", !settings.keepGamesRunningOnQuit);
   }, [settings, updateSetting]);
 
-  const toggleHighlightDisabledSettings = useCallback(() => {
-    updateSetting(
-      "highlightDisabledSettings",
-      !settings.highlightDisabledSettings,
-    );
-  }, [settings, updateSetting]);
-
   const toggleEnableUiActionSoundFeedbacks = useCallback(() => {
     updateSetting(
       "enableUiActionSoundFeedbacks",
@@ -240,12 +233,6 @@ const SettingsMenu = ({ onClose }) => {
       generalItems.push({
         type: "KEEP_GAMES_RUNNING",
         label: t("Keep Games Running On Quit"),
-      });
-    }
-    if (settings.highlightDisabledSettings !== undefined) {
-      generalItems.push({
-        type: "HIGHLIGHT_DISABLED_SETTINGS",
-        label: t("Highlight Disabled Settings"),
       });
     }
 
@@ -349,10 +336,6 @@ const SettingsMenu = ({ onClose }) => {
           if (actionName === "A") toggleKeepGamesRunningOnQuit();
           break;
         }
-        case "HIGHLIGHT_DISABLED_SETTINGS": {
-          if (actionName === "A") toggleHighlightDisabledSettings();
-          break;
-        }
         case "USE_REMOTE_DESKTOP_PORTAL": {
           if (actionName === "A") toggleUseRemoteDesktopPortal();
           break;
@@ -409,7 +392,6 @@ const SettingsMenu = ({ onClose }) => {
       nextSuspendMode,
       toggleEnableUiActionSoundFeedbacks,
       toggleKeepGamesRunningOnQuit,
-      toggleHighlightDisabledSettings,
       toggleUseRemoteDesktopPortal,
       toggleDoubleConfirmPowerManagement,
       toggleUseSdlInput,
@@ -501,11 +483,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleShowRecentlyPlayed}
             >
-              <CurrentSettingStatus4Boolean
-                checked={settings.showRecentlyPlayed}
-              >
+              <BooleanIcon checked={settings.showRecentlyPlayed}>
                 <span className="settings-menu-label">{item.label}</span>
-              </CurrentSettingStatus4Boolean>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.showRecentlyPlayed}
                 labelOn={t("Disable")}
@@ -523,9 +503,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleShowAllGames}
             >
-              <CurrentSettingStatus4Boolean checked={settings.showAllGames}>
+              <BooleanIcon checked={settings.showAllGames}>
                 <span className="settings-menu-label">{item.label}</span>
-              </CurrentSettingStatus4Boolean>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.showAllGames}
                 labelOn={t("Disable")}
@@ -543,11 +523,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleShowUncategorizedGames}
             >
-              <CurrentSettingStatus4Boolean
-                checked={settings.showUncategorizedGames}
-              >
+              <BooleanIcon checked={settings.showUncategorizedGames}>
                 <span className="settings-menu-label">{item.label}</span>
-              </CurrentSettingStatus4Boolean>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.showUncategorizedGames}
                 labelOn={t("Disable")}
@@ -565,11 +543,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleDoubleConfirmPowerManagement}
             >
-              <CurrentSettingStatus4Boolean
-                checked={settings.doubleConfirmPowerManagement}
-              >
+              <BooleanIcon checked={settings.doubleConfirmPowerManagement}>
                 <span className="settings-menu-label">{item.label}</span>
-              </CurrentSettingStatus4Boolean>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.doubleConfirmPowerManagement}
                 labelOn={t("Disable")}
@@ -587,9 +563,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleUseSdlInput}
             >
-              <CurrentSettingStatus4Boolean checked={settings.enableSdlInput}>
+              <BooleanIcon checked={settings.enableSdlInput}>
                 <span className="settings-menu-label">{item.label}</span>
-              </CurrentSettingStatus4Boolean>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.enableSdlInput}
                 labelOn={t("Disable")}
@@ -607,9 +583,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleShowHiddenGames}
             >
-              <CurrentSettingStatus4Boolean checked={settings.showHiddenGames}>
+              <BooleanIcon checked={settings.showHiddenGames}>
                 <span className="settings-menu-label">{item.label}</span>
-              </CurrentSettingStatus4Boolean>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.showHiddenGames}
                 labelOn={t("Disable")}
@@ -627,9 +603,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleShowRunnerIcon}
             >
-              <CurrentSettingStatus4Boolean checked={settings.showRunnerIcon}>
+              <BooleanIcon checked={settings.showRunnerIcon}>
                 <span className="settings-menu-label">{item.label}</span>
-              </CurrentSettingStatus4Boolean>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.showRunnerIcon}
                 labelOn={t("Disable")}
@@ -647,11 +623,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleUseRemoteDesktopPortal}
             >
-              <CurrentSettingStatus4Boolean
-                checked={settings.useRemoteDesktopPortal}
-              >
+              <BooleanIcon checked={settings.useRemoteDesktopPortal}>
                 <span className="settings-menu-label">{item.label}</span>
-              </CurrentSettingStatus4Boolean>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.useRemoteDesktopPortal}
                 labelOn={t("Disable")}
@@ -669,38 +643,14 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleKeepGamesRunningOnQuit}
             >
-              <CurrentSettingStatus4Boolean
-                checked={settings.keepGamesRunningOnQuit}
-              >
+              <BooleanIcon checked={settings.keepGamesRunningOnQuit}>
                 <span className="settings-menu-label">{item.label}</span>
-              </CurrentSettingStatus4Boolean>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.keepGamesRunningOnQuit}
                 labelOn={t("Disable")}
                 labelOff={t("Enable")}
                 onClick={toggleKeepGamesRunningOnQuit}
-              />
-            </FocusableRow>
-          );
-        }
-        case "HIGHLIGHT_DISABLED_SETTINGS": {
-          return (
-            <FocusableRow
-              ref={ref}
-              isFocused={isFocused}
-              onMouseEnter={onMouseEnter}
-              onClick={toggleHighlightDisabledSettings}
-            >
-              <CurrentSettingStatus4Boolean
-                checked={settings.highlightDisabledSettings}
-              >
-                <span className="settings-menu-label">{item.label}</span>
-              </CurrentSettingStatus4Boolean>
-              <ToggleButton
-                isToggledOn={settings.highlightDisabledSettings}
-                labelOn={t("Disable")}
-                labelOff={t("Enable")}
-                onClick={toggleHighlightDisabledSettings}
               />
             </FocusableRow>
           );
@@ -713,11 +663,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleEnableUiActionSoundFeedbacks}
             >
-              <CurrentSettingStatus4Boolean
-                checked={settings.enableUiActionSoundFeedbacks}
-              >
+              <BooleanIcon checked={settings.enableUiActionSoundFeedbacks}>
                 <span className="settings-menu-label">{item.label}</span>
-              </CurrentSettingStatus4Boolean>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.enableUiActionSoundFeedbacks}
                 labelOn={t("Disable")}
@@ -744,7 +692,6 @@ const SettingsMenu = ({ onClose }) => {
       settings.showRunnerIcon,
       settings.useRemoteDesktopPortal,
       settings.keepGamesRunningOnQuit,
-      settings.highlightDisabledSettings,
       settings.enableUiActionSoundFeedbacks,
       nextSuspendMode,
       suspendModeLabel,
@@ -760,7 +707,6 @@ const SettingsMenu = ({ onClose }) => {
       toggleShowRunnerIcon,
       toggleUseRemoteDesktopPortal,
       toggleKeepGamesRunningOnQuit,
-      toggleHighlightDisabledSettings,
       toggleEnableUiActionSoundFeedbacks,
     ],
   );
@@ -928,17 +874,6 @@ const SettingsMenu = ({ onClose }) => {
 
         break;
       }
-      case "HIGHLIGHT_DISABLED_SETTINGS": {
-        buttons.push({
-          button: "A",
-          label: settings.highlightDisabledSettings
-            ? t("Disable")
-            : t("Enable"),
-          onClick: toggleHighlightDisabledSettings,
-        });
-
-        break;
-      }
       case "ENABLE_UI_ACTION_SOUND_FEEDBACKS": {
         buttons.push({
           button: "A",
@@ -978,7 +913,6 @@ const SettingsMenu = ({ onClose }) => {
     settings.enableSdlInput,
     settings.useRemoteDesktopPortal,
     settings.keepGamesRunningOnQuit,
-    settings.highlightDisabledSettings,
     settings.enableUiActionSoundFeedbacks,
     toggleShowRecentlyPlayed,
     toggleShowAllGames,
@@ -989,7 +923,6 @@ const SettingsMenu = ({ onClose }) => {
     toggleUseSdlInput,
     toggleUseRemoteDesktopPortal,
     toggleKeepGamesRunningOnQuit,
-    toggleHighlightDisabledSettings,
     toggleEnableUiActionSoundFeedbacks,
   ]);
 
