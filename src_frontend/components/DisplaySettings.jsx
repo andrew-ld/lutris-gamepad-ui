@@ -7,6 +7,7 @@ import { useTranslation } from "../stores/translationStore";
 import { useViewActions } from "../stores/viewStore";
 import * as api from "../utils/ipc";
 
+import BooleanIcon from "./BooleanIcon";
 import DialogLayout from "./DialogLayout";
 import FocusableRow from "./FocusableRow";
 import PercentageBar from "./PercentageBar";
@@ -166,7 +167,13 @@ const DisplaySettings = ({ onClose }) => {
               : undefined
           }
         >
-          <span className="display-settings-label">{item.label}</span>
+          {item.type === CONTROL_TYPES.NIGHT_LIGHT ? (
+            <BooleanIcon checked={item.value}>
+              <span className="settings-menu-label">{item.label}</span>
+            </BooleanIcon>
+          ) : (
+            <span className="settings-menu-label">{item.label}</span>
+          )}
           {item.type === CONTROL_TYPES.BRIGHTNESS && (
             <PercentageBar percent={brightness} />
           )}

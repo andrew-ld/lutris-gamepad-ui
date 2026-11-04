@@ -1,0 +1,41 @@
+.checkmark-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: start;
+  align-items: center;
+}
+
+.checkmark-wrapper > .checkmark {
+  position: relative;
+  width: 2em;
+  height: 2em;
+  margin-right: 0.75em;
+  flex-shrink: 0;
+  flex-grow: 0;
+  border: 0.1875em solid var(--checkbox);
+  border-radius: 100%;
+}
+
+.checkmark-wrapper > .checkmark > div {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+.checkmark-wrapper > .checkmark > .check-icon {
+  width: 0.75em;
+  height: 1.75em;
+  border-width: 0 0.25em 0.25em 0;
+  border-style: solid;
+  border-radius: 0.1875em;
+  transform: rotate(45deg);
+  transform-origin: 2em 0.25em;
+}
+.checkmark-wrapper > .checkmark.checked > .check-icon {
+  border-color: var(--checkbox-enabled);
+}
+.checkmark-wrapper > .checkmark.unchecked > .check-icon {
+  display: none;
+}

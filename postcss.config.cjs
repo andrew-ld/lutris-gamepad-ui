@@ -24,6 +24,8 @@ hoverWrapperPlugin.postcss = true;
 const defaultThemeGenerator = () => {
   const themeProperties = new Set([
     "--accent-color",
+    "--checkbox",
+    "--checkbox-enabled",
     "--secondary-background",
     "--text-primary",
     "--text-secondary",

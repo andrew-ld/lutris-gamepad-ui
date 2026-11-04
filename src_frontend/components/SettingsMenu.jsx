@@ -4,6 +4,7 @@ import RowBasedMenu from "../navigation/row_based_menu/RowBasedMenu";
 import { useSettingsActions, useSettingsState } from "../stores/settingsStore";
 import { useTranslation } from "../stores/translationStore";
 
+import BooleanIcon from "./BooleanIcon";
 import DialogLayout from "./DialogLayout";
 import FocusableRow from "./FocusableRow";
 import PercentageBar from "./PercentageBar";
@@ -482,7 +483,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleShowRecentlyPlayed}
             >
-              <span className="settings-menu-label">{item.label}</span>
+              <BooleanIcon checked={settings.showRecentlyPlayed}>
+                <span className="settings-menu-label">{item.label}</span>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.showRecentlyPlayed}
                 labelOn={t("Disable")}
@@ -500,7 +503,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleShowAllGames}
             >
-              <span className="settings-menu-label">{item.label}</span>
+              <BooleanIcon checked={settings.showAllGames}>
+                <span className="settings-menu-label">{item.label}</span>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.showAllGames}
                 labelOn={t("Disable")}
@@ -518,7 +523,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleShowUncategorizedGames}
             >
-              <span className="settings-menu-label">{item.label}</span>
+              <BooleanIcon checked={settings.showUncategorizedGames}>
+                <span className="settings-menu-label">{item.label}</span>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.showUncategorizedGames}
                 labelOn={t("Disable")}
@@ -536,7 +543,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleDoubleConfirmPowerManagement}
             >
-              <span className="settings-menu-label">{item.label}</span>
+              <BooleanIcon checked={settings.doubleConfirmPowerManagement}>
+                <span className="settings-menu-label">{item.label}</span>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.doubleConfirmPowerManagement}
                 labelOn={t("Disable")}
@@ -554,7 +563,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleUseSdlInput}
             >
-              <span className="settings-menu-label">{item.label}</span>
+              <BooleanIcon checked={settings.enableSdlInput}>
+                <span className="settings-menu-label">{item.label}</span>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.enableSdlInput}
                 labelOn={t("Disable")}
@@ -572,7 +583,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleShowHiddenGames}
             >
-              <span className="settings-menu-label">{item.label}</span>
+              <BooleanIcon checked={settings.showHiddenGames}>
+                <span className="settings-menu-label">{item.label}</span>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.showHiddenGames}
                 labelOn={t("Disable")}
@@ -590,7 +603,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleShowRunnerIcon}
             >
-              <span className="settings-menu-label">{item.label}</span>
+              <BooleanIcon checked={settings.showRunnerIcon}>
+                <span className="settings-menu-label">{item.label}</span>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.showRunnerIcon}
                 labelOn={t("Disable")}
@@ -608,7 +623,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleUseRemoteDesktopPortal}
             >
-              <span className="settings-menu-label">{item.label}</span>
+              <BooleanIcon checked={settings.useRemoteDesktopPortal}>
+                <span className="settings-menu-label">{item.label}</span>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.useRemoteDesktopPortal}
                 labelOn={t("Disable")}
@@ -626,7 +643,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleKeepGamesRunningOnQuit}
             >
-              <span className="settings-menu-label">{item.label}</span>
+              <BooleanIcon checked={settings.keepGamesRunningOnQuit}>
+                <span className="settings-menu-label">{item.label}</span>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.keepGamesRunningOnQuit}
                 labelOn={t("Disable")}
@@ -644,7 +663,9 @@ const SettingsMenu = ({ onClose }) => {
               onMouseEnter={onMouseEnter}
               onClick={toggleEnableUiActionSoundFeedbacks}
             >
-              <span className="settings-menu-label">{item.label}</span>
+              <BooleanIcon checked={settings.enableUiActionSoundFeedbacks}>
+                <span className="settings-menu-label">{item.label}</span>
+              </BooleanIcon>
               <ToggleButton
                 isToggledOn={settings.enableUiActionSoundFeedbacks}
                 labelOn={t("Disable")}

@@ -130,7 +130,7 @@ export const useGameShelves = (games, searchQuery) => {
       const uncategorizedGames = currentGames.filter(
         (g) => (g.categories || []).length === 0,
       );
-      if (uncategorizedGames.length) {
+      if (uncategorizedGames.length > 0) {
         const uncategorizedGamesSorted = sortGames(
           uncategorizedGames,
           settings.librarySortMode,
